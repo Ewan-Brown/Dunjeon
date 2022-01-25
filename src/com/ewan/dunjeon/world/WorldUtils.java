@@ -17,44 +17,44 @@ public class WorldUtils {
     public static float getRawDistance(BasicCell c1, BasicCell c2){
         return (float)Math.sqrt(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2));
     }
-    public static List<Point> raytrace(BasicCell c1, BasicCell c2)
+    public static boolean raytrace(BasicCell c1, BasicCell c2)
     {
-        return raytrace(c1.getX(), c1.getY(), c2.getX(), c2.getY());
+        return true;
     }
 
     /**
      * Taken from http://playtechs.blogspot.com/2007/03/raytracing-on-grid.html
-     */
-    public static List<Point> raytrace(int x0, int y0, int x1, int y1)
-    {
-        List<Point> points = new ArrayList<>();
-        int dx = abs(x1 - x0);
-        int dy = abs(y1 - y0);
-        int x = x0;
-        int y = y0;
-        int n = 1 + dx + dy;
-        int x_inc = (x1 > x0) ? 1 : -1;
-        int y_inc = (y1 > y0) ? 1 : -1;
-        int error = dx - dy;
-        dx *= 2;
-        dy *= 2;
-
-        for (; n > 0; --n)
-        {
-            points.add(new Point(x, y));
-            if (error > 0)
-            {
-                x += x_inc;
-                error -= dy;
-            }
-            else
-            {
-                y += y_inc;
-                error += dx;
-            }
-        }
-        return points;
-    }
+//     */
+//    public static List<Point> raytraceCalc(int x0, int y0, int x1, int y1)
+//    {
+//        List<Point> points = new ArrayList<>();
+//        int dx = abs(x1 - x0);
+//        int dy = abs(y1 - y0);
+//        int x = x0;
+//        int y = y0;
+//        int n = 1 + dx + dy;
+//        int x_inc = (x1 > x0) ? 1 : -1;
+//        int y_inc = (y1 > y0) ? 1 : -1;
+//        int error = dx - dy;
+//        dx *= 2;
+//        dy *= 2;
+//
+//        for (; n > 0; --n)
+//        {
+//            points.add(new Point(x, y));
+//            if (error > 0)
+//            {
+//                x += x_inc;
+//                error -= dy;
+//            }
+//            else
+//            {
+//                y += y_inc;
+//                error += dx;
+//            }
+//        }
+//        return points;
+//    }
 
     public static List<BasicCell> getAStarPath(Level l, BasicCell source, BasicCell target, Entity e, boolean print){
         if(print) {

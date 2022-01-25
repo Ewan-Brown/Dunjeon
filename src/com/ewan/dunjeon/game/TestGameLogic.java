@@ -21,7 +21,7 @@ public class TestGameLogic {
 
         World w = World.getInstance();
 
-//        FloorGenerator generator = new FloorGenerator(30, 30);
+//        FloorGeneratora generator = new FloorGenerator(30, 30);
 //        generator.generateLeafs(10,1);
 //        generator.generateDoors(2,3, 2);
 //        generator.generateWeightMap();

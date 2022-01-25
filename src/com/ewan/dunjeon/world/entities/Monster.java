@@ -25,7 +25,7 @@ public class Monster extends Entity{
     List<BasicCell> inVision;
     int maxRange = 12;
     int minRange = 8;
-    float sightRange = 70;
+    float sightRange = 100;
 
     @Override
     public void update() {
@@ -49,27 +49,32 @@ public class Monster extends Entity{
         //  Cell line-of-sight view is unobstructed
         //
         // (Note that duplicate cells are discarded)
-        List<BasicCell> viewableCells = getLevel().getCellsAsList().stream()
-                .filter(basicCell -> basicCell.canBeEntered(Monster.this))
-                .filter(basicCell -> !basicCell.equals(Monster.this.containingCell))
-                .filter(basicCell -> WorldUtils.getRawDistance(basicCell, Monster.this.containingCell) < Monster.this.sightRange)
-                .filter(basicCell -> WorldUtils.raytrace(Monster.this.containingCell, basicCell).stream()
-                        .allMatch(point -> Monster.this.getLevel().getCellAt(point.x, point.y).canBeSeenThrough(Monster.this)))
-                .distinct()
-                .collect(Collectors.toList());
+//        List<BasicCell> viewableCells = getLevel().getCellsAsList().stream()
+//                .filter(basicCell -> basicCell.canBeEntered(Monster.this))
+//                .filter(basicCell -> !basicCell.equals(Monster.this.containingCell))
+//                .filter(basicCell -> WorldUtils.getRawDistance(basicCell, Monster.this.containingCell) < Monster.this.sightRange)
+//                .filter(basicCell -> WorldUtils.raytrace(Monster.this.containingCell, basicCell))
+//                .distinct()
+//                .collect(Collectors.toList());
 
 //        System.out.println("viewableCells.size() = " + viewableCells.size());
-        for (BasicCell viewableCell : viewableCells) {
-//            System.out.println("viewableCell = " + viewableCell);
-        }
+//        for (BasicCell viewableCell : viewableCells) {
+////            System.out.println("viewableCell = " + viewableCell);
+//        }
+
+        List<BasicCell> viewableCells = new ArrayList<>();
+        int rays = 1;
+        float angleDiv = 360f / rays;
         inVision = viewableCells;
     }
 
-
+    public void testSight(){
+        scanSurroundings();
+        LiveDisplay.setSelectedCells(inVision);
+    }
 
     public void randomSearch(){
         scanSurroundings();
-        LiveDisplay.setSelectedCells(inVision);
         //If the current path is either immediately blocked or finished, generate a new one
 //        if (currentPath == null  || currentPath.size() == 0 || !currentPath.get(0).canBeEntered(this)) {
 //            //Find an eligible target cell for exploration

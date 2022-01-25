@@ -5,6 +5,7 @@ import com.ewan.dunjeon.world.ai.InteractAction;
 import com.ewan.dunjeon.world.ai.MoveAction;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.Monster;
 import com.ewan.dunjeon.world.level.Level;
 
 import java.awt.*;
@@ -13,7 +14,10 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.ewan.dunjeon.generation.Main.rand;
 
@@ -61,6 +65,14 @@ public class World implements KeyListener {
             level.update();
         }
         movementProcessor.processMovements();
+        levels.stream()
+                .flatMap((Function<Level, Stream<Entity>>) level -> level.getEntities().stream())
+                .collect(Collectors.toList())
+                .forEach(o -> {
+                    if (o instanceof Monster) {
+                        ((Monster) o).testSight();
+                    }
+                });
     }
 
     HashMap<Integer, Point> keyDirMapping = new HashMap<>();
