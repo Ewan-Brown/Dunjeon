@@ -1,0 +1,6 @@
+What i was last doing:
+Working on Monster AI.
+    Raycasting isn't what i want it to be - it cuts off too much.
+        Maybe try the corner idea? sum how many corners of square X are visible from corners of cell Y? get a 'percentage' visibility?
+    Movements are processed immediately after AI is processed, so the visual display for sight will appear to lag.
+        THis is ok.
