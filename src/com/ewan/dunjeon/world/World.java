@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,10 +37,14 @@ public class World implements KeyListener {
         levels.add(l);
     }
 
+    public Entity getPlayer(){
+        return player;
+    }
+
     public void setPlayer(Entity p){ player = p;}
 
     /**
-     * Adds a entity at a random location. On a level. Will crash if there are no available spots atm
+     * Adds a entity at a random location On a level.
      * TODO Add exception handling when there is no valid spots
      * @param e
      * @param l
@@ -65,14 +70,7 @@ public class World implements KeyListener {
             level.update();
         }
         movementProcessor.processMovements();
-        levels.stream()
-                .flatMap((Function<Level, Stream<Entity>>) level -> level.getEntities().stream())
-                .collect(Collectors.toList())
-                .forEach(o -> {
-                    if (o instanceof Monster) {
-                        ((Monster) o).testSight();
-                    }
-                });
+        getPlayer().updateViewRange();
     }
 
     HashMap<Integer, Point> keyDirMapping = new HashMap<>();

@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.graphics;
 
+import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Level;
 import com.ewan.dunjeon.world.cells.BasicCell;
@@ -43,9 +44,14 @@ public class LiveDisplay {
                         if(DEBUG_CELLS.contains(cell)){
                             g.setColor(Color.YELLOW);
                         }
-                        else g.setColor(cell.getColor());
-                        g.fillRect(cell.getX()*size, cell.getY()*size, size, size);
-                        g.setColor(Color.BLACK);
+                        else {
+                            if(World.getInstance().getPlayer().getViewRange().contains(cell)) {
+                                g.setColor(cell.getColor());
+                            }else{
+                                g.setColor(Color.BLACK);
+                            }
+                            g.fillRect(cell.getX() * size, cell.getY() * size, size, size);
+                        }
 //                        g.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size+size, cell.getY()*size);
 //                        g.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size, cell.getY()*size+size);
                     }

@@ -8,17 +8,26 @@ import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.item.Item;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Entity implements ItemHolder, Updateable {
     public BasicCell containingCell;
     private GenericAction currentAction = null;
     private int speed;
+    private int sightRange;
+    private List<BasicCell> lastVisibleCells = new ArrayList<>();
     Color color;
 
-    public Entity(Color c, int s){
+    public Entity(Color c, int s, int sight){
         this.color = c;
         speed = s;
+        sightRange = sight;
+    }
+
+    public List<BasicCell> lastVisibleCells(){
+        return lastVisibleCells;
     }
 
     public Level getLevel(){
@@ -56,8 +65,113 @@ public class Entity implements ItemHolder, Updateable {
         currentAction = a;
     }
 
+    public List<BasicCell> getViewRange(){
+        return lastVisibleCells;
+    }
+
+    public void updateViewRange(){
+        List<BasicCell> viewableCells = new ArrayList<>();
+
+
+        //Use enough rays that we don't skip over whole cells.
+        //Arc length : r = al
+        //  Where r is arc length, a is angle, l is length
+        float arcLength = 0.1f;
+        float angleDiv =  arcLength/sightRange;
+        int rays = (int)Math.ceil(2 * (float)Math.PI / angleDiv);
+
+        float originX = containingCell.getX();
+        float originY = containingCell.getY();
+
+        List<Point2D[]> lines = new ArrayList<>();
+        for(int i = 0; i < rays; i++){
+            float currentAngle = angleDiv * i;
+            float dx = (float)Math.cos(currentAngle);
+            float dy = (float)Math.sin(currentAngle);
+            float x = originX + 0.5f;
+            float y = originY + 0.5f;
+//            System.out.printf("Start : (%f, %f)\n", x, y);
+            Point2D start = new Point2D.Float(x,y);
+
+            while(true){
+                //The values of the next borders to be intersected
+                int nextXIntersect = 0;
+                int nextYIntersect = 0;
+                boolean horizontal = false;
+                boolean vertical = false;
+
+                if(dx == 0){
+                    vertical = true;
+                }
+                else{
+                    //Calculate by rounding up or down depending on direction
+                    nextXIntersect = (int)((dx > 0) ? Math.ceil(x) : Math.floor(x));
+                }
+                if(dy == 0){
+                    horizontal = true;
+                }else{
+                    //Calculate by rounding up or down depending on direction
+                    nextYIntersect = (int)((dy > 0) ? Math.ceil(y) : Math.floor(y));
+                }
+
+                float minStepsToIntersect;
+                if(horizontal && vertical){
+                    throw new RuntimeException("Ray cast was not vertical or horizontal");
+                }else if(horizontal) {
+                    minStepsToIntersect = (nextXIntersect - x) / dx;
+                }else if(vertical){
+                    minStepsToIntersect = (nextYIntersect - y) / dy;
+                }else {
+                    minStepsToIntersect = Math.min((nextXIntersect - x) / dx, (nextYIntersect - y) / dy);
+                }
+
+                //To ensure we're in the next block, add a delta to hop over the intersection
+                // Decrease the second term if cells are being skipped over corners
+                float stepsToNextIntersect = minStepsToIntersect + 0.01f;
+
+                float nextX = x + dx * stepsToNextIntersect;
+                float nextY = y + dy * stepsToNextIntersect;
+                int nextBlockX = (int)Math.floor(nextX);
+                int nextBlockY = (int)Math.floor(nextY);
+
+                //Check if the distance of this ray now exceeds max radius
+                float xDist = nextX - originX;
+                float yDist = nextY - originY;
+                float squaredDist = xDist*xDist + yDist*yDist;
+                boolean exceedsRange = squaredDist > sightRange*sightRange;
+
+                BasicCell nextCell = containingCell.getLevel().getCellAt(nextBlockX, nextBlockY);
+
+                if(nextCell == null || nextCell == containingCell || exceedsRange){
+                    Point2D end = new Point2D.Float(nextX,nextY);
+                    lines.add(new Point2D[]{start, end});
+                    //End a rayline without saving last cell
+                    break;
+
+                }else{
+                    //Save this cell
+                    if(!viewableCells.contains(nextCell)) {
+                        viewableCells.add(nextCell);
+                    }
+                    x = nextX;
+                    y = nextY;
+                    if(!nextCell.canBeSeenThrough(this)){
+                        //Saved this cell but it's the end of the rayline
+                        Point2D end = new Point2D.Float(nextX,nextY);
+                        lines.add(new Point2D[]{start, end});
+                        break;
+                    }
+                }
+
+            }
+        }
+        lastVisibleCells = viewableCells;
+    }
+
     @Override
     public void update() {
+        //Update the visible cell range for outer usage
+        updateViewRange();
         if(currentAction != null){
             currentAction.update();
             if(currentAction.isComplete()){
