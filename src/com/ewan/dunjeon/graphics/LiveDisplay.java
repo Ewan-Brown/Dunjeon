@@ -8,18 +8,24 @@ import com.ewan.dunjeon.world.furniture.Furniture;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyListener;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LiveDisplay {
-    private int size = 8;
+    private int size = 6;
     private JFrame frame;
     private JPanel panel;
     private Level lev;
-    private static List<BasicCell> selectedCells = new ArrayList<>();
+    private static List<BasicCell> highlightedCells = new ArrayList<>();
+    private static List<Point2D[]> linesToDraw = new ArrayList<>();
 
-    public static void setSelectedCells(List<BasicCell> cells) {
-        selectedCells = cells;
+    public static void setHighlightedCells(List<BasicCell> cells) {
+        highlightedCells = cells;
+    }
+
+    public static void setLinesToDraw(List<Point2D[]> lines) {
+        linesToDraw = lines;
     }
 
     public void startDrawing(Level l, KeyListener keyListener){
@@ -34,12 +40,14 @@ public class LiveDisplay {
                 public void paint(Graphics g) {
                     super.paint(g);
                     for (BasicCell cell : lev.getCellsAsList()) {
-                        if(selectedCells.contains(cell)) g.setColor(Color.YELLOW);
+                        if(highlightedCells.contains(cell)){
+                            g.setColor(Color.YELLOW);
+                        }
                         else g.setColor(cell.getColor());
                         g.fillRect(cell.getX()*size, cell.getY()*size, size, size);
                         g.setColor(Color.BLACK);
-                        g.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size+size, cell.getY()*size);
-                        g.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size, cell.getY()*size+size);
+//                        g.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size+size, cell.getY()*size);
+//                        g.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size, cell.getY()*size+size);
                     }
                     for (Furniture f : lev.getFurniture()) {
                         BasicCell c  = f.containingCell;
@@ -50,7 +58,15 @@ public class LiveDisplay {
                     }
                     for (Entity e : lev.getEntities()) {
                         g.setColor(e.getColor());
-                        g.fillRect(e.getX() * size + 1, e.getY() * size + 1, size - 1, size - 1);
+                        g.fillRect(e.getX() * size, e.getY() * size, size, size);
+                    }
+                    for (Point2D[] line : linesToDraw){
+                        g.setColor(Color.BLACK);
+                        int x1 = (int)(line[0].getX() * size);
+                        int y1 = (int)(line[0].getY() * size);
+                        int x2 = (int)(line[1].getX() * size);
+                        int y2 = (int)(line[1].getY() * size);
+                        g.drawLine(x1, y1, x2, y2 );
                     }
 
                 }

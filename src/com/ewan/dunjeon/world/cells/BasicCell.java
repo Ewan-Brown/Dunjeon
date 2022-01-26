@@ -38,8 +38,11 @@ public class BasicCell implements ItemHolder, Updateable {
         f.containingCell = this;
     }
 
+    /*
+     Don't forget about me :)
+     */
     public boolean canBeSeenThrough(Entity e){
-        return !filled;
+        return canBeEntered(e);
     }
 
     public boolean canBeEntered(Entity e){
