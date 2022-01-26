@@ -1,6 +1,4 @@
-package com.ewan.dunjeon.world.ai;
-
-import java.sql.Time;
+package com.ewan.dunjeon.world.entities.ai.actions;
 
 public class IdleAction extends TimedAction {
 

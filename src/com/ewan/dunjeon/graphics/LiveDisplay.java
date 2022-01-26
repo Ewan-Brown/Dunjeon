@@ -38,41 +38,45 @@ public class LiveDisplay {
             frame.setSize(400, 420);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             panel = new JPanel() {
-                public void paint(Graphics g) {
-                    super.paint(g);
+                public void paint(Graphics graphics) {
+                    super.paint(graphics);
                     for (BasicCell cell : lev.getCellsAsList()) {
                         if(DEBUG_CELLS.contains(cell)){
-                            g.setColor(Color.YELLOW);
+                            graphics.setColor(Color.YELLOW);
                         }
                         else {
                             if(World.getInstance().getPlayer().getViewRange().contains(cell)) {
-                                g.setColor(cell.getColor());
+                                graphics.setColor(cell.getColor());
+                                Furniture f = cell.getFurniture();
+                                if(f != null && f.getColor() != null) {
+                                    graphics.setColor(f.getColor());
+                                    graphics.fillRect(cell.getX() * size + 2, cell.getY() * size + 2, size - 3, size - 3);
+                                }
+                            }else if(World.getInstance().getPlayer().getRememberedCells().contains(cell)){
+                                int r = cell.getColor().getRed();
+                                int g = cell.getColor().getGreen();
+                                int b = cell.getColor().getBlue();
+                                graphics.setColor(new Color(r/2, g/2, b/2));
                             }else{
-                                g.setColor(Color.BLACK);
+                                graphics.setColor(Color.BLACK);
                             }
-                            g.fillRect(cell.getX() * size, cell.getY() * size, size, size);
+                            graphics.fillRect(cell.getX() * size, cell.getY() * size, size, size);
                         }
-//                        g.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size+size, cell.getY()*size);
-//                        g.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size, cell.getY()*size+size);
+//                        graphics.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size+size, cell.getY()*size);
+//                        graphics.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size, cell.getY()*size+size);
                     }
-                    for (Furniture f : lev.getFurniture()) {
-                        BasicCell c  = f.containingCell;
-                        if(f.getColor() != null) {
-                            g.setColor(f.getColor());
-                            g.fillRect(c.getX() * size + 2, c.getY() * size + 2, size - 3, size - 3);
-                        }
-                    }
+
                     for (Entity e : lev.getEntities()) {
-                        g.setColor(e.getColor());
-                        g.fillRect(e.getX() * size, e.getY() * size, size, size);
+                        graphics.setColor(e.getColor());
+                        graphics.fillRect(e.getX() * size, e.getY() * size, size, size);
                     }
                     for (Point2D[] line : DEBUG_LINES){
-                        g.setColor(Color.BLACK);
+                        graphics.setColor(Color.BLACK);
                         int x1 = (int)(line[0].getX() * size);
                         int y1 = (int)(line[0].getY() * size);
                         int x2 = (int)(line[1].getX() * size);
                         int y2 = (int)(line[1].getY() * size);
-                        g.drawLine(x1, y1, x2, y2 );
+                        graphics.drawLine(x1, y1, x2, y2 );
                     }
 
                 }

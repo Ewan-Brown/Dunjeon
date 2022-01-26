@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.ai;
+package com.ewan.dunjeon.world.entities.ai.actions;
 
 import com.ewan.dunjeon.world.entities.Entity;
 

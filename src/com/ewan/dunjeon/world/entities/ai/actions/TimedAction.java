@@ -1,7 +1,4 @@
-package com.ewan.dunjeon.world.ai;
-
-import com.ewan.dunjeon.world.World;
-import com.ewan.dunjeon.world.cells.BasicCell;
+package com.ewan.dunjeon.world.entities.ai.actions;
 
 public abstract class TimedAction extends GenericAction{
 

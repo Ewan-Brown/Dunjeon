@@ -1,24 +1,19 @@
 package com.ewan.dunjeon.world;
 
-import com.ewan.dunjeon.world.ai.IdleAction;
-import com.ewan.dunjeon.world.ai.InteractAction;
-import com.ewan.dunjeon.world.ai.MoveAction;
+import com.ewan.dunjeon.world.entities.ai.actions.IdleAction;
+import com.ewan.dunjeon.world.entities.ai.actions.InteractAction;
+import com.ewan.dunjeon.world.entities.ai.actions.MoveAction;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.Monster;
 import com.ewan.dunjeon.world.level.Level;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.ewan.dunjeon.generation.Main.rand;
 

@@ -16,14 +16,14 @@ import static com.ewan.dunjeon.generation.Main.rand;
 public class TestGameLogic {
     public static void main(String[] args) {
         long seed = rand.nextInt();
-        seed = 1159233270L;
+        rand.setSeed(1467951989);
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 
         World w = World.getInstance();
 
-        FloorGenerator generator = new FloorGenerator(40, 40);
-        generator.generateLeafs(8,3);
+        FloorGenerator generator = new FloorGenerator(100, 100);
+        generator.generateLeafs(8,100);
         generator.generateDoors(2,3, 2);
         generator.generateWeightMap();
         generator.generateHalls();

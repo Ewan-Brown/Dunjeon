@@ -26,18 +26,20 @@ public class LevelGenerator {
                 switch(val){
                     case BLOCK:
                         filled = true;
-                        c = Color.BLACK;
+                        c = Color.DARK_GRAY;
                         break;
                     case WALL:
                         filled = true;
-                        c = DARK_GRAY;
+                        c = Color.LIGHT_GRAY;
                         break;
                     case OPEN:
-                        c = Color.LIGHT_GRAY;
+                        c = Color.GRAY;
+                        filled = false;
                         break;
                     case DOOR:
-                        c = Color.LIGHT_GRAY;
+                        c = Color.WHITE;
                         f = new Door(false);
+                        filled = false;
                         break;
                     case HALL:
                         c = Color.GRAY;

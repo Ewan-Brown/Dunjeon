@@ -3,21 +3,24 @@ package com.ewan.dunjeon.world.entities;
 import com.ewan.dunjeon.world.ItemHolder;
 import com.ewan.dunjeon.world.level.Level;
 import com.ewan.dunjeon.world.Updateable;
-import com.ewan.dunjeon.world.ai.GenericAction;
+import com.ewan.dunjeon.world.entities.ai.actions.GenericAction;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.item.Item;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Entity implements ItemHolder, Updateable {
     public BasicCell containingCell;
     private GenericAction currentAction = null;
     private int speed;
     private int sightRange;
-    private List<BasicCell> lastVisibleCells = new ArrayList<>();
+    private Set<BasicCell> lastVisibleCells = new HashSet<>();
+    private Set<BasicCell> rememberedCells = new HashSet<>();
     Color color;
 
     public Entity(Color c, int s, int sight){
@@ -26,7 +29,7 @@ public class Entity implements ItemHolder, Updateable {
         sightRange = sight;
     }
 
-    public List<BasicCell> lastVisibleCells(){
+    public Set<BasicCell> lastVisibleCells(){
         return lastVisibleCells;
     }
 
@@ -65,12 +68,20 @@ public class Entity implements ItemHolder, Updateable {
         currentAction = a;
     }
 
-    public List<BasicCell> getViewRange(){
+    public Set<BasicCell> getViewRange(){
         return lastVisibleCells;
     }
 
+    public Set<BasicCell> getRememberedCells(){
+        return rememberedCells;
+    }
+
+    public void updateMemory(){
+        rememberedCells.addAll(lastVisibleCells);
+    }
+
     public void updateViewRange(){
-        List<BasicCell> viewableCells = new ArrayList<>();
+        Set<BasicCell> viewableCells = new HashSet<>();
 
 
         //Use enough rays that we don't skip over whole cells.
@@ -172,6 +183,7 @@ public class Entity implements ItemHolder, Updateable {
     public void update() {
         //Update the visible cell range for outer usage
         updateViewRange();
+        updateMemory();
         if(currentAction != null){
             currentAction.update();
             if(currentAction.isComplete()){
