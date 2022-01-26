@@ -17,15 +17,15 @@ public class LiveDisplay {
     private JFrame frame;
     private JPanel panel;
     private Level lev;
-    private static List<BasicCell> highlightedCells = new ArrayList<>();
-    private static List<Point2D[]> linesToDraw = new ArrayList<>();
+    private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
+    private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
 
-    public static void setHighlightedCells(List<BasicCell> cells) {
-        highlightedCells = cells;
+    public static void setDebugCells(List<BasicCell> cells) {
+        DEBUG_CELLS = cells;
     }
 
-    public static void setLinesToDraw(List<Point2D[]> lines) {
-        linesToDraw = lines;
+    public static void setDebugLines(List<Point2D[]> lines) {
+        DEBUG_LINES = lines;
     }
 
     public void startDrawing(Level l, KeyListener keyListener){
@@ -40,7 +40,7 @@ public class LiveDisplay {
                 public void paint(Graphics g) {
                     super.paint(g);
                     for (BasicCell cell : lev.getCellsAsList()) {
-                        if(highlightedCells.contains(cell)){
+                        if(DEBUG_CELLS.contains(cell)){
                             g.setColor(Color.YELLOW);
                         }
                         else g.setColor(cell.getColor());
@@ -60,7 +60,7 @@ public class LiveDisplay {
                         g.setColor(e.getColor());
                         g.fillRect(e.getX() * size, e.getY() * size, size, size);
                     }
-                    for (Point2D[] line : linesToDraw){
+                    for (Point2D[] line : DEBUG_LINES){
                         g.setColor(Color.BLACK);
                         int x1 = (int)(line[0].getX() * size);
                         int y1 = (int)(line[0].getY() * size);

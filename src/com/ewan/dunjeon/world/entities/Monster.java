@@ -70,7 +70,7 @@ public class Monster extends Entity{
         float originX = containingCell.getX();
         float originY = containingCell.getY();
 
-        List<Point2D[]> lines = new ArrayList<>();
+//        List<Point2D[]> lines = new ArrayList<>();
         for(int i = 0; i < rays; i++){
             float currentAngle = angleDiv * i;
             float dx = (float)Math.cos(currentAngle);
@@ -135,7 +135,7 @@ public class Monster extends Entity{
 
                 if(nextCell == null || nextCell == containingCell || exceedsRange){
                     Point2D end = new Point2D.Float(nextX,nextY);
-                    lines.add(new Point2D[]{start, end});
+//                    lines.add(new Point2D[]{start, end});
                     break;
 
                 }else{
@@ -144,7 +144,7 @@ public class Monster extends Entity{
                     y = nextY;
                     if(!nextCell.canBeSeenThrough(this)){
                         Point2D end = new Point2D.Float(nextX,nextY);
-                        lines.add(new Point2D[]{start, end});
+//                        lines.add(new Point2D[]{start, end});
                         break;
                     }
                 }
@@ -152,8 +152,8 @@ public class Monster extends Entity{
             }
         }
         inVision = viewableCells.stream().distinct().collect(Collectors.toList());
-        LiveDisplay.setHighlightedCells(inVision);
-        LiveDisplay.setLinesToDraw(lines);
+        LiveDisplay.setDebugCells(inVision);
+//        LiveDisplay.setDebugLines(lines);
     }
 
     public void testSight(){
