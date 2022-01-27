@@ -15,13 +15,9 @@ public class InteractAction extends TimedAction{
         this.y = y;
     }
 
-    @Override
-    public void onStart() {
-
-    }
 
     @Override
-    public void onComplete() {
+    public void onTimerComplete() {
 
         int cellLocX = actor.containingCell.getX() + x;
         int cellLocY = actor.containingCell.getY() + y;
@@ -38,7 +34,7 @@ public class InteractAction extends TimedAction{
     }
 
     @Override
-    public void onCancel() {
+    public void cancel() {
 
     }
 }

@@ -29,7 +29,7 @@ public class TestGameLogic {
         generator.generateHalls();
 
 //        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
-        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(5, 5, 0.95f));
+        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(20, 20, 0.95f));
         w.addLevel(testLevel);
         LiveDisplay liveDisplay = new LiveDisplay();
 
@@ -37,7 +37,7 @@ public class TestGameLogic {
         w.addEntityRandomLoc(testPlayer, testLevel);
         w.setPlayer(testPlayer);
 
-        Monster testMonster = new Monster(new Color(0, 141, 0));
+        Monster testMonster = new Monster(new Color(0, 255, 0));
         w.addEntityRandomLoc(testMonster, testLevel);
 
         liveDisplay.startDrawing(testLevel, w);

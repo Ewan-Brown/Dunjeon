@@ -19,6 +19,11 @@ public class MovementProcessor {
 
         Entity actor;
         BasicCell target;
+
+        @Override
+        public String toString() {
+            return String.format("[Movement] (%d, %d) to (%d, %d)", actor.getX(), actor.getY(), target.getX(), target.getY());
+        }
     }
 
     public void addMovement(Entity e, BasicCell c){
@@ -30,10 +35,20 @@ public class MovementProcessor {
     }
 
     public void processMovements(){
+        if(movements.size() == 0){
+            System.out.println("No Movements");
+        }else{
+            System.out.printf("Processing %d Movements\n", movements.size());
+        }
         for (Movement movement : movements) {
+            System.out.println(movement);
             if(movement.target.canBeEntered(movement.actor)){
+                System.out.println("\t Success!");
                 World.getInstance().moveEntity(movement.actor, movement.target);
+            }else{
+                System.out.println("\t Failure!");
             }
         }
+        movements.clear();
     }
 }

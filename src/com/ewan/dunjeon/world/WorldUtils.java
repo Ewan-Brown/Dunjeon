@@ -135,7 +135,7 @@ public class WorldUtils {
                 //Calculate next G. equal to last cell's G + cost to move to this cell.
                 //Note that cost is multiplied by root of 2 (1.41 if diagonal movement!)
                 float successorG = getVal(gMap, currentNode) +
-                        getVal(weightMap, successor) * ((successorPair.getElement1()) ? 1.41f : 1f);
+                        getVal(weightMap, successor) * ((successorPair.getElement1()) ? (float)StrictMath.sqrt(2) : 1f);
                 float successorH = Math.abs(target.getX() - successor.getX()) + Math.abs(target.getY() - successor.getY()); //Manhattan distance
                 float successorF = successorG + successorH;
                 if(print) System.out.println("successorG = " + successorG);
@@ -198,7 +198,7 @@ public class WorldUtils {
                     if (x < 0 || y < 0 || x >= width || y >= height) {
                         continue;
                     } else {
-                        neighbors.add(new Pair<>(map[x][y], i == 0 && j == 0));
+                        neighbors.add(new Pair<>(map[x][y], i != 0 && j != 0));
                     }
                 }
             }

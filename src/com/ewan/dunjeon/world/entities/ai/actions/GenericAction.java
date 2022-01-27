@@ -7,10 +7,8 @@ import com.ewan.dunjeon.world.entities.Entity;
 public abstract class GenericAction {
     Entity actor;
     public abstract void update();
-    public abstract void onStart();
-    public abstract void onComplete();
-    public abstract void onCancel();
-    public abstract boolean isComplete();
+    public abstract void cancel();
+    public abstract boolean isDone();
     public void setActor(Entity e){
         actor = e;
     }

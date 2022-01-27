@@ -1,6 +1,5 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.ItemHolder;
 import com.ewan.dunjeon.world.level.Level;
 import com.ewan.dunjeon.world.Updateable;
@@ -19,7 +18,7 @@ public class Entity implements ItemHolder, Updateable {
     public BasicCell containingCell;
     private GenericAction currentAction = null;
     private int speed;
-    private int sightRange;
+    protected int sightRange;
     private Set<BasicCell> lastVisibleCells = new HashSet<>();
     private Set<BasicCell> rememberedCells = new HashSet<>();
     Color color;
@@ -63,10 +62,15 @@ public class Entity implements ItemHolder, Updateable {
 
     public void setNewAction(GenericAction a){
         if(currentAction != null){
-            currentAction.onCancel();
+            currentAction.cancel();
         }
-        a.setActor(this);
-        currentAction = a;
+        if(a == null){
+            currentAction = null;
+        }else{
+            a.setActor(this);
+            currentAction = a;
+        }
+
     }
 
     public Set<BasicCell> getViewRange(){
@@ -187,9 +191,10 @@ public class Entity implements ItemHolder, Updateable {
         updateViewRange();
         updateMemory();
         if(currentAction != null){
-            currentAction.update();
-            if(currentAction.isComplete()){
-                currentAction.onComplete();
+            if(!currentAction.isDone()) {
+                currentAction.update();
+            }
+            else{
                 currentAction = null;
             }
         }

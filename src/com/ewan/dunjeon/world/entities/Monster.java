@@ -16,19 +16,22 @@ import java.util.stream.Collectors;
 
 public class Monster extends Entity{
     public Monster(Color c) {
-        super(c, 3, 3);
+        super(c, 1, 3);
         currentPath = null;
+        minRange = 1;
+        maxRange = sightRange;
     }
 
     List<BasicCell> currentPath;
     List<BasicCell> inVision = new ArrayList<>();
-    int maxRange = 12;
-    int minRange = 8;
+    private int maxRange;
+    private int minRange;
 
     @Override
     public void update() {
         super.update();
-        if (getCurrentAction() == null) {
+        if (getCurrentAction() == null || getCurrentAction().isDone()) {
+            currentPath = null;
             randomSearch();
         }
 
@@ -43,25 +46,28 @@ public class Monster extends Entity{
                 float dist = WorldUtils.getRawDistance(basicCell, Monster.this.containingCell);
                 return basicCell.canBeEntered(Monster.this)  //Check that target cell can even be entered
                         && dist < maxRange //Check the distance between this entity's cell and the target cell
-                        && dist > minRange
+                        && dist >= minRange
                         && basicCell != Monster.this.containingCell;
             }).collect(Collectors.toList());
 
-            //Check if that cell is even accessible by slime
+            //Get a list of paths, one for each possible target
             List<List<BasicCell>> validPaths = validCells.stream()
-                    .map(basicCell -> WorldUtils.getAStarPath(Monster.this.getLevel(), Monster.this.containingCell, basicCell, Monster.this, true))
+                    .map(basicCell -> WorldUtils.getAStarPath(Monster.this.getLevel(), Monster.this.containingCell, basicCell, Monster.this, false))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
             //Choose one of these paths at random
             currentPath = validPaths.get(Main.rand.nextInt(validPaths.size()));
         }
-        System.out.println("Current Cell : " + containingCell);
         BasicCell nextCell = currentPath.get(0);
-        System.out.println("Next Cell : " + nextCell);
         int x = nextCell.getX() - containingCell.getX();
         int y = nextCell.getY() - containingCell.getY();
+        System.out.printf("Monster aiming for : [direction] (%d, %d)\n", x, y);
         currentPath.remove(0);
-        setNewAction(new MoveAction(getSpeed(), x, y));
+
+        int timeToMove = (int)(getSpeed() * ((x != 0 && y != 0) ? 1.41 : 1));
+
+
+        setNewAction(new MoveAction(timeToMove, x, y));
     }
 }

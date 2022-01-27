@@ -9,13 +9,18 @@ public abstract class TimedAction extends GenericAction{
         this.ticks = ticks;
     }
 
+    public abstract void onTimerComplete();
+
     @Override
     public void update() {
         ticks--;
+        if(isDone()){
+            onTimerComplete();
+        }
     }
 
     @Override
-    public boolean isComplete() {
-        return ticks < 0;
+    public boolean isDone() {
+        return ticks <= 0;
     }
 }

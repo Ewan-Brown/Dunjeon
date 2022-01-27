@@ -7,17 +7,12 @@ public class IdleAction extends TimedAction {
     }
 
     @Override
-    public void onStart() {
+    public void onTimerComplete() {
 
     }
 
     @Override
-    public void onComplete() {
-
-    }
-
-    @Override
-    public void onCancel() {
+    public void cancel() {
 
     }
 }
