@@ -5,6 +5,7 @@ import com.ewan.dunjeon.world.Pair;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class PathFinding {
@@ -71,7 +72,14 @@ public class PathFinding {
         outerLoop:
         while (!openNodes.isEmpty()){
             if(print) System.out.println("Node Loop");
-            openNodes.sort((t1, t2) -> (getVal(fMap, t1) > getVal(fMap, t2)) ? 1 : -1);
+            openNodes.sort(new Comparator<Point>() {
+                @Override
+                public int compare(Point t1, Point t2) {
+                    Float f1 = getVal(fMap, t1);
+                    Float f2 = getVal(fMap, t2);
+                    return f1.compareTo(f2);
+                }
+            });
             Point currentNode = openNodes.get(0);
             openNodes.remove(0);
             closedNodes.add(currentNode);

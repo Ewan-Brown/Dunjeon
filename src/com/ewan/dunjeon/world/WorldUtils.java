@@ -71,6 +71,9 @@ public class WorldUtils {
                 BasicCell c = map[y][x];
                 float weight = 0;
                 if(!c.canBeEntered(e)){
+                    if(print) {
+                        System.out.printf("Can't be entered : (%d, %d)\n", x, y);
+                    }
                     weight = Float.MAX_VALUE;
                 }else{
                     weight = 1 + Main.rand.nextFloat();

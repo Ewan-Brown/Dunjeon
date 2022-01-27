@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.world.entities;
 
+import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.ItemHolder;
 import com.ewan.dunjeon.world.level.Level;
 import com.ewan.dunjeon.world.Updateable;
@@ -177,6 +178,7 @@ public class Entity implements ItemHolder, Updateable {
             }
         }
         lastVisibleCells = viewableCells;
+//        LiveDisplay.setDebugLines(lines);
     }
 
     @Override

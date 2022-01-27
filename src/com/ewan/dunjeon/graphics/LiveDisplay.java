@@ -45,7 +45,7 @@ public class LiveDisplay {
                             graphics.setColor(Color.YELLOW);
                         }
                         else {
-                            if(World.getInstance().getPlayer().getViewRange().contains(cell)) {
+                            if(World.getInstance().getPlayer().getViewRange().contains(cell) || true) {
                                 graphics.setColor(cell.getColor());
                                 Furniture f = cell.getFurniture();
                                 if(f != null && f.getColor() != null) {
@@ -56,7 +56,7 @@ public class LiveDisplay {
                                 int r = cell.getColor().getRed();
                                 int g = cell.getColor().getGreen();
                                 int b = cell.getColor().getBlue();
-                                graphics.setColor(new Color(r/2, g/2, b/2));
+                                graphics.setColor(new Color(r/4, g/4, b/4));
                             }else{
                                 graphics.setColor(Color.BLACK);
                             }
@@ -67,8 +67,12 @@ public class LiveDisplay {
                     }
 
                     for (Entity e : lev.getEntities()) {
-                        graphics.setColor(e.getColor());
-                        graphics.fillRect(e.getX() * size, e.getY() * size, size, size);
+                        try {
+                            graphics.setColor(e.getColor()); //FIXME Sometimes get a random nullpointerexcception here. What's up with that?
+                            graphics.fillRect(e.getX() * size, e.getY() * size, size, size);
+                        }catch (NullPointerException ex){
+                            ex.printStackTrace();
+                        }
                     }
                     for (Point2D[] line : DEBUG_LINES){
                         graphics.setColor(Color.BLACK);

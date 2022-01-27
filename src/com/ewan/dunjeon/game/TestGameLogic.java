@@ -16,7 +16,7 @@ import static com.ewan.dunjeon.generation.Main.rand;
 public class TestGameLogic {
     public static void main(String[] args) {
         long seed = rand.nextInt();
-        rand.setSeed(1467951989);
+        seed = -921506715L;
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 
@@ -28,18 +28,12 @@ public class TestGameLogic {
         generator.generateWeightMap();
         generator.generateHalls();
 
-        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
-//        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(40, 40, 1f));
+//        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
+        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(5, 5, 0.95f));
         w.addLevel(testLevel);
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Entity testPlayer = new Entity(Color.BLUE, 10, 10){
-            @Override
-            public void update() {
-                super.update();
-
-            }
-        };
+        Entity testPlayer = new Entity(Color.BLUE, 1, 10);
         w.addEntityRandomLoc(testPlayer, testLevel);
         w.setPlayer(testPlayer);
 

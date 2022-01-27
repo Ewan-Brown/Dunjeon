@@ -25,6 +25,7 @@ public class World implements KeyListener {
     public MovementProcessor movementProcessor = new MovementProcessor();
 
     private Entity player;
+    private int tick_tracker = 0;
     public static World getInstance(){return w;}
 
     List<Level> levels = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
@@ -58,6 +59,8 @@ public class World implements KeyListener {
     }
 
     public void update(){
+        System.out.println("Update [" + tick_tracker+"]");
+        tick_tracker++;
         while(player.getCurrentAction() == null){
             doControls();
         }
@@ -77,7 +80,7 @@ public class World implements KeyListener {
     }
 
     private int getNextKey(){
-        while(keyList.size() == 0){ //FIXME Find a better way to wait for new keystroke. Maybe check out locks/synch?
+        while(keyList.size() == 0){ //FIXME Find a nicer way to wait for new keystroke. Maybe check out locks/synch?
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -139,10 +142,12 @@ public class World implements KeyListener {
             if (x != 0 || y != 0) {
                 player.setNewAction(new MoveAction(10, x, y));
             }
-        }else if(key == KeyEvent.VK_PERIOD){
-            player.setNewAction(new IdleAction(10));
+        }
+        // Note that actions last ticks+1 updates.
+        else if(key == KeyEvent.VK_PERIOD){
+            player.setNewAction(new IdleAction(9));
         }else if(key == KeyEvent.VK_COMMA){
-            player.setNewAction(new IdleAction(1));
+            player.setNewAction(new IdleAction(0));
         }
 
     }
