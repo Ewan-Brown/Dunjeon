@@ -58,8 +58,8 @@ public class WorldUtils {
 
     public static List<BasicCell> getAStarPath(Level l, BasicCell source, BasicCell target, Entity e, boolean print){
         if(print) {
-            System.out.println("Starting pathfinding...");
-            System.out.printf("Going from (%d, %d) to (%d, %d)\n", source.getX(), source.getY(), target.getX(), target.getY());
+            System.out.println("\tStarting pathfinding...");
+            System.out.printf("\tGoing from (%d, %d) to (%d, %d)\n", source.getX(), source.getY(), target.getX(), target.getY());
         }
         BasicCell[][] map = l.getCells();
         int height = map.length;
@@ -72,9 +72,9 @@ public class WorldUtils {
                 float weight = 0;
                 if(!c.canBeEntered(e)){
                     if(print) {
-                        System.out.printf("Can't be entered : (%d, %d)\n", x, y);
+                        System.out.printf("\tCan't be entered : (%d, %d)\n", x, y);
                     }
-                    weight = Float.MAX_VALUE;
+                    weight = Float.POSITIVE_INFINITY;
                 }else{
                     weight = 1 + Main.rand.nextFloat();
                 }
@@ -106,10 +106,10 @@ public class WorldUtils {
         setVal(prevDirMap, source, null);
         openNodes.add(source);
 
-        if(print) System.out.println("Starting node looping");
+        if(print) System.out.println("\tStarting node looping");
         outerLoop:
         while (!openNodes.isEmpty()){
-            if(print) System.out.println("Node Loop");
+            if(print) System.out.println("\tNode Loop");
             openNodes.sort((t1, t2) -> (getVal(fMap, t1) > getVal(fMap, t2)) ? 1 : -1);
             BasicCell currentNode = openNodes.get(0);
             openNodes.remove(0);
@@ -118,16 +118,16 @@ public class WorldUtils {
 
             for (Pair<BasicCell, Boolean> successorPair : neighbors) {
                 BasicCell successor = successorPair.getElement0();
-                if(print) System.out.printf("Checking Neighbor (%d, %d)\n", successor.getX(), successor.getY());
+                if(print) System.out.printf("\tChecking Neighbor (%d, %d)\n", successor.getX(), successor.getY());
                 if (successor.equals(target)) {
                     //WE FOUND THE END!
                     setVal(prevNodeMap, successor, currentNode);
-                    if(print) System.out.println("FOUND THE END!");
+                    if(print) System.out.println("\tFOUND THE END!");
                     break outerLoop;
                 }
 
                 if (closedNodes.stream().anyMatch(successor::equals)) {
-//                    System.out.println("This neighbor is already on the closed list - skipping");
+//                    System.out.println("\tThis neighbor is already on the closed list - skipping");
                     continue; //Skip this node if it's on the closed list
                 }
 
@@ -138,9 +138,10 @@ public class WorldUtils {
                         getVal(weightMap, successor) * ((successorPair.getElement1()) ? (float)StrictMath.sqrt(2) : 1f);
                 float successorH = Math.abs(target.getX() - successor.getX()) + Math.abs(target.getY() - successor.getY()); //Manhattan distance
                 float successorF = successorG + successorH;
-                if(print) System.out.println("successorG = " + successorG);
+                if(print) System.out.println("\tsuccessorG = " + successorG);
                 if(successorG == Float.POSITIVE_INFINITY) continue; //Skip cells that are infinite weight
 
+                //Check if moving to this cell results in a change in direction, if so add some weight to this path.
                 Object tempObj = getVal(prevDirMap, currentNode);
                 float successorAngle = (float)Math.atan2(successor.getY() - currentNode.getY(), successor.getX() - currentNode.getX());
                 if(tempObj != null) {
@@ -151,9 +152,9 @@ public class WorldUtils {
                 }
 
 
-//                if (!openNodes.stream().anyMatch(successor::equals)) System.out.println("Neighbor Not on open list");
-//                System.out.println("Neighbor F - " + successorF);
-//                System.out.println("Existing F - " + getVal(fMap, currentNode));
+//                if (!openNodes.stream().anyMatch(successor::equals)) System.out.println("\tNeighbor Not on open list");
+//                System.out.println("\tNeighbor F - " + successorF);
+//                System.out.println("\tExisting F - " + getVal(fMap, currentNode));
                 //If this successor point is NOT on the open list
                 //                           OR it IS on the open list but the new F is lower than the existing F
                 //Then proceed
@@ -162,7 +163,7 @@ public class WorldUtils {
                     openNodes.add(successor);
                     setVal(prevNodeMap, successor, currentNode);
                     setVal(prevDirMap, successor, successorAngle);
-//                    System.out.println("Added to open list!");
+//                    System.out.println("\tAdded to open list!");
                     setVal(hMap, successor, successorH);
                     setVal(gMap, successor, successorG);
                     setVal(fMap, successor, successorF);

@@ -42,12 +42,7 @@ public class MovementProcessor {
         }
         for (Movement movement : movements) {
             System.out.println(movement);
-            if(movement.target.canBeEntered(movement.actor)){
-                System.out.println("\t Success!");
-                World.getInstance().moveEntity(movement.actor, movement.target);
-            }else{
-                System.out.println("\t Failure!");
-            }
+
         }
         movements.clear();
     }

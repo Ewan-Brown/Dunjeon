@@ -72,13 +72,10 @@ public class PathFinding {
         outerLoop:
         while (!openNodes.isEmpty()){
             if(print) System.out.println("Node Loop");
-            openNodes.sort(new Comparator<Point>() {
-                @Override
-                public int compare(Point t1, Point t2) {
-                    Float f1 = getVal(fMap, t1);
-                    Float f2 = getVal(fMap, t2);
-                    return f1.compareTo(f2);
-                }
+            openNodes.sort((t1, t2) -> {
+                Float f1 = getVal(fMap, t1);
+                Float f2 = getVal(fMap, t2);
+                return f1.compareTo(f2);
             });
             Point currentNode = openNodes.get(0);
             openNodes.remove(0);

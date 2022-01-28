@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 
 public class Monster extends Entity{
     public Monster(Color c) {
-        super(c, 1, 3);
+        super(c, 0, 5);
         currentPath = null;
-        minRange = 1;
+        minRange = 4;
         maxRange = sightRange;
     }
 
@@ -30,8 +30,7 @@ public class Monster extends Entity{
     @Override
     public void update() {
         super.update();
-        if (getCurrentAction() == null || getCurrentAction().isDone()) {
-            currentPath = null;
+        if (getCurrentAction() == null) {
             randomSearch();
         }
 
@@ -40,7 +39,7 @@ public class Monster extends Entity{
     public void randomSearch(){
         //If the current path is either immediately blocked or finished, generate a new one
         if (currentPath == null  || currentPath.size() == 0 || !currentPath.get(0).canBeEntered(this)) {
-
+            System.out.println("Creating a new Path");
             //Find an eligible target cell for exploration
             List<BasicCell> validCells = this.containingCell.getLevel().getCellsAsList().stream().filter(basicCell -> {
                 float dist = WorldUtils.getRawDistance(basicCell, Monster.this.containingCell);
@@ -59,10 +58,11 @@ public class Monster extends Entity{
             //Choose one of these paths at random
             currentPath = validPaths.get(Main.rand.nextInt(validPaths.size()));
         }
+        System.out.println(currentPath);
         BasicCell nextCell = currentPath.get(0);
         int x = nextCell.getX() - containingCell.getX();
         int y = nextCell.getY() - containingCell.getY();
-        System.out.printf("Monster aiming for : [direction] (%d, %d)\n", x, y);
+        System.out.printf("Monster next aiming for : [direction] (%d, %d)\n", x, y);
         currentPath.remove(0);
 
         int timeToMove = (int)(getSpeed() * ((x != 0 && y != 0) ? 1.41 : 1));

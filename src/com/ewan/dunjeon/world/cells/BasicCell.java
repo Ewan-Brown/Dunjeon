@@ -83,6 +83,6 @@ public class BasicCell implements ItemHolder, Updateable {
     }
 
     public String toString(){
-        return String.format("(%d, %d) | [%d, %d %d]", x, y, color.getRed(), color.getGreen(), color.getBlue());
+        return String.format("(%d, %d)", x, y);
     }
 }

@@ -191,10 +191,8 @@ public class Entity implements ItemHolder, Updateable {
         updateViewRange();
         updateMemory();
         if(currentAction != null){
-            if(!currentAction.isDone()) {
-                currentAction.update();
-            }
-            else{
+            currentAction.update();
+            if(currentAction.isDone()) {
                 currentAction = null;
             }
         }

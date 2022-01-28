@@ -59,7 +59,7 @@ public class World implements KeyListener {
     }
 
     public void update(){
-        System.out.println("Update [" + tick_tracker+"]");
+        System.out.println("\nUpdate [" + tick_tracker+"]");
         tick_tracker++;
         while(player.getCurrentAction() == null){
             doControls();
@@ -67,7 +67,7 @@ public class World implements KeyListener {
         for (Level level : levels) {
             level.update();
         }
-        movementProcessor.processMovements();
+//        movementProcessor.processMovements();
         getPlayer().updateViewRange();
     }
 
