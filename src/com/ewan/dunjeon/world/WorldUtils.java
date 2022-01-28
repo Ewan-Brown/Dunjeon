@@ -152,13 +152,10 @@ public class WorldUtils {
                 }
 
 
-//                if (!openNodes.stream().anyMatch(successor::equals)) System.out.println("\tNeighbor Not on open list");
-//                System.out.println("\tNeighbor F - " + successorF);
-//                System.out.println("\tExisting F - " + getVal(fMap, currentNode));
                 //If this successor point is NOT on the open list
-                //                           OR it IS on the open list but the new F is lower than the existing F
+                //OR it IS on the open list but the new F is lower than the existing F
                 //Then proceed
-                if (!openNodes.stream().anyMatch(successor::equals) || successorF < getVal(fMap, currentNode)) {
+                if (openNodes.stream().noneMatch(successor::equals) || successorF < getVal(fMap, currentNode)) {
                     openNodes.removeIf(successor::equals); //Remove this point if it exists on the open list
                     openNodes.add(successor);
                     setVal(prevNodeMap, successor, currentNode);
@@ -199,7 +196,7 @@ public class WorldUtils {
                     if (x < 0 || y < 0 || x >= width || y >= height) {
                         continue;
                     } else {
-                        neighbors.add(new Pair<>(map[x][y], i != 0 && j != 0));
+                        neighbors.add(new Pair<>(map[y][x], i != 0 && j != 0));
                     }
                 }
             }

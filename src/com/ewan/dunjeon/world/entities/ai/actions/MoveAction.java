@@ -29,7 +29,7 @@ public class MoveAction extends TimedAction{
             World.getInstance().moveEntity(actor, entryCell);
         }else{
             System.out.println("\t Failure!");
-            throw new RuntimeException("AAAAAAAAA");
+            throw new RuntimeException(cellLocX + " " + cellLocY);
         }
 //        World.getInstance().movementProcessor.addMovement(actor, entryCell);
     }

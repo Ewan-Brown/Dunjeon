@@ -29,7 +29,7 @@ public class TestGameLogic {
         generator.generateHalls();
 
 //        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
-        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(20, 20, 0.95f));
+        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 0.5f));
         w.addLevel(testLevel);
         LiveDisplay liveDisplay = new LiveDisplay();
 

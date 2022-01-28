@@ -50,7 +50,7 @@ public class Level {
             return null;
         }
         else {
-            return cells[x][y];
+            return cells[y][x];
         }
     }
 

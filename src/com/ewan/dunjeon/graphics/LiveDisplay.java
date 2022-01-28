@@ -20,6 +20,7 @@ public class LiveDisplay {
     private Level lev;
     private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
     private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
+    private static boolean SHOW_ALL_TILES = true;
 
     public static void setDebugCells(List<BasicCell> cells) {
         DEBUG_CELLS = cells;
@@ -45,7 +46,7 @@ public class LiveDisplay {
                             graphics.setColor(Color.YELLOW);
                         }
                         else {
-                            if(World.getInstance().getPlayer().getViewRange().contains(cell) || true) {
+                            if(World.getInstance().getPlayer().getViewRange().contains(cell) || SHOW_ALL_TILES) {
                                 graphics.setColor(cell.getColor());
                                 Furniture f = cell.getFurniture();
                                 if(f != null && f.getColor() != null) {

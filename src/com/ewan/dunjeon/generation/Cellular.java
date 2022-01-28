@@ -11,7 +11,7 @@ public class Cellular {
                         int x = i + k;
                         int y = j + l;
                         if(k == 0 && l == 0 || x < 0 || x >= map.length || y < 0 || y >= map[i].length) continue;
-                        livingNeighbors += map[x][y];
+                        livingNeighbors += map[y][x];
                     }
                 }
                new_map[i][j] = (rule.calculate(map[i][j],livingNeighbors)) ? 1 : 0;

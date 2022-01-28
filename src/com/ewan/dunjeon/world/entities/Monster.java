@@ -51,7 +51,7 @@ public class Monster extends Entity{
 
             //Get a list of paths, one for each possible target
             List<List<BasicCell>> validPaths = validCells.stream()
-                    .map(basicCell -> WorldUtils.getAStarPath(Monster.this.getLevel(), Monster.this.containingCell, basicCell, Monster.this, false))
+                    .map(basicCell -> WorldUtils.getAStarPath(Monster.this.getLevel(), Monster.this.containingCell, basicCell, Monster.this, true))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
