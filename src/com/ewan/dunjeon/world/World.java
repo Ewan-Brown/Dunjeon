@@ -22,7 +22,6 @@ public class World implements KeyListener {
     private static World w = new World();
 
     List<Integer> keyList = new ArrayList<>();
-    public MovementProcessor movementProcessor = new MovementProcessor();
 
     private Entity player;
     private int tick_tracker = 0;
