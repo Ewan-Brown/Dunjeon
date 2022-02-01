@@ -58,7 +58,7 @@ public class Entity implements ItemHolder, Updateable {
     }
     public int getSpeed(){
         return speed;
-    };
+    }
 
     public void setNewAction(GenericAction a){
         if(currentAction != null){
@@ -73,7 +73,7 @@ public class Entity implements ItemHolder, Updateable {
 
     }
 
-    public Set<BasicCell> getViewRange(){
+    public Set<BasicCell> getVisibleCells(){
         return lastVisibleCells;
     }
 
@@ -87,7 +87,6 @@ public class Entity implements ItemHolder, Updateable {
 
     public void updateViewRange(){
         Set<BasicCell> viewableCells = new HashSet<>();
-
 
         //Use enough rays that we don't skip over whole cells.
         //Arc length : r = al
@@ -106,7 +105,7 @@ public class Entity implements ItemHolder, Updateable {
             float dy = (float)Math.sin(currentAngle);
             float x = originX + 0.5f;
             float y = originY + 0.5f;
-//            System.out.printf("Start : (%f, %f)\n", x, y);
+//          System.out.printf("Start : (%f, %f)\n", x, y);
             Point2D start = new Point2D.Float(x,y);
 
             while(true){
@@ -178,7 +177,6 @@ public class Entity implements ItemHolder, Updateable {
                         break;
                     }
                 }
-
             }
         }
         lastVisibleCells = viewableCells;

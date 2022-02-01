@@ -14,6 +14,9 @@ import java.awt.*;
 import static com.ewan.dunjeon.generation.Main.rand;
 
 public class TestGameLogic {
+
+    static final long UPDATE_DELAY = 2;
+
     public static void main(String[] args) {
         long seed = rand.nextInt();
         seed = -921506715L;
@@ -44,6 +47,11 @@ public class TestGameLogic {
         while (true) {
             w.getPlayer().updateViewRange();
             w.update();
+            try {
+                Thread.sleep(UPDATE_DELAY);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

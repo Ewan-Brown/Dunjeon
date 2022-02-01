@@ -19,7 +19,7 @@ public class BasicCell implements ItemHolder, Updateable {
     Furniture furniture;
     List<Item> items = new ArrayList<>();
     Color color;
-    boolean filled;
+    private  boolean filled;
 
     public BasicCell(int x, int y, Level level, boolean filled, Color c) {
         this.x = x;
