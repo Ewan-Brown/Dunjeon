@@ -1,8 +1,8 @@
 package com.ewan.dunjeon.world;
 
-import com.ewan.dunjeon.world.entities.ai.actions.IdleAction;
-import com.ewan.dunjeon.world.entities.ai.actions.InteractAction;
-import com.ewan.dunjeon.world.entities.ai.actions.MoveAction;
+import com.ewan.dunjeon.world.entities.actions.IdleAction;
+import com.ewan.dunjeon.world.entities.actions.InteractAction;
+import com.ewan.dunjeon.world.entities.actions.MoveAction;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Level;

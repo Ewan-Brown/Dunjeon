@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.entities.ai.actions;
+package com.ewan.dunjeon.world.entities.actions;
 
 public abstract class TimedAction extends GenericAction{
 

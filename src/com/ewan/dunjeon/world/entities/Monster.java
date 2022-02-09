@@ -1,13 +1,13 @@
 package com.ewan.dunjeon.world.entities;
 
 import com.ewan.dunjeon.generation.Main;
-import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.ai.actions.MoveAction;
+import com.ewan.dunjeon.world.entities.actions.IdleAction;
+import com.ewan.dunjeon.world.entities.actions.MoveAction;
+import com.ewan.dunjeon.world.entities.ai.GenericTask;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,19 +24,23 @@ public class Monster extends Entity{
 
     List<BasicCell> currentPath;
     List<BasicCell> inVision = new ArrayList<>();
+    GenericTask task;
     private int maxRange;
     private int minRange;
 
     @Override
     public void update() {
         super.update();
-        if (getCurrentAction() == null) {
-            randomSearch();
-        }
+        task.update();
+//        if (getCurrentAction() == null) {
+//            tryToWalk();
+//        }
 
     }
 
-    public void randomSearch(){
+
+
+    public void tryToWalk(){
         //If the current path is either immediately blocked or finished, generate a new one
         if (currentPath == null  || currentPath.size() == 0 || !currentPath.get(0).canBeEntered(this)) {
             System.out.println("Creating a new Path");
@@ -49,11 +53,23 @@ public class Monster extends Entity{
                         && basicCell != Monster.this.containingCell;
             }).collect(Collectors.toList());
 
+            //If no valid target cells are found then idle for a tick.
+            if(validCells.size() == 0){
+                setNewAction(new IdleAction(1));
+                return;
+            }
+
             //Get a list of paths, one for each possible target
             List<List<BasicCell>> validPaths = validCells.stream()
                     .map(basicCell -> WorldUtils.getAStarPath(Monster.this.getLevel(), Monster.this.containingCell, basicCell, Monster.this, false))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
+
+            //If no valid paths are found then idle for a tick.
+            if(validPaths.size() == 0){
+                setNewAction(new IdleAction(1));
+                return;
+            }
 
             //Choose one of these paths at random
             currentPath = validPaths.get(Main.rand.nextInt(validPaths.size()));

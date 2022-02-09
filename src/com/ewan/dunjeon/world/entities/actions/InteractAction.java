@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.entities.ai.actions;
+package com.ewan.dunjeon.world.entities.actions;
 
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.cells.BasicCell;

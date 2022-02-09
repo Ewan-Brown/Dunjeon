@@ -3,7 +3,7 @@ package com.ewan.dunjeon.world.entities;
 import com.ewan.dunjeon.world.ItemHolder;
 import com.ewan.dunjeon.world.level.Level;
 import com.ewan.dunjeon.world.Updateable;
-import com.ewan.dunjeon.world.entities.ai.actions.GenericAction;
+import com.ewan.dunjeon.world.entities.actions.GenericAction;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.item.Item;
 
