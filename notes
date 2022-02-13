@@ -1,4 +1,19 @@
-What i was last doing:
-Working on Monster AI.
-    Raycasting Is nearly what i want it to be. It works for 90% but cuts off a bit when the target is directly in any cardinal direction.
+WIP/FIXING:
+    There's some pretty serious performance issues, need to get some profiling data from the raycasting and the pathfinding stuff.
+    Also, it seems that the player/monster can phase through eachother while moving. This should be removed.
+
+    For the raytracing : can I 'slide' across the walls that I hit, as there's no reason to hit the same block 10 times.
+        Maybe when a ray collides, we can slide across the wall and add tiny delta at the end to push it past the known
+        collision spot.
+
+Next Steps:
+    Need to add more tasks for monster.
+        Fight/Attack. Melee can be structured just like the interact action afaik.
+        Sleep?
+
+    Give monster ability to open door!
+
+    Sound/Acoustic system
+        Keep it simple stupid
+
 

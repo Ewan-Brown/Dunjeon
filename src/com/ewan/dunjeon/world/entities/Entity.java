@@ -17,8 +17,9 @@ import java.util.Set;
 public class Entity implements ItemHolder, Updateable {
     public BasicCell containingCell;
     private GenericAction currentAction = null;
+    private GenericAction nextAction = null;
     private int speed;
-    protected int sightRange;
+    private int sightRange;
     private Set<BasicCell> lastVisibleCells = new HashSet<>();
     private Set<BasicCell> rememberedCells = new HashSet<>();
     Color color;
@@ -50,6 +51,8 @@ public class Entity implements ItemHolder, Updateable {
         return color;
     }
 
+    public int getSightRange(){return sightRange;}
+
     public int getX(){
         return containingCell.getX();
     }
@@ -63,6 +66,9 @@ public class Entity implements ItemHolder, Updateable {
     public void setNewAction(GenericAction a){
         if(currentAction != null){
             currentAction.cancel();
+            System.err.println("Warning : Set a new action, overriding the old one. Can we rewrite so this doesn't occur?");
+            //TODO FIX this? Not very robust. What if the current action should still take up time and not instantly cancel?
+            // i.e player's attack is intercepted BUT
         }
         if(a == null){
             currentAction = null;

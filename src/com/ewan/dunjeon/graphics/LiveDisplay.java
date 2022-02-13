@@ -20,7 +20,7 @@ public class LiveDisplay {
     private Level lev;
     private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
     private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
-    private static boolean SHOW_ALL_TILES = true;
+    private static boolean SHOW_ALL_TILES = false;
 
     public static void setDebugCells(List<BasicCell> cells) {
         DEBUG_CELLS = cells;
@@ -36,7 +36,7 @@ public class LiveDisplay {
             frame = new JFrame();
             frame.addKeyListener(keyListener);
             frame.setFocusable(true);
-            frame.setSize(400, 420);
+            frame.setSize(800, 800);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             panel = new JPanel() {
                 public void paint(Graphics graphics) {

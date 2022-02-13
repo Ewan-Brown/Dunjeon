@@ -144,7 +144,7 @@ public class World implements KeyListener {
         }
         // Note that actions last ticks+1 updates.
         else if(key == KeyEvent.VK_PERIOD){
-            player.setNewAction(new IdleAction(9));
+            player.setNewAction(new IdleAction(10));
         }else if(key == KeyEvent.VK_COMMA){
             player.setNewAction(new IdleAction(0));
         }

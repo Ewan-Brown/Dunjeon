@@ -19,7 +19,7 @@ public class BasicCell implements ItemHolder, Updateable {
     Furniture furniture;
     List<Item> items = new ArrayList<>();
     Color color;
-    private  boolean filled;
+    private boolean filled; //TODO Replace this with something a little more flexible?
 
     public BasicCell(int x, int y, Level level, boolean filled, Color c) {
         this.x = x;

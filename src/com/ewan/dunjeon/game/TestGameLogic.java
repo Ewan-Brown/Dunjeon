@@ -31,8 +31,8 @@ public class TestGameLogic {
         generator.generateWeightMap();
         generator.generateHalls();
 
-//        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
-        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 0.5f));
+        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
+//        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 0.5f));
         w.addLevel(testLevel);
         LiveDisplay liveDisplay = new LiveDisplay();
 

@@ -1,15 +1,20 @@
 package com.ewan.dunjeon.world.entities.ai;
 
+import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.Monster;
 
 public class GenericTask {
-    private Monster actor;
+    protected Entity actor;
+
+    public GenericTask(Entity a){
+        actor = a;
+    }
 
     public void update(){
 
     }
 
-    Monster getActor(){
+    Entity getActor(){
         return actor;
     }
 

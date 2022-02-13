@@ -25,13 +25,10 @@ public class MoveAction extends TimedAction{
         int cellLocY = actor.containingCell.getY() + y;
         BasicCell entryCell = actor.containingCell.getLevel().getCellAt(cellLocX, cellLocY);
         if(entryCell.canBeEntered(actor)){
-            System.out.println("\t Success!");
             World.getInstance().moveEntity(actor, entryCell);
         }else{
-            System.out.println("\t Failure!");
-            throw new RuntimeException(cellLocX + " " + cellLocY);
+            //TODO Maybe do something if you bump into a wall like this?
         }
-//        World.getInstance().movementProcessor.addMovement(actor, entryCell);
     }
 
 
