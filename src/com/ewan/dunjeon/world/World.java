@@ -58,7 +58,7 @@ public class World implements KeyListener {
     }
 
     public void update(){
-        System.out.println("\nUpdate [" + tick_tracker+"]");
+//        System.out.println("\nUpdate [" + tick_tracker+"]");
         tick_tracker++;
         while(player.getCurrentAction() == null){
             doControls();
