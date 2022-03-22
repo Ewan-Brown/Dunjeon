@@ -36,7 +36,7 @@ public class LiveDisplay {
             frame = new JFrame();
             frame.addKeyListener(keyListener);
             frame.setFocusable(true);
-            frame.setSize(800, 800);
+            frame.setSize(600, 600);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             panel = new JPanel() {
                 public void paint(Graphics graphics) {

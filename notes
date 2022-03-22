@@ -1,19 +1,13 @@
-WIP/FIXING:
-    There's some pretty serious performance issues, need to get some profiling data from the raycasting and the pathfinding stuff.
-    Also, it seems that the player/monster can phase through eachother while moving. This should be removed.
+TO FIX:
 
-    For the raytracing : can I 'slide' across the walls that I hit, as there's no reason to hit the same block 10 times.
-        Maybe when a ray collides, we can slide across the wall and add tiny delta at the end to push it past the known
-        collision spot.
+    Entities can phase through eachother. Probably because their move actions are ending on the same tick
 
-Next Steps:
-    Need to add more tasks for monster.
-        Fight/Attack. Melee can be structured just like the interact action afaik.
-        Sleep?
+    For the raytracing : can I 'slide' across the walls that I hit? there's no reason to hit the same block 10 times.
+        Maybe when a ray collides, we can slide across the wall and add tiny delta at the end to push it past the
+        known collision spot.
 
-    Give monster ability to open door!
+    How to deal with task transitions? Where do they go, how do I handle cancellations and interruptions that should
+    result in a given action? Can this case be avoided?
 
-    Sound/Acoustic system
-        Keep it simple stupid
 
 

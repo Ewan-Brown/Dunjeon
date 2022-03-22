@@ -21,9 +21,9 @@ public class MoveAction extends TimedAction{
 
     @Override
     public void onTimerComplete() {
-        int cellLocX = actor.containingCell.getX() + x;
-        int cellLocY = actor.containingCell.getY() + y;
-        BasicCell entryCell = actor.containingCell.getLevel().getCellAt(cellLocX, cellLocY);
+        int cellLocX = actor.getContainingCell().getX() + x;
+        int cellLocY = actor.getContainingCell().getY() + y;
+        BasicCell entryCell = actor.getContainingCell().getLevel().getCellAt(cellLocX, cellLocY);
         if(entryCell.canBeEntered(actor)){
             World.getInstance().moveEntity(actor, entryCell);
         }else{

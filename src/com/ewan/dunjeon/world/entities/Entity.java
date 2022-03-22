@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Entity implements ItemHolder, Updateable {
-    public BasicCell containingCell;
+    private BasicCell containingCell;
     private GenericAction currentAction = null;
     private GenericAction nextAction = null;
     private int speed;
@@ -35,11 +35,11 @@ public class Entity implements ItemHolder, Updateable {
     }
 
     public Level getLevel(){
-        return containingCell.getLevel();
+        return getContainingCell().getLevel();
     }
 
     public void enterCell(BasicCell c){
-        containingCell = c;
+        setContainingCell(c);
     }
 
     @Override
@@ -54,10 +54,10 @@ public class Entity implements ItemHolder, Updateable {
     public int getSightRange(){return sightRange;}
 
     public int getX(){
-        return containingCell.getX();
+        return getContainingCell().getX();
     }
     public int getY(){
-        return containingCell.getY();
+        return getContainingCell().getY();
     }
     public int getSpeed(){
         return speed;
@@ -101,8 +101,8 @@ public class Entity implements ItemHolder, Updateable {
         float angleDiv =  arcLength/sightRange;
         int rays = (int)Math.ceil(2 * (float)Math.PI / angleDiv);
 
-        float originX = containingCell.getX();
-        float originY = containingCell.getY();
+        float originX = getContainingCell().getX();
+        float originY = getContainingCell().getY();
 
         List<Point2D[]> lines = new ArrayList<>();
         for(int i = 0; i < rays; i++){
@@ -161,9 +161,9 @@ public class Entity implements ItemHolder, Updateable {
                 float squaredDist = xDist*xDist + yDist*yDist;
                 boolean exceedsRange = squaredDist > sightRange*sightRange;
 
-                BasicCell nextCell = containingCell.getLevel().getCellAt(nextBlockX, nextBlockY);
+                BasicCell nextCell = getContainingCell().getLevel().getCellAt(nextBlockX, nextBlockY);
 
-                if(nextCell == null || nextCell == containingCell || exceedsRange){
+                if(nextCell == null || nextCell == getContainingCell() || exceedsRange){
                     Point2D end = new Point2D.Float(nextX,nextY);
                     lines.add(new Point2D[]{start, end});
                     //End a rayline without saving last cell
@@ -210,4 +210,11 @@ public class Entity implements ItemHolder, Updateable {
 
     }
 
+    public BasicCell getContainingCell() {
+        return containingCell;
+    }
+
+    public void setContainingCell(BasicCell containingCell) {
+        this.containingCell = containingCell;
+    }
 }

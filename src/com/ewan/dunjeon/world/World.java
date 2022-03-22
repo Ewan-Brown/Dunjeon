@@ -160,13 +160,13 @@ public class World implements KeyListener {
     }
 
     public void moveEntity(Entity e, BasicCell entry){
-        e.containingCell.onExit(e);
+        e.getContainingCell().onExit(e);
         entry.onEntry(e);
         e.enterCell(entry);
     }
 
     public void killEntity(Entity e){
-        e.containingCell.onEntityDeath(e);
+        e.getContainingCell().onEntityDeath(e);
         e.onDeath();
     }
 

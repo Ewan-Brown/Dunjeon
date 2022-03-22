@@ -19,9 +19,9 @@ public class TestGameLogic {
 
     public static void main(String[] args) {
         long seed = rand.nextInt();
-        seed = -921506715L;
+//        seed = -921506715L;
         System.out.println("SEED USED : " + seed);
-        rand.setSeed(seed);
+//        rand.setSeed(seed);
 
         World w = World.getInstance();
 
@@ -30,17 +30,17 @@ public class TestGameLogic {
         generator.generateDoors(2,3, 2);
         generator.generateWeightMap();
         generator.generateHalls();
-
+//
         Level testLevel = LevelGenerator.createLevel(generator.getGrid());
-//        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 0.5f));
+//        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 1.0f));
         w.addLevel(testLevel);
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Entity testPlayer = new Entity(Color.BLUE, 1, 10);
+        Entity testPlayer = new Entity(Color.BLUE, 2, 10);
         w.addEntityRandomLoc(testPlayer, testLevel);
         w.setPlayer(testPlayer);
 
-        Monster testMonster = new Monster(new Color(0, 255, 0));
+        Monster testMonster = new Monster(new Color(0, 255, 0), (m) -> m == testPlayer);
         w.addEntityRandomLoc(testMonster, testLevel);
 
         liveDisplay.startDrawing(testLevel, w);

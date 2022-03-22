@@ -66,7 +66,9 @@ public class FloorGenerator {
             Leaf subLeaf = f.subLeaf();
             rooms.add(subLeaf);
         }
-
+        if(rooms.size() < 2){
+            throw new Error("Floor generated with less than 2 rooms! Oh no!");
+        }
         this.rooms = rooms;
 
     }

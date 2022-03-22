@@ -56,7 +56,7 @@ public class WorldUtils {
 //        return points;
 //    }
 
-    public static List<BasicCell> getAStarPath(Level l, BasicCell source, BasicCell target, Entity e, boolean print){
+    public static List<BasicCell> getAStarPath(Level l, BasicCell source, BasicCell target, Entity mover, boolean print){
         if(print) {
             System.out.println("\tStarting pathfinding...");
             System.out.printf("\tGoing from (%d, %d) to (%d, %d)\n", source.getX(), source.getY(), target.getX(), target.getY());
@@ -70,7 +70,7 @@ public class WorldUtils {
             for (int x = 0; x < width; x++) {
                 BasicCell c = map[y][x];
                 float weight = 0;
-                if(!c.canBeEntered(e)){
+                if(!c.canBeEntered(mover)){
                     if(print) {
                         System.out.printf("\tCan't be entered : (%d, %d)\n", x, y);
                     }

@@ -1,5 +1,7 @@
 package com.ewan.dunjeon.generation;
 
+import com.ewan.dunjeon.world.furniture.Furniture;
+
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
