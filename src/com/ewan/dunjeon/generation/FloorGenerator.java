@@ -104,10 +104,10 @@ public class FloorGenerator {
     public void generateWeightMap(){
         weightMap = new float[height][width];
         //Setup weight map for pathfinding
-        for (int i = 0; i < weightMap.length; i++) {
-            for (int j = 0; j < weightMap[0].length; j++) {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
                 //Set edges of map as inf. weight
-                if(i == 0 || i == weightMap.length - 1 || j == 0  || j == weightMap[0].length - 1){
+                if(i == 0 || i == width - 1 || j == 0  || j == height - 1){
                     weightMap[j][i] = Float.POSITIVE_INFINITY;
                 }else {
 //                    weightMap[j][i] = 0;
