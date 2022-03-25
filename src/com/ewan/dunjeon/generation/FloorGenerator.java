@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.generation;
 
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
+import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.level.Level;
 
 import java.awt.*;
@@ -21,17 +22,14 @@ public class FloorGenerator {
     int width;
     int height;
 
-    public static final int BLOCK = 0;
-    public static final int OPEN = 1;
-    public static final int DOOR = 2;
-    public static final int WALL = 3;
-    public static final int HALL = 4;
-
     List<Leaf> rooms;
     List<Door> doors;
     List<Hall> halls;
 
     float[][] weightMap;
+    BasicCell[][] cells;
+
+//    int[][] map;
 
     public void generateLeafs(int minSize, int maxRooms){
         ArrayList<Leaf> splits = new ArrayList<>(); //List of room 'splits', within which the rooms will be created
@@ -177,9 +175,14 @@ public class FloorGenerator {
     public Level buildLevel(){
         Level l = new Level();
         //Draw background
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                map[j][i] = BLOCK;
+        cells = new BasicCell[height][width];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+//                map[j][i] = BLOCK;
+                cells[j][i] = new BasicCell(i, j, l);
+                cells[j][i].setFilled(true);
+                cells[j][i].setColor(Color.BLACK);
+
             }
         }
 
@@ -189,9 +192,15 @@ public class FloorGenerator {
                 for (int i = leaf.x1; i <= leaf.x2; i++) {
                     for (int j = leaf.y1; j <= leaf.y2; j++) {;
                         if(i == leaf.x1 || i == leaf.x2 || j == leaf.y1 || j == leaf.y2) {
-                            map[j][i] = WALL;
+//                            map[j][i] = WALL;
+                            cells[j][i] = new BasicCell(i, j, l);
+                            cells[j][i].setFilled(true);
+                            cells[j][i].setColor(Color.DARK_GRAY);
+
                         }else {
-                            map[j][i] = OPEN;
+                            cells[j][i] = new BasicCell(i, j, l);
+                            cells[j][i].setFilled(false);
+                            cells[j][i].setColor(Color.GRAY);
                         }
                     }
                 }
@@ -202,7 +211,9 @@ public class FloorGenerator {
         //Draw doors
         if(doors != null) {
             for (Door door : doors) {
-                map[door.y][door.x] = DOOR;
+                cells[door.y][door.x] = new BasicCell(door.x, door.y, l);
+                cells[door.y][door.x].setFilled(false);
+                cells[door.y][door.x].setColor(new Color(165,42,42, 255));
             }
         }
 
@@ -210,56 +221,14 @@ public class FloorGenerator {
         if(halls != null) {
             for (Hall hall : halls) {
                 for (Point point : hall.points) {
-                    map[point.y][point.x] = HALL;
+                    cells[point.y][point.x] = new BasicCell(point.x, point.y, l);
+                    cells[point.y][point.x].setFilled(false);
+                    cells[point.y][point.x].setColor(Color.GRAY);
                 }
             }
         }
+        l.setCells(cells);
         return l;
-    }
-
-    public int[][] getGrid(){
-        int[][] map = new int[height][width];
-
-        //Draw background
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                map[j][i] = BLOCK;
-            }
-        }
-
-        //Draw rooms
-        if(rooms != null){
-            for (Leaf leaf : rooms) {
-                for (int i = leaf.x1; i <= leaf.x2; i++) {
-                    for (int j = leaf.y1; j <= leaf.y2; j++) {;
-                        if(i == leaf.x1 || i == leaf.x2 || j == leaf.y1 || j == leaf.y2) {
-                            map[j][i] = WALL;
-                        }else {
-                            map[j][i] = OPEN;
-                        }
-                    }
-                }
-            }
-        }
-
-
-        //Draw doors
-        if(doors != null) {
-            for (Door door : doors) {
-                map[door.y][door.x] = DOOR;
-            }
-        }
-
-        //Draw paths to map
-        if(halls != null) {
-            for (Hall hall : halls) {
-                for (Point point : hall.points) {
-                    map[point.y][point.x] = HALL;
-                }
-            }
-        }
-
-        return map;
     }
 
     public List<Leaf> getRooms() {

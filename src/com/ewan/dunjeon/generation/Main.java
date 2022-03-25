@@ -13,15 +13,15 @@ public class Main {
         rand.setSeed(seed);
 
         //Procedurally generate and print out results at each stage
-        int size = 200;
-        FloorGenerator generator = new FloorGenerator(size,size);
-        generator.generateLeafs(10,100);
-        Display.drawMap(generator.getGrid());
-        generator.generateDoors(2,3, 2);
-        Display.drawMap(generator.getGrid());
-        generator.generateWeightMap();
-        generator.generateHalls();
-        Display.drawMap(generator.getGrid());
+//        int size = 200;
+//        FloorGenerator generator = new FloorGenerator(size,size);
+//        generator.generateLeafs(10,100);
+//        Display.drawMap(generator.getGrid());
+//        generator.generateDoors(2,3, 2);
+//        Display.drawMap(generator.getGrid());
+//        generator.generateWeightMap();
+//        generator.generateHalls();
+//        Display.drawMap(generator.getGrid());
     }
 
 

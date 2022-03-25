@@ -1,13 +1,11 @@
 package com.ewan.dunjeon.game;
 
 import com.ewan.dunjeon.generation.FloorGenerator;
-import com.ewan.dunjeon.generation.GeneratorsMisc;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Level;
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Monster;
-import com.ewan.dunjeon.world.level.LevelGenerator;
 
 import java.awt.*;
 
@@ -30,8 +28,8 @@ public class TestGameLogic {
         generator.generateDoors(2,3, 2);
         generator.generateWeightMap();
         generator.generateHalls();
-//
-        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
+        Level testLevel = generator.buildLevel();
+//        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
 //        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 1.0f));
         w.addLevel(testLevel);
         LiveDisplay liveDisplay = new LiveDisplay();

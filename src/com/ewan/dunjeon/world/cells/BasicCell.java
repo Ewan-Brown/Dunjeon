@@ -21,13 +21,21 @@ public class BasicCell implements ItemHolder, Updateable {
     Color color;
     private boolean filled; //TODO Replace this with something a little more flexible?
 
-    public BasicCell(int x, int y, Level level, boolean filled, Color c) {
+    public BasicCell(int x, int y, Level l) {
         this.x = x;
         this.y = y;
-        this.level = level;
-        this.filled = filled;
-        color = c;
+        this.level = l;
     }
+
+    public void setFilled(boolean f){
+        filled = f;
+    }
+
+    public void setColor(Color c){
+        this.color = c;
+    }
+
+
 
     public Furniture getFurniture(){
         return furniture;

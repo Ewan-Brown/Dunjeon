@@ -20,6 +20,10 @@ public class Level {
 
     public Level(){}
 
+    public void setCells(BasicCell[][] cells){
+        this.cells = cells;
+    }
+
     public List<Furniture> getFurniture(){
         List<Furniture> furniture = new ArrayList<>();
         Stream.of(cells).forEach(cells -> Stream.of(cells)
