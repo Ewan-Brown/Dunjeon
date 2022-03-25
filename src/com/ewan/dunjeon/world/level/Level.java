@@ -18,7 +18,7 @@ import static com.ewan.dunjeon.generation.FloorGenerator.*;
 public class Level {
     BasicCell[][] cells;
 
-    protected Level(){}
+    public Level(){}
 
     public List<Furniture> getFurniture(){
         List<Furniture> furniture = new ArrayList<>();

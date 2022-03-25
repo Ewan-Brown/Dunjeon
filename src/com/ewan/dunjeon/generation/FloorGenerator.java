@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.generation;
 
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
+import com.ewan.dunjeon.world.level.Level;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -171,6 +172,49 @@ public class FloorGenerator {
         }
 
         this.halls = halls;
+    }
+
+    public Level buildLevel(){
+        Level l = new Level();
+        //Draw background
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                map[j][i] = BLOCK;
+            }
+        }
+
+        //Draw rooms
+        if(rooms != null){
+            for (Leaf leaf : rooms) {
+                for (int i = leaf.x1; i <= leaf.x2; i++) {
+                    for (int j = leaf.y1; j <= leaf.y2; j++) {;
+                        if(i == leaf.x1 || i == leaf.x2 || j == leaf.y1 || j == leaf.y2) {
+                            map[j][i] = WALL;
+                        }else {
+                            map[j][i] = OPEN;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        //Draw doors
+        if(doors != null) {
+            for (Door door : doors) {
+                map[door.y][door.x] = DOOR;
+            }
+        }
+
+        //Draw paths to map
+        if(halls != null) {
+            for (Hall hall : halls) {
+                for (Point point : hall.points) {
+                    map[point.y][point.x] = HALL;
+                }
+            }
+        }
+        return l;
     }
 
     public int[][] getGrid(){

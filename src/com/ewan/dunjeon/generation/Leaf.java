@@ -21,6 +21,7 @@ public class Leaf implements Serializable {
     int y2;
 
     List<GeneratorsMisc.Door> doors = new ArrayList<>();
+    List<Furniture> assignedFurniture = new ArrayList<>();
 
     Leaf(int x1, int y1, int x2, int y2) {
         this.x1 = x1;

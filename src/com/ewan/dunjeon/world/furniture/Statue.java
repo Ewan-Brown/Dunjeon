@@ -4,7 +4,7 @@ import com.ewan.dunjeon.world.entities.Entity;
 
 import java.awt.*;
 
-public class Entrance extends Furniture{
+public class Statue extends Furniture{
     @Override
     public Color getColor() {
         return null;

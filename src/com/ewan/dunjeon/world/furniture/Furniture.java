@@ -15,7 +15,7 @@ public abstract class Furniture implements ItemHolder, Updateable {
 
     public BasicCell containingCell;
 
-    public Furniture(){
+    public Furniture() {
 
     }
 
