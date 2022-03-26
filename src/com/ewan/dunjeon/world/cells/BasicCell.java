@@ -1,8 +1,8 @@
 package com.ewan.dunjeon.world.cells;
 
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.ItemHolder;
-import com.ewan.dunjeon.world.level.Level;
+import com.ewan.dunjeon.world.hasInventory;
+import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.item.Item;
@@ -11,20 +11,20 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BasicCell implements ItemHolder, Updateable {
+public class BasicCell implements hasInventory, Updateable {
     int x;
     int y;
-    Level level;
+    Floor floor;
     Entity entity;
     Furniture furniture;
     List<Item> items = new ArrayList<>();
     Color color;
     private boolean filled; //TODO Replace this with something a little more flexible?
 
-    public BasicCell(int x, int y, Level l) {
+    public BasicCell(int x, int y, Floor l) {
         this.x = x;
         this.y = y;
-        this.level = l;
+        this.floor = l;
     }
 
     public void setFilled(boolean f){
@@ -42,8 +42,17 @@ public class BasicCell implements ItemHolder, Updateable {
     }
 
     public void setFurniture(Furniture f){
+        if(this.furniture != null){
+            throw new Error("Tried to add furniture to cell that already contains furniture!");
+        }
         furniture = f;
         f.containingCell = this;
+    }
+
+    public void updateFurniture(){
+        if(furniture!= null) {
+            furniture.update();
+        }
     }
 
     /*
@@ -75,14 +84,14 @@ public class BasicCell implements ItemHolder, Updateable {
     public int getY(){return y;}
 
     @Override
-    public List<Item> getItems() {
+    public List<Item> getInventory() {
         return null;
     }
 
     public Entity getEntity(){ return entity;}
 
-    public Level getLevel(){
-        return level;
+    public Floor getFloor(){
+        return floor;
     }
 
     @Override

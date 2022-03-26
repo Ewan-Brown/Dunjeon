@@ -3,9 +3,8 @@ package com.ewan.dunjeon.world;
 import com.ewan.dunjeon.generation.Main;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.level.Level;
+import com.ewan.dunjeon.world.level.Floor;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +55,7 @@ public class WorldUtils {
 //        return points;
 //    }
 
-    public static List<BasicCell> getAStarPath(Level l, BasicCell source, BasicCell target, Entity mover, boolean print){
+    public static List<BasicCell> getAStarPath(Floor l, BasicCell source, BasicCell target, Entity mover, boolean print){
         if(print) {
             System.out.println("\tStarting pathfinding...");
             System.out.printf("\tGoing from (%d, %d) to (%d, %d)\n", source.getX(), source.getY(), target.getX(), target.getY());

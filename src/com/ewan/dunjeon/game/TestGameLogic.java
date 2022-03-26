@@ -3,7 +3,7 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.level.Level;
+import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Monster;
 
@@ -28,20 +28,23 @@ public class TestGameLogic {
         generator.generateDoors(2,3, 2);
         generator.generateWeightMap();
         generator.generateHalls();
-        Level testLevel = generator.buildLevel();
-//        Level testLevel = LevelGenerator.createLevel(generator.getGrid());
-//        Level testLevel = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 1.0f));
-        w.addLevel(testLevel);
+        generator.buildCells();
+        generator.addFurniture();
+        Floor testFloor = generator.getFloor();
+
+//        Floor testFloor = LevelGenerator.createLevel(generator.getGrid());
+//        Floor testFloor = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 1.0f));
+        w.addLevel(testFloor);
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Entity testPlayer = new Entity(Color.BLUE, 2, 10);
-        w.addEntityRandomLoc(testPlayer, testLevel);
+        Entity testPlayer = new Entity(Color.BLUE, 0, 10);
+        w.addEntityRandomLoc(testPlayer, testFloor);
         w.setPlayer(testPlayer);
 
         Monster testMonster = new Monster(new Color(0, 255, 0), (m) -> m == testPlayer);
-        w.addEntityRandomLoc(testMonster, testLevel);
+        w.addEntityRandomLoc(testMonster, testFloor);
 
-        liveDisplay.startDrawing(testLevel, w);
+        liveDisplay.startDrawing(testFloor, w);
         while (true) {
             w.getPlayer().updateViewRange();
             w.update();

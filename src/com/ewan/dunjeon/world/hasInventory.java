@@ -4,6 +4,6 @@ import com.ewan.dunjeon.world.item.Item;
 
 import java.util.List;
 
-public interface ItemHolder {
-    List<Item> getItems();
+public interface hasInventory {
+    List<Item> getInventory();
 }

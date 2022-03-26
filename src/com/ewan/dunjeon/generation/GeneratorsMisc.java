@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.ewan.dunjeon.generation.Main.rand;
 
@@ -63,12 +62,12 @@ public class GeneratorsMisc {
         int y;
         List<Door> directConnections = new ArrayList<>();
         List<Hall> hallsConnected = new ArrayList<>();
-        Leaf parentLeaf;
+        Section parentSection;
 
-        public Door(Point p, Leaf l){
+        public Door(Point p, Section l){
             this.x = p.x;
             this.y = p.y;
-            parentLeaf = l;
+            parentSection = l;
         }
 
         public Point getPoint(){

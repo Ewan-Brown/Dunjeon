@@ -35,7 +35,7 @@ public class SearchGivenArea extends GenericTask{
         //If the current path is either immediately blocked or finished, generate a new one
         if (currentPath == null || currentPath.size() == 0 || !currentPath.get(0).canBeEntered(actor)) {
             //Find an eligible target cell for exploration
-            List<BasicCell> validCells = actor.getContainingCell().getLevel().getCellsAsList().stream().filter(filter).collect(Collectors.toList());
+            List<BasicCell> validCells = actor.getContainingCell().getFloor().getCellsAsList().stream().filter(filter).collect(Collectors.toList());
 
             //If no valid target cells are found then idle for a tick.
             if (validCells.size() == 0) {
@@ -69,7 +69,6 @@ public class SearchGivenArea extends GenericTask{
             currentPath.remove(0);
 
             int timeToMove = (int) (actor.getSpeed() * ((x != 0 && y != 0) ? 1.41 : 1));
-
 
             actor.setNewAction(new MoveAction(timeToMove, x, y));
         }

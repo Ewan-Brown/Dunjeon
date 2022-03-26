@@ -5,7 +5,7 @@ import com.ewan.dunjeon.world.entities.actions.InteractAction;
 import com.ewan.dunjeon.world.entities.actions.MoveAction;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.level.Level;
+import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -27,9 +27,9 @@ public class World implements KeyListener {
     private int tick_tracker = 0;
     public static World getInstance(){return w;}
 
-    List<Level> levels = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
-    public void addLevel(Level l){
-        levels.add(l);
+    List<Floor> floors = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
+    public void addLevel(Floor l){
+        floors.add(l);
     }
 
     public Entity getPlayer(){
@@ -45,7 +45,7 @@ public class World implements KeyListener {
      * @param l
      * @return
      */
-    public boolean addEntityRandomLoc(Entity e, Level l){
+    public boolean addEntityRandomLoc(Entity e, Floor l){
         List<BasicCell> validCells =  l.getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).collect(Collectors.toList());
         if(validCells.size() == 0) return false;
         else {
@@ -58,13 +58,13 @@ public class World implements KeyListener {
     }
 
     public void update(){
-//        System.out.println("\nUpdate [" + tick_tracker+"]");
+//        System.out.println("Update [" + tick_tracker+"]");
         tick_tracker++;
         while(player.getCurrentAction() == null){
             doControls();
         }
-        for (Level level : levels) {
-            level.update();
+        for (Floor floor : floors) {
+            floor.update();
         }
 //        movementProcessor.processMovements();
         getPlayer().updateViewRange();
@@ -76,6 +76,8 @@ public class World implements KeyListener {
         keyDirMapping.put(KeyEvent.VK_DOWN, new Point(0, 1));
         keyDirMapping.put(KeyEvent.VK_LEFT, new Point(-1, 0));
         keyDirMapping.put(KeyEvent.VK_RIGHT, new Point(1, 0));
+        keyDirMapping.put(KeyEvent.VK_PERIOD, new Point(0, 0));
+
     }
 
     private int getNextKey(){
@@ -114,6 +116,7 @@ public class World implements KeyListener {
         DIRECTION_KEYS.add(KeyEvent.VK_DOWN);
         DIRECTION_KEYS.add(KeyEvent.VK_LEFT);
         DIRECTION_KEYS.add(KeyEvent.VK_RIGHT);
+        DIRECTION_KEYS.add(KeyEvent.VK_PERIOD);
 
     }
 
@@ -130,7 +133,7 @@ public class World implements KeyListener {
                     continue;
                 }
                 else {
-                    player.setNewAction(new InteractAction(10, x, y));
+                    player.setNewAction(new InteractAction(5, x, y));
                     return;
                 }
             }
@@ -139,7 +142,7 @@ public class World implements KeyListener {
             int x = dir[0];
             int y = dir[1];
             if (x != 0 || y != 0) {
-                player.setNewAction(new MoveAction(10, x, y));
+                player.setNewAction(new MoveAction(player.getSpeed(), x, y));
             }
         }
         // Note that actions last ticks+1 updates.

@@ -1,10 +1,10 @@
 package com.ewan.dunjeon.world.item;
 
-import com.ewan.dunjeon.world.ItemHolder;
+import com.ewan.dunjeon.world.hasInventory;
 
 public class Item{
-    ItemHolder holder;
-    public Item(ItemHolder h){
+    hasInventory holder;
+    public Item(hasInventory h){
         holder = h;
     }
 

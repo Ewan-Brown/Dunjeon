@@ -25,12 +25,12 @@ public class Main {
     }
 
 
-    public static void generateWithRule4() {
-        int[][] map = GeneratorsMisc.generateRandomMap(150,150, 0.4f);
-        for (int i = 0; i < 5; i++) {
-            Display.drawMap(map);
-            map = Cellular.updateWithRule(map, Cellular.sumGreaterThan4);
-        }
-    }
+//    public static void generateWithRule4() {
+//        int[][] map = GeneratorsMisc.generateRandomMap(150,150, 0.4f);
+//        for (int i = 0; i < 5; i++) {
+//            Display.drawMap(map);
+//            map = Cellular.updateWithRule(map, Cellular.sumGreaterThan4);
+//        }
+//    }
 
 }

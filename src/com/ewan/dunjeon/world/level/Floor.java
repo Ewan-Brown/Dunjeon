@@ -1,24 +1,20 @@
 package com.ewan.dunjeon.world.level;
 
-import com.ewan.dunjeon.generation.Leaf;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.furniture.Door;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static com.ewan.dunjeon.generation.FloorGenerator.*;
 
-
-public class Level {
+public class Floor {
     BasicCell[][] cells;
 
-    public Level(){}
+    public Floor(){}
 
     public void setCells(BasicCell[][] cells){
         this.cells = cells;
@@ -67,6 +63,7 @@ public class Level {
     }
 
     public void update(){
+        getCellsAsList().forEach(basicCell -> basicCell.updateFurniture());
         for (Entity entity : getEntities()) {
             entity.update();
         }

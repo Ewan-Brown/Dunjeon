@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class Stair extends Furniture{
 
-    enum Direction{
+    public enum Direction{
         UP, DOWN
     }
 
@@ -14,12 +14,12 @@ public class Stair extends Furniture{
     Stair connectingStair;
 
     public Stair(Direction d){
-
+        this.direction = d;
     }
 
     @Override
     public Color getColor() {
-        return null;
+        return Color.WHITE;
     }
 
     @Override

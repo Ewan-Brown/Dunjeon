@@ -2,7 +2,7 @@ package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.level.Level;
+import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
@@ -17,10 +17,10 @@ public class LiveDisplay {
     private int size = 6;
     private JFrame frame;
     private JPanel panel;
-    private Level lev;
+    private Floor lev;
     private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
     private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
-    private static boolean SHOW_ALL_TILES = false;
+    private static boolean SHOW_ALL_TILES = true;
 
     public static void setDebugCells(List<BasicCell> cells) {
         DEBUG_CELLS = cells;
@@ -30,7 +30,7 @@ public class LiveDisplay {
         DEBUG_LINES = lines;
     }
 
-    public void startDrawing(Level l, KeyListener keyListener){
+    public void startDrawing(Floor l, KeyListener keyListener){
         lev = l;
         if(frame == null) {
             frame = new JFrame();

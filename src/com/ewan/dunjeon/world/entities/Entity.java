@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.world.ItemHolder;
-import com.ewan.dunjeon.world.level.Level;
+import com.ewan.dunjeon.world.hasInventory;
+import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.entities.actions.GenericAction;
 import com.ewan.dunjeon.world.cells.BasicCell;
@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Entity implements ItemHolder, Updateable {
+public class Entity implements hasInventory, Updateable {
     private BasicCell containingCell;
     private GenericAction currentAction = null;
     private GenericAction nextAction = null;
@@ -22,6 +22,7 @@ public class Entity implements ItemHolder, Updateable {
     private int sightRange;
     private Set<BasicCell> lastVisibleCells = new HashSet<>();
     private Set<BasicCell> rememberedCells = new HashSet<>();
+    List<Item> inventory = new ArrayList<>();
     Color color;
 
     public Entity(Color c, int s, int sight){
@@ -34,8 +35,8 @@ public class Entity implements ItemHolder, Updateable {
         return lastVisibleCells;
     }
 
-    public Level getLevel(){
-        return getContainingCell().getLevel();
+    public Floor getLevel(){
+        return getContainingCell().getFloor();
     }
 
     public void enterCell(BasicCell c){
@@ -43,8 +44,8 @@ public class Entity implements ItemHolder, Updateable {
     }
 
     @Override
-    public List<Item> getItems() {
-        return null;
+    public List<Item> getInventory() {
+        return inventory;
     }
 
     public Color getColor(){
@@ -161,7 +162,7 @@ public class Entity implements ItemHolder, Updateable {
                 float squaredDist = xDist*xDist + yDist*yDist;
                 boolean exceedsRange = squaredDist > sightRange*sightRange;
 
-                BasicCell nextCell = getContainingCell().getLevel().getCellAt(nextBlockX, nextBlockY);
+                BasicCell nextCell = getContainingCell().getFloor().getCellAt(nextBlockX, nextBlockY);
 
                 if(nextCell == null || nextCell == getContainingCell() || exceedsRange){
                     Point2D end = new Point2D.Float(nextX,nextY);

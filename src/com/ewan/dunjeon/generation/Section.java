@@ -1,15 +1,20 @@
 package com.ewan.dunjeon.generation;
 
+import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.ewan.dunjeon.generation.Main.rand;
 
-public class Leaf implements Serializable {
+public class Section implements Serializable {
     public void printDetails() {
         System.out.printf("(%d, %d) - (%d, %d)\n", x1, y1, x2, y2);
     }
@@ -21,13 +26,27 @@ public class Leaf implements Serializable {
     int y2;
 
     List<GeneratorsMisc.Door> doors = new ArrayList<>();
-    List<Furniture> assignedFurniture = new ArrayList<>();
+    HashMap<Furniture, Pair<Integer, Integer>> assignedFurniture = new HashMap<>();
 
-    Leaf(int x1, int y1, int x2, int y2) {
+    Section(int x1, int y1, int x2, int y2) {
         this.x1 = x1;
         this.x2 = x2;
         this.y1 = y1;
         this.y2 = y2;
+    }
+
+    public List<Pair<Integer, Integer>> getAvailableLocations(){
+        List<Pair<Integer, Integer>> locations = new ArrayList<>();
+        for (int x = x1+1; x < x2; x++) {
+            for (int y = y1+1; y < y2; y++) {
+                locations.add(new Pair<>(x, y));
+            }
+        }
+        for (Furniture furniture : assignedFurniture.keySet()) {
+            Pair<Integer, Integer> loc = assignedFurniture.get(furniture);
+            locations.remove(loc);
+        }
+        return locations;
     }
 
     int getWidth() {
@@ -57,7 +76,7 @@ public class Leaf implements Serializable {
     }
 
     //Generate a leaf that exists within this leaf, with some certain restrictions
-    Leaf subLeaf() {
+    Section subLeaf() {
 
         //Calculating useful values
         int xPadding = 1;
@@ -80,11 +99,11 @@ public class Leaf implements Serializable {
         int newX2Abs = x1 + xPadding + newX2Local;
         int newY2Abs = y1 + yPadding + newY2Local;
 
-        return new Leaf(newX1Abs, newY1Abs, newX2Abs, newY2Abs);
+        return new Section(newX1Abs, newY1Abs, newX2Abs, newY2Abs);
     }
 
-    Leaf[] split(int minSize) {
-        Leaf[] retVal = null;
+    Section[] split(int minSize) {
+        Section[] retVal = null;
         float ratio = (float) getHeight() / (float) getWidth();
 
         //Force the split direction based on leaf ratio
@@ -93,28 +112,28 @@ public class Leaf implements Serializable {
         if (horizontal) {
             //Generate a y value between y1 and y2, but only possible in centered 30% (avoids tiny leafs)
             int ySplit = (int) (rand.nextInt((getHeight())) / 3f + y1 + getHeight() * (1f / 3f));
-            Leaf leaf1 = new Leaf(x1, y1, x2, ySplit);
-            Leaf leaf2 = new Leaf(x1, ySplit + 1, x2, y2);
+            Section section1 = new Section(x1, y1, x2, ySplit);
+            Section section2 = new Section(x1, ySplit + 1, x2, y2);
 
             //Check that leaf is valid
-            if (leaf1.getWidth() > minSize
-                    && leaf2.getWidth() > minSize
-                    && leaf1.getHeight() > minSize
-                    && leaf2.getHeight() > minSize) {
-                retVal = new Leaf[]{leaf1, leaf2};
+            if (section1.getWidth() > minSize
+                    && section2.getWidth() > minSize
+                    && section1.getHeight() > minSize
+                    && section2.getHeight() > minSize) {
+                retVal = new Section[]{section1, section2};
             }
         } else {
             //Generate a x value between x1 and x2, but only possible in centered 30% (avoids tiny leafs)
             int xSplit = (int) (rand.nextInt((getWidth())) / 3f + x1 + getWidth() * (1f / 3f));
-            Leaf leaf1 = new Leaf(x1, y1, xSplit, y2);
-            Leaf leaf2 = new Leaf(xSplit + 1, y1, x2, y2);
+            Section section1 = new Section(x1, y1, xSplit, y2);
+            Section section2 = new Section(xSplit + 1, y1, x2, y2);
 
             //Check that leaf is valid
-            if (leaf1.getWidth() > minSize
-                    && leaf2.getWidth() > minSize
-                    && leaf1.getHeight() > minSize
-                    && leaf2.getHeight() > minSize) {
-                retVal = new Leaf[]{leaf1, leaf2};
+            if (section1.getWidth() > minSize
+                    && section2.getWidth() > minSize
+                    && section1.getHeight() > minSize
+                    && section2.getHeight() > minSize) {
+                retVal = new Section[]{section1, section2};
             }
         }
         return retVal;
