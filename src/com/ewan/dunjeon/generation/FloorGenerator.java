@@ -30,6 +30,7 @@ public class FloorGenerator {
     List<Section> sections;
     List<Door> doors;
     List<Hall> halls;
+    List<Stair> stairs;
     Floor floor;
 
     float[][] weightMap;
@@ -71,9 +72,9 @@ public class FloorGenerator {
             Section subSection = f.subLeaf();
             rooms.add(subSection);
         }
-        if(rooms.size() < 2){
-            throw new Error("Floor generated with less than 2 sections! Oh no!");
-        }
+//        if(rooms.size() < 2){
+//            throw new Error("Floor generated with less than 2 sections! Oh no!");
+//        }
         this.sections = rooms;
 
     }
@@ -179,28 +180,29 @@ public class FloorGenerator {
     }
 
     //Add stairs to the floor according to how many are required
-    public List<Stair> addStairs(List<Stair> connections, int downsRequired){
-
+    public List<Stair> generateStairs(List<Stair> connections, int downsRequired){
+        floor = new Floor();
+        stairs = new ArrayList<>();
         List<Stair> downs = new ArrayList<>();
 
         //Add connecting upwards stairs
         for(Stair stair : connections){
             //TODO If the chosen section has no space this will crash.
             Section s = sections.get(rand.nextInt(sections.size()));
-            int x = rand.nextInt(s.x2 - s.x1) + s.x1;
-            int y = rand.nextInt(s.y2 - s.y1) + s.y1;
+            int x = rand.nextInt(s.x2 - s.x1 - 1) + s.x1 + 1;
+            int y = rand.nextInt(s.y2 - s.y1 - 1) + s.y1 + 1;
             Stair newStair = Stair.createConnectingUpwardsStair(x, y, floor, stair);
-            cells[y][x] = newStair;
+            stairs.add(newStair);
         }
 
         //Add new downwards stairs
-        for(int i = 0; i < connections.size(); i++){
+        for(int i = 0; i < downsRequired; i++){
             //TODO If the chosen section has no space this will crash.
             Section s = sections.get(rand.nextInt(sections.size()));
-            int x = rand.nextInt(s.x2 - s.x1) + s.x1;
-            int y = rand.nextInt(s.y2 - s.y1) + s.y1;
+            int x = rand.nextInt(s.x2 - s.x1 - 1) + s.x1 + 1;
+            int y = rand.nextInt(s.y2 - s.y1 - 1) + s.y1 + 1;
             Stair newStair = Stair.createDownwardsStair(x, y, floor);
-            cells[y][x] = newStair;
+            stairs.add(newStair);
             downs.add(newStair);
         }
 
@@ -209,8 +211,7 @@ public class FloorGenerator {
 
     public void addFurniture(){
         //Generate up stairs
-
-        int chests = rand.nextInt((int)Math.ceil(sections.size()/5)) + 1;
+        int chests = rand.nextInt((int)Math.ceil(sections.size()/5.0)) + 1;
         for (int i = 0; i < chests; i++) {
             randomlyPlaceFurniture(new Container());
         }
@@ -229,7 +230,6 @@ public class FloorGenerator {
 
 
     public void buildCells(){
-        floor = new Floor();
         //Draw background
         cells = new BasicCell[height][width];
         for (int i = 0; i < width; i++) {
@@ -261,6 +261,11 @@ public class FloorGenerator {
                     }
                 }
             }
+        }
+
+        //Draw stairs
+        for(Stair s : stairs){
+            cells[s.getY()][s.getX()] = s;
         }
 
         //Draw doors

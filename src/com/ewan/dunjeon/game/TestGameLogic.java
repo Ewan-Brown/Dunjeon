@@ -2,12 +2,14 @@ package com.ewan.dunjeon.game;
 
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
+import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Monster;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import static com.ewan.dunjeon.generation.Main.rand;
 
@@ -17,18 +19,18 @@ public class TestGameLogic {
 
     public static void main(String[] args) {
         long seed = rand.nextInt();
-//        seed = -921506715L;
+        seed = -1427703176;
         System.out.println("SEED USED : " + seed);
-//        rand.setSeed(seed);
+        rand.setSeed(seed);
 
         World w = World.getInstance();
 
         FloorGenerator generator = new FloorGenerator(100, 100);
-        generator.generateLeafs(8,100);
+        generator.generateLeafs(5,1);
         generator.generateDoors(2,3, 2);
         generator.generateWeightMap();
         generator.generateHalls();
-        generator.addStairs(null, 1);
+        generator.generateStairs(new ArrayList<Stair>(), 1);
         generator.buildCells();
         generator.addFurniture();
         Floor testFloor = generator.getFloor();
