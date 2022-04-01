@@ -21,7 +21,8 @@ public class World implements KeyListener {
 
     private static World w = new World();
 
-    List<Integer> keyList = new ArrayList<>();
+    List<Integer> keyQueue = new ArrayList<>(); //TODO Use a Queue here??
+    int MAX_KEYLIST_SIZE = 1; //Max number of keys that can be in the queue
 
     private Entity player;
     private int tick_tracker = 0;
@@ -58,7 +59,7 @@ public class World implements KeyListener {
     }
 
     public void update(){
-//        System.out.println("Update [" + tick_tracker+"]");
+        System.out.println("Update [" + tick_tracker+"]");
         tick_tracker++;
         while(player.getCurrentAction() == null){
             doControls();
@@ -81,15 +82,15 @@ public class World implements KeyListener {
     }
 
     private int getNextKey(){
-        while(keyList.size() == 0){ //FIXME Find a nicer way to wait for new keystroke. Maybe check out locks/synch?
+        while(keyQueue.size() == 0){ //FIXME Find a nicer way to wait for new keystroke. Maybe check out locks/synch?
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        int retVal = keyList.get(keyList.size()-1);
-        keyList.remove(keyList.size()-1);
+        int retVal = keyQueue.get(keyQueue.size()-1);
+        keyQueue.remove(keyQueue.size()-1);
         return retVal;
     }
 
@@ -124,6 +125,7 @@ public class World implements KeyListener {
     public void doControls(){
         int key = getNextKeyWithFilter(ACCEPTABLE_INPUTS);
         if(key == KeyEvent.VK_I){
+            System.out.println("Detected Interact!");
             while(true) {
                 key = getNextKeyWithFilter(DIRECTION_KEYS);
                 int[] dir = getDir(key);
@@ -180,7 +182,9 @@ public class World implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        keyList.add(keyEvent.getKeyCode());
+        if(keyQueue.size() < MAX_KEYLIST_SIZE) {
+            keyQueue.add(keyEvent.getKeyCode());
+        }
     }
 
     @Override

@@ -3,9 +3,9 @@ package com.ewan.dunjeon.generation;
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.furniture.Container;
 import com.ewan.dunjeon.world.furniture.Furniture;
-import com.ewan.dunjeon.world.furniture.Stair;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.*;
@@ -178,11 +178,37 @@ public class FloorGenerator {
         this.halls = halls;
     }
 
+    //Add stairs to the floor according to how many are required
+    public List<Stair> addStairs(List<Stair> connections, int downsRequired){
+
+        List<Stair> downs = new ArrayList<>();
+
+        //Add connecting upwards stairs
+        for(Stair stair : connections){
+            //TODO If the chosen section has no space this will crash.
+            Section s = sections.get(rand.nextInt(sections.size()));
+            int x = rand.nextInt(s.x2 - s.x1) + s.x1;
+            int y = rand.nextInt(s.y2 - s.y1) + s.y1;
+            Stair newStair = Stair.createConnectingUpwardsStair(x, y, floor, stair);
+            cells[y][x] = newStair;
+        }
+
+        //Add new downwards stairs
+        for(int i = 0; i < connections.size(); i++){
+            //TODO If the chosen section has no space this will crash.
+            Section s = sections.get(rand.nextInt(sections.size()));
+            int x = rand.nextInt(s.x2 - s.x1) + s.x1;
+            int y = rand.nextInt(s.y2 - s.y1) + s.y1;
+            Stair newStair = Stair.createDownwardsStair(x, y, floor);
+            cells[y][x] = newStair;
+            downs.add(newStair);
+        }
+
+        return downs;
+    }
+
     public void addFurniture(){
         //Generate up stairs
-
-        randomlyPlaceFurniture(new Stair(Stair.Direction.UP));
-        randomlyPlaceFurniture(new Stair(Stair.Direction.DOWN));
 
         int chests = rand.nextInt((int)Math.ceil(sections.size()/5)) + 1;
         for (int i = 0; i < chests; i++) {
@@ -191,9 +217,10 @@ public class FloorGenerator {
     }
 
     public void randomlyPlaceFurniture(Furniture f){
+        //TODO If the chosen section has no space this will crash.
         Section s = sections.get(rand.nextInt(sections.size()));
         List<Pair<Integer, Integer>> availableLocations = s.getAvailableLocations();
-        Collections.shuffle(availableLocations);
+        Collections.shuffle(availableLocations, rand);
         Pair<Integer, Integer> location = availableLocations.get(0);
         BasicCell cell = floor.getCellAt(location.getElement0(), location.getElement1());
         cell.setFurniture(f);
@@ -235,7 +262,6 @@ public class FloorGenerator {
                 }
             }
         }
-
 
         //Draw doors
         if(doors != null) {

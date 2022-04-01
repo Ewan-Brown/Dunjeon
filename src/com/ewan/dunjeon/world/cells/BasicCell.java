@@ -21,10 +21,10 @@ public class BasicCell implements hasInventory, Updateable {
     Color color;
     private boolean filled; //TODO Replace this with something a little more flexible?
 
-    public BasicCell(int x, int y, Floor l) {
+    public BasicCell(int x, int y, Floor f) {
         this.x = x;
         this.y = y;
-        this.floor = l;
+        this.floor = f;
     }
 
     public void setFilled(boolean f){

@@ -35,6 +35,7 @@ public class Section implements Serializable {
         this.y2 = y2;
     }
 
+    //TODO Test me! I don't think this works...
     public List<Pair<Integer, Integer>> getAvailableLocations(){
         List<Pair<Integer, Integer>> locations = new ArrayList<>();
         for (int x = x1+1; x < x2; x++) {
@@ -44,7 +45,7 @@ public class Section implements Serializable {
         }
         for (Furniture furniture : assignedFurniture.keySet()) {
             Pair<Integer, Integer> loc = assignedFurniture.get(furniture);
-            locations.remove(loc);
+            locations.remove(loc); //Specifically here seems sketchy...
         }
         return locations;
     }

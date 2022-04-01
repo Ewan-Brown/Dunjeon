@@ -5,13 +5,13 @@ import java.util.Random;
 
 public class Main {
 
-    public static Random rand = new Random();
+    public static final Random rand = new Random();
     public static void main(String[] args) {
 
-        long seed = rand.nextInt();
+        long seed = rand.nextLong();
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
-
+//        rand.setSeed(592864305);
         //Procedurally generate and print out results at each stage
 //        int size = 200;
 //        FloorGenerator generator = new FloorGenerator(size,size);

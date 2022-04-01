@@ -28,6 +28,7 @@ public class TestGameLogic {
         generator.generateDoors(2,3, 2);
         generator.generateWeightMap();
         generator.generateHalls();
+        generator.addStairs(null, 1);
         generator.buildCells();
         generator.addFurniture();
         Floor testFloor = generator.getFloor();

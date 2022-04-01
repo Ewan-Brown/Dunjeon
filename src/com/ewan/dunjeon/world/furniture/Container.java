@@ -11,7 +11,7 @@ import java.util.List;
 public class Container extends Furniture implements hasInventory {
     @Override
     public Color getColor() {
-        return (opened) ? new Color(140, 140, 0): Color.yellow;
+        return (getInventory().size() == 0) ? new Color(140, 140, 0): Color.yellow;
     }
 
     public void addToInventory(List<Item> items){ inventory.addAll(items);}
@@ -21,10 +21,8 @@ public class Container extends Furniture implements hasInventory {
         //TODO Proper chest interactive UI
         e.getInventory().addAll(inventory);
         inventory.clear();
-        opened = true;
     }
 
-    boolean opened = false;
     List<Item> inventory = new ArrayList<>();
 
     @Override
