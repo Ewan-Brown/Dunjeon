@@ -10,6 +10,7 @@ import com.ewan.dunjeon.world.entities.Monster;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.ewan.dunjeon.generation.Main.rand;
 
@@ -24,30 +25,40 @@ public class TestGameLogic {
         rand.setSeed(seed);
 
         World w = World.getInstance();
+        int floorCount = 5;
+        List<Stair> prevStairs = new ArrayList<>();
 
-        FloorGenerator generator = new FloorGenerator(100, 100);
-        generator.generateLeafs(5,1);
-        generator.generateDoors(2,3, 2);
-        generator.generateWeightMap();
-        generator.generateHalls();
-        generator.generateStairs(new ArrayList<Stair>(), 1);
-        generator.buildCells();
-        generator.addFurniture();
-        Floor testFloor = generator.getFloor();
+        Floor startFloor = null;
+
+        for (int i = 0; i < 5; i++) {
+            FloorGenerator generator = new FloorGenerator(100, 100);
+            generator.generateLeafs(5, 1);
+            generator.generateDoors(2, 3, 2);
+            generator.generateWeightMap();
+            generator.generateHalls();
+            prevStairs = generator.generateStairs(prevStairs, 1);
+            generator.buildCells();
+            generator.addFurniture();
+            Floor newFloor = generator.getFloor();
+            if(startFloor == null){
+                startFloor = newFloor;
+            }
+            w.addLevel(newFloor);
+        }
 
 //        Floor testFloor = LevelGenerator.createLevel(generator.getGrid());
 //        Floor testFloor = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 1.0f));
-        w.addLevel(testFloor);
         LiveDisplay liveDisplay = new LiveDisplay();
 
+
         Entity testPlayer = new Entity(Color.BLUE, 0, 10);
-        w.addEntityRandomLoc(testPlayer, testFloor);
+        w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 
         Monster testMonster = new Monster(new Color(0, 255, 0), (m) -> m == testPlayer);
-        w.addEntityRandomLoc(testMonster, testFloor);
+        w.addEntityRandomLoc(testMonster, startFloor);
 
-        liveDisplay.startDrawing(testFloor, w);
+        liveDisplay.startDrawing(w);
         while (true) {
             w.getPlayer().updateViewRange();
             w.update();

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -19,6 +20,8 @@ public class Section implements Serializable {
         System.out.printf("(%d, %d) - (%d, %d)\n", x1, y1, x2, y2);
     }
 
+    List<Point> availableCells;
+
     //Coords of leaf boundaries, including walls.
     int x1;
     int x2;
@@ -26,29 +29,43 @@ public class Section implements Serializable {
     int y2;
 
     List<GeneratorsMisc.Door> doors = new ArrayList<>();
-    HashMap<Furniture, Pair<Integer, Integer>> assignedFurniture = new HashMap<>();
 
     Section(int x1, int y1, int x2, int y2) {
         this.x1 = x1;
         this.x2 = x2;
         this.y1 = y1;
         this.y2 = y2;
+        availableCells = new ArrayList<>();
+        for (int x = x1+1; x < x2; x++) {
+            for (int y = y1+1; y < y2; y++){
+                availableCells.add(new Point(x,y));
+            }
+        }
+        Collections.shuffle(availableCells, rand);
+    }
+
+    public Point getRandomEmptyPoint(){
+        return availableCells.stream().findFirst().orElse(null);
+    }
+
+    public void remove(Point p){
+        availableCells.remove(p);
     }
 
     //TODO Test me! I don't think this works...
-    public List<Pair<Integer, Integer>> getAvailableLocations(){
-        List<Pair<Integer, Integer>> locations = new ArrayList<>();
-        for (int x = x1+1; x < x2; x++) {
-            for (int y = y1+1; y < y2; y++) {
-                locations.add(new Pair<>(x, y));
-            }
-        }
-        for (Furniture furniture : assignedFurniture.keySet()) {
-            Pair<Integer, Integer> loc = assignedFurniture.get(furniture);
-            locations.remove(loc); //Specifically here seems sketchy...
-        }
-        return locations;
-    }
+//    public List<Pair<Integer, Integer>> getAvailableLocations(){
+//        List<Pair<Integer, Integer>> locations = new ArrayList<>();
+//        for (int x = x1+1; x < x2; x++) {
+//            for (int y = y1+1; y < y2; y++) {
+//                locations.add(new Pair<>(x, y));
+//            }
+//        }
+//        for (Furniture furniture : assignedFurniture.keySet()) {
+//            Pair<Integer, Integer> loc = assignedFurniture.get(furniture);
+//            locations.remove(loc); //Specifically here seems sketchy...
+//        }
+//        return locations;
+//    }
 
     int getWidth() {
         return x2 - x1;

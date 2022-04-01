@@ -21,6 +21,10 @@ public class Stair extends BasicCell{
         return newStair;
     }
 
+    public Stair getConnection(){
+        return connection;
+    }
+
     private void setConnection(Stair s){
         connection = s;
     }

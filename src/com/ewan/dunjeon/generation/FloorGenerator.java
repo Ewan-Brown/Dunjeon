@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.ewan.dunjeon.generation.Main.rand;
@@ -72,9 +73,8 @@ public class FloorGenerator {
             Section subSection = f.subLeaf();
             rooms.add(subSection);
         }
-//        if(rooms.size() < 2){
-//            throw new Error("Floor generated with less than 2 sections! Oh no!");
-//        }
+        //Shuffle these up, so there's no bias when continuing generation.
+        Collections.shuffle(rooms, rand);
         this.sections = rooms;
 
     }
@@ -187,21 +187,15 @@ public class FloorGenerator {
 
         //Add connecting upwards stairs
         for(Stair stair : connections){
-            //TODO If the chosen section has no space this will crash.
-            Section s = sections.get(rand.nextInt(sections.size()));
-            int x = rand.nextInt(s.x2 - s.x1 - 1) + s.x1 + 1;
-            int y = rand.nextInt(s.y2 - s.y1 - 1) + s.y1 + 1;
-            Stair newStair = Stair.createConnectingUpwardsStair(x, y, floor, stair);
+            Point p = getRandomUnusedCell();
+            Stair newStair = Stair.createConnectingUpwardsStair(p.x, p.y, floor, stair);
             stairs.add(newStair);
         }
 
         //Add new downwards stairs
         for(int i = 0; i < downsRequired; i++){
-            //TODO If the chosen section has no space this will crash.
-            Section s = sections.get(rand.nextInt(sections.size()));
-            int x = rand.nextInt(s.x2 - s.x1 - 1) + s.x1 + 1;
-            int y = rand.nextInt(s.y2 - s.y1 - 1) + s.y1 + 1;
-            Stair newStair = Stair.createDownwardsStair(x, y, floor);
+            Point p = getRandomUnusedCell();
+            Stair newStair = Stair.createDownwardsStair(p.x, p.y, floor);
             stairs.add(newStair);
             downs.add(newStair);
         }
@@ -210,24 +204,37 @@ public class FloorGenerator {
     }
 
     public void addFurniture(){
-        //Generate up stairs
         int chests = rand.nextInt((int)Math.ceil(sections.size()/5.0)) + 1;
         for (int i = 0; i < chests; i++) {
-            randomlyPlaceFurniture(new Container());
+            Container c = new Container();
+            Point p = getRandomUnusedCell();
+            cells[p.y][p.x].setFurniture(c);
         }
     }
 
-    public void randomlyPlaceFurniture(Furniture f){
-        //TODO If the chosen section has no space this will crash.
-        Section s = sections.get(rand.nextInt(sections.size()));
-        List<Pair<Integer, Integer>> availableLocations = s.getAvailableLocations();
-        Collections.shuffle(availableLocations, rand);
-        Pair<Integer, Integer> location = availableLocations.get(0);
-        BasicCell cell = floor.getCellAt(location.getElement0(), location.getElement1());
-        cell.setFurniture(f);
-        s.assignedFurniture.put(f, location);
-    }
+    //TODO Add some handling for when there are no usable cells left?
+    public Point getRandomUnusedCell(){
+        //Sections are already shuffled so you don't have to worry about bias here
+        Point cellCoords = null;
+        Section selected = null;
+        for (Section s : sections){
+            cellCoords = s.getRandomEmptyPoint();
+            if(cellCoords == null){
+                continue;
+            }
+            else{
+                selected = s;
+            }
+        }
 
+        if(cellCoords == null){
+            throw new Error("Floor has no space empty space left!");
+        }else{
+            selected.remove(cellCoords);
+        }
+
+        return cellCoords;
+    }
 
     public void buildCells(){
         //Draw background

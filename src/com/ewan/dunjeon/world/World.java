@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.world;
 
+import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.entities.actions.IdleAction;
 import com.ewan.dunjeon.world.entities.actions.InteractAction;
 import com.ewan.dunjeon.world.entities.actions.MoveAction;
@@ -105,6 +106,7 @@ public class World implements KeyListener {
     private static final List<Integer> ACCEPTABLE_INPUTS = new ArrayList<>();
     private static final List<Integer> DIRECTION_KEYS = new ArrayList<>();
     static {
+
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_UP);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_DOWN);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_LEFT);
@@ -112,6 +114,7 @@ public class World implements KeyListener {
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_I);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_COMMA);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_PERIOD);
+        ACCEPTABLE_INPUTS.add(KeyEvent.VK_S);
 
         DIRECTION_KEYS.add(KeyEvent.VK_UP);
         DIRECTION_KEYS.add(KeyEvent.VK_DOWN);
@@ -146,14 +149,21 @@ public class World implements KeyListener {
             if (x != 0 || y != 0) {
                 player.setNewAction(new MoveAction(player.getSpeed(), x, y));
             }
+        }else if(key == KeyEvent.VK_S) {
+            if (player.getContainingCell() instanceof Stair) {
+                Stair s = (Stair) player.getContainingCell();
+                attemptStairMove(player, s);
+            }
         }
-        // Note that actions last ticks+1 updates.
-        else if(key == KeyEvent.VK_PERIOD){
-            player.setNewAction(new IdleAction(10));
-        }else if(key == KeyEvent.VK_COMMA){
+        // Note that actions endure ticks+1 updates.
+        else if(key == KeyEvent.VK_COMMA){
             player.setNewAction(new IdleAction(0));
         }
 
+    }
+
+    public void attemptStairMove(Entity e, Stair s){
+        moveEntity(e, s.getConnection());
     }
 
     public int[] getDir(int key){

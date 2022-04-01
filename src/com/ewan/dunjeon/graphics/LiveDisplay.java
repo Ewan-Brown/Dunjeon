@@ -17,7 +17,6 @@ public class LiveDisplay {
     private int size = 6;
     private JFrame frame;
     private JPanel panel;
-    private Floor lev;
     private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
     private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
     private static boolean SHOW_ALL_TILES = true;
@@ -30,17 +29,17 @@ public class LiveDisplay {
         DEBUG_LINES = lines;
     }
 
-    public void startDrawing(Floor l, KeyListener keyListener){
-        lev = l;
+    public void startDrawing(World w){
         if(frame == null) {
             frame = new JFrame();
-            frame.addKeyListener(keyListener);
+            frame.addKeyListener(w);
             frame.setFocusable(true);
             frame.setSize(600, 600);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             panel = new JPanel() {
                 public void paint(Graphics graphics) {
                     super.paint(graphics);
+                    Floor lev = w.getPlayer().getLevel();
                     for (BasicCell cell : lev.getCellsAsList()) {
                         if(DEBUG_CELLS.contains(cell)){
                             graphics.setColor(Color.YELLOW);
