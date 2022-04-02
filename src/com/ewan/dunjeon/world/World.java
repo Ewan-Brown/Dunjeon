@@ -128,7 +128,6 @@ public class World implements KeyListener {
     public void doControls(){
         int key = getNextKeyWithFilter(ACCEPTABLE_INPUTS);
         if(key == KeyEvent.VK_I){
-            System.out.println("Detected Interact!");
             while(true) {
                 key = getNextKeyWithFilter(DIRECTION_KEYS);
                 int[] dir = getDir(key);

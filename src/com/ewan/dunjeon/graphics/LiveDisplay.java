@@ -15,11 +15,12 @@ import java.util.List;
 
 public class LiveDisplay {
     private int size = 6;
+    private static int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
     private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
     private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
-    private static boolean SHOW_ALL_TILES = true;
+    private static boolean SHOW_ALL_TILES = false;
 
     public static void setDebugCells(List<BasicCell> cells) {
         DEBUG_CELLS = cells;
@@ -45,33 +46,35 @@ public class LiveDisplay {
                             graphics.setColor(Color.YELLOW);
                         }
                         else {
+                            //Color block based on whether it is visible (full color), remembered (faded color), or unknown (black)
                             if(World.getInstance().getPlayer().getVisibleCells().contains(cell) || SHOW_ALL_TILES) {
                                 graphics.setColor(cell.getColor());
+                                graphics.fillRect(cell.getX() * size, cell.getY() * size, size, size);
                                 Furniture f = cell.getFurniture();
                                 if(f != null && f.getColor() != null) {
                                     graphics.setColor(f.getColor());
-                                    graphics.fillRect(cell.getX() * size + 2, cell.getY() * size + 2, size - 3, size - 3);
+                                    graphics.fillRect(cell.getX() * size + furniture_padding, cell.getY() * size + furniture_padding, size - furniture_padding*2, size - furniture_padding*2);
                                 }
                             }else if(World.getInstance().getPlayer().getRememberedCells().contains(cell)){
                                 int r = cell.getColor().getRed();
                                 int g = cell.getColor().getGreen();
                                 int b = cell.getColor().getBlue();
                                 graphics.setColor(new Color(r/4, g/4, b/4));
+                                graphics.fillRect(cell.getX() * size, cell.getY() * size, size, size);
+
                             }else{
                                 graphics.setColor(Color.BLACK);
+                                graphics.fillRect(cell.getX() * size, cell.getY() * size, size, size);
                             }
-                            graphics.fillRect(cell.getX() * size, cell.getY() * size, size, size);
                         }
 //                        graphics.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size+size, cell.getY()*size);
 //                        graphics.drawLine(cell.getX()*size, cell.getY()*size, cell.getX()*size, cell.getY()*size+size);
                     }
 
                     for (Entity e : lev.getEntities()) {
-                        try {
-                            graphics.setColor(e.getColor()); //FIXME Sometimes get a random nullpointerexcception here. What's up with that?
+                        if(SHOW_ALL_TILES || e == w.getPlayer() || w.getPlayer().getVisibleCells().contains(e.getContainingCell())){
+                            graphics.setColor(e.getColor());
                             graphics.fillRect(e.getX() * size, e.getY() * size, size, size);
-                        }catch (NullPointerException ex){
-                            ex.printStackTrace();
                         }
                     }
                     for (Point2D[] line : DEBUG_LINES){

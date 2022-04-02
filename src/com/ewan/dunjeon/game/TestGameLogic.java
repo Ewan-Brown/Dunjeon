@@ -31,12 +31,12 @@ public class TestGameLogic {
         Floor startFloor = null;
 
         for (int i = 0; i < 5; i++) {
-            FloorGenerator generator = new FloorGenerator(100, 100);
-            generator.generateLeafs(5, 1);
+            FloorGenerator generator = new FloorGenerator(20, 20);
+            generator.generateLeafs(5, 3);
             generator.generateDoors(2, 3, 2);
             generator.generateWeightMap();
             generator.generateHalls();
-            prevStairs = generator.generateStairs(prevStairs, 1);
+            prevStairs = generator.generateStairs(prevStairs, (i ==4)? 0:1);
             generator.buildCells();
             generator.addFurniture();
             Floor newFloor = generator.getFloor();
