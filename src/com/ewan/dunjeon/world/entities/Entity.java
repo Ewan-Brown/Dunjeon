@@ -1,6 +1,5 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.world.hasInventory;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.entities.actions.GenericAction;
@@ -14,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Entity implements hasInventory, Updateable {
+public class Entity implements Updateable {
     private BasicCell containingCell;
     private GenericAction currentAction = null;
     private GenericAction nextAction = null;
@@ -41,11 +40,6 @@ public class Entity implements hasInventory, Updateable {
 
     public void enterCell(BasicCell c){
         setContainingCell(c);
-    }
-
-    @Override
-    public List<Item> getInventory() {
-        return inventory;
     }
 
     public Color getColor(){
@@ -209,6 +203,10 @@ public class Entity implements hasInventory, Updateable {
 
     public void onDeath(){
 
+    }
+
+    public List<Item> getInventory() {
+        return inventory;
     }
 
     public BasicCell getContainingCell() {

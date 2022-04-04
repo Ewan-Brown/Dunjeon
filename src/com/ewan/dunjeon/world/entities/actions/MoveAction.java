@@ -7,7 +7,6 @@ public class MoveAction extends TimedAction{
 
     int x;
     int y;
-    boolean isDone = false;
     public MoveAction(int ticks, int x, int y) {
         super(ticks);
         this.x = x;

@@ -6,6 +6,7 @@ import com.ewan.dunjeon.world.entities.actions.InteractAction;
 import com.ewan.dunjeon.world.entities.actions.MoveAction;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.actions.UseStairsAction;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.*;
@@ -124,7 +125,7 @@ public class World implements KeyListener {
 
     }
 
-    //TODO Move this stuff somewhere else
+    //TODO Move controls somewhere else
     public void doControls(){
         int key = getNextKeyWithFilter(ACCEPTABLE_INPUTS);
         if(key == KeyEvent.VK_I){
@@ -151,7 +152,7 @@ public class World implements KeyListener {
         }else if(key == KeyEvent.VK_S) {
             if (player.getContainingCell() instanceof Stair) {
                 Stair s = (Stair) player.getContainingCell();
-                attemptStairMove(player, s);
+                player.setNewAction(new UseStairsAction(s, player.getSpeed()));
             }
         }
         // Note that actions endure ticks+1 updates.

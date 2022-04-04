@@ -1,7 +1,6 @@
 package com.ewan.dunjeon.world.cells;
 
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.hasInventory;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.furniture.Furniture;
@@ -11,7 +10,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BasicCell implements hasInventory, Updateable {
+public class BasicCell implements Updateable {
     int x;
     int y;
     Floor floor;
@@ -83,9 +82,8 @@ public class BasicCell implements hasInventory, Updateable {
     public int getX(){return x;}
     public int getY(){return y;}
 
-    @Override
-    public List<Item> getInventory() {
-        return null;
+    public List<Item> getItemsHere() {
+        return items;
     }
 
     public Entity getEntity(){ return entity;}

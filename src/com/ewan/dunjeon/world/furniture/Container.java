@@ -1,6 +1,5 @@
 package com.ewan.dunjeon.world.furniture;
 
-import com.ewan.dunjeon.world.hasInventory;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.item.Item;
 
@@ -8,7 +7,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Container extends Furniture implements hasInventory {
+public class Container extends Furniture{
     @Override
     public Color getColor() {
         return (getInventory().size() == 0) ? new Color(215, 215, 14): Color.yellow;
@@ -23,10 +22,7 @@ public class Container extends Furniture implements hasInventory {
         inventory.clear();
     }
 
-    List<Item> inventory = new ArrayList<>();
+    public List<Item> getInventory(){return inventory;}
 
-    @Override
-    public List<Item> getInventory() {
-        return inventory;
-    }
+    private List<Item> inventory = new ArrayList<>();
 }

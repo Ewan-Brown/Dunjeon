@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LiveDisplay {
-    private int size = 6;
-    private static int furniture_padding = 1;
+    private final int size = 6;
+    private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
     private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
     private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
-    private static boolean SHOW_ALL_TILES = false;
+    private static final boolean SHOW_ALL_TILES = true;
 
     public static void setDebugCells(List<BasicCell> cells) {
         DEBUG_CELLS = cells;

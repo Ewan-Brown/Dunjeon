@@ -20,7 +20,7 @@ public class TestGameLogic {
 
     public static void main(String[] args) {
         long seed = rand.nextInt();
-        seed = -1427703176;
+//        seed = -1427703176;
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 
@@ -46,17 +46,11 @@ public class TestGameLogic {
             w.addLevel(newFloor);
         }
 
-//        Floor testFloor = LevelGenerator.createLevel(generator.getGrid());
-//        Floor testFloor = LevelGenerator.createLevel(GeneratorsMisc.generateRandomMap(10, 10, 1.0f));
         LiveDisplay liveDisplay = new LiveDisplay();
-
 
         Entity testPlayer = new Entity(Color.BLUE, 0, 10);
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
-
-        Monster testMonster = new Monster(new Color(0, 255, 0), (m) -> m == testPlayer);
-        w.addEntityRandomLoc(testMonster, startFloor);
 
         liveDisplay.startDrawing(w);
         while (true) {
