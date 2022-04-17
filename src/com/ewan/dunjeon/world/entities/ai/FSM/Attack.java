@@ -47,8 +47,9 @@ public class Attack extends State {
         }
 
         if(canAttackTarget){
-            //TODO Expand attacking functionality here
-            actor.setNewAction(new MeleeAttackAction(actor, target, new AttackData(2)));
+            int xDiff = target.getX() - actor.getX();
+            int yDiff = target.getY() - actor.getY();
+            actor.setNewAction(new MeleeAttackAction(new AttackData(actor.getTimeToHit(), xDiff, yDiff)));
         }
         else if (isTargetReachable) {
             BasicCell targetCell = target.getContainingCell();

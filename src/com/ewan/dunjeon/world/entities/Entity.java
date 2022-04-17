@@ -63,6 +63,10 @@ public class Entity implements Updateable {
        return (int) (getSpeed() * ((x != 0 && y != 0) ? Math.sqrt(2) : 1));
     }
 
+    public int getTimeToHit(){
+        return 2;
+    }
+
     public void setNewAction(GenericAction a){
         if(currentAction != null){
             currentAction.cancel();
@@ -71,7 +75,8 @@ public class Entity implements Updateable {
             // e.x player's attack is intercepted ...
         }
         if(a == null){
-            currentAction = null;
+            throw new NullPointerException();
+//            currentAction = null;
         }else{
             a.setActor(this);
             currentAction = a;

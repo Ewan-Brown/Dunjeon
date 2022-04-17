@@ -2,12 +2,23 @@ package com.ewan.dunjeon.world.entities;
 
 public class AttackData {
 
-    public AttackData(int timeToHit) {
+    private int x;
+    private int y;
+    private int timeToHit;
+
+    public AttackData(int timeToHit, int xDir, int yDir) {
         this.timeToHit = timeToHit;
+        x = xDir;
+        y = yDir;
     }
 
-    // This represents the 'swing' time, the time between starting the attack and the actual hit.
-    private int timeToHit;
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
 
     public int getTimeToHit(){
         return timeToHit;

@@ -1,12 +1,10 @@
 package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.world.cells.Stair;
-import com.ewan.dunjeon.world.entities.actions.IdleAction;
-import com.ewan.dunjeon.world.entities.actions.InteractAction;
-import com.ewan.dunjeon.world.entities.actions.MoveAction;
+import com.ewan.dunjeon.world.entities.AttackData;
+import com.ewan.dunjeon.world.entities.actions.*;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.actions.UseStairsAction;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.*;
@@ -113,6 +111,7 @@ public class World implements KeyListener {
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_LEFT);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_RIGHT);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_I);
+        ACCEPTABLE_INPUTS.add(KeyEvent.VK_F);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_COMMA);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_PERIOD);
         ACCEPTABLE_INPUTS.add(KeyEvent.VK_S);
@@ -128,6 +127,21 @@ public class World implements KeyListener {
     //TODO Move controls somewhere else
     public void doControls(){
         int key = getNextKeyWithFilter(ACCEPTABLE_INPUTS);
+        if(key == KeyEvent.VK_F){
+            while(true) {
+                key = getNextKeyWithFilter(DIRECTION_KEYS);
+                int[] dir = getDir(key);
+                int x = dir[0];
+                int y = dir[1];
+                if(x == 0 && y == 0) {
+                    continue;
+                }
+                else {
+                    player.setNewAction(new MeleeAttackAction(new AttackData(player.getTimeToHit(),x,y)));
+                    return;
+                }
+            }
+        }
         if(key == KeyEvent.VK_I){
             while(true) {
                 key = getNextKeyWithFilter(DIRECTION_KEYS);
