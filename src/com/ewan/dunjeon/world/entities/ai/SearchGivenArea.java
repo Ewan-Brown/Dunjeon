@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world.entities.ai;
 
-import com.ewan.dunjeon.generation.Main;
+import com.ewan.dunjeon.game.TestGameLogic;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
@@ -24,11 +24,6 @@ public class SearchGivenArea extends GenericTask{
         filter = f;
     }
 
-
-    @Override
-    public int getPriority() {
-        return 0;
-    }
 
     public void update() {
         super.update();
@@ -58,7 +53,7 @@ public class SearchGivenArea extends GenericTask{
             }
 
             //Choose one of these paths at random
-            currentPath = validPaths.get(Main.rand.nextInt(validPaths.size()));
+            currentPath = validPaths.get(TestGameLogic.rand.nextInt(validPaths.size()));
         }
 
         //If the character is NOT already currently moving or doing something, stat moving to the next cell in path
@@ -75,13 +70,13 @@ public class SearchGivenArea extends GenericTask{
 
     }
     
-    public static SearchGivenArea RandomSearchVisibleArea(Entity m, int priority){
+    private static SearchGivenArea RandomSearchVisibleArea(Entity m, int priority){
         return new SearchGivenArea(m, priority, basicCell -> basicCell.canBeEntered(m)
                 && m.getVisibleCells().contains(basicCell)
                 && basicCell != m.getContainingCell());
     }
 
-    public static SearchGivenArea RandomSearchRememberedArea(Entity m, int priority){
+    private static SearchGivenArea RandomSearchRememberedArea(Entity m, int priority){
         return new SearchGivenArea(m, priority, basicCell -> basicCell.canBeEntered(m)
                 && m.getRememberedCells().contains(basicCell)
                 && basicCell != m.getContainingCell());

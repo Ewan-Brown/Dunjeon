@@ -11,11 +11,11 @@ import com.ewan.dunjeon.world.entities.Monster;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.ewan.dunjeon.generation.Main.rand;
+import java.util.Random;
 
 public class TestGameLogic {
 
+    public static final Random rand = new Random();
     static final long UPDATE_DELAY = 2;
 
     public static void main(String[] args) {
@@ -30,13 +30,13 @@ public class TestGameLogic {
 
         Floor startFloor = null;
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(20, 20);
-            generator.generateLeafs(5, 3);
+            generator.generateLeafs(7, 1);
             generator.generateDoors(2, 3, 2);
             generator.generateWeightMap();
             generator.generateHalls();
-            prevStairs = generator.generateStairs(prevStairs, (i ==4)? 0:1);
+            prevStairs = generator.generateStairs(prevStairs, (i == floorCount-1)? 0:1);
             generator.buildCells();
             generator.addFurniture();
             Floor newFloor = generator.getFloor();
@@ -51,6 +51,9 @@ public class TestGameLogic {
         Entity testPlayer = new Entity(Color.BLUE, 0, 10);
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
+
+        Entity testMonster = new Monster(Color.GREEN, (entity -> entity == testPlayer));
+        w.addEntityRandomLoc(testMonster, startFloor);
 
         liveDisplay.startDrawing(w);
         while (true) {

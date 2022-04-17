@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.world.entities;
 
+import com.ewan.dunjeon.world.entities.ai.FSM.State;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.entities.actions.GenericAction;
@@ -58,12 +59,16 @@ public class Entity implements Updateable {
         return speed;
     }
 
+    public int getTimeToMove(int x,int y){
+       return (int) (getSpeed() * ((x != 0 && y != 0) ? Math.sqrt(2) : 1));
+    }
+
     public void setNewAction(GenericAction a){
         if(currentAction != null){
             currentAction.cancel();
             System.err.println("Warning : Set a new action, overriding the old one. Can we rewrite so this doesn't occur?");
             //TODO FIX this? Not very robust. What if the current action should still take up time and not instantly cancel?
-            // i.e player's attack is intercepted BUT
+            // e.x player's attack is intercepted ...
         }
         if(a == null){
             currentAction = null;

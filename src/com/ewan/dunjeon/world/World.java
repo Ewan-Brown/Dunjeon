@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ewan.dunjeon.generation.Main.rand;
+import static com.ewan.dunjeon.game.TestGameLogic.rand;
 
 public class World implements KeyListener {
 

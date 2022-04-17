@@ -1,3 +1,8 @@
+WIP :
+    WOrking on redoing the AI. using a finite state machine, started with 'Explore' task.
+        This task should represent both Idle and Explore states, as they share many branches.
+        A basic Explore-Idle state works. Need to do branching next. see IRL notes.
+
 TO FIX:
 
     Entities can phase through eachother. Probably because their move actions are ending on the same tick

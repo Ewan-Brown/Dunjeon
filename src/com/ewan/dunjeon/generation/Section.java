@@ -1,19 +1,12 @@
 package com.ewan.dunjeon.generation;
 
-import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.furniture.Furniture;
-
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static com.ewan.dunjeon.generation.Main.rand;
+import static com.ewan.dunjeon.game.TestGameLogic.rand;
 
 public class Section implements Serializable {
     public void printDetails() {

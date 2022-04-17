@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
-import static com.ewan.dunjeon.generation.Main.rand;
+import static com.ewan.dunjeon.game.TestGameLogic.rand;
 
 public class GeneratorsMisc {
 

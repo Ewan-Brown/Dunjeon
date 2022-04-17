@@ -1,11 +1,9 @@
 package com.ewan.dunjeon.generation;
 
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
-import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.furniture.Container;
-import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.*;
@@ -13,10 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.ewan.dunjeon.generation.Main.rand;
+import static com.ewan.dunjeon.game.TestGameLogic.rand;
 
 public class FloorGenerator {
 

@@ -13,7 +13,7 @@ public class AttackTargetTask extends GenericTask{
     Entity target;
     List<BasicCell> currentPath = null;
 
-    public AttackTargetTask(Entity a, int p, Entity t) {
+    private AttackTargetTask(Entity a, int p, Entity t) {
         super(a, p);
         target = t;
     }
@@ -26,7 +26,6 @@ public class AttackTargetTask extends GenericTask{
         //Check that target is still within vision
         if(!actor.getVisibleCells().contains(target.getContainingCell())){
             System.out.println("\t\tActor has left");
-            this.isCompleted = true;
         }else{
             System.out.println("\t\tActor still in vision!");
 
