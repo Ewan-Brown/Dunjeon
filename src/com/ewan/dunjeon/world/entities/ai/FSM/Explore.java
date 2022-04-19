@@ -1,5 +1,7 @@
 package com.ewan.dunjeon.world.entities.ai.FSM;
 
+import com.ewan.dunjeon.game.TestGameLogic;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.Monster;
@@ -7,21 +9,25 @@ import com.ewan.dunjeon.world.entities.actions.MoveAction;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.ewan.dunjeon.game.TestGameLogic.rand;
 
 public class Explore extends State{
 
-    int restCounter; // Representative of how 'rested' the entity is. Higher = can explore longer. At 0 the entity must rest.
-
-    boolean resting;
-    static final int MAX_REST = 10;
+    List<BasicCell> path = null;
 
     public Explore(Monster a){
         super(a);
-        restCounter = MAX_REST;
-        resting = false;
+    }
+
+    public Explore(Monster a, BasicCell initialExplore){
+        this(a);
+        path = WorldUtils.getAStarPath(a.getLevel(), a.getContainingCell(), initialExplore, a, false);
     }
 
     @Override
@@ -36,31 +42,59 @@ public class Explore extends State{
         }
     }
 
-    Point[] directions = new Point[]{new Point(1, 0), new Point(-1, 0), new Point(0, 1), new Point(0, -1)};
+    public boolean requiresRecalculation(){
+
+        if(path == null){
+            return true;
+        }else {
+
+            if (path.isEmpty()) {
+                System.out.println("Explore - Path is empty");
+                return true;
+            }
+
+            if (path.stream().anyMatch(basicCell -> !basicCell.canBeEntered(actor))) {
+                System.out.println("Explore - Path is not valid, unenterable cell");
+                return true;
+            }
+            BasicCell nextCell = path.get(0);
+            if (nextCell == actor.getContainingCell()) {
+                System.out.println("Explore - Path not valid, nextCell = actor's current cell ");
+                return true;
+            }
+            if(!WorldUtils.isAdjacent(nextCell, actor.getContainingCell())){
+                System.out.println("Explore - Path not valid, next cell is NOT adjacent to actor's current cell");
+            }
+        }
+
+        return false;
+    }
 
     @Override
     public void update() {
-        System.out.println("\tUpdating Exploration!");
-        if (resting) {
-            System.out.println("\t\tResting");
-            restCounter++;
-            //This should mean that he continues rest until he's half rested,
-            // then the chance of cancelling rest increases linearly as rest increases. should be 100% chance to explore if rest is at max rest
-            if (Math.max(0, restCounter - MAX_REST / 2) > rand.nextInt(MAX_REST / 2)) { //TODO Check that this does what it should
-                resting = false;
-            }
-        } else {
-//            System.out.println("\t\tExploring!");
-            restCounter--;
-            if (restCounter < 0) {
-//                System.out.println("\t\t Too tired.. Time to rest!");
-                resting = true;
-            } else {
-                Point direction = directions[rand.nextInt(directions.length)];
-                int x = (int) direction.getX();
-                int y = (int) direction.getY();
-                actor.setNewAction(new MoveAction(actor.getTimeToMove(x, y), x, y));
+
+        if(requiresRecalculation()){
+            path = null;
+            System.out.println("Recalculating path");
+            List<List<BasicCell>> validPaths = actor.getVisibleCells().stream()
+                    .filter(basicCell -> basicCell != actor.getContainingCell())
+                    .map(basicCell -> WorldUtils.getAStarPath(actor.getLevel(), actor.getContainingCell(), basicCell, actor, false))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            if(!validPaths.isEmpty()){
+                System.out.println("Found a new path!");
+                path = validPaths.get(rand.nextInt(validPaths.size()));
+            }else{
+                System.out.println("No valid paths generated");
             }
         }
+
+        BasicCell nextCell = path.get(0);
+        int x = nextCell.getX() - actor.getContainingCell().getX();
+        int y = nextCell.getY() - actor.getContainingCell().getY();
+        path.remove(0);
+        int timeToMove = (int) (actor.getSpeed() * ((x != 0 && y != 0) ? 1.41 : 1));
+        actor.setNewAction(new MoveAction(timeToMove, x, y));
     }
 }

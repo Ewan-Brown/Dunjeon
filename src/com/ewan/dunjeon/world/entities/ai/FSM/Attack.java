@@ -9,23 +9,32 @@ import com.ewan.dunjeon.world.entities.actions.MeleeAttackAction;
 import com.ewan.dunjeon.world.entities.actions.MoveAction;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class Attack extends State {
     Entity target;
     List<BasicCell> currentPathToTarget;
+    BasicCell lastLocationOfTarget = null;
     boolean isTargetReachable;
 
     public Attack(Monster actor, Entity target) {
         super(actor);
         this.target = target;
         isTargetReachable = true;
+        lastLocationOfTarget = target.getContainingCell();
     }
 
     @Override
     public State getNextState() {
         //If the current path is still null once the code reaches here, then there must be no valid path to the target, or it has dissapeared.
         if (!isTargetReachable) {
-            return new Explore(actor);
+            if(lastLocationOfTarget != null){
+                System.out.println("Target gone, exploring their last location");
+                return new Explore(actor, lastLocationOfTarget);
+            }else {
+                System.err.println("Target dissapeared, attempted to track but last location logged is null! Should not happen.");
+                throw new NullPointerException();
+            }
         }
         return null;
     }
@@ -37,8 +46,11 @@ public class Attack extends State {
         boolean requiresRecalculation = (currentPathToTarget == null);
         boolean canAttackTarget = false;
 
-        //Check if the target exists and is still visible, otherwise we give up
-        //TODO Change this flow so that even if the target disappears the monster continues its' path?
+        if(target != null && actor.getVisibleCells().stream().anyMatch(basicCell -> basicCell == target.getContainingCell())){
+            lastLocationOfTarget = target.getContainingCell();
+        }
+
+        //Check if the target exists and is still visible, otherwise we give up on attacking and switch to exploring last location of target
         if (target == null || actor.getVisibleCells().stream().noneMatch(basicCell -> basicCell.getEntity() == target)) {
             isTargetReachable = false;
         }else if(WorldUtils.isAdjacent(target.getContainingCell(), actor.getContainingCell())){

@@ -63,6 +63,7 @@ public class Entity implements Updateable {
        return (int) (getSpeed() * ((x != 0 && y != 0) ? Math.sqrt(2) : 1));
     }
 
+    //TODO Transform this into a system conforming with 'AttackData'.
     public int getTimeToHit(){
         return 2;
     }

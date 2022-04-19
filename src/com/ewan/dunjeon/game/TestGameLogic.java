@@ -31,8 +31,8 @@ public class TestGameLogic {
         Floor startFloor = null;
 
         for (int i = 0; i < floorCount; i++) {
-            FloorGenerator generator = new FloorGenerator(20, 20);
-            generator.generateLeafs(7, 1);
+            FloorGenerator generator = new FloorGenerator(40, 40);
+            generator.generateLeafs(5, 3);
             generator.generateDoors(2, 3, 2);
             generator.generateWeightMap();
             generator.generateHalls();
