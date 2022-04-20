@@ -73,6 +73,10 @@ public class BasicCell implements Updateable {
         entity = null;
     }
 
+    public void onDeath(Entity e){
+        entity = null;
+    }
+
     public void onEntityDeath(Entity e) {entity = null; }
 
     public Color getColor(){
@@ -86,7 +90,9 @@ public class BasicCell implements Updateable {
         return items;
     }
 
-    public Entity getEntity(){ return entity;}
+    public Entity getEntity(){
+        return entity;
+    }
 
     public Floor getFloor(){
         return floor;

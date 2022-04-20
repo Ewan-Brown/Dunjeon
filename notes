@@ -1,18 +1,12 @@
 WIP :
-    WOrking on redoing the AI. using a finite state machine, started with 'Explore' task.
-        This task should represent both Idle and Explore states, as they share many branches.
-        A basic Explore-Idle state works. Need to do branching next. see IRL notes.
+    Working on adding logic for when an entity dies. Check out Entity line 57 for some random starting point
 
 TO FIX:
-
-    Entities can phase through eachother. Probably because their move actions are ending on the same tick
 
     For the raytracing : can I 'slide' across the walls that I hit? there's no reason to hit the same block 10 times.
         Maybe when a ray collides, we can slide across the wall and add tiny delta at the end to push it past the
         known collision spot.
 
-    How to deal with task transitions? Where do they go, how do I handle cancellations and interruptions that should
-    result in a given action? Can this case be avoided?
 
 
 

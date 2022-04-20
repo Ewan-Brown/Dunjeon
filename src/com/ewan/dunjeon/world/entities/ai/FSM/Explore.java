@@ -32,7 +32,8 @@ public class Explore extends State{
 
     @Override
     public State getNextState() {
-        List<BasicCell> possibleTargets = actor.getVisibleCells().stream().filter(basicCell -> actor.getTargetPredicate().test(basicCell.getEntity())).collect(Collectors.toList());
+        List<BasicCell> possibleTargets = actor.getVisibleCells().stream()
+                .filter(basicCell -> actor.getTargetPredicate().test(basicCell.getEntity())).collect(Collectors.toList());
         if(!possibleTargets.isEmpty()){
             System.out.println("\tPossible targets found!");
             Entity t = possibleTargets.get(rand.nextInt(possibleTargets.size())).getEntity();

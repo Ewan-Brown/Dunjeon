@@ -58,9 +58,16 @@ public class World implements KeyListener {
 
     }
 
-    public void update(){
+    /*
+    Updates the game, returns true if the game is over.
+     */
+    public boolean update(){
         System.out.println("Update [" + tick_tracker+"]");
         tick_tracker++;
+        if(player.isDead()){
+            System.out.println("Game over! Player dead.");
+            return true;
+        }
         while(player.getCurrentAction() == null){
             doControls();
         }
@@ -69,6 +76,7 @@ public class World implements KeyListener {
         }
 //        movementProcessor.processMovements();
         getPlayer().updateViewRange();
+        return false;
     }
 
     HashMap<Integer, Point> keyDirMapping = new HashMap<>();
@@ -137,7 +145,7 @@ public class World implements KeyListener {
                     continue;
                 }
                 else {
-                    player.setNewAction(new MeleeAttackAction(new AttackData(player.getTimeToHit(),x,y)));
+                    player.setNewAction(new MeleeAttackAction(new AttackData(player.getTimeToHit(),x,y, player.getDamage())));
                     return;
                 }
             }
@@ -192,11 +200,6 @@ public class World implements KeyListener {
         e.getContainingCell().onExit(e);
         entry.onEntry(e);
         e.enterCell(entry);
-    }
-
-    public void killEntity(Entity e){
-        e.getContainingCell().onEntityDeath(e);
-        e.onDeath();
     }
 
     @Override

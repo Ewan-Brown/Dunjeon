@@ -48,7 +48,7 @@ public class TestGameLogic {
 
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Entity testPlayer = new Entity(Color.BLUE, 0, 10);
+        Entity testPlayer = new Entity(Color.BLUE, 0, 10, 5);
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 
@@ -58,7 +58,10 @@ public class TestGameLogic {
         liveDisplay.startDrawing(w);
         while (true) {
             w.getPlayer().updateViewRange();
-            w.update();
+            boolean gameOver = w.update();
+            if(gameOver){
+                break;
+            }
             try {
                 Thread.sleep(UPDATE_DELAY);
             } catch (InterruptedException e) {

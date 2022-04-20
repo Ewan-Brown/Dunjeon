@@ -63,9 +63,13 @@ public class Floor {
     }
 
     public void update(){
-        getCellsAsList().forEach(basicCell -> basicCell.updateFurniture());
+        getCellsAsList().forEach(BasicCell::updateFurniture);
         for (Entity entity : getEntities()) {
-            entity.update();
+            if(entity.isDead()){
+                entity.getContainingCell().onDeath(entity);
+            }else {
+                entity.update();
+            }
         }
     }
 }

@@ -46,6 +46,10 @@ public class Attack extends State {
         boolean requiresRecalculation = (currentPathToTarget == null);
         boolean canAttackTarget = false;
 
+        if(target.isDead()){
+            target = null;
+        }
+
         if(target != null && actor.getVisibleCells().stream().anyMatch(basicCell -> basicCell == target.getContainingCell())){
             lastLocationOfTarget = target.getContainingCell();
         }
@@ -61,7 +65,7 @@ public class Attack extends State {
         if(canAttackTarget){
             int xDiff = target.getX() - actor.getX();
             int yDiff = target.getY() - actor.getY();
-            actor.setNewAction(new MeleeAttackAction(new AttackData(actor.getTimeToHit(), xDiff, yDiff)));
+            actor.setNewAction(new MeleeAttackAction(new AttackData(actor.getTimeToHit(), xDiff, yDiff, actor.getDamage())));
         }
         else if (isTargetReachable) {
             BasicCell targetCell = target.getContainingCell();
@@ -69,7 +73,7 @@ public class Attack extends State {
             //Check if the path still leads us to being beside the target
             if (currentPathToTarget != null) {
                 if(currentPathToTarget.isEmpty()){
-                    System.out.println("\t\tPath is empty but not attackable target");
+                    System.out.println("\t\tNo path and no target not in reach");
                     requiresRecalculation = true;
                 }else {
                     if(currentPathToTarget.get(currentPathToTarget.size() - 1) == targetCell){

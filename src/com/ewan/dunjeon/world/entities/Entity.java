@@ -20,15 +20,20 @@ public class Entity implements Updateable {
     private GenericAction nextAction = null;
     private int speed;
     private int sightRange;
+    private int damage;
     private Set<BasicCell> lastVisibleCells = new HashSet<>();
     private Set<BasicCell> rememberedCells = new HashSet<>();
+
+    private int health; //TODO Replace with in depth health system
     List<Item> inventory = new ArrayList<>();
     Color color;
 
-    public Entity(Color c, int s, int sight){
+    public Entity(Color c, int s, int sight, int d){
         this.color = c;
         speed = s;
         sightRange = sight;
+        health = 10;
+        damage = d;
     }
 
     public Set<BasicCell> lastVisibleCells(){
@@ -44,8 +49,21 @@ public class Entity implements Updateable {
     }
 
     public Color getColor(){
-        return color;
+        return isDead() ? Color.BLACK : color;
     }
+
+    public void applyDamage(int d){
+        health -= d;
+    }
+
+    public int getDamage(){
+        return damage;
+    }
+
+    public boolean isDead(){
+        return health <= 0;
+    }
+
 
     public int getSightRange(){return sightRange;}
 
@@ -198,12 +216,16 @@ public class Entity implements Updateable {
     @Override
     public void update() {
         //Update the visible cell range for outer usage
-        updateViewRange();
-        updateMemory();
-        if(currentAction != null){
-            currentAction.update();
-            if(currentAction.isDone()) {
-                currentAction = null;
+        if(isDead()){
+            throw new Error("Attempted to update dead entity");
+        }else {
+            updateViewRange();
+            updateMemory();
+            if (currentAction != null) {
+                currentAction.update();
+                if (currentAction.isDone()) {
+                    currentAction = null;
+                }
             }
         }
     }

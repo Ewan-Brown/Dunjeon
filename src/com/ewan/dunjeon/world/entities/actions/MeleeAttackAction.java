@@ -1,11 +1,11 @@
 package com.ewan.dunjeon.world.entities.actions;
 
+import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.AttackData;
 import com.ewan.dunjeon.world.entities.Entity;
 
 public class MeleeAttackAction extends TimedAction {
 
-    private Entity attacker, attackee;
     private AttackData attackData;
 
     public MeleeAttackAction(AttackData data){
@@ -15,7 +15,17 @@ public class MeleeAttackAction extends TimedAction {
 
     @Override
     public void onTimerComplete() {
-        System.out.println("\tI've attacked!");
+        System.out.println("\tSwing! from " + actor.getClass());
+        int x = actor.getX() + attackData.getX();
+        int y = actor.getY() + attackData.getY();
+        BasicCell attackedCell = actor.getContainingCell().getFloor().getCellAt(x, y);
+        Entity attackedEntity = attackedCell.getEntity();
+        if(attackedEntity == null){
+            System.out.println("\t\tand a miss...");
+        }else{
+            System.out.printf("\t\tWhack! for %d damage\n", attackData.getDamage());
+            attackedEntity.applyDamage(attackData.getDamage());
+        }
     }
 
     @Override
