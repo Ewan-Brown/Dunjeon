@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class TestGameLogic {
+public class Main {
 
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 2;
