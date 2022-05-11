@@ -1,5 +1,5 @@
 package com.ewan.dunjeon.world.item;
 
-public class Item{
+public abstract class Item{
     public Item(){}
 }

@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.world.cells;
 
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.item.Inventory;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.furniture.Furniture;
@@ -16,8 +17,10 @@ public class BasicCell implements Updateable {
     Floor floor;
     Entity entity;
     Furniture furniture;
-    List<Item> items = new ArrayList<>();
+    Inventory inventory = new Inventory();
     Color color;
+
+
     private boolean filled; //TODO Replace this with something a little more flexible?
 
     public BasicCell(int x, int y, Floor f) {
@@ -86,8 +89,8 @@ public class BasicCell implements Updateable {
     public int getX(){return x;}
     public int getY(){return y;}
 
-    public List<Item> getItemsHere() {
-        return items;
+    public Inventory getItemsHere() {
+        return inventory;
     }
 
     public Entity getEntity(){

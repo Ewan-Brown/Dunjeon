@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.world.entities;
 
 import com.ewan.dunjeon.world.entities.ai.FSM.State;
+import com.ewan.dunjeon.world.item.Inventory;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.entities.actions.GenericAction;
@@ -25,7 +26,7 @@ public class Entity implements Updateable {
     private Set<BasicCell> rememberedCells = new HashSet<>();
 
     private int health; //TODO Replace with in depth health system
-    List<Item> inventory = new ArrayList<>();
+    private Inventory inventory;
     Color color;
 
     public Entity(Color c, int s, int sight, int d){
@@ -34,6 +35,7 @@ public class Entity implements Updateable {
         sightRange = sight;
         health = 10;
         damage = d;
+        inventory = new Inventory();
     }
 
     public Set<BasicCell> lastVisibleCells(){
@@ -54,6 +56,10 @@ public class Entity implements Updateable {
 
     public void applyDamage(int d){
         health -= d;
+        if(isDead()){
+            System.out.println("Entity died!");
+            this.getContainingCell().onDeath(this);
+        }
     }
 
     public int getDamage(){
@@ -238,7 +244,7 @@ public class Entity implements Updateable {
 
     }
 
-    public List<Item> getInventory() {
+    public Inventory getInventory() {
         return inventory;
     }
 

@@ -1,21 +1,16 @@
 package com.ewan.dunjeon.world.entities.ai.FSM;
 
-import com.ewan.dunjeon.game.TestGameLogic;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.Monster;
 import com.ewan.dunjeon.world.entities.actions.MoveAction;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.ewan.dunjeon.game.TestGameLogic.rand;
+import static com.ewan.dunjeon.game.Main.rand;
 
 public class Explore extends State{
 

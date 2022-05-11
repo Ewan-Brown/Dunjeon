@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world;
 
-import com.ewan.dunjeon.game.TestGameLogic;
+import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
@@ -49,7 +49,7 @@ public class WorldUtils {
                     }
                     weight = Float.POSITIVE_INFINITY;
                 }else{
-                    weight = 1 + TestGameLogic.rand.nextFloat();
+                    weight = 1 + Main.rand.nextFloat();
                 }
                 weightMap[y][x] = weight;
             }

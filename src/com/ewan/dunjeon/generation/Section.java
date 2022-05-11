@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.ewan.dunjeon.game.TestGameLogic.rand;
+import static com.ewan.dunjeon.game.Main.rand;
 
 public class Section implements Serializable {
     public void printDetails() {

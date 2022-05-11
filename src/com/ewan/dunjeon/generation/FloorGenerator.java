@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ewan.dunjeon.game.TestGameLogic.rand;
+import static com.ewan.dunjeon.game.Main.rand;
 
 public class FloorGenerator {
 
