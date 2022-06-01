@@ -45,7 +45,7 @@ public class BasicCell implements Updateable {
 
     public void setFurniture(Furniture f){
         if(this.furniture != null){
-            throw new Error("Tried to add furniture to cell that already contains furniture!");
+            throw new RuntimeException("Tried to add furniture to cell that already contains furniture!");
         }
         furniture = f;
         f.containingCell = this;

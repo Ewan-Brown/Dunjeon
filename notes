@@ -1,5 +1,10 @@
 WIP :
     Working on figuring out inventory and item interactions... going to need to think this one through a fair amount.
+    I've got it somewhat down. Leaving AI for later, that should be a secondary layer to things, shouldn't be item dependant.
+    Items Will have 'Uses' attached to them for certain actions. Each item should for now only have one melee, cast, use.
+    IF the item has a usage to match the action, said action is performed using logic from the 'use'.
+    Allows easy sharing of 'use' between very different items (e.x bash with crossbow vs bash with Big Stick should function the same.)
+    This may also be useful for AI.
 
 TO FIX:
 

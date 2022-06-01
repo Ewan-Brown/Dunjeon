@@ -21,20 +21,33 @@ public class Entity implements Updateable {
     private GenericAction nextAction = null;
     private int speed;
     private int sightRange;
+    private String name;
     private int damage;
     private Set<BasicCell> lastVisibleCells = new HashSet<>();
     private Set<BasicCell> rememberedCells = new HashSet<>();
+    private Item WieldedWeapon;
 
     private int health; //TODO Replace with in depth health system
     private Inventory inventory;
+
+    public int getHealth() {
+        return health;
+    }
+    public String getName(){return name;}
+    public Item getWieldedItem() {
+        return wieldedItem;
+    }
+
+    private Item wieldedItem;
     Color color;
 
-    public Entity(Color c, int s, int sight, int d){
+    public Entity(Color c, int sp, int sight, int d, String name){
         this.color = c;
-        speed = s;
+        speed = sp;
         sightRange = sight;
         health = 10;
         damage = d;
+        this.name = name;
         inventory = new Inventory();
     }
 
@@ -223,7 +236,7 @@ public class Entity implements Updateable {
     public void update() {
         //Update the visible cell range for outer usage
         if(isDead()){
-            throw new Error("Attempted to update dead entity");
+            throw new RuntimeException("Attempted to update dead entity");
         }else {
             updateViewRange();
             updateMemory();

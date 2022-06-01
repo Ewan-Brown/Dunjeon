@@ -115,7 +115,7 @@ public class Attack extends State {
                 if (WorldUtils.isAdjacent(actor.getContainingCell(), nextStep)) {
                     actor.setNewAction(new MoveAction(actor.getTimeToMove(x, y), x, y));
                 } else {
-                    throw new Error("Attempted to move more than one cell during attack approach phase!");
+                    throw new RuntimeException("Attempted to move more than one cell during attack approach phase!");
                 }
 
             }

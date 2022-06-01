@@ -48,7 +48,7 @@ public class Main {
 
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Entity testPlayer = new Entity(Color.BLUE, 0, 10, 5);
+        Entity testPlayer = new Entity(Color.BLUE, 0, 10, 5, "Player");
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 

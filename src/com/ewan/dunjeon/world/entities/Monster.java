@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 
 public class Monster extends Entity{
     public Monster(Color c, Predicate<Entity> predicate) {
-        super(c, 4, 20, 2);
+        super(c, 4, 20, 2, "Monster");
         isTargetPredicate = predicate;
         s = new Explore(this);
     }

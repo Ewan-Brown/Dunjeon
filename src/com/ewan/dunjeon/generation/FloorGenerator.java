@@ -225,7 +225,7 @@ public class FloorGenerator {
         }
 
         if(cellCoords == null){
-            throw new Error("Floor has no space empty space left!");
+            throw new RuntimeException("Floor has no space empty space left!");
         }else{
             selected.remove(cellCoords);
         }
