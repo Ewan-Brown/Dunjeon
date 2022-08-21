@@ -1,17 +1,16 @@
 package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.world.cells.Stair;
-import com.ewan.dunjeon.world.entities.AttackData;
-import com.ewan.dunjeon.world.entities.actions.*;
 import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.entities.Creature;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,11 +20,7 @@ public class World implements KeyListener {
 
     private static World w = new World();
 
-    List<Integer> keyQueue = new ArrayList<>(); //TODO Use a Queue here??
-    int MAX_KEYLIST_SIZE = 1; //Max number of keys that can be in the queue
-
-    private Entity player;
-    private int tick_tracker = 0;
+    private Creature player;
     public static World getInstance(){return w;}
 
     List<Floor> floors = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
@@ -33,11 +28,11 @@ public class World implements KeyListener {
         floors.add(l);
     }
 
-    public Entity getPlayer(){
+    public Creature getPlayer(){
         return player;
     }
 
-    public void setPlayer(Entity p){ player = p;}
+    public void setPlayer(Creature p){ player = p;}
 
     /**
      * Adds a entity at a random location On a level.
@@ -53,169 +48,63 @@ public class World implements KeyListener {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
             randomValidCell.onEntry(e);
             e.enterCell(randomValidCell);
+            e.setPosition(randomValidCell.getX() + 0.5f, randomValidCell.getY() + 0.5f);
+            e.setFloor(l);
+            l.addEntity(e);
             return true;
         }
 
     }
+
+
 
     /*
     Updates the game, returns true if the game is over.
      */
     public boolean update(){
-        System.out.println("Update [" + tick_tracker+"]");
-        tick_tracker++;
         if(player.isDead()){
             System.out.println("Game over! Player dead.");
             return true;
         }
-        while(player.getCurrentAction() == null){
-            doControls();
-        }
-        for (Floor floor : floors) {
-            floor.update();
-        }
-//        movementProcessor.processMovements();
+        doControls();
+        getPlayer().getFloor().update();
         getPlayer().updateViewRange();
         return false;
     }
 
-    HashMap<Integer, Point> keyDirMapping = new HashMap<>();
-    {
-        keyDirMapping.put(KeyEvent.VK_UP, new Point(0, -1));
-        keyDirMapping.put(KeyEvent.VK_DOWN, new Point(0, 1));
-        keyDirMapping.put(KeyEvent.VK_LEFT, new Point(-1, 0));
-        keyDirMapping.put(KeyEvent.VK_RIGHT, new Point(1, 0));
-        keyDirMapping.put(KeyEvent.VK_PERIOD, new Point(0, 0));
-
-    }
-
-    private int getNextKey(){
-        while(keyQueue.size() == 0){ //FIXME Find a nicer way to wait for new keystroke. Maybe check out locks/synch?
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        int retVal = keyQueue.get(keyQueue.size()-1);
-        keyQueue.remove(keyQueue.size()-1);
-        return retVal;
-    }
-
-    private int getNextKeyWithFilter(List<Integer> acceptable){
-        int key;
-        do{
-            key = getNextKey();
-        }while(!acceptable.contains(key));
-        return key;
-    }
-
-    private static final List<Integer> ACCEPTABLE_INPUTS = new ArrayList<>();
-    private static final List<Integer> DIRECTION_KEYS = new ArrayList<>();
-    static {
-
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_UP);
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_DOWN);
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_LEFT);
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_RIGHT);
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_I);
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_F);
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_COMMA);
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_PERIOD);
-        ACCEPTABLE_INPUTS.add(KeyEvent.VK_S);
-
-        DIRECTION_KEYS.add(KeyEvent.VK_UP);
-        DIRECTION_KEYS.add(KeyEvent.VK_DOWN);
-        DIRECTION_KEYS.add(KeyEvent.VK_LEFT);
-        DIRECTION_KEYS.add(KeyEvent.VK_RIGHT);
-        DIRECTION_KEYS.add(KeyEvent.VK_PERIOD);
-
-    }
-
     //TODO Move controls somewhere else
     public void doControls(){
-        int key = getNextKeyWithFilter(ACCEPTABLE_INPUTS);
-        if(key == KeyEvent.VK_F){
-            while(true) {
-                key = getNextKeyWithFilter(DIRECTION_KEYS);
-                int[] dir = getDir(key);
-                int x = dir[0];
-                int y = dir[1];
-                if(x == 0 && y == 0) {
-                    continue;
-                }
-                else {
-                    player.setNewAction(new MeleeAttackAction(new AttackData(player.getTimeToHit(),x,y, player.getDamage())));
-                    return;
-                }
-            }
+        if(keySet[KeyEvent.VK_UP]){
+            player.addVelocity(0.0f,-0.001f);
         }
-        if(key == KeyEvent.VK_I){
-            while(true) {
-                key = getNextKeyWithFilter(DIRECTION_KEYS);
-                int[] dir = getDir(key);
-                int x = dir[0];
-                int y = dir[1];
-                if(x == 0 && y == 0) {
-                    continue;
-                }
-                else {
-                    player.setNewAction(new InteractAction(5, x, y));
-                    return;
-                }
-            }
-        }else if(DIRECTION_KEYS.contains(key)){
-            int[] dir = getDir(key);
-            int x = dir[0];
-            int y = dir[1];
-            if (x != 0 || y != 0) {
-                player.setNewAction(new MoveAction(player.getSpeed(), x, y));
-            }
-        }else if(key == KeyEvent.VK_S) {
-            if (player.getContainingCell() instanceof Stair) {
-                Stair s = (Stair) player.getContainingCell();
-                player.setNewAction(new UseStairsAction(s, player.getSpeed()));
-            }
+        if(keySet[KeyEvent.VK_DOWN]){
+            player.addVelocity(0.0f,+0.001f);
         }
-        // Note that actions endure ticks+1 updates.
-        else if(key == KeyEvent.VK_COMMA){
-            player.setNewAction(new IdleAction(0));
+        if(keySet[KeyEvent.VK_LEFT]){
+            player.addVelocity(-0.001f,0.0f);
         }
-
+        if(keySet[KeyEvent.VK_RIGHT]){
+            player.addVelocity(0.001f, 0.0f);
+        }
     }
 
     public void attemptStairMove(Entity e, Stair s){
-        moveEntity(e, s.getConnection());
+//        moveEntity(e, s.getConnection());
     }
 
-    public int[] getDir(int key){
-        int x = 0;
-        int y = 0;
-        x = (int)keyDirMapping.get(key).getX();
-        y = (int)keyDirMapping.get(key).getY();
-        return new int[]{x, y};
-    }
-
-    public void moveEntity(Entity e, BasicCell entry){
-        e.getContainingCell().onExit(e);
-        entry.onEntry(e);
-        e.enterCell(entry);
-    }
+    private boolean[] keySet = new boolean[256];
 
     @Override
     public void keyTyped(KeyEvent keyEvent) {
-
     }
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        if(keyQueue.size() < MAX_KEYLIST_SIZE) {
-            keyQueue.add(keyEvent.getKeyCode());
-        }
+        keySet[keyEvent.getKeyCode()] = true;
     }
 
     @Override
     public void keyReleased(KeyEvent keyEvent) {
-
+        keySet[keyEvent.getKeyCode()] = false;
     }
 }

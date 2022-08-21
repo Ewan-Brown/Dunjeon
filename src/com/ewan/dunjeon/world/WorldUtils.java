@@ -13,6 +13,9 @@ import static java.lang.Math.abs;
 
 
 public class WorldUtils {
+    public static float getRawDistance(Entity e1, Entity e2){
+        return (float)Math.sqrt(Math.pow(e1.getX() - e2.getX(), 2) + Math.pow(e1.getY() - e2.getY(), 2));
+    }
     public static float getRawDistance(BasicCell c1, BasicCell c2){
         return (float)Math.sqrt(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2));
     }

@@ -3,10 +3,10 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
+import com.ewan.dunjeon.world.entities.Creature;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
-import com.ewan.dunjeon.world.entities.Monster;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -48,11 +48,11 @@ public class Main {
 
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Entity testPlayer = new Entity(Color.BLUE, 0, 10, 5, "Player");
+        Creature testPlayer = new Creature(Color.BLUE, "Player");
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 
-        Entity testMonster = new Monster(Color.GREEN, (entity -> entity == testPlayer));
+        Creature testMonster = new Creature(Color.GREEN, "Monster");
         w.addEntityRandomLoc(testMonster, startFloor);
 
         liveDisplay.startDrawing(w);

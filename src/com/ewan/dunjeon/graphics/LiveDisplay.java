@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LiveDisplay {
-    private final int size = 6;
+    private final int size = 30;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
@@ -74,7 +74,7 @@ public class LiveDisplay {
                     for (Entity e : lev.getEntities()) {
                         if(SHOW_ALL_TILES || e == w.getPlayer() || w.getPlayer().getVisibleCells().contains(e.getContainingCell())){
                             graphics.setColor(e.getColor());
-                            graphics.fillRect(e.getX() * size, e.getY() * size, size, size);
+                            graphics.fillRect((int)((e.getX() - e.getSize()/2) * size), (int)((e.getY() - e.getSize()/2) * size), (int)(e.getSize() * size) , (int)(e.getSize() * size));
                         }
                     }
                     for (Point2D[] line : DEBUG_LINES){
