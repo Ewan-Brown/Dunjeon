@@ -5,7 +5,6 @@ import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Creature;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
