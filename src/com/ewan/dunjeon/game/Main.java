@@ -32,7 +32,7 @@ public class Main {
 
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(40, 40);
-            generator.generateLeafs(5, 3);
+            generator.generateLeafs(5, 10);
             generator.generateDoors(2, 3, 2);
             generator.generateWeightMap();
             generator.generateHalls();

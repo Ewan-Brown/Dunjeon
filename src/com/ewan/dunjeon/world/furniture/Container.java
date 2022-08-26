@@ -11,11 +11,4 @@ public class Container extends Furniture{
         return null;
     }
 
-    @Override
-    public void onInteract(Entity e) {
-        //TODO Proper chest interactive UI
-//        e.getInventory().addAll(inventory);
-//        inventory.clear();
-    }
-
 }

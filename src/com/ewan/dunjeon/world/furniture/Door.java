@@ -22,7 +22,6 @@ public class Door extends Furniture{
         return !open;
     }
 
-    @Override
     public void onInteract(Entity e) {
         open = !open;
     }

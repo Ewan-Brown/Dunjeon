@@ -2,7 +2,6 @@ package com.ewan.dunjeon.world.entities;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.sun.org.apache.xerces.internal.impl.XMLEntityHandler;
 
 import java.awt.*;
 import java.awt.geom.Point2D;

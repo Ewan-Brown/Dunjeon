@@ -10,7 +10,6 @@ public class Statue extends Furniture{
         return null;
     }
 
-    @Override
     public void onInteract(Entity e) {
 
     }

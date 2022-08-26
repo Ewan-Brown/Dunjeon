@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LiveDisplay {
-    private final int size = 30;
+    private final int size = 20;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;

@@ -15,19 +15,16 @@ public abstract class Furniture implements Updateable {
 
     }
 
-    /**
-     * Could be null if the furniture doesn't have a color right now (i.e is invisible?)
-     * @return
-     */
     public abstract Color getColor();
 
     public boolean isBlocking(){
         return false;
     }
 
-    public abstract void onInteract(Entity e);
-
-
+    public float getOffsetX(){return 0; }
+    public float getOffsetY(){return 0; }
+    public float getX(){return containingCell.getX() + 0.5f + getOffsetX();}
+    public float getY(){return containingCell.getY() + 0.5f + getOffsetY();}
 
     @Override
     public void update() {

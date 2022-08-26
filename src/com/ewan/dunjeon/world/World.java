@@ -8,10 +8,12 @@ import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.ewan.dunjeon.game.Main.rand;
 
@@ -27,11 +29,6 @@ public class World implements KeyListener {
         floors.add(l);
     }
 
-    public Creature getPlayer(){
-        return player;
-    }
-
-    public void setPlayer(Creature p){ player = p;}
 
     /**
      * Adds a entity at a random location On a level.
@@ -71,7 +68,17 @@ public class World implements KeyListener {
         return false;
     }
 
-    //TODO Move controls somewhere else
+    //**************************************************
+    //PLAYER SPECIFIC TODO MOVE THIS STUFF
+    //**************************************************
+
+
+    public Creature getPlayer(){
+        return player;
+    }
+
+    public void setPlayer(Creature p){ player = p;}
+
     public void doControls(){
         if(keySet[KeyEvent.VK_UP]){
             player.addVelocity(0.0f,-0.001f);
@@ -85,11 +92,47 @@ public class World implements KeyListener {
         if(keySet[KeyEvent.VK_RIGHT]){
             player.addVelocity(0.001f, 0.0f);
         }
+        if(keySet[KeyEvent.VK_SPACE]){
+            //Interact!
+        }
     }
 
-    public void attemptStairMove(Entity e, Stair s){
-//        moveEntity(e, s.getConnection());
+    public Interactable getNearestPlayerInteractable(){
+        float minDist = -1;
+        Interactable closestInteractable = null;
+        Floor f = player.getFloor();
+
+        List<Interactable> interactables = new ArrayList<>();
+
+        for (int x = 0; x < f.getWidth(); x++) {
+            for (int y = 0; y < f.getHeight(); y++) {
+                BasicCell currentCell = f.getCellAt(x, y);
+                if (currentCell.getFurniture() instanceof Interactable) {
+                    interactables.add((Interactable) currentCell.getFurniture());
+                }
+            }
+        }
+
+        for (Entity e : getPlayer().getFloor().getEntities()) {
+            if(e instanceof Interactable){
+                interactables.add((Interactable)e);
+            }
+        }
+
+        for (Interactable interactable : interactables) {
+            if (interactable.isInteractable(getPlayer())) {
+                float dist = WorldUtils.getRawDistance(interactable, getPlayer());
+                if(dist < minDist){
+                    minDist = dist;
+                    closestInteractable = interactable;
+                }
+            }
+        }
+
+        return closestInteractable;
+
     }
+
 
     private boolean[] keySet = new boolean[256];
 
