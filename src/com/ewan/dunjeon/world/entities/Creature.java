@@ -53,6 +53,7 @@ public class Creature extends Entity{
         float angleDiv =  arcLength/sightRange;
         int rays = (int)Math.ceil(2 * (float)Math.PI / angleDiv);
 
+        viewableCells.add(this.getContainingCell()); // DUe to some foresight this has to be added?
 
         List<Point2D[]> lines = new ArrayList<>();
         for(int i = 0; i < rays; i++){

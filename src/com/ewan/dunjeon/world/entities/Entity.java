@@ -66,7 +66,6 @@ public class Entity implements Updateable {
 
     @Override
     public void update() {
-        //Update the visible cell range for outer usage
         if(!exists()){
             System.out.println(exists() + " " + getName());
             throw new RuntimeException("Attempted to update dead entity");

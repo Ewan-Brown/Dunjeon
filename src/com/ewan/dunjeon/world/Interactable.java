@@ -2,11 +2,17 @@ package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.world.entities.Entity;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public interface Interactable {
-    public void onInteract(Entity interactor);
-    public boolean isInteractable(Entity interactor);
+    public enum InteractionType{
+        TOUCH, CHAT
+    }
+
+    public void onInteract(Entity interactor, InteractionType type);
+//    public boolean isInteractable(Entity interactor);
     public float getX();
     public float getY();
+    public Set<InteractionType> getAvailableInteractions(Entity interactor);
 }

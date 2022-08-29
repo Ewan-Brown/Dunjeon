@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.graphics;
 
+import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
@@ -8,19 +9,18 @@ import com.ewan.dunjeon.world.furniture.Furniture;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LiveDisplay {
-    private final int size = 20;
+    private final int size = 12;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
     private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
     private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
-    private static final boolean SHOW_ALL_TILES = true;
+    public static boolean SHOW_ALL_TILES = false;
 
     public static void setDebugCells(List<BasicCell> cells) {
         DEBUG_CELLS = cells;
@@ -41,6 +41,8 @@ public class LiveDisplay {
                 public void paint(Graphics graphics) {
                     super.paint(graphics);
                     Floor lev = w.getPlayer().getLevel();
+                    Interactable nearestPlayerTouchable = w.getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
+                    Interactable nearestPlayerChattable = w.getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
                     for (BasicCell cell : lev.getCellsAsList()) {
                         if(DEBUG_CELLS.contains(cell)){
                             graphics.setColor(Color.YELLOW);
@@ -51,9 +53,15 @@ public class LiveDisplay {
                                 graphics.setColor(cell.getColor());
                                 graphics.fillRect(cell.getX() * size, cell.getY() * size, size, size);
                                 Furniture f = cell.getFurniture();
+                                //Draw furniture
                                 if(f != null && f.getColor() != null) {
                                     graphics.setColor(f.getColor());
                                     graphics.fillRect(cell.getX() * size + furniture_padding, cell.getY() * size + furniture_padding, size - furniture_padding*2, size - furniture_padding*2);
+                                    //Highlight furniture if in range for interactino
+                                    if(nearestPlayerTouchable == f){
+                                        graphics.setColor(Color.YELLOW);
+                                        graphics.drawRect(cell.getX() * size + furniture_padding, cell.getY() * size + furniture_padding, size - furniture_padding*2, size - furniture_padding*2);
+                                    }
                                 }
                             }else if(World.getInstance().getPlayer().getRememberedCells().contains(cell)){
                                 int r = cell.getColor().getRed();
@@ -75,6 +83,11 @@ public class LiveDisplay {
                         if(SHOW_ALL_TILES || e == w.getPlayer() || w.getPlayer().getVisibleCells().contains(e.getContainingCell())){
                             graphics.setColor(e.getColor());
                             graphics.fillRect((int)((e.getX() - e.getSize()/2) * size), (int)((e.getY() - e.getSize()/2) * size), (int)(e.getSize() * size) , (int)(e.getSize() * size));
+                            if(e == nearestPlayerChattable){
+                                graphics.setColor(Color.YELLOW);
+                                graphics.drawRect((int)((e.getX() - e.getSize()/2) * size), (int)((e.getY() - e.getSize()/2) * size), (int)(e.getSize() * size) , (int)(e.getSize() * size));
+
+                            }
                         }
                     }
                     for (Point2D[] line : DEBUG_LINES){

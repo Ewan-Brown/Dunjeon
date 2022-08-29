@@ -5,6 +5,7 @@ import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.entities.Creature;
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.NPC;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 
@@ -54,6 +55,9 @@ public class Main {
 
         Creature testMonster = new Creature(Color.GREEN, "Monster");
         w.addEntityRandomLoc(testMonster, startFloor);
+
+        NPC testNPC = new NPC(Color.CYAN, "NPC");
+        w.addEntityRandomLoc(testNPC, startFloor);
 
         liveDisplay.startDrawing(w);
         while (true) {
