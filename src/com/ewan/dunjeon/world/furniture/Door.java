@@ -1,6 +1,9 @@
 package com.ewan.dunjeon.world.furniture;
 
+import com.ewan.dunjeon.world.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.Interactable;
+import com.ewan.dunjeon.world.SoundManager;
+import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Entity;
 
 import java.awt.*;
@@ -33,7 +36,9 @@ public class Door extends Furniture implements Interactable {
 
     @Override
     public void onInteract(Entity interactor, InteractionType type) {
-        System.out.println((open) ? "the door slams shut" : "the door swings open");
+//        System.out.println((open) ? "the door slams shut" : "the door swings open");
+        String action = open ? "closes" : "opens";
+        World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(10, containingCell.getPoint2D(), containingCell.getFloor(), "The door "+action, "A door" + action, AbsoluteSoundEvent.SoundType.PHYSICAL));
         open = !open;
 
     }

@@ -111,4 +111,8 @@ public class Floor {
     public BasicCell getCellAt(float x, float y){
         return getCellAt((int)Math.floor(x),(int)Math.floor(y));
     }
+
+    public BasicCell getCellAt(Point2D point){
+        return getCellAt((float)Math.floor(point.getX()),(float)Math.floor(point.getY()));
+    }
 }

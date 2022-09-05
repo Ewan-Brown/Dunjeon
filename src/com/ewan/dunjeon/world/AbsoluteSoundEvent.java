@@ -5,7 +5,7 @@ import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.geom.Point2D;
 
-public record AbsoluteSoundEvent(float decibels, SoundSource source, Point2D sourceLocation, Floor sourceFloor, String soundMessageIfVisible, String soundMessageIfNotVisible, SoundType type) {
+public record AbsoluteSoundEvent(float decibels, Point2D sourceLocation, Floor sourceFloor, String soundMessageIfVisible, String soundMessageIfNotVisible, SoundType type) {
 
 //    public AbsoluteSoundEvent(float decibels, SoundSource source, Point2D sourceLocation, Floor sourceFloor, String soundMessageIfVisible, String soundMessageIfNotVisible, SoundType type) {
 //        this.decibels = decibels;
@@ -29,7 +29,7 @@ public record AbsoluteSoundEvent(float decibels, SoundSource source, Point2D sou
 //    //Used for player visualization
 //
 //    SoundType type;
-    enum SoundType{
+    public enum SoundType{
         PHYSICAL, CHAT, AMBIENT
     }
 }

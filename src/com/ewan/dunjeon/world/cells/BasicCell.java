@@ -6,6 +6,7 @@ import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,10 +79,11 @@ public class BasicCell implements Updateable {
 
     public int getX(){return x;}
     public int getY(){return y;}
-
+    public Point2D getPoint2D(){return new Point2D.Double(getX(), getY());}
     public Floor getFloor(){
         return floor;
     }
+
 
     @Override
     public void update() {
