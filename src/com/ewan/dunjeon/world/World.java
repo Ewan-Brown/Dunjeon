@@ -17,6 +17,7 @@ import static com.ewan.dunjeon.game.Main.rand;
 public class World implements KeyListener {
 
     private static World w = new World();
+    private SoundManager soundManager = new SoundManager();
 
     private Creature player;
     public static World getInstance(){return w;}
@@ -63,6 +64,10 @@ public class World implements KeyListener {
         getPlayer().getFloor().update();
         getPlayer().updateViewRange();
         return false;
+    }
+
+    public SoundManager getSoundManager(){
+        return soundManager;
     }
 
     //**************************************************

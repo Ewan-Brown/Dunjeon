@@ -1,16 +1,13 @@
 package com.ewan.dunjeon.world.entities;
+import com.ewan.dunjeon.world.AbsoluteSoundEvent;
+import com.ewan.dunjeon.world.RelativeSoundEvent;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.cells.BasicCell;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-public class Entity implements Updateable {
+public abstract class Entity implements Updateable {
     private String name;
     private float size;
 
@@ -63,7 +60,6 @@ public class Entity implements Updateable {
         return posY;
     }
 
-
     @Override
     public void update() {
         if(!exists()){
@@ -86,6 +82,9 @@ public class Entity implements Updateable {
 
     public void onCollideWithWall(BasicCell cell){};
     public void onCollideWithEntity(Entity e){ };
+    public void onReceiveSound(RelativeSoundEvent event){
+
+    }
 
     public void addVelocity(float x, float y){
         velX += x;
