@@ -5,6 +5,7 @@ import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Creature;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
+import com.ewan.dunjeon.world.sounds.SoundManager;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -60,6 +61,7 @@ public class World implements KeyListener {
             System.out.println("Game over! Player dead.");
             return true;
         }
+        soundManager.propogateSounds();
         doControls();
         getPlayer().getFloor().update();
         getPlayer().updateViewRange();

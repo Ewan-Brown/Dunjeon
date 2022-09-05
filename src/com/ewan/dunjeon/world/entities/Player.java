@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.world.RelativeSoundEvent;
+import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
 import java.awt.*;
 
@@ -10,10 +10,13 @@ public class Player extends Creature{
     }
 
     @Override
-    public void onReceiveSound(RelativeSoundEvent event) {
-        super.onReceiveSound(event);
+    public void processSound(RelativeSoundEvent event) {
+        super.processSound(event);
         //TODO This needs to be refined. What if the sound eminates from an invisible entity that is in viewing range??
         boolean isVisible = getVisibleCells().contains(getFloor().getCellAt(event.abs().sourceLocation()));
-        System.out.println(isVisible ? event.abs().soundMessageIfVisible() : event.abs().soundMessageIfNotVisible());
+        String message = isVisible ? event.abs().soundMessageIfVisible() : event.abs().soundMessageIfNotVisible();
+        if(!message.isEmpty()) {
+            System.out.println("["+message+"]");
+        }
     }
 }

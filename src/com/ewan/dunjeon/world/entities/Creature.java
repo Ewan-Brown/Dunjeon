@@ -1,5 +1,8 @@
 package com.ewan.dunjeon.world.entities;
 
+import com.ewan.dunjeon.game.Main;
+import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
+import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.cells.BasicCell;
 
 import java.awt.*;
@@ -21,6 +24,7 @@ public class Creature extends Entity{
 
     private Set<BasicCell> lastVisibleCells = new HashSet<>();
     private Set<BasicCell> rememberedCells = new HashSet<>();
+    private double loudStepChance = 0.001d; // TODO Do fun stuff with this!
 
 
     @Override
@@ -29,6 +33,11 @@ public class Creature extends Entity{
 
         updateViewRange();
         updateMemory();
+        if(getVelX() != 0 || getVelY() != 0){
+            if(Main.rand.nextDouble() < loudStepChance){
+                World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2D(), getFloor(),"", "Something stumbles in the dark", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
+            }
+        }
     }
 
     public Set<BasicCell> getVisibleCells(){
@@ -167,5 +176,7 @@ public class Creature extends Entity{
     public Set<BasicCell> lastVisibleCells(){
         return lastVisibleCells;
     }
+
+    public Point2D getPoint2D(){return new Point2D.Double(getPosX(), getPosY());}
 
 }

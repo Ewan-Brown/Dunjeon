@@ -1,6 +1,5 @@
 package com.ewan.dunjeon.world.entities;
-import com.ewan.dunjeon.world.AbsoluteSoundEvent;
-import com.ewan.dunjeon.world.RelativeSoundEvent;
+import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.cells.BasicCell;
@@ -73,6 +72,14 @@ public abstract class Entity implements Updateable {
             velX -= velX/friction;
             velY -= velY/friction;
 
+            //I don't like this but it's necessary.
+            if(Math.abs(velX) < 0.00001){
+                velX = 0;
+            }
+            if(Math.abs(velY) < 0.00001){
+                velY = 0;
+            }
+
         }
     }
 
@@ -82,7 +89,7 @@ public abstract class Entity implements Updateable {
 
     public void onCollideWithWall(BasicCell cell){};
     public void onCollideWithEntity(Entity e){ };
-    public void onReceiveSound(RelativeSoundEvent event){
+    public void processSound(RelativeSoundEvent event){
 
     }
 
