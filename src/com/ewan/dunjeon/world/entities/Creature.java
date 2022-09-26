@@ -49,20 +49,6 @@ public class Creature extends Entity{
         return floorMemoryMap.get(f);
     }
 
-//    public Set<BasicCell> getVisibleCells(){
-//        return lastVisibleCells;
-//    }
-
-//    public Set<BasicCell> getRememberedCells(){
-//        return rememberedCells;
-//    }
-
-//    public Set<CellVisual> getLastCalculatedVisuals
-
-//    public void updateMemory(){
-//        rememberedCells.addAll(lastVisibleCells);
-//    }
-
     public void updateViewRange(){
         if(!floorMemoryMap.containsKey(getFloor())){
             floorMemoryMap.put(getFloor(), new FloorMemory(getFloor()));
