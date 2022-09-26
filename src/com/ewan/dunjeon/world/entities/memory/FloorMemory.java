@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class FloorMemory {
+public class FloorMemory{
     public FloorMemory(Floor f){
         cellDataArray = new CellData[f.getHeight()][f.getWidth()];
     }

@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Creature extends Entity{
     public Creature(Color c, String name) {
@@ -158,12 +159,14 @@ public class Creature extends Entity{
                 }
             }
         }
-        currentFloorMemory.setAllDataToOld();
-        for (BasicCell viewableCell : viewableCells) {
-            CellData data = new CellData(VisualProcessor.getVisual(viewableCell, this), (viewableCell.canBeEntered(this) ? CellData.EnterableStatus.OPEN : CellData.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
-            currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
+
+        synchronized (currentFloorMemory) {
+            currentFloorMemory.setAllDataToOld();
+            for (BasicCell viewableCell : viewableCells) {
+                CellData data = new CellData(VisualProcessor.getVisual(viewableCell, this), (viewableCell.canBeEntered(this) ? CellData.EnterableStatus.OPEN : CellData.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
+                currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
+            }
         }
-//        LiveDisplay.setDebugLines(lines);
     }
 
     @Override
