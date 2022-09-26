@@ -4,6 +4,7 @@ import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,5 +115,9 @@ public class Floor {
 
     public BasicCell getCellAt(Point2D point){
         return getCellAt((float)Math.floor(point.getX()),(float)Math.floor(point.getY()));
+    }
+
+    public BasicCell getCellAt(Point point){
+        return getCellAt((int)point.getX(), (int)point.y);
     }
 }

@@ -6,7 +6,6 @@ import com.ewan.dunjeon.world.cells.BasicCell;
 
 import java.awt.*;
 
-//TODO Make Furniture and Entity share a super class for obtaining containing cell and level.
 public abstract class Furniture implements Updateable {
 
     public BasicCell containingCell;

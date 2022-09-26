@@ -1,16 +1,18 @@
 package com.ewan.dunjeon.world.entities;
 
 import com.ewan.dunjeon.game.Main;
+import com.ewan.dunjeon.world.entities.memory.CellData;
+import com.ewan.dunjeon.world.cells.VisualProcessor;
+import com.ewan.dunjeon.world.entities.memory.FloorMemory;
+import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.cells.BasicCell;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public class Creature extends Entity{
     public Creature(Color c, String name) {
@@ -22,9 +24,12 @@ public class Creature extends Entity{
     private int sightRange;
     private int health;
 
-    private Set<BasicCell> lastVisibleCells = new HashSet<>();
-    private Set<BasicCell> rememberedCells = new HashSet<>();
-    private double loudStepChance = 0.001d; // TODO Do fun stuff with this!
+//    private Set<BasicCell> lastVisibleCells = new HashSet<>();
+//    private Set<BasicCell> rememberedCells = new HashSet<>();
+//    private Set<CellVisual> lastCellVisuals = new HashSet<>();
+//    private HashMap<Floor, Set<CellMemory>> cellMemories = new HashMap<>();
+    private HashMap<Floor, FloorMemory> floorMemoryMap = new HashMap();
+    private double loudStepChance = 0.001d; // TODO Make this variable? Just an example/starting point for dynamic sounds
 
 
     @Override
@@ -32,27 +37,38 @@ public class Creature extends Entity{
         super.update();
 
         updateViewRange();
-        updateMemory();
         if(getVelX() != 0 || getVelY() != 0){
             if(Main.rand.nextDouble() < loudStepChance){
-                World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2D(), getFloor(),"", "Something stumbles in the dark", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
+                World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2D(), getFloor(),"", "You hear a loud footstep", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
             }
         }
     }
 
-    public Set<BasicCell> getVisibleCells(){
-        return lastVisibleCells;
+    public FloorMemory getFloorMemory(Floor f){
+        return floorMemoryMap.get(f);
     }
 
-    public Set<BasicCell> getRememberedCells(){
-        return rememberedCells;
-    }
+//    public Set<BasicCell> getVisibleCells(){
+//        return lastVisibleCells;
+//    }
 
-    public void updateMemory(){
-        rememberedCells.addAll(lastVisibleCells);
-    }
+//    public Set<BasicCell> getRememberedCells(){
+//        return rememberedCells;
+//    }
+
+//    public Set<CellVisual> getLastCalculatedVisuals
+
+//    public void updateMemory(){
+//        rememberedCells.addAll(lastVisibleCells);
+//    }
 
     public void updateViewRange(){
+        if(!floorMemoryMap.containsKey(getFloor())){
+            floorMemoryMap.put(getFloor(), new FloorMemory(getFloor()));
+        }
+
+        FloorMemory currentFloorMemory = floorMemoryMap.get(getFloor());
+
         Set<BasicCell> viewableCells = new HashSet<>();
 
         //Use enough rays that we don't skip over whole cells.
@@ -134,7 +150,7 @@ public class Creature extends Entity{
                     x = nextX;
                     y = nextY;
                     if(!nextCell.canBeSeenThrough(this)){
-                        //Even though the block can't be see /through/ it should still be visible!
+                        //Even though the block can't be seen /through/ it should still be visible!
                         Point2D end = new Point2D.Float(nextX,nextY);
                         lines.add(new Point2D[]{start, end});
                         break;
@@ -142,7 +158,11 @@ public class Creature extends Entity{
                 }
             }
         }
-        lastVisibleCells = viewableCells;
+        currentFloorMemory.setAllDataToOld();
+        for (BasicCell viewableCell : viewableCells) {
+            CellData data = new CellData(VisualProcessor.getVisual(viewableCell, this), (viewableCell.canBeEntered(this) ? CellData.EnterableStatus.OPEN : CellData.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
+            currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
+        }
 //        LiveDisplay.setDebugLines(lines);
     }
 
@@ -173,9 +193,9 @@ public class Creature extends Entity{
         return health;
     }
 
-    public Set<BasicCell> lastVisibleCells(){
-        return lastVisibleCells;
-    }
+//    public Set<BasicCell> lastVisibleCells(){
+//        return lastVisibleCells;
+//    }
 
     public Point2D getPoint2D(){return new Point2D.Double(getPosX(), getPosY());}
 

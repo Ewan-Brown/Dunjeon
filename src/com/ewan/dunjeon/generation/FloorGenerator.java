@@ -239,9 +239,9 @@ public class FloorGenerator {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
 //                map[j][i] = BLOCK;
-                cells[j][i] = new BasicCell(i, j, floor);
+                cells[j][i] = new BasicCell(i, j, floor, Color.BLACK);
                 cells[j][i].setFilled(true);
-                cells[j][i].setColor(Color.BLACK);
+//                cells[j][i].setColor(Color.BLACK);
 
             }
         }
@@ -253,14 +253,14 @@ public class FloorGenerator {
                     for (int j = section.y1; j <= section.y2; j++) {;
                         if(i == section.x1 || i == section.x2 || j == section.y1 || j == section.y2) {
 //                            map[j][i] = WALL;
-                            cells[j][i] = new BasicCell(i, j, floor);
+                            cells[j][i] = new BasicCell(i, j, floor, Color.DARK_GRAY);
                             cells[j][i].setFilled(true);
-                            cells[j][i].setColor(Color.DARK_GRAY);
+//                            cells[j][i].setColor(Color.DARK_GRAY);
 
                         }else {
-                            cells[j][i] = new BasicCell(i, j, floor);
+                            cells[j][i] = new BasicCell(i, j, floor, Color.GRAY);
                             cells[j][i].setFilled(false);
-                            cells[j][i].setColor(Color.GRAY);
+//                            cells[j][i].setColor(Color.GRAY);
                         }
                     }
                 }
@@ -275,9 +275,8 @@ public class FloorGenerator {
         //Draw doors
         if(doors != null) {
             for (Door door : doors) {
-                cells[door.y][door.x] = new BasicCell(door.x, door.y, floor);
+                cells[door.y][door.x] = new BasicCell(door.x, door.y, floor, Color.GRAY);
                 cells[door.y][door.x].setFilled(false);
-                cells[door.y][door.x].setColor(Color.GRAY);
                 cells[door.y][door.x].setFurniture(new com.ewan.dunjeon.world.furniture.Door(false));
 //                cells[door.y][door.x].setColor(new Color(165,42,42, 255));
             }
@@ -287,9 +286,8 @@ public class FloorGenerator {
         if(halls != null) {
             for (Hall hall : halls) {
                 for (Point point : hall.points) {
-                    cells[point.y][point.x] = new BasicCell(point.x, point.y, floor);
+                    cells[point.y][point.x] = new BasicCell(point.x, point.y, floor, Color.GRAY);
                     cells[point.y][point.x].setFilled(false);
-                    cells[point.y][point.x].setColor(Color.GRAY);
                 }
             }
         }

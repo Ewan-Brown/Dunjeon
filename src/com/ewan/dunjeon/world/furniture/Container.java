@@ -28,11 +28,6 @@ public class Container extends Furniture implements Interactable {
         unOpened = false;
     }
 
-//    @Override
-//    public boolean isInteractable(Entity interactor) {
-//        return true;
-//    }
-
     @Override
     public Set<InteractionType> getAvailableInteractions(Entity interactor) {
         return new HashSet<>();

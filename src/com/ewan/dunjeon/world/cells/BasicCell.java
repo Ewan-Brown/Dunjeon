@@ -7,31 +7,30 @@ import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BasicCell implements Updateable {
     int x;
     int y;
     Floor floor;
     Furniture furniture;
-    Color color;
+    public Color color;
 
     private boolean filled; //TODO Replace this with something a little more flexible?
 
-    public BasicCell(int x, int y, Floor f) {
+    public BasicCell(int x, int y, Floor f, Color c) {
         this.x = x;
         this.y = y;
         this.floor = f;
+        this.color = c;
     }
 
     public void setFilled(boolean f){
         filled = f;
     }
 
-    public void setColor(Color c){
-        this.color = c;
-    }
+//    public void setColor(Color c){
+//        this.color = c;
+//    }
 
     public Furniture getFurniture(){
         return furniture;
@@ -62,20 +61,13 @@ public class BasicCell implements Updateable {
         return !filled && (furniture == null || !furniture.isBlocking());
     }
 
-    public void onEntry(Entity e) { }
+    public void onEntry(Entity e) {}
 
-    public void onExit(Entity e){
-    }
+    public void onExit(Entity e){}
 
-    public void onDeath(Entity e){
-    }
+    public void onDeath(Entity e){}
 
-    public void onEntityDeath(Entity e) {
-    }
-
-    public Color getColor(){
-        return color;
-    }
+    public void onEntityDeath(Entity e) {}
 
     public int getX(){return x;}
     public int getY(){return y;}

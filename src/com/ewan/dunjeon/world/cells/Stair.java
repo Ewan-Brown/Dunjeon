@@ -4,9 +4,11 @@ import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.*;
 
+
+//TODO Make stairs furniture
 public class Stair extends BasicCell{
     private Stair(int x, int y, Floor f, Direction dir) {
-        super(x, y, f);
+        super(x, y, f, Color.WHITE);
         this.dir = dir;
     }
 
@@ -35,10 +37,6 @@ public class Stair extends BasicCell{
         UP, DOWN;
     }
 
-    @Override
-    public Color getColor() {
-        return Color.WHITE;
-    }
 
     Direction dir;
 }
