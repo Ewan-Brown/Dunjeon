@@ -6,10 +6,10 @@ import com.ewan.dunjeon.world.furniture.Furniture;
 import java.awt.*;
 
 //Contains cell memory data on cell and furniture
-public class CellData {
+public class CellData extends Memory {
     public CellData(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y) {
+        super();
         this.cellRenderData = cellRenderData;
-        isOldData = false;
         this.enterable = e;
         this.x = x;
         this.y = y;
@@ -23,9 +23,6 @@ public class CellData {
     public final EnterableStatus enterable; // For AI
 
     public final FurnitureData furnitureData;
-    boolean isOldData;
-
-    public boolean isOldData(){return isOldData;}
 
     public enum EnterableStatus{
         OPEN, //An open cell, an open door
@@ -38,7 +35,7 @@ public class CellData {
         private boolean enterable;
         private float size;
         private boolean visible;
-        private boolean interactable;
+        private boolean interactable; //For use with player
         public final FurnitureRenderData furnitureRenderData;
 
         public FurnitureData(float xCenter, float yCenter, float size, boolean enterable, boolean visible, boolean interactable, FurnitureRenderData furnitureRenderData) {
@@ -52,7 +49,6 @@ public class CellData {
         }
 
         public static class FurnitureRenderData {
-
             public FurnitureRenderData(Furniture f){
                 color = f.getColor();
             }

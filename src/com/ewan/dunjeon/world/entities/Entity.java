@@ -15,6 +15,7 @@ public abstract class Entity implements Updateable {
     private float velX;
     private float friction = 10;
     private float velY;
+    private long UUID;
 
     private Floor floor;
 
