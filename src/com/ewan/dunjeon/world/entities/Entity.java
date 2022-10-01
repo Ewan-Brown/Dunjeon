@@ -52,10 +52,10 @@ public abstract class Entity implements Updateable {
         return color;
     }
 
-    public float getX(){
+    public float getCenterX(){
         return posX;
     }
-    public float getY(){
+    public float getCenterY(){
         return posY;
     }
 

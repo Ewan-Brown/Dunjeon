@@ -1,24 +1,16 @@
 package com.ewan.dunjeon.graphics;
 
-import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Creature;
-import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.Player;
 import com.ewan.dunjeon.world.entities.memory.CellData;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
 import com.ewan.dunjeon.world.level.Floor;
-import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.furniture.Furniture;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LiveDisplay {
-    private final int size = 12;
+    private final int size = 10;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
@@ -47,8 +39,7 @@ public class LiveDisplay {
                     graphics.setColor(Color.BLACK);
                     graphics.clearRect(0,0,getWidth(),getHeight());
                     Floor lev = w.getPlayer().getLevel();
-                    Interactable nearestPlayerTouchable = w.getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
-                    Interactable nearestPlayerChattable = w.getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
+
                     for (int x = 0; x < lev.getWidth(); x++) {
                         for (int y = 0; y < lev.getHeight(); y++) {
                             FloorMemory memoryFloor = World.getInstance().getPlayer().getFloorMemory(lev);
@@ -57,21 +48,48 @@ public class LiveDisplay {
                             }
                             synchronized (memoryFloor) {
                                 CellData data = World.getInstance().getPlayer().getFloorMemory(lev).getDataAt(x, y);
+                                Color processedCellColor = null;
+                                Color processedFurnitureColor = null;
                                 if (data == null) {
                                     graphics.setColor(Color.BLACK);
                                 } else {
                                     //Color block based on whether it is visible (full color), remembered (faded color), or unknown (black)
-                                    Color processedColor;
                                     if (!data.isOldData()) {
-                                        processedColor = data.visual.getColor();
+                                        processedCellColor = data.cellRenderData.getColor();
                                     } else {
-                                        Color rawColor = data.visual.getColor();
-                                        processedColor = new Color(rawColor.getRed() / 3, rawColor.getGreen() / 3, rawColor.getBlue() / 3);
+                                        Color rawColor = data.cellRenderData.getColor();
+                                        processedCellColor = new Color(rawColor.getRed() / 3, rawColor.getGreen() / 3, rawColor.getBlue() / 3);
                                     }
-                                    graphics.setColor(processedColor);
 
+
+                                    //Draw Furniture if it exists
+                                    CellData.FurnitureData furnitureData = data.furnitureData;
+                                    if(furnitureData != null && furnitureData.isVisible()){
+                                        if(!data.isOldData()){
+                                            processedFurnitureColor = furnitureData.furnitureRenderData.getColor();
+                                        }
+                                        else{
+                                            Color rawColor = furnitureData.furnitureRenderData.getColor();
+                                            processedFurnitureColor = new Color(rawColor.getRed() / 3, rawColor.getGreen() / 3, rawColor.getBlue() / 3);
+                                        }
+
+                                    }
                                 }
+                                graphics.setColor(processedCellColor);
                                 graphics.fillRect(x * size, y * size, size, size);
+                                if(processedFurnitureColor != null){
+                                    CellData.FurnitureData fData = data.furnitureData;
+                                    int fX = (int)((fData.getCenterX() - fData.getSize()/2f) * size) ;
+                                    int fY = (int)((fData.getCenterY() - fData.getSize()/2f) * size);
+                                    int fSize = (int)(fData.getSize() * size);
+                                    graphics.setColor(processedFurnitureColor);
+                                    graphics.fillRect(fX, fY, fSize, fSize);
+                                    if(fData.isInteractable()){
+                                        graphics.setColor(Color.BLACK);
+                                        graphics.drawRect(fX, fY, fSize-1, fSize -1);
+                                    }
+                                }
+
                             }
                         }
                     }
@@ -79,7 +97,7 @@ public class LiveDisplay {
                     //Draw Player
                     graphics.setColor(Color.BLUE);
                     Creature p = w.getPlayer();
-                    graphics.fillRect((int)((p.getX() - p.getSize()/2) * size), (int)((p.getY() - p.getSize()/2) * size), (int)(p.getSize() * size) , (int)(p.getSize() * size));
+                    graphics.fillRect((int)((p.getCenterX() - p.getSize()/2) * size), (int)((p.getCenterY() - p.getSize()/2) * size), (int)(p.getSize() * size) , (int)(p.getSize() * size));
 
                 }
             };

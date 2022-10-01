@@ -1,9 +1,11 @@
 package com.ewan.dunjeon.world.entities;
 
 import com.ewan.dunjeon.game.Main;
+import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.entities.memory.CellData;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
+import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.World;
@@ -13,7 +15,6 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Creature extends Entity{
     public Creature(Color c, String name) {
@@ -149,7 +150,18 @@ public class Creature extends Entity{
         synchronized (currentFloorMemory) {
             currentFloorMemory.setAllDataToOld();
             for (BasicCell viewableCell : viewableCells) {
-                CellData data = new CellData(VisualProcessor.getVisual(viewableCell, this), (viewableCell.canBeEntered(this) ? CellData.EnterableStatus.OPEN : CellData.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
+                CellData.FurnitureData fData = null;
+                if(viewableCell.getFurniture() != null){
+                    Furniture f = viewableCell.getFurniture();
+                    boolean interactable = false;
+                    //FIXME Hacky solution. This should not be in this class.
+                    if(World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH) == f && this instanceof Player){
+                        interactable = true;
+                    }
+                    //FIXME Currently, a furniture is invisible if its' color is null. This is not a good practice.
+                    fData = new CellData.FurnitureData(f.getCenterX(), f.getCenterY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
+                }
+                CellData data = new CellData(VisualProcessor.getVisual(viewableCell, this), fData,(viewableCell.canBeEntered(this) ? CellData.EnterableStatus.OPEN : CellData.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
                 currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
             }
         }

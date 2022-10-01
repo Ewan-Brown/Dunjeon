@@ -14,10 +14,6 @@ public class Container extends Furniture implements Interactable {
 
     private boolean unOpened = true;
 
-    public Container(){
-
-    }
-
     @Override
     public Color getColor() {
         return unOpened ? CLOSED_COLOR : OPEN_COLOR;

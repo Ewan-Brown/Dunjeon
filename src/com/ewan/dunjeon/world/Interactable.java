@@ -12,7 +12,7 @@ public interface Interactable {
 
     public void onInteract(Entity interactor, InteractionType type);
 //    public boolean isInteractable(Entity interactor);
-    public float getX();
-    public float getY();
+    public float getCenterX();
+    public float getCenterY();
     public Set<InteractionType> getAvailableInteractions(Entity interactor);
 }

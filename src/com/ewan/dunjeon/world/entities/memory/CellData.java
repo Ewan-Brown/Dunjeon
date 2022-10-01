@@ -7,20 +7,22 @@ import java.awt.*;
 
 //Contains cell memory data on cell and furniture
 public class CellData {
-    public CellData(CellVisualData visual, EnterableStatus e, int x, int y) {
-        this.visual = visual;
+    public CellData(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y) {
+        this.cellRenderData = cellRenderData;
         isOldData = false;
         this.enterable = e;
         this.x = x;
         this.y = y;
+        furnitureData = fData;
     }
 
     private final int x;
     private final int y;
 
-    public final CellVisualData visual; // For player
-
+    public final CellRenderData cellRenderData; // For player
     public final EnterableStatus enterable; // For AI
+
+    public final FurnitureData furnitureData;
     boolean isOldData;
 
     public boolean isOldData(){return isOldData;}
@@ -31,25 +33,45 @@ public class CellData {
     }
 
     public static class FurnitureData {
-        private int xCenter;
-        private int yCenter;
+        private float xCenter;
+        private float yCenter;
         private boolean enterable;
+        private float size;
+        private boolean visible;
+        private boolean interactable;
+        public final FurnitureRenderData furnitureRenderData;
 
-        public static class FurnitureVisualData{
+        public FurnitureData(float xCenter, float yCenter, float size, boolean enterable, boolean visible, boolean interactable, FurnitureRenderData furnitureRenderData) {
+            this.xCenter = xCenter;
+            this.yCenter = yCenter;
+            this.enterable = enterable;
+            this.visible = visible;
+            this.size = size;
+            this.furnitureRenderData = furnitureRenderData;
+            this.interactable = interactable;
+        }
 
-            public FurnitureVisualData(Furniture f){
+        public static class FurnitureRenderData {
+
+            public FurnitureRenderData(Furniture f){
                 color = f.getColor();
             }
-            private Color color;
-            private int offsetX;
-            private int offsetY;
+            private final Color color;
+            public Color getColor(){return color;}
         }
+
+        public float getCenterX() {return xCenter;}
+        public float getCenterY() {return yCenter;}
+        public boolean isEnterable() {return enterable;}
+        public boolean isInteractable() {return interactable;}
+        public float getSize() {return size;}
+        public boolean isVisible (){return visible;}
 
     }
 
-    public static class CellVisualData {
+    public static class CellRenderData {
 
-        public CellVisualData(BasicCell c) {
+        public CellRenderData(BasicCell c) {
             this.color = c.color;
         }
 
