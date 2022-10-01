@@ -131,6 +131,8 @@ public abstract class Entity implements Updateable {
         return velY;
     }
 
+    public long getUUID(){ return UUID;}
+
     public boolean doesCollideWithWall(Entity e){
         return true;
     }

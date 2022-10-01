@@ -4,6 +4,7 @@ import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.entities.memory.CellData;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
+import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.level.Floor;
@@ -15,6 +16,8 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Creature extends Entity{
     public Creature(Color c, String name) {
@@ -149,13 +152,15 @@ public class Creature extends Entity{
 
         synchronized (currentFloorMemory) {
             currentFloorMemory.setAllDataToOld();
+            Interactable touchInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
+            Interactable chatInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
             for (BasicCell viewableCell : viewableCells) {
                 CellData.FurnitureData fData = null;
                 if(viewableCell.getFurniture() != null){
                     Furniture f = viewableCell.getFurniture();
                     boolean interactable = false;
                     //FIXME Hacky solution. This should not be in this class.
-                    if(World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH) == f && this instanceof Player){
+                    if(touchInteractive == f && this instanceof Player){
                         interactable = true;
                     }
                     //FIXME Currently, a furniture is invisible if its' color is null. This is not a good practice.
@@ -164,6 +169,16 @@ public class Creature extends Entity{
                 CellData data = new CellData(VisualProcessor.getVisual(viewableCell, this), fData,(viewableCell.canBeEntered(this) ? CellData.EnterableStatus.OPEN : CellData.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
                 currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
             }
+            //Iterate through entities who are in cell within view range. May miss some entities?
+
+            for (Entity entity : getFloor().getEntities().stream().filter(entity -> viewableCells.contains(entity.getContainingCell())).collect(Collectors.toList())) {
+                boolean chattable = false;
+                if(chatInteractive == entity){
+                    chattable = true;
+                }
+                EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getCenterX(), entity.getCenterY(), entity.getVelX(), entity.getVelY(), chattable, VisualProcessor.getVisual(entity, this));
+            }
+
         }
     }
 
