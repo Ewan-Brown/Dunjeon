@@ -171,12 +171,13 @@ public class Creature extends Entity{
             }
             //Iterate through entities who are in cell within view range. May miss some entities?
 
-            for (Entity entity : getFloor().getEntities().stream().filter(entity -> viewableCells.contains(entity.getContainingCell())).collect(Collectors.toList())) {
+            for (Entity entity : getFloor().getEntities().stream().filter(entity -> entity != this && viewableCells.contains(entity.getContainingCell())).collect(Collectors.toList())) {
                 boolean chattable = false;
                 if(chatInteractive == entity){
                     chattable = true;
                 }
-                EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getCenterX(), entity.getCenterY(), entity.getVelX(), entity.getVelY(), chattable, VisualProcessor.getVisual(entity, this));
+                EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getCenterX(), entity.getCenterY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
+                currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);
             }
 
         }

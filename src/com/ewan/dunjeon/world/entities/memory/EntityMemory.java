@@ -6,12 +6,13 @@ import java.awt.*;
 
 public class EntityMemory extends Memory{
 
-    public EntityMemory(long UUID, float x, float y, float xSpeed, float ySpeed, boolean interactable, EntityRenderData renderData) {
+    public EntityMemory(long UUID, float x, float y, float xSpeed, float ySpeed, float size, boolean interactable, EntityRenderData renderData) {
         this.UUID = UUID;
         this.x = x;
         this.y = y;
         this.xSpeed = xSpeed;
         this.ySpeed = ySpeed;
+        this.size = size;
         this.interactable = interactable;
         this.renderData = renderData;
     }
@@ -21,6 +22,7 @@ public class EntityMemory extends Memory{
     private final float y;
     private final float xSpeed;
     private final float ySpeed;
+    private final float size;
     private final boolean interactable; //For use with player
 
     EntityRenderData renderData;
@@ -39,4 +41,35 @@ public class EntityMemory extends Memory{
         public Color getColor(){ return color;}
     }
 
+    public long getUUID() {
+        return UUID;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public float getxSpeed() {
+        return xSpeed;
+    }
+
+    public float getySpeed() {
+        return ySpeed;
+    }
+
+    public float getSize(){
+        return size;
+    }
+
+    public boolean isInteractable() {
+        return interactable;
+    }
+
+    public EntityRenderData getRenderData() {
+        return renderData;
+    }
 }

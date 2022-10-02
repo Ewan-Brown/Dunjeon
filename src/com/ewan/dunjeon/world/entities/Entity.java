@@ -7,6 +7,9 @@ import com.ewan.dunjeon.world.cells.BasicCell;
 import java.awt.*;
 
 public abstract class Entity implements Updateable {
+
+    private static long UUIDcounter = 0;
+
     private String name;
     private float size;
 
@@ -27,9 +30,10 @@ public abstract class Entity implements Updateable {
 
     public Entity(Color c, String name){
         this.color = c;
-
+        UUID = UUIDcounter;
         this.name = name;
         this.size = 0.5f;
+        UUIDcounter++;
     }
 
     public void setPosition(float x, float y){

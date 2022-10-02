@@ -88,16 +88,16 @@ public class World implements KeyListener {
     //TODO Make a nice wrapper for this to make managing controls easier!
     public void doControls(){
         if(keySet[KeyEvent.VK_UP]){
-            player.addVelocity(0.0f,-0.001f);
+            player.addVelocity(0.0f,-0.003f);
         }
         if(keySet[KeyEvent.VK_DOWN]){
-            player.addVelocity(0.0f,+0.001f);
+            player.addVelocity(0.0f,+0.003f);
         }
         if(keySet[KeyEvent.VK_LEFT]){
-            player.addVelocity(-0.001f,0.0f);
+            player.addVelocity(-0.003f,0.0f);
         }
         if(keySet[KeyEvent.VK_RIGHT]){
-            player.addVelocity(0.001f, 0.0f);
+            player.addVelocity(0.003f, 0.0f);
         }
         if(keySet[KeyEvent.VK_SPACE]){
             //Prevents instant repeat on hold
