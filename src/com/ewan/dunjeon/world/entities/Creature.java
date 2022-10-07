@@ -60,6 +60,10 @@ public class Creature extends Entity{
 
         FloorMemory currentFloorMemory = floorMemoryMap.get(getFloor());
 
+
+        //***********
+        //Update Visual Memory
+        //***********
         Set<BasicCell> viewableCells = new HashSet<>();
 
         //Use enough rays that we don't skip over whole cells.
@@ -149,6 +153,10 @@ public class Creature extends Entity{
                 }
             }
         }
+
+        //*************
+        //Update Cell/Furniture/EntityMemory
+        //*************
 
         synchronized (currentFloorMemory) {
             currentFloorMemory.setAllDataToOld();

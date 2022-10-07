@@ -108,6 +108,11 @@ public class LiveDisplay {
                             }
                             graphics.setColor(c);
                             graphics.fillRect(x1, y1, (int)(size * scale), (int)(size * scale));
+
+                            if (memory.isInteractable()) {
+                                graphics.setColor(Color.BLACK);
+                                graphics.drawRect(x1, y1, (int)(scale*size - 1), (int)(scale*size - 1));
+                            }
                         }
                         
                     }
