@@ -17,7 +17,7 @@ public class SoundManager {
                 double dX = event.sourceLocation().getX() - entity.getCenterX();
                 double dY = event.sourceLocation().getY() - entity.getCenterY();
                 double dist = Math.sqrt(dX*dX + dY*dY);
-                double decibels = event.decibels() / (dist*dist); //Intensity decreases with inverse square law
+                double decibels = event.intensity() / (dist*dist); //Intensity decreases with inverse square law
                 double angle = Math.atan2(dY, dX);
                 RelativeSoundEvent relativeSoundEvent = new RelativeSoundEvent(decibels, angle, event);
                 entity.processSound(relativeSoundEvent);

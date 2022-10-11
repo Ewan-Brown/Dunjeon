@@ -1,10 +1,8 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.world.entities.memory.CellData;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
 import java.awt.*;
-import java.util.function.Predicate;
 
 public class Player extends Creature{
     public Player(Color c, String name) {

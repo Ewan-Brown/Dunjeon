@@ -6,8 +6,8 @@ import com.ewan.dunjeon.world.furniture.Furniture;
 import java.awt.*;
 
 //Contains cell memory data on cell and furniture
-public class CellData extends Memory {
-    public CellData(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y) {
+public class CellMemory extends Memory {
+    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y) {
         super();
         this.cellRenderData = cellRenderData;
         this.enterable = e;

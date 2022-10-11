@@ -2,21 +2,22 @@ package com.ewan.dunjeon.world.entities;
 
 import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.world.Interactable;
-import com.ewan.dunjeon.world.entities.memory.CellData;
+import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
+import com.ewan.dunjeon.world.entities.memory.SoundMemory;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Creature extends Entity{
@@ -155,7 +156,7 @@ public class Creature extends Entity{
             Interactable touchInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
             Interactable chatInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
             for (BasicCell viewableCell : viewableCells) {
-                CellData.FurnitureData fData = null;
+                CellMemory.FurnitureData fData = null;
                 if(viewableCell.getFurniture() != null){
                     Furniture f = viewableCell.getFurniture();
                     boolean interactable = false;
@@ -164,9 +165,9 @@ public class Creature extends Entity{
                         interactable = true;
                     }
                     //FIXME Currently, a furniture is invisible if its' color is null. This is not a good practice.
-                    fData = new CellData.FurnitureData(f.getCenterX(), f.getCenterY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
+                    fData = new CellMemory.FurnitureData(f.getCenterX(), f.getCenterY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
                 }
-                CellData data = new CellData(VisualProcessor.getVisual(viewableCell, this), fData,(viewableCell.canBeEntered(this) ? CellData.EnterableStatus.OPEN : CellData.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
+                CellMemory data = new CellMemory(VisualProcessor.getVisual(viewableCell, this), fData,(viewableCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
                 currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
             }
             //Iterate through entities who are in cell within view range. May miss some entities?
@@ -181,6 +182,18 @@ public class Creature extends Entity{
             }
 
         }
+    }
+
+    public void processSound(RelativeSoundEvent event){
+        getFloorMemory(event.abs().sourceFloor()).addSoundMemory(new SoundMemory(
+                this.getPosX(),
+                this.getPosY(),
+                event.abs().sourceLocation().getX(),
+                event.abs().sourceLocation().getY(),
+                false,
+                event.direction(),
+                event.intensity()
+        ));
     }
 
     @Override
