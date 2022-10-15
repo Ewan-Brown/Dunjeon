@@ -38,6 +38,10 @@ public class SoundMemory extends Memory{
         return sourceX;
     }
 
+    public boolean doesKnowSource(){
+        return knowsSourceLocation;
+    }
+
     public double getSourceY() {
         return sourceY;
     }
