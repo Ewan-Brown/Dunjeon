@@ -2,7 +2,7 @@ package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.entities.Creature;
-import com.ewan.dunjeon.world.entities.memory.CellData;
+import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
 import com.ewan.dunjeon.world.level.Floor;
@@ -47,7 +47,7 @@ public class LiveDisplay {
                     synchronized (memoryFloor) {
                         for (int x = 0; x < lev.getWidth(); x++) {
                             for (int y = 0; y < lev.getHeight(); y++) {
-                                CellData data = World.getInstance().getPlayer().getFloorMemory(lev).getDataAt(x, y);
+                                CellMemory data = World.getInstance().getPlayer().getFloorMemory(lev).getDataAt(x, y);
                                 Color processedCellColor = null;
                                 Color processedFurnitureColor = null;
                                 if (data == null) {
@@ -63,7 +63,7 @@ public class LiveDisplay {
 
 
                                     //Draw Furniture if it exists
-                                    CellData.FurnitureData furnitureData = data.furnitureData;
+                                    CellMemory.FurnitureData furnitureData = data.furnitureData;
                                     if (furnitureData != null && furnitureData.isVisible()) {
                                         if (!data.isOldData()) {
                                             processedFurnitureColor = furnitureData.furnitureRenderData.getColor();
@@ -77,7 +77,7 @@ public class LiveDisplay {
                                 graphics.setColor(processedCellColor);
                                 graphics.fillRect(x * scale, y * scale, scale, scale);
                                 if (processedFurnitureColor != null) {
-                                    CellData.FurnitureData fData = data.furnitureData;
+                                    CellMemory.FurnitureData fData = data.furnitureData;
                                     int fX = (int) ((fData.getCenterX() - fData.getSize() / 2f) * scale);
                                     int fY = (int) ((fData.getCenterY() - fData.getSize() / 2f) * scale);
                                     int fSize = (int) (fData.getSize() * scale);
