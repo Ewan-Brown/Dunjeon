@@ -1,4 +1,6 @@
 package com.ewan.dunjeon.world.entities;
+import com.ewan.dunjeon.world.World;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
@@ -16,7 +18,7 @@ public abstract class Entity implements Updateable {
     private float posX;
     private float posY;
     private float velX;
-    private float friction = 10;
+    protected float friction = 10;
     private float velY;
     private long UUID;
 
@@ -46,22 +48,10 @@ public abstract class Entity implements Updateable {
         velY = y;
     }
 
-
-    public Floor getLevel(){
-        return getContainingCell().getFloor();
-    }
-
-    public void enterCell(BasicCell c){}
+    public void onEnterCell(BasicCell c){}
 
     public Color getColor(){
         return color;
-    }
-
-    public float getCenterX(){
-        return posX;
-    }
-    public float getCenterY(){
-        return posY;
     }
 
     @Override
@@ -74,16 +64,18 @@ public abstract class Entity implements Updateable {
             posX += velX;
             posY += velY;
 
-            velX -= velX/friction;
-            velY -= velY/friction;
+            if(friction != 0) {
+                velX -= velX / friction;
+                velY -= velY / friction;
+            }
 
-            //I don't like this but it's necessary.
-            if(Math.abs(velX) < 0.00001){
-                velX = 0;
-            }
-            if(Math.abs(velY) < 0.00001){
-                velY = 0;
-            }
+//            //I don't like this but it's necessary.
+//            if(Math.abs(velX) < 0.00001){
+//                velX = 0;
+//            }
+//            if(Math.abs(velY) < 0.00001){
+//                velY = 0;
+//            }
 
         }
     }
@@ -139,5 +131,9 @@ public abstract class Entity implements Updateable {
 
     public boolean doesCollideWithWall(Entity e){
         return true;
+    }
+
+    public float getSpeed(){
+        return (float)Math.sqrt(velX*velX+velY*velY);
     }
 }

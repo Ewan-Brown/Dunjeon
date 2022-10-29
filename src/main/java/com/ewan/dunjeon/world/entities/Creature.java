@@ -30,10 +30,6 @@ public class Creature extends Entity{
     private int sightRange;
     private int health;
 
-//    private Set<BasicCell> lastVisibleCells = new HashSet<>();
-//    private Set<BasicCell> rememberedCells = new HashSet<>();
-//    private Set<CellVisual> lastCellVisuals = new HashSet<>();
-//    private HashMap<Floor, Set<CellMemory>> cellMemories = new HashMap<>();
     private HashMap<Floor, FloorMemory> floorMemoryMap = new HashMap();
     private double loudStepChance = 0.001d; // TODO Make this variable? Just an example/starting point for dynamic sounds
 
@@ -45,7 +41,7 @@ public class Creature extends Entity{
         updateViewRange();
         if(getVelX() != 0 || getVelY() != 0){
             if(Main.rand.nextDouble() < loudStepChance){
-                World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2D(), getFloor(),"", "You hear a loud footstep", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
+                World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2DLoc(), getFloor(),"", "You hear a loud footstep", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
             }
         }
     }
@@ -173,7 +169,7 @@ public class Creature extends Entity{
                         interactable = true;
                     }
                     //FIXME Currently, a furniture is invisible if its' color is null. This is not a good practice.
-                    fData = new CellMemory.FurnitureData(f.getCenterX(), f.getCenterY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
+                    fData = new CellMemory.FurnitureData(f.getPosX(), f.getPosY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
                 }
                 CellMemory data = new CellMemory(VisualProcessor.getVisual(viewableCell, this), fData,(viewableCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
                 currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
@@ -185,7 +181,7 @@ public class Creature extends Entity{
                 if(chatInteractive == entity){
                     chattable = true;
                 }
-                EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getCenterX(), entity.getCenterY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
+                EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
                 currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);
             }
 
@@ -235,6 +231,6 @@ public class Creature extends Entity{
 //        return lastVisibleCells;
 //    }
 
-    public Point2D getPoint2D(){return new Point2D.Double(getPosX(), getPosY());}
+    public Point2D getPoint2DLoc(){return new Point2D.Double(getPosX(), getPosY());}
 
 }

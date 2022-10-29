@@ -20,8 +20,8 @@ public abstract class Furniture implements Updateable {
         return false;
     }
     public float getSize(){return 0.8f;}
-    public float getCenterX(){return containingCell.getX() + 0.5f;}
-    public float getCenterY(){return containingCell.getY() + 0.5f;}
+    public float getPosX(){return containingCell.getX() + 0.5f;}
+    public float getPosY(){return containingCell.getY() + 0.5f;}
 
     @Override
     public void update() {

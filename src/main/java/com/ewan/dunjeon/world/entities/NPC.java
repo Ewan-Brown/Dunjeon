@@ -18,6 +18,16 @@ public class NPC extends Creature implements Interactable {
     }
 
 //    @Override
+//    public float getPosX() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public float getPosY() {
+//        return 0;
+//    }
+
+//    @Override
 //    public boolean isInteractable(Entity interactor) {
 //        return true;
 //    }

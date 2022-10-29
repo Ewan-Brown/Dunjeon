@@ -17,20 +17,20 @@ public class WorldUtils {
 
     //TODO Reduce these after by making a 'HasPosition' interface?
     public static float getRawDistance(Entity e1, Entity e2){
-        return (float)Math.sqrt(Math.pow(e1.getCenterX() - e2.getCenterX(), 2) + Math.pow(e1.getCenterY() - e2.getCenterY(), 2));
+        return (float)Math.sqrt(Math.pow(e1.getPosX() - e2.getPosX(), 2) + Math.pow(e1.getPosY() - e2.getPosY(), 2));
     }
     public static float getRawDistance(BasicCell c1, BasicCell c2){
         return (float)Math.sqrt(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2));
     }
 
     public static float getRawDistance(BasicCell c, Entity e){
-        return (float)Math.sqrt(Math.pow(c.getX() - e.getCenterX(), 2) + Math.pow(c.getY() - e.getCenterY(), 2));
+        return (float)Math.sqrt(Math.pow(c.getX() - e.getPosX(), 2) + Math.pow(c.getY() - e.getPosY(), 2));
     }
     public static float getRawDistance(Furniture f, Entity e){
-        return (float)Math.sqrt(Math.pow(f.getCenterX() - e.getCenterX(), 2) + Math.pow(f.getCenterY() - e.getCenterY(), 2));
+        return (float)Math.sqrt(Math.pow(f.getPosX() - e.getPosY(), 2) + Math.pow(f.getPosY() - e.getPosY(), 2));
     }
     public static float getRawDistance(Interactable f, Entity e){
-        return (float)Math.sqrt(Math.pow(f.getCenterX() - e.getCenterX(), 2) + Math.pow(f.getCenterY() - e.getCenterY(), 2));
+        return (float)Math.sqrt(Math.pow(f.getPosX() - e.getPosX(), 2) + Math.pow(f.getPosY() - e.getPosY(), 2));
     }
 
     public static boolean isAdjacent(BasicCell b1, BasicCell b2){

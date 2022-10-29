@@ -56,8 +56,8 @@ public class CellMemory extends Memory {
             public Color getColor(){return color;}
         }
 
-        public float getCenterX() {return xCenter;}
-        public float getCenterY() {return yCenter;}
+        public float getPosX() {return xCenter;}
+        public float getPosY() {return yCenter;}
         public boolean isEnterable() {return enterable;}
         public boolean isInteractable() {return interactable;}
         public float getSize() {return size;}

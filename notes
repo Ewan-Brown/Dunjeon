@@ -1,13 +1,8 @@
-Simplifying this alot so I can actually finish something
+WIP - Simple projectile
+    Makes sound on wall hit
+    Does nothing on entity hit
+        Entity hit register not available yet...
+    0 Friction
+    Magic orb that has no friction, and constant speed.
 
-Hoping to make this game with minimal controls necessary - to make possible porting to controller easier and generally keep things concise
-
-Will need:
-    Movement keys
-    Furniture Interaction key (insert / open / press)
-    Entity Interaction key (chat)
-    Pickup key ? Or auto-pickup and swap key?
-
-To remove the common issue of inventory management, maybe the player has 1 of each type of weapon (max) that can each be upgraded/replaced.
-Also no inventory weight required, no interactive UI required either, maybe just a list of tools/food/weapon details.
-Instead of equipping weapons,
+Did some profiling - try running with CPU Profiler to see some interesting results...

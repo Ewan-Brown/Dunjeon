@@ -4,9 +4,11 @@ import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Creature;
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.SimpleProjectile;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.SoundManager;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -38,17 +40,26 @@ public class World implements KeyListener {
      */
     public boolean addEntityRandomLoc(Entity e, Floor l){
         List<BasicCell> validCells =  l.getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).collect(Collectors.toList());
-        if(validCells.size() == 0) return false;
+        if(validCells.size() == 0) throw new Error("No valid spots for entity found");
         else {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
             randomValidCell.onEntry(e);
-            e.enterCell(randomValidCell);
+            e.onEnterCell(randomValidCell);
             e.setPosition(randomValidCell.getX() + 0.5f, randomValidCell.getY() + 0.5f);
             e.setFloor(l);
             l.addEntity(e);
             return true;
         }
 
+    }
+
+    public void addEntityAtLoc(Entity e, Floor f, float x, float y){
+        BasicCell randomValidCell = f.getCellAt(x, y);
+        randomValidCell.onEntry(e);
+        e.onEnterCell(randomValidCell);
+        e.setPosition(x, y);
+        e.setFloor(f);
+        f.addEntity(e);
     }
 
 
@@ -108,17 +119,25 @@ public class World implements KeyListener {
             }
         }
         if(keySet[KeyEvent.VK_T]){
-            //Prevents instant repeat on hold
             keySet[KeyEvent.VK_T] = false;
             Interactable i = getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
             if(i != null){
                 i.onInteract(player, Interactable.InteractionType.CHAT);
             }
         }
+
+        //Display all tiles if supported
         if(keySet[KeyEvent.VK_M]){
-            //Prevents instant repeat on hold
             keySet[KeyEvent.VK_M] = false;
             LiveDisplay.SHOW_ALL_TILES = !LiveDisplay.SHOW_ALL_TILES;
+        }
+
+        //Fire projectile in random direction
+        if(keySet[KeyEvent.VK_R]){
+            keySet[KeyEvent.VK_R] = false;
+            Entity e = new SimpleProjectile(Color.RED, "Projectile");
+            e.setVelocity((rand.nextFloat() - 0.5f) / 30f,(rand.nextFloat() - 0.5f) / 30f + 0.01f);
+            addEntityAtLoc(e, player.getFloor(), player.getPosX(), player.getPosY());
         }
     }
 

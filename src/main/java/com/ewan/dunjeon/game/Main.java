@@ -15,11 +15,11 @@ import java.util.Random;
 public class Main {
 
     public static final Random rand = new Random();
-    static final long UPDATE_DELAY = 2;
+    static final long UPDATE_DELAY = 16;
 
     public static void main(String[] args) {
         long seed = rand.nextInt();
-//        seed = -1427703176;
+        seed = -1380589433;
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 

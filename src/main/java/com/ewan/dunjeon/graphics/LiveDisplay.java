@@ -39,7 +39,7 @@ public class LiveDisplay {
                     super.paint(graphics);
                     graphics.setColor(Color.BLACK);
                     graphics.clearRect(0,0,getWidth(),getHeight());
-                    Floor lev = w.getPlayer().getLevel();
+                    Floor lev = w.getPlayer().getFloor();
                     FloorMemory memoryFloor = World.getInstance().getPlayer().getFloorMemory(lev);
                     if(memoryFloor == null){
                         return;
@@ -78,8 +78,8 @@ public class LiveDisplay {
                                 graphics.fillRect(x * scale, y * scale, scale, scale);
                                 if (processedFurnitureColor != null) {
                                     CellMemory.FurnitureData fData = data.furnitureData;
-                                    int fX = (int) ((fData.getCenterX() - fData.getSize() / 2f) * scale);
-                                    int fY = (int) ((fData.getCenterY() - fData.getSize() / 2f) * scale);
+                                    int fX = (int) ((fData.getPosX() - fData.getSize() / 2f) * scale);
+                                    int fY = (int) ((fData.getPosY() - fData.getSize() / 2f) * scale);
                                     int fSize = (int) (fData.getSize() * scale);
                                     graphics.setColor(processedFurnitureColor);
                                     graphics.fillRect(fX, fY, fSize, fSize);
@@ -94,7 +94,7 @@ public class LiveDisplay {
                         //Draw Player
                         graphics.setColor(Color.BLUE);
                         Creature p = w.getPlayer();
-                        graphics.fillRect((int)((p.getCenterX() - p.getSize()/2) * scale), (int)((p.getCenterY() - p.getSize()/2) * scale), (int)(p.getSize() * scale) , (int)(p.getSize() * scale));
+                        graphics.fillRect((int)((p.getPosX() - p.getSize()/2) * scale), (int)((p.getPosY() - p.getSize()/2) * scale), (int)(p.getSize() * scale) , (int)(p.getSize() * scale));
 
                         for (EntityMemory memory : World.getInstance().getPlayer().getFloorMemory(lev).getEntityMemory()) {
                             float size = memory.getSize();
