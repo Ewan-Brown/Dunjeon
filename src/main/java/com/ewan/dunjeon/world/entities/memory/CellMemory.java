@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.world.entities.memory;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.entities.creatures.Memory;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;

@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.world.World;
-import com.ewan.dunjeon.world.entities.Creature;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
@@ -9,12 +9,15 @@ import com.ewan.dunjeon.world.level.Floor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class LiveDisplay {
-    private final int scale = 20;
+    private final int scale = 10;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
+
+    public static ArrayList<Point> debugCells;
 //    private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
 //    private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
     public static boolean SHOW_ALL_TILES = false;
@@ -59,6 +62,10 @@ public class LiveDisplay {
                                     } else {
                                         Color rawColor = data.cellRenderData.getColor();
                                         processedCellColor = new Color(rawColor.getRed() / 3, rawColor.getGreen() / 3, rawColor.getBlue() / 3);
+                                    }
+
+                                    if(debugCells != null && debugCells.contains(new Point(x,y))){
+                                        processedCellColor = new Color(processedCellColor.getRed(), 0, 0);
                                     }
 
 

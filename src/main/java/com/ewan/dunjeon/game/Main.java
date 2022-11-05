@@ -3,7 +3,10 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
-import com.ewan.dunjeon.world.entities.*;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.world.entities.creatures.Monster;
+import com.ewan.dunjeon.world.entities.creatures.NPC;
+import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 
@@ -47,7 +50,7 @@ public class Main {
 
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Creature testPlayer = new Player(Color.BLUE, "Player");
+        Player testPlayer = new Player(Color.BLUE, "Player");
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 

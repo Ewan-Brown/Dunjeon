@@ -2,9 +2,9 @@ package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.Creature;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.SimpleProjectile;
+import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.SoundManager;
 
@@ -22,7 +22,7 @@ public class World implements KeyListener {
     private static World w = new World();
     private SoundManager soundManager = new SoundManager();
 
-    private Creature player;
+    private Player player;
     public static World getInstance(){return w;}
 
     List<Floor> floors = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
@@ -90,11 +90,11 @@ public class World implements KeyListener {
     double playerInteractionDist = 1.5;
 
 
-    public Creature getPlayer(){
+    public Player getPlayer(){
         return player;
     }
 
-    public void setPlayer(Creature p){ player = p;}
+    public void setPlayer(Player p){ player = p;}
 
     //TODO Make a nice wrapper for this to make managing controls easier!
     public void doControls(){
@@ -138,6 +138,13 @@ public class World implements KeyListener {
             Entity e = new SimpleProjectile(Color.RED, "Projectile");
             e.setVelocity((rand.nextFloat() - 0.5f) / 30f,(rand.nextFloat() - 0.5f) / 30f + 0.01f);
             addEntityAtLoc(e, player.getFloor(), player.getPosX(), player.getPosY());
+        }
+
+        //Test function
+        if(keySet[KeyEvent.VK_Z]){
+            keySet[KeyEvent.VK_Z] = false;
+            ArrayList<Point> points = player.getListOfAccessibleNodesFromMemoryWithCriteria();
+            LiveDisplay.debugCells = points;
         }
     }
 

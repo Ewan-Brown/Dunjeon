@@ -1,12 +1,12 @@
-package com.ewan.dunjeon.world.entities;
+package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.world.Interactable;
-import com.ewan.dunjeon.world.entities.memory.CellMemory;
+import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
+import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
-import com.ewan.dunjeon.world.entities.memory.SoundMemory;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Creature extends Entity{
+public abstract class Creature extends Entity {
     public Creature(Color c, String name) {
         super(c, name);
         sightRange = 5;
@@ -31,12 +31,13 @@ public class Creature extends Entity{
     private int health;
 
     private HashMap<Floor, FloorMemory> floorMemoryMap = new HashMap();
-    private double loudStepChance = 0.001d; // TODO Make this variable? Just an example/starting point for dynamic sounds
-
+    private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
 
     @Override
     public void update() {
         super.update();
+
+        processAI();
 
         updateViewRange();
         if(getVelX() != 0 || getVelY() != 0){
@@ -45,6 +46,9 @@ public class Creature extends Entity{
             }
         }
     }
+
+    protected abstract void processAI();
+
 
     public FloorMemory getFloorMemory(Floor f){
         return floorMemoryMap.get(f);

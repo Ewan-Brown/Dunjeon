@@ -1,10 +1,12 @@
-package com.ewan.dunjeon.world.entities;
+package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.world.Interactable;
+import com.ewan.dunjeon.world.entities.Entity;
 
 import java.awt.*;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class NPC extends Creature implements Interactable {
@@ -13,27 +15,17 @@ public class NPC extends Creature implements Interactable {
     }
 
     @Override
+    protected void processAI() {
+
+    }
+
+    @Override
     public void onInteract(Entity interactor, InteractionType type) {
         System.out.println("Hello, interactor.");
     }
 
-//    @Override
-//    public float getPosX() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public float getPosY() {
-//        return 0;
-//    }
-
-//    @Override
-//    public boolean isInteractable(Entity interactor) {
-//        return true;
-//    }
-
     @Override
     public Set<InteractionType> getAvailableInteractions(Entity interactor) {
-        return new HashSet<>(Arrays.asList(InteractionType.CHAT));
+        return new HashSet<>(List.of(InteractionType.CHAT));
     }
 }

@@ -1,10 +1,11 @@
 package com.ewan.dunjeon.world.entities.memory;
 
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.creatures.Memory;
 
 import java.awt.*;
 
-public class EntityMemory extends Memory{
+public class EntityMemory extends Memory {
 
     public EntityMemory(long UUID, float x, float y, float xSpeed, float ySpeed, float size, boolean interactable, EntityRenderData renderData) {
         this.UUID = UUID;
