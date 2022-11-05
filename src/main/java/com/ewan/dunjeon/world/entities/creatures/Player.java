@@ -5,7 +5,7 @@ import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.function.Predicate;
+import java.util.Comparator;
 
 public class Player extends Creature{
     public Player(Color c, String name) {
@@ -31,8 +31,9 @@ public class Player extends Creature{
 
     /**
      * Works as expected now :)
+     * Holy shit performance is terrible.
      */
-    public ArrayList<Point> getListOfAccessibleNodesFromMemoryWithCriteria(){
+    public ArrayList<Point> getListOfAccessibleNodesFromMemory(){
         Point startNode = new Point((int)Math.floor(getPosX()), (int)Math.floor(getPosY()));
         ArrayList<Point> toExplore = new ArrayList<>();
         ArrayList<Point> accessibleNodes = new ArrayList<>();
@@ -47,7 +48,7 @@ public class Player extends Creature{
                     if (i == 0 && j == 0) continue;
                     Point neighbor = new Point((int)currentNode.getX() + i, (int)currentNode.getY() + j);
                     CellMemory cellMemory = getFloorMemory(getFloor()).getDataAt((int)neighbor.getX(), (int)neighbor.getY());
-                    if(cellMemory != null && cellMemory.enterable == CellMemory.EnterableStatus.OPEN && !accessibleNodes.contains(neighbor)){
+                    if(cellMemory != null && cellMemory.enterable == CellMemory.EnterableStatus.OPEN && !accessibleNodes.contains(neighbor) && !toExplore.contains(neighbor)){
                         toExplore.add(neighbor);
                     }
                 }
