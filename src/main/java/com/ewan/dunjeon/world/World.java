@@ -143,8 +143,7 @@ public class World implements KeyListener {
         //Test function
         if(keySet[KeyEvent.VK_Z]){
             keySet[KeyEvent.VK_Z] = false;
-            ArrayList<Point> points = player.getListOfAccessibleNodesFromMemory();
-            LiveDisplay.debugCells = points;
+            player.triggerAIPathFind();
         }
     }
 

@@ -16,16 +16,16 @@ public class Monster extends Creature{
 
     @Override
     protected void processAI() {
-
-        if(currentPath.size() == 0) {
-
-            // Find a random accessible spot from memory:)
-            FloorMemory f = getFloorMemory(this.getFloor());
-
-            Point2D startNode = getContainingCell().getPoint2D();
-
-
-        }
+//
+//        if(currentPath.size() == 0) {
+//
+//            // Find a random accessible spot from memory:)
+//            FloorMemory f = getFloorMemory(this.getFloor());
+//
+//            Point2D startNode = getContainingCell().getPoint2D();
+//
+//
+//        }
 
 
     }

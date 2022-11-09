@@ -10,6 +10,7 @@ import com.ewan.dunjeon.world.level.Floor;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LiveDisplay {
     private final int scale = 10;
@@ -17,7 +18,8 @@ public class LiveDisplay {
     private JFrame frame;
     private JPanel panel;
 
-    public static ArrayList<Point> debugCells;
+//    public static ArrayList<Point> debugCells;
+    public static HashMap<Point, Color> debugCells = new HashMap<>();
 //    private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
 //    private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
     public static boolean SHOW_ALL_TILES = false;
@@ -64,10 +66,10 @@ public class LiveDisplay {
                                         processedCellColor = new Color(rawColor.getRed() / 3, rawColor.getGreen() / 3, rawColor.getBlue() / 3);
                                     }
 
-                                    if(debugCells != null && debugCells.contains(new Point(x,y))){
-                                        processedCellColor = new Color(processedCellColor.getRed(), 0, 0);
+                                    Point p = new Point(x,y);
+                                    if(debugCells != null && debugCells.containsKey(p)){
+                                        processedCellColor = debugCells.get(p);
                                     }
-
 
                                     //Draw Furniture if it exists
                                     CellMemory.FurnitureData furnitureData = data.furnitureData;

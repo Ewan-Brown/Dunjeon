@@ -148,7 +148,7 @@ public class FloorGenerator {
             Door d2 = nextSection.doors.get(0);
 
             //Create a hall from door1 to door2
-            List<Point> hall = PathFinding.getAStarPath(weightMap, d1.getPoint(), d2.getPoint(), false);
+            List<Point> hall = PathFinding.getAStarPath(weightMap, d1.getPoint(), d2.getPoint(), false, PathFinding.CornerInclusionRule.NO_CORNERS, 1);
             hall.remove(0);
             Hall p = new Hall(d1, d2, hall);
             halls.add(p);
@@ -164,7 +164,7 @@ public class FloorGenerator {
             Door d2 = doors.get(rand.nextInt(doors.size()));
             if(d1 == d2) continue;
             unconnectedDoors.remove(d2);
-            List<Point> hall = PathFinding.getAStarPath(weightMap, d1.getPoint(), d2.getPoint(), false);
+            List<Point> hall = PathFinding.getAStarPath(weightMap, d1.getPoint(), d2.getPoint(), false, PathFinding.CornerInclusionRule.NO_CORNERS, 1);
             Hall p = new Hall(d1, d2, hall);
             hall.remove(0);
             halls.add(p);
