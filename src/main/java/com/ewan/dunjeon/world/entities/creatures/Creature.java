@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class Creature extends Entity {
@@ -25,10 +26,13 @@ public abstract class Creature extends Entity {
         super(c, name);
         sightRange = 5;
         health = 10;
+        friction = 2;
     }
 
     private int sightRange;
     private int health;
+
+    public boolean true_sight_debug = false;
 
     private HashMap<Floor, FloorMemory> floorMemoryMap = new HashMap();
     private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
@@ -49,6 +53,7 @@ public abstract class Creature extends Entity {
 
     protected abstract void processAI();
 
+    public FloorMemory getCurrentFloorMemory(){return getFloorMemory(getFloor());}
 
     public FloorMemory getFloorMemory(Floor f){
         return floorMemoryMap.get(f);
@@ -74,82 +79,87 @@ public abstract class Creature extends Entity {
         float angleDiv =  arcLength/sightRange;
         int rays = (int)Math.ceil(2 * (float)Math.PI / angleDiv);
 
-        viewableCells.add(this.getContainingCell()); // DUe to some foresight this has to be added?
+        viewableCells.add(this.getContainingCell());
 
-        List<Point2D[]> lines = new ArrayList<>();
-        for(int i = 0; i < rays; i++){
-            float currentAngle = angleDiv * i;
-            float dx = (float)Math.cos(currentAngle);
-            float dy = (float)Math.sin(currentAngle);
-            float x = getPosX();
-            float y = getPosY();
+        if(true_sight_debug){
+            viewableCells.addAll(getFloor().getCellsAsList());
+        }
+        else {
+
+            List<Point2D[]> lines = new ArrayList<>();
+            for (int i = 0; i < rays; i++) {
+                float currentAngle = angleDiv * i;
+                float dx = (float) Math.cos(currentAngle);
+                float dy = (float) Math.sin(currentAngle);
+                float x = getPosX();
+                float y = getPosY();
 //          System.out.printf("Start : (%f, %f)\n", x, y);
-            Point2D start = new Point2D.Float(x,y);
+                Point2D start = new Point2D.Float(x, y);
 
-            while(true){
-                //The values of the next borders to be intersected
-                int nextXIntersect = 0;
-                int nextYIntersect = 0;
-                boolean horizontal = false;
-                boolean vertical = false;
+                while (true) {
+                    //The values of the next borders to be intersected
+                    int nextXIntersect = 0;
+                    int nextYIntersect = 0;
+                    boolean horizontal = false;
+                    boolean vertical = false;
 
-                if(dx == 0){
-                    vertical = true;
-                }
-                else{
-                    //Calculate by rounding up or down depending on direction
-                    nextXIntersect = (int)((dx > 0) ? Math.ceil(x) : Math.floor(x));
-                }
-                if(dy == 0){
-                    horizontal = true;
-                }else{
-                    //Calculate by rounding up or down depending on direction
-                    nextYIntersect = (int)((dy > 0) ? Math.ceil(y) : Math.floor(y));
-                }
+                    if (dx == 0) {
+                        vertical = true;
+                    } else {
+                        //Calculate by rounding up or down depending on direction
+                        nextXIntersect = (int) ((dx > 0) ? Math.ceil(x) : Math.floor(x));
+                    }
+                    if (dy == 0) {
+                        horizontal = true;
+                    } else {
+                        //Calculate by rounding up or down depending on direction
+                        nextYIntersect = (int) ((dy > 0) ? Math.ceil(y) : Math.floor(y));
+                    }
 
-                float minStepsToIntersect;
-                if(horizontal && vertical){
-                    throw new RuntimeException("Ray cast was not vertical or horizontal");
-                }else if(horizontal) {
-                    minStepsToIntersect = (nextXIntersect - x) / dx;
-                }else if(vertical){
-                    minStepsToIntersect = (nextYIntersect - y) / dy;
-                }else {
-                    minStepsToIntersect = Math.min((nextXIntersect - x) / dx, (nextYIntersect - y) / dy);
-                }
+                    float minStepsToIntersect;
+                    if (horizontal && vertical) {
+                        throw new RuntimeException("Ray cast was not vertical or horizontal");
+                    } else if (horizontal) {
+                        minStepsToIntersect = (nextXIntersect - x) / dx;
+                    } else if (vertical) {
+                        minStepsToIntersect = (nextYIntersect - y) / dy;
+                    } else {
+                        minStepsToIntersect = Math.min((nextXIntersect - x) / dx, (nextYIntersect - y) / dy);
+                    }
 
-                //To ensure we're in the next block, add a delta to hop over the intersection
-                // Decrease the second term if cells are being skipped over corners
-                float stepsToNextIntersect = minStepsToIntersect + 0.01f;
+                    //To ensure we're in the next block, add a delta to hop over the intersection
+                    // Decrease the second term if cells are being skipped over corners
+                    float stepsToNextIntersect = minStepsToIntersect + 0.01f;
 
-                float nextX = x + dx * stepsToNextIntersect;
-                float nextY = y + dy * stepsToNextIntersect;
-                int nextBlockX = (int)Math.floor(nextX);
-                int nextBlockY = (int)Math.floor(nextY);
+                    float nextX = x + dx * stepsToNextIntersect;
+                    float nextY = y + dy * stepsToNextIntersect;
+                    int nextBlockX = (int) Math.floor(nextX);
+                    int nextBlockY = (int) Math.floor(nextY);
 
-                //Check if the distance of this ray now exceeds max radius
-                float xDist = nextX - getPosX();
-                float yDist = nextY - getPosY();
-                float squaredDist = xDist*xDist + yDist*yDist;
-                boolean exceedsRange = squaredDist > sightRange*sightRange;
+                    //Check if the distance of this ray now exceeds max radius
+                    float xDist = nextX - getPosX();
+                    float yDist = nextY - getPosY();
+                    float squaredDist = xDist * xDist + yDist * yDist;
+                    boolean exceedsRange = squaredDist > sightRange * sightRange;
 
-                BasicCell nextCell = getContainingCell().getFloor().getCellAt(nextBlockX, nextBlockY);
+                    BasicCell nextCell = getContainingCell().getFloor().getCellAt(nextBlockX, nextBlockY);
 
-                if(nextCell == null || nextCell == getContainingCell() || exceedsRange){
-                    Point2D end = new Point2D.Float(nextX,nextY);
-                    lines.add(new Point2D[]{start, end});
-                    //End a rayline without saving last cell
-                    break;
-
-                }else{
-                    viewableCells.add(nextCell);
-                    x = nextX;
-                    y = nextY;
-                    if(!nextCell.canBeSeenThrough(this)){
-                        //Even though the block can't be seen /through/ it should still be visible!
-                        Point2D end = new Point2D.Float(nextX,nextY);
+                    if (nextCell == null || nextCell == getContainingCell() || exceedsRange) {
+                        Point2D end = new Point2D.Float(nextX, nextY);
                         lines.add(new Point2D[]{start, end});
+                        //End a rayline without saving last cell
                         break;
+
+                    } else {
+                        viewableCells.add(nextCell);
+                        x = nextX;
+                        y = nextY;
+                        if (!nextCell.canBeSeenThrough(this)) {
+                            //Even though the block can't be seen /through/ it should still be visible!
+                            Point2D end = new Point2D.Float(nextX, nextY);
+                            lines.add(new Point2D[]{start, end});
+                            break;
+                        }
                     }
                 }
             }

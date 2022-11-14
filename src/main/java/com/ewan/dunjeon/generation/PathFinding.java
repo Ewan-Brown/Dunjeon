@@ -5,13 +5,12 @@ import com.ewan.dunjeon.world.Pair;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class PathFinding {
 
 
-    public static List<Point> getAStarPath(float[][] primitiveWeightMap, Point startNode, Point targetNode, boolean print, CornerInclusionRule cornerRule, float weightAgainstTurning){
+    public static List<Point> getAStarPath(float[][] primitiveWeightMap, Point startNode, Point targetNode, boolean print, CornerInclusionRule cornerRule, float weightAgainstTurning, boolean includeStartNodeInPath){
 
         if(print) {
             System.out.println("Starting pathfinding...");
@@ -127,6 +126,9 @@ public class PathFinding {
                 foundPath.add(currentPoint);
                 currentPoint = getVal(prevNodeMap, currentPoint);
                 if(startNode.equals(currentPoint)){
+                    if(includeStartNodeInPath){
+                        foundPath.add(currentPoint);
+                    }
                     break;
                 }
             }
@@ -140,7 +142,7 @@ public class PathFinding {
         SEMI_CLIPPING_CORNERS(1),
         ALL_CORNERS(2);
 
-        private int clippingCornersAllowed;
+        private final int clippingCornersAllowed;
 
         CornerInclusionRule(int c){
             clippingCornersAllowed = c;

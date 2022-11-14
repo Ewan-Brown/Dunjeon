@@ -3,18 +3,18 @@ package com.ewan.dunjeon.world.entities.creatures;
 import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.generation.PathFinding;
 import com.ewan.dunjeon.graphics.LiveDisplay;
-import com.ewan.dunjeon.world.World;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
 import java.awt.*;
 import java.util.*;
-import java.util.Comparator;
 import java.util.List;
 
 public class Player extends Creature {
     public Player(Color c, String name) {
         super(c, name);
+        true_sight_debug = true;
     }
 
     @Override
@@ -45,22 +45,26 @@ public class Player extends Creature {
 //        System.out.printf("Found %d possible nodes to explore%n", possibleNodes.size());
 //        Point p = possibleNodes.get(Main.rand.nextInt(possibleNodes.size()-1)); //Get last possible node - hopefully decently far from entity
 
-        Point p = possibleNodes.get(possibleNodes.size()-1); //Get last possible node - hopefully decently far from entity
-        System.out.printf("%f,%f => %d, %d\n",getPosX(), getPosY(), (int)p.getX(), (int)p.getY());
+        Point p = possibleNodes.get(Main.rand.nextInt(possibleNodes.size()));
         float[][] weights = getWeightMapFromMemory();
-        List<Point> pathPoints = PathFinding.getAStarPath(weights, new Point((int)getPosX(), (int)getPosY()), p, true, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0);
+        List<Point> pathPoints = PathFinding.getAStarPath(weights, new Point((int)getPosX(), (int)getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
 //        System.out.printf("Path to node is %d tiles long\n", pathPoints.size());
-        LiveDisplay.debugCells.clear();
-        for (Point point : possibleNodes) {
-            LiveDisplay.debugCells.put(point, Color.CYAN);
-        }
-        for (Point point : pathPoints) {
-            LiveDisplay.debugCells.put(point, Color.RED);
-        }
-        LiveDisplay.debugCells.put(p, Color.BLUE);
+//        LiveDisplay.debugCells.clear();
+//        for (Point point : possibleNodes) {
+//            LiveDisplay.debugCells.put(point, Color.CYAN);
+//        }
+//        for (Point point : pathPoints) {
+//            LiveDisplay.debugCells.put(point, Color.RED);
+//        }
+//        LiveDisplay.debugCells.put(p, Color.BLUE);
+//
+//        LiveDisplay.debugCells.put(pathPoints.get(0), Color.PINK);
 
-//            Point chosenPoint = points.get
-//            LiveDisplay.debugCells = points;
+        Point pathStart = pathPoints.get(pathPoints.size()-1);
+
+//        System.out.printf("%f,%f => %f, %f\n",getPosX(), getPosY(), pathStart.getX(), pathStart.getY());
+//        System.out.printf("\t dist to starting square : %f\n", WorldUtils.getRawDistance(getPosX(), (float)pathStart.getX() + 0.5f, getPosY(), (float)pathStart.getY() + 0.5f));
+
     }
 
     /**
@@ -81,7 +85,7 @@ public class Player extends Creature {
                 for (int j = -1; j < 2; j++) {
                     if (i == 0 && j == 0) continue;
                     Point neighbor = new Point((int) currentNode.getX() + i, (int) currentNode.getY() + j);
-                    CellMemory cellMemory = getFloorMemory(getFloor()).getDataAt((int) neighbor.getX(), (int) neighbor.getY());
+                    CellMemory cellMemory = getCurrentFloorMemory().getDataAt((int) neighbor.getX(), (int) neighbor.getY());
                     if (cellMemory != null && cellMemory.enterable == CellMemory.EnterableStatus.OPEN && !accessibleNodes.contains(neighbor) && !toExplore.contains(neighbor)) {
                         toExplore.add(neighbor);
                     }
@@ -104,7 +108,7 @@ public class Player extends Creature {
             for (int x = 0; x < getFloor().getWidth(); x++) {
 
                 float weight;
-                CellMemory mem = getFloorMemory(getFloor()).getDataAt(x, y);
+                CellMemory mem = getCurrentFloorMemory().getDataAt(x, y);
 
                 if (mem == null || mem.enterable == CellMemory.EnterableStatus.CLOSED) {
                     weight = Float.POSITIVE_INFINITY;

@@ -32,11 +32,8 @@ public class World implements KeyListener {
 
 
     /**
-     * Adds a entity at a random location On a level.
-     * TODO Add exception handling when there is no valid spots
-     * @param e
-     * @param l
-     * @return
+     * Adds ,man entity at a random location On a level.
+     * <i>TODO Add exception handling when there is no valid spots</i>
      */
     public boolean addEntityRandomLoc(Entity e, Floor l){
         List<BasicCell> validCells =  l.getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).collect(Collectors.toList());
@@ -61,8 +58,6 @@ public class World implements KeyListener {
         e.setFloor(f);
         f.addEntity(e);
     }
-
-
 
     /*
     Updates the game, returns true if the game is over.
@@ -89,6 +84,7 @@ public class World implements KeyListener {
 
     double playerInteractionDist = 1.5;
 
+    float playerSpeed = 0.03f;
 
     public Player getPlayer(){
         return player;
@@ -99,16 +95,16 @@ public class World implements KeyListener {
     //TODO Make a nice wrapper for this to make managing controls easier!
     public void doControls(){
         if(keySet[KeyEvent.VK_UP]){
-            player.addVelocity(0.0f,-0.003f);
+            player.addVelocity(0.0f,-playerSpeed);
         }
         if(keySet[KeyEvent.VK_DOWN]){
-            player.addVelocity(0.0f,+0.003f);
+            player.addVelocity(0.0f,+playerSpeed);
         }
         if(keySet[KeyEvent.VK_LEFT]){
-            player.addVelocity(-0.003f,0.0f);
+            player.addVelocity(-playerSpeed,0.0f);
         }
         if(keySet[KeyEvent.VK_RIGHT]){
-            player.addVelocity(0.003f, 0.0f);
+            player.addVelocity(playerSpeed, 0.0f);
         }
         if(keySet[KeyEvent.VK_SPACE]){
             //Prevents instant repeat on hold
