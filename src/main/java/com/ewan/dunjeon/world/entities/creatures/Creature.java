@@ -178,14 +178,15 @@ public abstract class Creature extends Entity {
                 if(viewableCell.getFurniture() != null){
                     Furniture f = viewableCell.getFurniture();
                     boolean interactable = false;
-                    //FIXME Hacky solution. This should not be in this class.
+                    //FIXME This should not be in this class
                     if(touchInteractive == f && this instanceof Player){
                         interactable = true;
                     }
                     //FIXME Currently, a furniture is invisible if its' color is null. This is not a good practice.
                     fData = new CellMemory.FurnitureData(f.getPosX(), f.getPosY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
                 }
-                CellMemory data = new CellMemory(VisualProcessor.getVisual(viewableCell, this), fData,(viewableCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY());
+                boolean isExplored = viewableCell == this.getContainingCell();
+                CellMemory data = new CellMemory(VisualProcessor.getVisual(viewableCell, this), fData,(viewableCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY(), isExplored);
                 currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
             }
             //Iterate through entities who are in cell within view range. May miss some entities?

@@ -1,33 +1,52 @@
 package com.ewan.dunjeon.world.entities.memory;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.creatures.Memory;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
 
 //Contains cell memory data on cell and furniture
 public class CellMemory extends Memory {
-    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y) {
+    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y, boolean isExplored) {
         super();
         this.cellRenderData = cellRenderData;
         this.enterable = e;
         this.x = x;
         this.y = y;
         furnitureData = fData;
+        hasBeenExplored = isExplored;
     }
 
-    private final int x;
-    private final int y;
+    public void update(CellMemory newMemory) {
+        if (this.x != newMemory.x || this.y != newMemory.y) {
+            throw new IllegalArgumentException();
+        }
+        this.cellRenderData = newMemory.cellRenderData;
+        this.enterable = newMemory.enterable;
+        this.hasBeenExplored = this.hasBeenExplored || newMemory.hasBeenExplored;
+        this.furnitureData = newMemory.furnitureData;
+        this.isOldData = newMemory.isOldData();
+    }
 
-    public final CellRenderData cellRenderData; // For player
-    public final EnterableStatus enterable; // For AI
+    public Point getPoint(){return new Point(x,y);}
 
-    public final FurnitureData furnitureData;
+    private int x;
+    private int y;
 
-    public enum EnterableStatus{
+    public CellRenderData cellRenderData; // For player
+    public EnterableStatus enterable; // For AI
+
+    private boolean hasBeenExplored = false;
+
+    public FurnitureData furnitureData;
+
+    public enum EnterableStatus {
         OPEN, //An open cell, an open door
         CLOSED //A wall, a locked door
+    }
+
+    public boolean hasBeenExplored() {
+        return hasBeenExplored;
     }
 
     public static class FurnitureData {
@@ -37,7 +56,7 @@ public class CellMemory extends Memory {
         private float size;
         private boolean visible;
         private boolean interactable; //For use with player
-        public final FurnitureRenderData furnitureRenderData;
+        public FurnitureRenderData furnitureRenderData;
 
         public FurnitureData(float xCenter, float yCenter, float size, boolean enterable, boolean visible, boolean interactable, FurnitureRenderData furnitureRenderData) {
             this.xCenter = xCenter;
@@ -50,19 +69,40 @@ public class CellMemory extends Memory {
         }
 
         public static class FurnitureRenderData {
-            public FurnitureRenderData(Furniture f){
+            public FurnitureRenderData(Furniture f) {
                 color = f.getColor();
             }
-            private final Color color;
-            public Color getColor(){return color;}
+
+            private Color color;
+
+            public Color getColor() {
+                return color;
+            }
         }
 
-        public float getPosX() {return xCenter;}
-        public float getPosY() {return yCenter;}
-        public boolean isEnterable() {return enterable;}
-        public boolean isInteractable() {return interactable;}
-        public float getSize() {return size;}
-        public boolean isVisible (){return visible;}
+        public float getPosX() {
+            return xCenter;
+        }
+
+        public float getPosY() {
+            return yCenter;
+        }
+
+        public boolean isEnterable() {
+            return enterable;
+        }
+
+        public boolean isInteractable() {
+            return interactable;
+        }
+
+        public float getSize() {
+            return size;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
 
     }
 
@@ -74,9 +114,11 @@ public class CellMemory extends Memory {
 
         private Color color;
 
-        public Color getColor(){
+        public Color getColor() {
             return color;
         }
 
     }
+
+
 }

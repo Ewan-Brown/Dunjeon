@@ -1,6 +1,5 @@
 package com.ewan.dunjeon.world.entities.memory;
 
-import com.ewan.dunjeon.world.entities.creatures.Memory;
 import com.ewan.dunjeon.world.entities.creatures.SoundMemory;
 import com.ewan.dunjeon.world.level.Floor;
 
@@ -33,7 +32,12 @@ public class FloorMemory{
     public List<EntityMemory> getEntityMemory() {return new ArrayList<>(entityMemories.values());}
     public void updateEntity(long UUID, EntityMemory e){ entityMemories.put(UUID, e);}
     public void updateCell(int x, int y, CellMemory d){
-        cellMemoryArray[y][x] = d;
+        CellMemory old = cellMemoryArray[y][x];
+        if(old != null){
+            old.update(d);
+        }else{
+            cellMemoryArray[y][x] = d;
+        }
     }
     public void addSoundMemory(SoundMemory m){soundMemories.add(m);}
 }

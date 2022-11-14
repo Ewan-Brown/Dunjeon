@@ -1,6 +1,8 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-public class SoundMemory extends Memory{
+import com.ewan.dunjeon.world.entities.memory.Memory;
+
+public class SoundMemory extends Memory {
     //Entity position when they heard the noise
     private double receivedX;
     private double receivedY;

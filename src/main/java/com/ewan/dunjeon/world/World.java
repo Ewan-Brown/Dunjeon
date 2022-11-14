@@ -20,7 +20,10 @@ import static com.ewan.dunjeon.game.Main.rand;
 public class World implements KeyListener {
 
     private static World w = new World();
+    private float time = 0;
     private SoundManager soundManager = new SoundManager();
+
+    public float getTime(){return time;}
 
     private Player player;
     public static World getInstance(){return w;}
@@ -63,6 +66,7 @@ public class World implements KeyListener {
     Updates the game, returns true if the game is over.
      */
     public boolean update(){
+        time++;
         if(player.isDead()){
             System.out.println("Game over! Player dead.");
             return true;

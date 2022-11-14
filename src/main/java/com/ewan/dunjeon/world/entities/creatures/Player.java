@@ -10,6 +10,7 @@ import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Player extends Creature {
     public Player(Color c, String name) {
@@ -20,6 +21,7 @@ public class Player extends Creature {
     @Override
     protected void processAI() {
         //Thinky thinky
+
 
     }
 
@@ -40,14 +42,14 @@ public class Player extends Creature {
 
     public void triggerAIPathFind(){
 //        System.out.println("triggering pathfind");
-        path.clear();
-        ArrayList<Point> possibleNodes = getListOfAccessibleNodesFromMemory();
+//        path.clear();
+//        ArrayList<Point> possibleNodes = getListOfAccessibleNodesFromMemory();
 //        System.out.printf("Found %d possible nodes to explore%n", possibleNodes.size());
 //        Point p = possibleNodes.get(Main.rand.nextInt(possibleNodes.size()-1)); //Get last possible node - hopefully decently far from entity
 
-        Point p = possibleNodes.get(Main.rand.nextInt(possibleNodes.size()));
-        float[][] weights = getWeightMapFromMemory();
-        List<Point> pathPoints = PathFinding.getAStarPath(weights, new Point((int)getPosX(), (int)getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
+//        Point p = possibleNodes.get(Main.rand.nextInt(possibleNodes.size()));
+//        float[][] weights = getWeightMapFromMemory();
+//        List<Point> pathPoints = PathFinding.getAStarPath(weights, new Point((int)getPosX(), (int)getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
 //        System.out.printf("Path to node is %d tiles long\n", pathPoints.size());
 //        LiveDisplay.debugCells.clear();
 //        for (Point point : possibleNodes) {
@@ -60,7 +62,7 @@ public class Player extends Creature {
 //
 //        LiveDisplay.debugCells.put(pathPoints.get(0), Color.PINK);
 
-        Point pathStart = pathPoints.get(pathPoints.size()-1);
+//        Point pathStart = pathPoints.get(pathPoints.size()-1);
 
 //        System.out.printf("%f,%f => %f, %f\n",getPosX(), getPosY(), pathStart.getX(), pathStart.getY());
 //        System.out.printf("\t dist to starting square : %f\n", WorldUtils.getRawDistance(getPosX(), (float)pathStart.getX() + 0.5f, getPosY(), (float)pathStart.getY() + 0.5f));
