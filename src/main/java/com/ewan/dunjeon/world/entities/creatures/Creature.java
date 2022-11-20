@@ -29,6 +29,7 @@ public abstract class Creature extends Entity {
         friction = 2;
     }
 
+    private float walkSpeed = 0.03f;
     private int sightRange;
     private int health;
 
@@ -242,9 +243,7 @@ public abstract class Creature extends Entity {
         return health;
     }
 
-//    public Set<BasicCell> lastVisibleCells(){
-//        return lastVisibleCells;
-//    }
+    public float getWalkSpeed() { return walkSpeed;}
 
     public Point2D getPoint2DLoc(){return new Point2D.Double(getPosX(), getPosY());}
 
