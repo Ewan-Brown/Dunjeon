@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public abstract class Creature extends Entity {
     public Creature(Color c, String name) {
         super(c, name);
-        sightRange = 1000;
+        sightRange = 5;
         health = 10;
         friction = 2;
     }

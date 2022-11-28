@@ -23,7 +23,7 @@ public class Player extends Creature {
         super.processSound(event);
         int sourceX = (int) event.abs().sourceLocation().getX();
         int sourceY = (int) event.abs().sourceLocation().getY();
-        boolean isVisible = !getFloorMemory(event.abs().sourceFloor()).getDataAt(sourceX, sourceY).isOldData();
+        boolean isVisible = CreatureUtils.isCellCurrentlyVisible(this, sourceX, sourceY);
         String message = isVisible ? event.abs().soundMessageIfVisible() : event.abs().soundMessageIfNotVisible();
         if (!message.isEmpty()) {
             System.out.println("[" + message + "]");
