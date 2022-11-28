@@ -7,46 +7,82 @@ import java.awt.*;
 
 //Contains cell memory data on cell and furniture
 public class CellMemory extends Memory {
-    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y, boolean isExplored) {
+    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y, boolean isHostWithinCell) {
         super();
         this.cellRenderData = cellRenderData;
         this.enterable = e;
         this.x = x;
         this.y = y;
         furnitureData = fData;
-        hasBeenExplored = isExplored;
+        entityWithinCell = isHostWithinCell;
+        exploredStatus = (isHostWithinCell) ? ExploredStatus.EXPLORED_UNCHANGED : ExploredStatus.NEVER_EXPLORED;
     }
 
     public void update(CellMemory newMemory) {
         if (this.x != newMemory.x || this.y != newMemory.y) {
             throw new IllegalArgumentException();
         }
+
+        //If this cell is newly enterable
+        if(newMemory.enterable == EnterableStatus.OPEN && this.enterable == EnterableStatus.CLOSED) {
+            exploredStatus = switch (this.getExploredStatus()) {
+                case EXPLORED_DIFFERENT, EXPLORED_UNCHANGED -> ExploredStatus.EXPLORED_DIFFERENT;
+                case NEVER_EXPLORED -> ExploredStatus.NEVER_EXPLORED;
+            };
+        }
+        //If the cell has not changed
+        else{
+            if(newMemory.exploredStatus == ExploredStatus.EXPLORED_UNCHANGED){
+                this.exploredStatus = ExploredStatus.EXPLORED_UNCHANGED;
+            }else{
+                newMemory.exploredStatus = this.exploredStatus;
+            }
+        }
+
         this.cellRenderData = newMemory.cellRenderData;
         this.enterable = newMemory.enterable;
-        this.hasBeenExplored = this.hasBeenExplored || newMemory.hasBeenExplored;
+        this.entityWithinCell = newMemory.entityWithinCell;
         this.furnitureData = newMemory.furnitureData;
         this.isOldData = newMemory.isOldData();
     }
 
     public Point getPoint(){return new Point(x,y);}
 
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
 
     public CellRenderData cellRenderData; // For player
     public EnterableStatus enterable; // For AI
 
-    private boolean hasBeenExplored = false;
+    /**<p>
+     * Represents status of the exploration of the cell.
+     * </p>
+     * <ul>
+         * <li>Has the cell never been explored</li>
+         * <li>Has the cell been explored, but changed</li>
+         * <li>Has the cell been explored, and hasnt appeared to have changed</li>
+     * </ul>
+     */
+    public enum ExploredStatus{
+
+        NEVER_EXPLORED,
+        EXPLORED_DIFFERENT,
+        EXPLORED_UNCHANGED;
+    }
+
+    boolean entityWithinCell;
+
+    ExploredStatus exploredStatus;
+
+    public ExploredStatus getExploredStatus(){
+        return exploredStatus;
+    }
 
     public FurnitureData furnitureData;
 
     public enum EnterableStatus {
         OPEN, //An open cell, an open door
         CLOSED //A wall, a locked door
-    }
-
-    public boolean hasBeenExplored() {
-        return hasBeenExplored;
     }
 
     public static class FurnitureData {

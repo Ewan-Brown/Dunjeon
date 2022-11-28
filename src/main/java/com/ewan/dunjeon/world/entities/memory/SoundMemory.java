@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.entities.creatures;
+package com.ewan.dunjeon.world.entities.memory;
 
 import com.ewan.dunjeon.world.entities.memory.Memory;
 

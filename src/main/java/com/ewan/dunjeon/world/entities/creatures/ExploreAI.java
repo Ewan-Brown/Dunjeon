@@ -1,11 +1,10 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.generation.PathFinding;
-import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
+import lombok.NonNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,25 +13,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public class ExploreAI extends AI{
+public class ExploreAI extends AIState {
 
 
     List<Point> currentPath = new ArrayList<>();
+    boolean noAccessableUnexploredCells = false;
 
     public ExploreAI(Creature e) {
         super(e);
     }
 
+    //TODO Make this smarter by pathfinding with adjusted weights based on whether a cell has been explored or not,
+    // i.e add a discount to weights on unexplored cells
     public void process(){
-        LiveDisplay.debugCells.clear();
-        if(hostEntity.getCurrentFloorMemory() != null) {
-            hostEntity.getCurrentFloorMemory().streamCellData().forEach(cellMemory -> {
-                if (cellMemory != null && cellMemory.hasBeenExplored()) {
-                    LiveDisplay.debugCells.put(cellMemory.getPoint(), Color.PINK);
-                }
-            });
-        }
-
+        noAccessableUnexploredCells = false;
         boolean pathValid = true;
 
         if(Objects.isNull(currentPath)){
@@ -49,14 +43,20 @@ public class ExploreAI extends AI{
         }
 
         if(!pathValid){
-            //TODO IF you want to change the exploratory nature of mosnter - go here
-            ArrayList<CellMemory> possibleNodes = getListOfPotentialDestinations(cellMemory -> !cellMemory.hasBeenExplored());
+            //If you want to change the exploratory nature of monster - look here
+            ArrayList<CellMemory> possibleNodes = getListOfPotentialDestinations(cellMemory -> cellMemory.getExploredStatus() != CellMemory.ExploredStatus.EXPLORED_UNCHANGED);
             possibleNodes.sort((o1, o2) -> Float.compare(o1.getTimeStamp(), o2.getTimeStamp()));
             if(!possibleNodes.isEmpty()){
                 float[][] weights = getWeightMapFromMemory();
                 Point p = possibleNodes.get(possibleNodes.size()-1).getPoint();
                 currentPath = PathFinding.getAStarPath(weights, new Point((int)hostEntity.getPosX(), (int)hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
+                if(currentPath == null){
+                    throw new IllegalStateException("Path is null!");
+                }
                 Collections.reverse(currentPath);
+            }
+            else{
+                noAccessableUnexploredCells = true;
             }
         }
 
@@ -79,10 +79,19 @@ public class ExploreAI extends AI{
 
     }
 
-    /**
-     * Ordered most to least interesting to AI...
-     * @return
-     */
+    public class ExploreAIStateData extends AIStateData{
+
+        @Override
+        public boolean canContinue() {
+            return CreatureUtils.countUnexploredCells(hostEntity) > 0 && !noAccessableUnexploredCells;
+        }
+    }
+
+    @Override
+    public @NonNull AIStateData getStateData() {
+        return new ExploreAIStateData();
+    }
+
     public ArrayList<CellMemory> getListOfPotentialDestinations(Predicate<CellMemory> criteria) {
         Point startNode = new Point((int) Math.floor(hostEntity.getPosX()), (int) Math.floor(hostEntity.getPosY()));
         ArrayList<Point> toExplore = new ArrayList<>();

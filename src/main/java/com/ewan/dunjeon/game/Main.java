@@ -54,11 +54,11 @@ public class Main {
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 
-        Monster testMonster = new Monster(Color.GREEN, "Monster");
+        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
         w.addEntityRandomLoc(testMonster, startFloor);
 
-        NPC testNPC = new NPC(Color.CYAN, "NPC");
-        w.addEntityRandomLoc(testNPC, startFloor);
+//        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
+//        w.addEntityRandomLoc(testNPC, startFloor);
 
         liveDisplay.startDrawing(w);
         while (true) {

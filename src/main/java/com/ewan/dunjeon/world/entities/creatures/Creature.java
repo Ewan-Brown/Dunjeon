@@ -7,6 +7,7 @@ import com.ewan.dunjeon.world.cells.VisualProcessor;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
+import com.ewan.dunjeon.world.entities.memory.SoundMemory;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
@@ -18,13 +19,12 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class Creature extends Entity {
     public Creature(Color c, String name) {
         super(c, name);
-        sightRange = 5;
+        sightRange = 1000;
         health = 10;
         friction = 2;
     }
@@ -42,7 +42,6 @@ public abstract class Creature extends Entity {
     public void update() {
         super.update();
 
-        processAI();
 
         updateViewRange();
         if(getVelX() != 0 || getVelY() != 0){
@@ -52,7 +51,7 @@ public abstract class Creature extends Entity {
         }
     }
 
-    protected abstract void processAI();
+
 
     public FloorMemory getCurrentFloorMemory(){return getFloorMemory(getFloor());}
 
@@ -174,21 +173,21 @@ public abstract class Creature extends Entity {
             currentFloorMemory.setAllDataToOld();
             Interactable touchInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
             Interactable chatInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
-            for (BasicCell viewableCell : viewableCells) {
+            for (BasicCell currentCell : viewableCells) {
                 CellMemory.FurnitureData fData = null;
-                if(viewableCell.getFurniture() != null){
-                    Furniture f = viewableCell.getFurniture();
+                if(currentCell.getFurniture() != null){
+                    Furniture f = currentCell.getFurniture();
                     boolean interactable = false;
                     //FIXME This should not be in this class
                     if(touchInteractive == f && this instanceof Player){
                         interactable = true;
                     }
-                    //FIXME Currently, a furniture is invisible if its' color is null. This is not a good practice.
+                    //FIXME Currently, furniture is "rendered" invisible if its' color is null. This is not a good practice use of null.
                     fData = new CellMemory.FurnitureData(f.getPosX(), f.getPosY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
                 }
-                boolean isExplored = viewableCell == this.getContainingCell();
-                CellMemory data = new CellMemory(VisualProcessor.getVisual(viewableCell, this), fData,(viewableCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED), viewableCell.getX(), viewableCell.getY(), isExplored);
-                currentFloorMemory.updateCell(viewableCell.getX(), viewableCell.getY(), data);
+                boolean isCreatureWithinThisCell = (currentCell == this.getContainingCell());
+                CellMemory data = new CellMemory(VisualProcessor.getVisual(currentCell, this), fData,(currentCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED), currentCell.getX(), currentCell.getY(), isCreatureWithinThisCell);
+                currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
             }
             //Iterate through entities who are in cell within view range. May miss some entities?
 

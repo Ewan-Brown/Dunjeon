@@ -19,13 +19,6 @@ public class Player extends Creature {
     }
 
     @Override
-    protected void processAI() {
-        //Thinky thinky
-
-
-    }
-
-    @Override
     public void processSound(RelativeSoundEvent event) {
         super.processSound(event);
         int sourceX = (int) event.abs().sourceLocation().getX();

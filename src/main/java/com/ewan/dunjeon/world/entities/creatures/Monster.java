@@ -1,30 +1,25 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-import com.ewan.dunjeon.game.Main;
-import com.ewan.dunjeon.generation.PathFinding;
-import com.ewan.dunjeon.graphics.LiveDisplay;
-import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.entities.memory.CellMemory;
-import com.ewan.dunjeon.world.entities.memory.FloorMemory;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.*;
 import java.util.List;
-import java.util.function.Predicate;
 
-public class Monster extends Creature{
-    public Monster(Color c, String name) {
-        super(c, name);
-        ai = new ExploreAI(this);
+public class Monster extends CreatureWithAI {
+    private Monster(Color c, String name, List<AIStateGenerator> generators) {
+        super(c, name, generators);
+//        currentState = new ExploreAI(this);
     }
 
-    AI ai;
+    public static Monster generateExploringMonster(Color c, String name){
+        List<AIStateGenerator> gens = new ArrayList<>();
 
-    @Override
-    protected void processAI() {
+        gens.add(new AIStateGenerator(creature -> CreatureUtils.countUnexploredVisibleCells(creature) > 0, ExploreAI::new));
 
-        ai.process();
+        gens.add(new AIStateGenerator(creature -> {
+            return true;
+        }, StandAroundIdiotAI::new));
 
+        return new Monster(c, name, gens);
     }
 
 

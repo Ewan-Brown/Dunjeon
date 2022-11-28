@@ -1,6 +1,5 @@
 package com.ewan.dunjeon.world.entities.memory;
 
-import com.ewan.dunjeon.world.entities.creatures.SoundMemory;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.util.*;

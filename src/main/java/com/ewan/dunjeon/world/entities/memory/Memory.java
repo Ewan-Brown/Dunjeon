@@ -12,6 +12,10 @@ public class Memory {
 
     protected boolean isOldData;
 
+    /**
+     * Read as "Is this thing currently visible/audible, or is this purely a memory"
+     * @return
+     */
     public boolean isOldData(){return isOldData;}
 
     public void setOldData(){isOldData = true;}

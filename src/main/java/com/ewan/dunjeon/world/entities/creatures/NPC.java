@@ -4,18 +4,22 @@ import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.entities.Entity;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-public class NPC extends Creature implements Interactable {
-    public NPC(Color c, String name) {
-        super(c, name);
+public class NPC extends CreatureWithAI implements Interactable {
+
+    public static NPC generateDumbNPC(Color c, String name){
+        ArrayList<AIStateGenerator> generators = new ArrayList<>();
+
+        generators.add(new AIStateGenerator(creature -> true, StandAroundIdiotAI::new));
+
+        return new NPC(c, name, generators);
     }
-
-    @Override
-    protected void processAI() {
+    private NPC(Color c, String name, List<AIStateGenerator> generators) {
+        super(c, name, generators);
 
     }
 
