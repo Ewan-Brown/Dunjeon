@@ -29,7 +29,14 @@ public class FloorMemory{
     }
 
     public List<EntityMemory> getEntityMemory() {return new ArrayList<>(entityMemories.values());}
-    public void updateEntity(long UUID, EntityMemory e){ entityMemories.put(UUID, e);}
+    public void updateEntity(long UUID, EntityMemory e){
+        if(entityMemories.containsKey(UUID)){
+            entityMemories.get(UUID).update(e);
+        }else {
+            entityMemories.put(UUID, e);
+        }
+
+    }
     public void updateCell(int x, int y, CellMemory d){
         CellMemory old = cellMemoryArray[y][x];
         if(old != null){
@@ -38,5 +45,6 @@ public class FloorMemory{
             cellMemoryArray[y][x] = d;
         }
     }
+    public EntityMemory getEntity(long UUID){ return entityMemories.get(UUID);}
     public void addSoundMemory(SoundMemory m){soundMemories.add(m);}
 }

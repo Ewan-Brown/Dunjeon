@@ -6,6 +6,7 @@ import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.level.Floor;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,13 +40,23 @@ public class WorldUtils {
         return (float)Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
+
     public static boolean isAdjacent(BasicCell b1, BasicCell b2){
         if(b1 == b2){
             throw new IllegalArgumentException();
+        }else {
+            return isAdjacent(b1.getX(), b1.getY(), b2.getX(), b2.getY());
         }
+    }
+    public static boolean isAdjacent(Point b1, Point b2){
+        return isAdjacent((int)b1.getX(), (int)b1.getY(), (int)b2.getX(), (int)b2.getY());
+    }
 
-        int xDiff = b2.getX() - b1.getX();
-        int yDiff = b2.getY() - b1.getY();
+    public static boolean isAdjacent(int x1, int y1, int x2, int y2){
+
+
+        int xDiff = x2 - x1;
+        int yDiff = y2 - y1;
 
         return Math.abs(yDiff) < 2 && Math.abs(xDiff) < 2;
     }

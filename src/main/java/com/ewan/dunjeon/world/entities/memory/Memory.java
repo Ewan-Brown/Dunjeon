@@ -10,6 +10,9 @@ public class Memory {
     }
     private float timeStamp;
 
+    /**
+     * True if this is data that is not representational of the 'present' from the hosts' point of view.
+     */
     protected boolean isOldData;
 
     /**

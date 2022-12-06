@@ -17,13 +17,25 @@ public class EntityMemory extends Memory {
         this.renderData = renderData;
     }
 
-    private final long UUID; //Allows individual tracking of memory to entity - if an entity reappears multiple times, this will allow an old memory to be replaced by new.
-    private final float x;
-    private final float y;
-    private final float xSpeed;
-    private final float ySpeed;
-    private final float size;
-    private final boolean interactable; //For use with player
+    private long UUID; //Allows individual tracking of memory to entity - if an entity reappears multiple times, this will allow an old memory to be replaced by new.
+    private float x;
+    private float y;
+    private float xSpeed;
+    private float ySpeed;
+    private float size;
+    private boolean interactable; //For use with player
+
+    public void update(EntityMemory newMemory){
+        this.UUID = newMemory.UUID;
+        this.x = newMemory.x;
+        this.y = newMemory.y;
+        this.xSpeed = newMemory.xSpeed;
+        this.ySpeed = newMemory.ySpeed;
+        this.size = newMemory.size;
+        this.interactable = newMemory.interactable;
+        this.renderData = newMemory.renderData;
+        this.isOldData = newMemory.isOldData;
+    }
 
     EntityRenderData renderData;
 
