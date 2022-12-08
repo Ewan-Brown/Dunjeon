@@ -4,10 +4,13 @@ import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 //Contains cell memory data on cell and furniture
 public class CellMemory extends Memory {
-    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y, boolean isHostWithinCell) {
+    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y, boolean isHostWithinCell, java.util.List<BasicCell.CellSide> sides) {
         super();
         this.cellRenderData = cellRenderData;
         this.enterable = e;
@@ -18,32 +21,33 @@ public class CellMemory extends Memory {
         exploredStatus = (isHostWithinCell) ? ExploredStatus.EXPLORED_UNCHANGED : ExploredStatus.NEVER_EXPLORED;
     }
 
-    public void update(CellMemory newMemory) {
-        if (this.x != newMemory.x || this.y != newMemory.y) {
+    public void update(CellMemory updatedMemoryData) {
+        if (this.x != updatedMemoryData.x || this.y != updatedMemoryData.y) {
             throw new IllegalArgumentException();
         }
 
         //If this cell is newly enterable
-        if(newMemory.enterable == EnterableStatus.OPEN && this.enterable == EnterableStatus.CLOSED) {
+        if(updatedMemoryData.enterable == EnterableStatus.OPEN && this.enterable == EnterableStatus.CLOSED) {
             exploredStatus = switch (this.getExploredStatus()) {
                 case EXPLORED_DIFFERENT, EXPLORED_UNCHANGED -> ExploredStatus.EXPLORED_DIFFERENT;
                 case NEVER_EXPLORED -> ExploredStatus.NEVER_EXPLORED;
             };
         }
+
         //If the cell has not changed
         else{
-            if(newMemory.exploredStatus == ExploredStatus.EXPLORED_UNCHANGED){
+            if(updatedMemoryData.exploredStatus == ExploredStatus.EXPLORED_UNCHANGED){
                 this.exploredStatus = ExploredStatus.EXPLORED_UNCHANGED;
             }else{
-                newMemory.exploredStatus = this.exploredStatus;
+                updatedMemoryData.exploredStatus = this.exploredStatus;
             }
         }
 
-        this.cellRenderData = newMemory.cellRenderData;
-        this.enterable = newMemory.enterable;
-        this.entityWithinCell = newMemory.entityWithinCell;
-        this.furnitureData = newMemory.furnitureData;
-        this.isOldData = newMemory.isOldData();
+        this.cellRenderData.update(updatedMemoryData.cellRenderData);
+        this.enterable = updatedMemoryData.enterable;
+        this.entityWithinCell = updatedMemoryData.entityWithinCell;
+        this.furnitureData = updatedMemoryData.furnitureData;
+        this.isOldData = updatedMemoryData.isOldData();
     }
 
     public Point getPoint(){return new Point(x,y);}
@@ -51,7 +55,7 @@ public class CellMemory extends Memory {
     private final int x;
     private final int y;
 
-    public CellRenderData cellRenderData; // For player
+    public final CellRenderData cellRenderData; // For player
     public EnterableStatus enterable; // For AI
 
     /**<p>
@@ -144,16 +148,54 @@ public class CellMemory extends Memory {
 
     public static class CellRenderData {
 
-        public CellRenderData(BasicCell c) {
+        public enum CellSideVisibility{
+            NEVER_SEEN,
+            SEEN_PREVIOUSLY,
+            SEE_PRESENT;
+        }
+
+        public CellRenderData(BasicCell c, List<BasicCell.CellSide> visibleSides, boolean shouldRenderWalls) {
             this.color = c.color;
+            Arrays.stream(BasicCell.CellSide.values()).forEach(cellSide -> sides.put(cellSide, CellSideVisibility.NEVER_SEEN));
+            if(visibleSides != null) {
+                for (BasicCell.CellSide side : visibleSides) {
+                    sides.put(side, CellSideVisibility.SEE_PRESENT);
+                }
+            }
+            this.shouldRenderWalls = shouldRenderWalls;
+        }
+
+        public void update(CellRenderData data){
+            this.color = data.color;
+
+            sides.replaceAll((cellSide, newVisibility) -> data.sides.put(cellSide,
+                    switch (newVisibility) {
+                        case NEVER_SEEN -> data.sides.get(cellSide);
+                        case SEEN_PREVIOUSLY -> throw new IllegalStateException("*NEW* render data shouldn't' claim it's seen something in the past");
+                        case SEE_PRESENT -> CellSideVisibility.SEE_PRESENT;
+                    }
+            ));
+            this.shouldRenderWalls = data.shouldRenderWalls;
         }
 
         private Color color;
+        private final HashMap<BasicCell.CellSide, CellSideVisibility> sides = new HashMap<>();
+        private boolean shouldRenderWalls;
 
         public Color getColor() {
             return color;
         }
+        public CellSideVisibility isSideVisible(BasicCell.CellSide s){
+            return sides.get(s);
+        }
 
+        public HashMap<BasicCell.CellSide, CellSideVisibility> getSides() {
+            return sides;
+        }
+
+        public boolean shouldRenderWalls() {
+            return shouldRenderWalls;
+        }
     }
 
 

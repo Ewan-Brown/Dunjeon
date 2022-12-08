@@ -71,6 +71,7 @@ public abstract class Creature extends Entity {
         //Update Visual Memory
         //***********
         Set<BasicCell> viewableCells = new HashSet<>();
+        HashMap<BasicCell, List<BasicCell.CellSide>> viewableWalls = new HashMap<>();
 
         //Use enough rays that we don't skip over whole cells.
         //Arc length : r = al
@@ -86,7 +87,6 @@ public abstract class Creature extends Entity {
         }
         else {
 
-            List<Point2D[]> lines = new ArrayList<>();
             for (int i = 0; i < rays; i++) {
                 float currentAngle = angleDiv * i;
                 float dx = (float) Math.cos(currentAngle);
@@ -100,28 +100,28 @@ public abstract class Creature extends Entity {
                     //The values of the next borders to be intersected
                     int nextXIntersect = 0;
                     int nextYIntersect = 0;
-                    boolean horizontal = false;
-                    boolean vertical = false;
+                    boolean rayIsHorizontal = false;
+                    boolean rayIsVertical = false;
 
                     if (dx == 0) {
-                        vertical = true;
+                        rayIsVertical = true;
                     } else {
                         //Calculate by rounding up or down depending on direction
                         nextXIntersect = (int) ((dx > 0) ? Math.ceil(x) : Math.floor(x));
                     }
                     if (dy == 0) {
-                        horizontal = true;
+                        rayIsHorizontal = true;
                     } else {
                         //Calculate by rounding up or down depending on direction
                         nextYIntersect = (int) ((dy > 0) ? Math.ceil(y) : Math.floor(y));
                     }
 
                     float minStepsToIntersect;
-                    if (horizontal && vertical) {
-                        throw new RuntimeException("Ray cast was not vertical or horizontal");
-                    } else if (horizontal) {
+                    if (rayIsHorizontal && rayIsVertical) {
+                        throw new RuntimeException("Ray cast was both vertical and horizontal");
+                    } else if (rayIsHorizontal) {
                         minStepsToIntersect = (nextXIntersect - x) / dx;
-                    } else if (vertical) {
+                    } else if (rayIsVertical) {
                         minStepsToIntersect = (nextYIntersect - y) / dy;
                     } else {
                         minStepsToIntersect = Math.min((nextXIntersect - x) / dx, (nextYIntersect - y) / dy);
@@ -146,7 +146,6 @@ public abstract class Creature extends Entity {
 
                     if (nextCell == null || nextCell == getContainingCell() || exceedsRange) {
                         Point2D end = new Point2D.Float(nextX, nextY);
-                        lines.add(new Point2D[]{start, end});
                         //End a rayline without saving last cell
                         break;
 
@@ -154,10 +153,36 @@ public abstract class Creature extends Entity {
                         viewableCells.add(nextCell);
                         x = nextX;
                         y = nextY;
-                        if (!nextCell.canBeSeenThrough(this)) {
-                            //Even though the block can't be seen /through/ it should still be visible!
-                            Point2D end = new Point2D.Float(nextX, nextY);
-                            lines.add(new Point2D[]{start, end});
+                        if(!nextCell.canBeSeenThrough(this)){
+                            //Figure out what wall this makes visible
+
+                            float intersectX = x + dx * minStepsToIntersect;
+                            float intersectY = y + dy * minStepsToIntersect;
+
+                            float yDiff = intersectY - nextBlockY;
+                            float xDiff = intersectX - nextBlockX;
+
+                            float angle = (float)Math.atan2(yDiff, xDiff);
+
+                            float quarterPI = (float)Math.PI/4f;
+
+                            BasicCell.CellSide visibleSide = null;
+
+                            if(angle > quarterPI * 7 || angle < quarterPI * 1){
+                                visibleSide = BasicCell.CellSide.EAST;
+                            }else if(angle < quarterPI * 3){
+                                visibleSide = BasicCell.CellSide.NORTH;
+                            }else if(angle < quarterPI * 5){
+                                visibleSide = BasicCell.CellSide.WEST;
+                            }else if(angle < quarterPI * 7){
+                                visibleSide = BasicCell.CellSide.SOUTH;
+                            }
+
+                            if(viewableWalls.containsKey(nextCell)){
+                                viewableWalls.get(nextCell).add(visibleSide);
+                            }else{
+                                viewableWalls.put(nextCell, new ArrayList<>(Collections.singleton(visibleSide)));
+                            }
                             break;
                         }
                     }
@@ -186,7 +211,10 @@ public abstract class Creature extends Entity {
                     fData = new CellMemory.FurnitureData(f.getPosX(), f.getPosY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
                 }
                 boolean isCreatureWithinThisCell = (currentCell == this.getContainingCell());
-                CellMemory data = new CellMemory(VisualProcessor.getVisual(currentCell, this), fData,(currentCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED), currentCell.getX(), currentCell.getY(), isCreatureWithinThisCell);
+
+                CellMemory data = new CellMemory(VisualProcessor.getVisual(currentCell, this, viewableWalls.get(currentCell)),
+                        fData,(currentCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED),
+                        currentCell.getX(), currentCell.getY(), isCreatureWithinThisCell, viewableWalls.get(currentCell));
                 currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
             }
             //Iterate through entities who are in cell within view range. May miss some entities?

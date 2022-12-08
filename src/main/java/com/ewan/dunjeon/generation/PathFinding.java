@@ -116,7 +116,6 @@ public class PathFinding {
         }
 
         if(getVal(prevNodeMap, targetNode) == null){
-            System.err.println("No path found :(");
             return null;
         }else{
             List<Point> foundPath = new ArrayList<>();

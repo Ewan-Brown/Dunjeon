@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
+import org.w3c.dom.ls.LSOutput;
 
 import java.awt.Color;
 import java.util.*;
@@ -24,6 +25,11 @@ public class Monster extends CreatureWithAI {
         }, StandAroundIdiotAI::new));
 
         return new Monster(c, name, gens);
+    }
+
+    @Override
+    public void update() {
+        super.update();
     }
 
     public static Monster generateChasingMonster(Color c, String name){

@@ -53,7 +53,10 @@ public class ChaseAI extends AIState {
             Point p = new Point((int)Math.floor(targetMemory.getX()), (int)Math.floor(targetMemory.getY()));
             float[][] weights = getWeightMapFromMemory();
             currentPath = PathFinding.getAStarPath(weights, new Point((int)hostEntity.getPosX(), (int)hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
-            if(currentPath != null && !currentPath.isEmpty()){
+            if(currentPath == null){
+                targetUnreachable = true;
+            }
+            else if(!currentPath.isEmpty()){
                 Collections.reverse(currentPath);
             }
         }
@@ -63,7 +66,6 @@ public class ChaseAI extends AIState {
             float targetX = nextNode.x + 0.5f;
             float targetY = nextNode.y + 0.5f;
             float distToNextTile = WorldUtils.getRawDistance(hostEntity.getPosX(), targetX, hostEntity.getPosY(), targetY);
-            System.out.println(distToNextTile);
             float angleToNextTile = (float) Math.atan2(targetY - hostEntity.getPosY(), targetX - hostEntity.getPosX());
             if(distToNextTile > WorldUtils.ENTITY_WITHIN_TILE_THRESHOLD){
                 float speed = hostEntity.getWalkSpeed() * Math.min(1, distToNextTile*2);
@@ -83,7 +85,7 @@ public class ChaseAI extends AIState {
         @Override
         public boolean canContinue() {
 
-            if(hostEntity.getCurrentFloorMemory().getEntity(targetUUID) != null) {
+            if(hostEntity.getCurrentFloorMemory().getEntity(targetUUID) != null && !targetUnreachable) {
                 EntityMemory targetMem = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
                 return (WorldUtils.getRawDistance(hostEntity.getPosX(), targetMem.getX(), hostEntity.getPosY(), targetMem.getY()) >= desiredDistToTarget);
             }else{
