@@ -19,8 +19,9 @@ public class ChaseAI extends AIState {
 
 
     List<Point> currentPath = new ArrayList<>();
-    boolean targetInaccessable = false;
+    float desiredDistToTarget = 1;
     long targetUUID;
+    boolean targetUnreachable = false;
 
 
     public ChaseAI(Creature e, long targetUUID) {
@@ -49,13 +50,11 @@ public class ChaseAI extends AIState {
         }
 
         if(!pathValid){
-            //If you want to change the exploratory nature of monster - look here
             Point p = new Point((int)Math.floor(targetMemory.getX()), (int)Math.floor(targetMemory.getY()));
             float[][] weights = getWeightMapFromMemory();
             currentPath = PathFinding.getAStarPath(weights, new Point((int)hostEntity.getPosX(), (int)hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
-            Collections.reverse(currentPath);
-            if(currentPath == null || currentPath.isEmpty()){
-                throw new IllegalStateException("Path is null!");
+            if(currentPath != null && !currentPath.isEmpty()){
+                Collections.reverse(currentPath);
             }
         }
 
@@ -64,6 +63,7 @@ public class ChaseAI extends AIState {
             float targetX = nextNode.x + 0.5f;
             float targetY = nextNode.y + 0.5f;
             float distToNextTile = WorldUtils.getRawDistance(hostEntity.getPosX(), targetX, hostEntity.getPosY(), targetY);
+            System.out.println(distToNextTile);
             float angleToNextTile = (float) Math.atan2(targetY - hostEntity.getPosY(), targetX - hostEntity.getPosX());
             if(distToNextTile > WorldUtils.ENTITY_WITHIN_TILE_THRESHOLD){
                 float speed = hostEntity.getWalkSpeed() * Math.min(1, distToNextTile*2);
@@ -85,7 +85,7 @@ public class ChaseAI extends AIState {
 
             if(hostEntity.getCurrentFloorMemory().getEntity(targetUUID) != null) {
                 EntityMemory targetMem = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
-                return (WorldUtils.getRawDistance(hostEntity.getPosX(), targetMem.getX(), hostEntity.getPosY(), targetMem.getY()) >= 1);
+                return (WorldUtils.getRawDistance(hostEntity.getPosX(), targetMem.getX(), hostEntity.getPosY(), targetMem.getY()) >= desiredDistToTarget);
             }else{
                 return false;
             }

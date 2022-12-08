@@ -29,12 +29,7 @@ public class Monster extends CreatureWithAI {
     public static Monster generateChasingMonster(Color c, String name){
         List<AIStateGenerator> gens = new ArrayList<>();
 
-        gens.add(new AIStateGenerator(creature -> creature.getCurrentFloorMemory().getEntityMemory().stream().anyMatch(new Predicate<EntityMemory>() {
-            @Override
-            public boolean test(EntityMemory entityMemory) {
-                return !entityMemory.isOldData();
-            }
-        }), creature -> new ChaseAI(creature, creature.getCurrentFloorMemory().getEntityMemory().stream().filter(entityMemory -> !entityMemory.isOldData()).findAny().orElse(null).getUUID())));
+        gens.add(new AIStateGenerator(creature -> creature.getCurrentFloorMemory().getEntityMemory().stream().anyMatch(entityMemory -> !entityMemory.isOldData()), creature -> new ChaseAI(creature, creature.getCurrentFloorMemory().getEntityMemory().stream().filter(entityMemory -> !entityMemory.isOldData()).findAny().orElse(null).getUUID())));
 
         gens.add(new AIStateGenerator(creature -> CreatureUtils.countUnexploredVisibleCells(creature) > 0, ExploreAI::new));
 

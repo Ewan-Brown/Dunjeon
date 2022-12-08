@@ -241,7 +241,7 @@ public class FloorGenerator {
 //                map[j][i] = BLOCK;
                 cells[j][i] = new BasicCell(i, j, floor, Color.BLACK);
                 cells[j][i].setFilled(true);
-//                cells[j][i].setColor(Color.BLACK);
+                cells[j][i].color = new Color (30,30,30);
 
             }
         }
