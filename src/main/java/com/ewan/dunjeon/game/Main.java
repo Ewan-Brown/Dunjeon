@@ -22,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) {
         long seed = rand.nextInt();
-        seed = -1380589433;
+        seed = -1380589431;
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 
@@ -55,10 +55,8 @@ public class Main {
         w.setPlayer(testPlayer);
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
-                Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
-
-        w.addEntityRandomLoc(testMonster, startFloor);
-
+//        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
+//        w.addEntityRandomLoc(testMonster, startFloor);
 //        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
 //        w.addEntityRandomLoc(testNPC, startFloor);
 

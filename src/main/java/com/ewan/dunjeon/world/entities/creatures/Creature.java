@@ -93,8 +93,6 @@ public abstract class Creature extends Entity {
                 float dy = (float) Math.sin(currentAngle);
                 float x = getPosX();
                 float y = getPosY();
-//          System.out.printf("Start : (%f, %f)\n", x, y);
-                Point2D start = new Point2D.Float(x, y);
 
                 while (true) {
                     //The values of the next borders to be intersected
@@ -129,7 +127,7 @@ public abstract class Creature extends Entity {
 
                     //To ensure we're in the next block, add a delta to hop over the intersection
                     // Decrease the second term if cells are being skipped over corners
-                    float stepsToNextIntersect = minStepsToIntersect + 0.01f;
+                    float stepsToNextIntersect = minStepsToIntersect + 0.001f;
 
                     float nextX = x + dx * stepsToNextIntersect;
                     float nextY = y + dy * stepsToNextIntersect;
@@ -145,24 +143,25 @@ public abstract class Creature extends Entity {
                     BasicCell nextCell = getContainingCell().getFloor().getCellAt(nextBlockX, nextBlockY);
 
                     if (nextCell == null || nextCell == getContainingCell() || exceedsRange) {
-                        Point2D end = new Point2D.Float(nextX, nextY);
-                        //End a rayline without saving last cell
                         break;
 
                     } else {
                         viewableCells.add(nextCell);
-                        x = nextX;
-                        y = nextY;
+
                         if(!nextCell.canBeSeenThrough(this)){
                             //Figure out what wall this makes visible
 
                             float intersectX = x + dx * minStepsToIntersect;
                             float intersectY = y + dy * minStepsToIntersect;
 
-                            float yDiff = intersectY - nextBlockY;
-                            float xDiff = intersectX - nextBlockX;
+                            float yDiff = intersectY - (nextBlockY + 0.5f);
+                            float xDiff = intersectX - (nextBlockX + 0.5f);
 
                             float angle = (float)Math.atan2(yDiff, xDiff);
+
+                            if(angle < 0){
+                                angle += (float)Math.PI*2;
+                            }
 
                             float quarterPI = (float)Math.PI/4f;
 
@@ -171,11 +170,11 @@ public abstract class Creature extends Entity {
                             if(angle > quarterPI * 7 || angle < quarterPI * 1){
                                 visibleSide = BasicCell.CellSide.EAST;
                             }else if(angle < quarterPI * 3){
-                                visibleSide = BasicCell.CellSide.NORTH;
+                                visibleSide = BasicCell.CellSide.SOUTH;
                             }else if(angle < quarterPI * 5){
                                 visibleSide = BasicCell.CellSide.WEST;
                             }else if(angle < quarterPI * 7){
-                                visibleSide = BasicCell.CellSide.SOUTH;
+                                visibleSide = BasicCell.CellSide.NORTH;
                             }
 
                             if(viewableWalls.containsKey(nextCell)){
@@ -185,6 +184,8 @@ public abstract class Creature extends Entity {
                             }
                             break;
                         }
+                        x = nextX;
+                        y = nextY;
                     }
                 }
             }
