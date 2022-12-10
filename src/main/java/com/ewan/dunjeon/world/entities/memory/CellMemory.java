@@ -173,7 +173,7 @@ public class CellMemory extends Memory {
             sides.forEach((cellSide, oldVisibilityStatus) -> {
                 CellSideVisibility newVisibilityStatus = newData.sides.get(cellSide);
                 CellSideVisibility calculatedVisibility = switch (newVisibilityStatus) {
-                    case SEEN_PREVIOUSLY -> throw new IllegalStateException("*NEW* render data shouldn't' claim it's seen something in the past");
+                    case SEEN_PREVIOUSLY -> throw new IllegalStateException("NEW render data shouldn't claim that it has data about the past");
                     case SEE_PRESENT -> CellSideVisibility.SEE_PRESENT;
                     case NEVER_SEEN -> (oldVisibilityStatus == CellSideVisibility.NEVER_SEEN)
                                     ? CellSideVisibility.NEVER_SEEN
