@@ -170,9 +170,9 @@ public class CellMemory extends Memory {
 
             sides.replaceAll((cellSide, newVisibility) -> data.sides.put(cellSide,
                     switch (newVisibility) {
-                        case NEVER_SEEN -> data.sides.get(cellSide);
                         case SEEN_PREVIOUSLY -> throw new IllegalStateException("*NEW* render data shouldn't' claim it's seen something in the past");
                         case SEE_PRESENT -> CellSideVisibility.SEE_PRESENT;
+                        default -> data.sides.get(cellSide);
                     }
             ));
             this.shouldRenderWalls = data.shouldRenderWalls;
