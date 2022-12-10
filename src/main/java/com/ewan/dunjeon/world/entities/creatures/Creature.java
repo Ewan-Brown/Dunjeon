@@ -59,6 +59,12 @@ public abstract class Creature extends Entity {
         return floorMemoryMap.get(f);
     }
 
+    enum AxisAlignment {
+        VERTICAL,
+        HORIZONTAL,
+        DIAGONAL
+    }
+
     public void updateViewRange(){
         if(!floorMemoryMap.containsKey(getFloor())){
             floorMemoryMap.put(getFloor(), new FloorMemory(getFloor()));
@@ -96,38 +102,46 @@ public abstract class Creature extends Entity {
 
                 while (true) {
                     //The values of the next borders to be intersected
-                    int nextXIntersect = 0;
-                    int nextYIntersect = 0;
-                    boolean rayIsHorizontal = false;
-                    boolean rayIsVertical = false;
+                    int nextVerticalBorderIntersect = 0;
+                    int nextHorizontalBorderIntersect = 0;
+                    AxisAlignment rayDirection = null;
+                    AxisAlignment borderIntersectDirection = null;
 
                     if (dx == 0) {
-                        rayIsVertical = true;
+                        rayDirection = AxisAlignment.VERTICAL;
                     } else {
                         //Calculate by rounding up or down depending on direction
-                        nextXIntersect = (int) ((dx > 0) ? Math.ceil(x) : Math.floor(x));
+                        nextVerticalBorderIntersect = (int) ((dx > 0) ? Math.ceil(x) : Math.floor(x));
                     }
                     if (dy == 0) {
-                        rayIsHorizontal = true;
+                        rayDirection = AxisAlignment.HORIZONTAL;
                     } else {
                         //Calculate by rounding up or down depending on direction
-                        nextYIntersect = (int) ((dy > 0) ? Math.ceil(y) : Math.floor(y));
+                        nextHorizontalBorderIntersect = (int) ((dy > 0) ? Math.ceil(y) : Math.floor(y));
                     }
 
-                    float minStepsToIntersect;
-                    if (rayIsHorizontal && rayIsVertical) {
-                        throw new RuntimeException("Ray cast was both vertical and horizontal");
-                    } else if (rayIsHorizontal) {
-                        minStepsToIntersect = (nextXIntersect - x) / dx;
-                    } else if (rayIsVertical) {
-                        minStepsToIntersect = (nextYIntersect - y) / dy;
-                    } else {
-                        minStepsToIntersect = Math.min((nextXIntersect - x) / dx, (nextYIntersect - y) / dy);
+                    if(dx != 0 && dy != 0){
+                        rayDirection = AxisAlignment.DIAGONAL;
                     }
+
+                    float minStepsToIntersect = switch (rayDirection){
+                        case HORIZONTAL -> (nextVerticalBorderIntersect - x) / dx;
+                        case VERTICAL -> (nextHorizontalBorderIntersect - y) / dy;
+                        case DIAGONAL -> Math.min((nextVerticalBorderIntersect - x) / dx, (nextHorizontalBorderIntersect - y) / dy); //Don't worry sign is preserved :)
+                    };
+
+//                    borderIntersectDirection = switch (rayDirection){
+//                        case HORIZONTAL -> AxisAlignment.VERTICAL;
+//                        case VERTICAL -> AxisAlignment.HORIZONTAL;
+//                        case DIAGONAL -> ((nextVerticalBorderIntersect - x) / dx > (nextHorizontalBorderIntersect - y) / dy) ? ;
+//                    }
 
                     //To ensure we're in the next block, add a delta to hop over the intersection
                     // Decrease the second term if cells are being skipped over corners
-                    float stepsToNextIntersect = minStepsToIntersect + 0.001f;
+
+                    throw new RuntimeException("Continue here - see if you can use the location of the intersect and the dx/dy of the ray to analytically determine what the next block is. Should be easy enough (?)");
+
+                    float stepsToNextIntersect = minStepsToIntersect + 0.0001f;
 
                     float nextX = x + dx * stepsToNextIntersect;
                     float nextY = y + dy * stepsToNextIntersect;
@@ -149,7 +163,7 @@ public abstract class Creature extends Entity {
                         viewableCells.add(nextCell);
 
                         if(!nextCell.canBeSeenThrough(this)){
-                            //Figure out what wall this makes visible
+                            //Figure out what wall this collides with
 
                             float intersectX = x + dx * minStepsToIntersect;
                             float intersectY = y + dy * minStepsToIntersect;
