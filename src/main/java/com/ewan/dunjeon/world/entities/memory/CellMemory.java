@@ -7,6 +7,8 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 //Contains cell memory data on cell and furniture
 public class CellMemory extends Memory {
@@ -165,17 +167,22 @@ public class CellMemory extends Memory {
             this.shouldRenderWalls = shouldRenderWalls;
         }
 
-        public void update(CellRenderData data){
-            this.color = data.color;
+        public void update(CellRenderData newData){
+            this.color = newData.color;
 
-            sides.replaceAll((cellSide, newVisibility) -> data.sides.put(cellSide,
-                    switch (newVisibility) {
-                        case SEEN_PREVIOUSLY -> throw new IllegalStateException("*NEW* render data shouldn't' claim it's seen something in the past");
-                        case SEE_PRESENT -> CellSideVisibility.SEE_PRESENT;
-                        default -> data.sides.get(cellSide);
-                    }
-            ));
-            this.shouldRenderWalls = data.shouldRenderWalls;
+            sides.forEach((cellSide, oldVisibilityStatus) -> {
+                CellSideVisibility newVisibilityStatus = newData.sides.get(cellSide);
+                CellSideVisibility calculatedVisibility = switch (newVisibilityStatus) {
+                    case SEEN_PREVIOUSLY -> throw new IllegalStateException("*NEW* render data shouldn't' claim it's seen something in the past");
+                    case SEE_PRESENT -> CellSideVisibility.SEE_PRESENT;
+                    case NEVER_SEEN -> (oldVisibilityStatus == CellSideVisibility.NEVER_SEEN)
+                                    ? CellSideVisibility.NEVER_SEEN
+                                    : CellSideVisibility.SEEN_PREVIOUSLY;
+                };
+                sides.put(cellSide, calculatedVisibility);
+            });
+
+            this.shouldRenderWalls = newData.shouldRenderWalls;
         }
 
         private Color color;
