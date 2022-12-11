@@ -103,6 +103,13 @@ public abstract class Creature extends Entity {
                 int steps = 0;
 
                 while (true) {
+
+//                    System.out.println("steps = " + steps);
+//                    System.out.println("x = " + x);
+//                    System.out.println("y = " + y);
+//                    System.out.println();
+
+
                     //The values of the next borders to be intersected
                     int nextVerticalBorderIntersect = 0;
                     int nextHorizontalBorderIntersect = 0;
@@ -182,10 +189,7 @@ public abstract class Creature extends Entity {
                     int nextBlockX = (int) Math.floor(nextX);
                     int nextBlockY = (int) Math.floor(nextY);
 
-//                    System.out.println(borderIntersectDirection);
-//                    System.out.println(nextBlockX - nextBlockX2);
-//                    System.out.println(nextBlockY - nextBlockY2);
-//                    System.out.println();
+
 
                     nextBlockY = nextBlockY2;
                     nextBlockX = nextBlockX2;
@@ -201,14 +205,13 @@ public abstract class Creature extends Entity {
 
                     boolean isBroke = false;
 
-                    if(currentCell.isFilled() && nextCell.isFilled()){
-                        isBroke = true;
-                    }
+
 
                     if (nextCell == null || nextCell == getContainingCell() || exceedsRange) {
                         break;
 
-                    } else{
+                    } else {
+                        isBroke = currentCell.isFilled() && nextCell.isFilled();
                         viewableCells.add(nextCell);
 
                         if(!nextCell.canBeSeenThrough(this) && !isBroke){
@@ -250,8 +253,8 @@ public abstract class Creature extends Entity {
                         x = nextX;
                         y = nextY;
                     }
+                    steps++;
                 }
-                steps++;
             }
         }
 
