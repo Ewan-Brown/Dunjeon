@@ -15,6 +15,10 @@ public class BasicCell implements Updateable {
     Furniture furniture;
     public Color color;
 
+    public boolean isFilled() {
+        return filled;
+    }
+
     private boolean filled; //TODO Replace this with something a little more flexible?
 
     public BasicCell(int x, int y, Floor f, Color c) {
