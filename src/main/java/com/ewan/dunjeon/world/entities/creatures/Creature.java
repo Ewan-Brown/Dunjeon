@@ -124,22 +124,54 @@ public abstract class Creature extends Entity {
                         rayDirection = AxisAlignment.DIAGONAL;
                     }
 
+
+
                     float minStepsToIntersect = switch (rayDirection){
                         case HORIZONTAL -> (nextVerticalBorderIntersect - x) / dx;
                         case VERTICAL -> (nextHorizontalBorderIntersect - y) / dy;
                         case DIAGONAL -> Math.min((nextVerticalBorderIntersect - x) / dx, (nextHorizontalBorderIntersect - y) / dy); //Don't worry sign is preserved :)
                     };
 
-//                    borderIntersectDirection = switch (rayDirection){
-//                        case HORIZONTAL -> AxisAlignment.VERTICAL;
-//                        case VERTICAL -> AxisAlignment.HORIZONTAL;
-//                        case DIAGONAL -> ((nextVerticalBorderIntersect - x) / dx > (nextHorizontalBorderIntersect - y) / dy) ? ;
-//                    }
+                    borderIntersectDirection = switch (rayDirection){
+                        case HORIZONTAL -> AxisAlignment.VERTICAL;
+                        case VERTICAL -> AxisAlignment.HORIZONTAL;
+                        case DIAGONAL -> ((nextVerticalBorderIntersect - x) / dx < (nextHorizontalBorderIntersect - y) / dy) ? AxisAlignment.VERTICAL : AxisAlignment.HORIZONTAL;
+                    };
+
+                    int currentBlockX = (int)Math.floor(x);
+                    int currentBlockY = (int)Math.floor(y);
+
+                    int nextBlockX2 = 0;
+                    int nextBlockY2 = 0;
+
+                    if(borderIntersectDirection == AxisAlignment.HORIZONTAL){
+                        int ySignum = (int)Math.signum(dy);
+
+                        if(ySignum == -1){
+                            nextBlockY2 = currentBlockY - 1;
+                            nextBlockX2 = currentBlockX;
+                        }else if(ySignum == 1){
+                            nextBlockY2 = currentBlockY + 1;
+                            nextBlockX2 = currentBlockX;
+                        }else{
+                            throw new IllegalStateException();
+                        }
+                    }else if(borderIntersectDirection == AxisAlignment.VERTICAL){
+                        int xSignum = (int)Math.signum(dx);
+
+                        if(xSignum == -1){
+                            nextBlockX2 = currentBlockX - 1;
+                            nextBlockY2 = currentBlockY;
+                        }else if(xSignum == 1){
+                            nextBlockX2 = currentBlockX + 1;
+                            nextBlockY2 = currentBlockY;
+                        }else{
+                            throw new IllegalStateException();
+                        }
+                    }
 
                     //To ensure we're in the next block, add a delta to hop over the intersection
                     // Decrease the second term if cells are being skipped over corners
-
-                    throw new RuntimeException("Continue here - see if you can use the location of the intersect and the dx/dy of the ray to analytically determine what the next block is. Should be easy enough (?)");
 
                     float stepsToNextIntersect = minStepsToIntersect + 0.0001f;
 
@@ -147,6 +179,14 @@ public abstract class Creature extends Entity {
                     float nextY = y + dy * stepsToNextIntersect;
                     int nextBlockX = (int) Math.floor(nextX);
                     int nextBlockY = (int) Math.floor(nextY);
+
+                    System.out.println(borderIntersectDirection);
+                    System.out.println(nextBlockX - nextBlockX2);
+                    System.out.println(nextBlockY - nextBlockY2);
+                    System.out.println();
+
+                    nextBlockY = nextBlockY2;
+                    nextBlockX = nextBlockX2;
 
                     //Check if the distance of this ray now exceeds max radius
                     float xDist = nextX - getPosX();
