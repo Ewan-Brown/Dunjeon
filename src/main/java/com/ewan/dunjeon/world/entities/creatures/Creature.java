@@ -150,18 +150,18 @@ public abstract class Creature extends Entity {
                     int currentBlockX = (int)Math.floor(x);
                     int currentBlockY = (int)Math.floor(y);
 
-                    int nextBlockX2 = 0;
-                    int nextBlockY2 = 0;
+                    int nextBlockX = 0;
+                    int nextBlockY = 0;
 
                     if(borderIntersectDirection == AxisAlignment.HORIZONTAL){
                         int ySignum = (int)Math.signum(dy);
 
                         if(ySignum == -1){
-                            nextBlockY2 = currentBlockY - 1;
-                            nextBlockX2 = currentBlockX;
+                            nextBlockY = currentBlockY - 1;
+                            nextBlockX = currentBlockX;
                         }else if(ySignum == 1){
-                            nextBlockY2 = currentBlockY + 1;
-                            nextBlockX2 = currentBlockX;
+                            nextBlockY = currentBlockY + 1;
+                            nextBlockX = currentBlockX;
                         }else{
                             throw new IllegalStateException();
                         }
@@ -169,11 +169,11 @@ public abstract class Creature extends Entity {
                         int xSignum = (int)Math.signum(dx);
 
                         if(xSignum == -1){
-                            nextBlockX2 = currentBlockX - 1;
-                            nextBlockY2 = currentBlockY;
+                            nextBlockX = currentBlockX - 1;
+                            nextBlockY = currentBlockY;
                         }else if(xSignum == 1){
-                            nextBlockX2 = currentBlockX + 1;
-                            nextBlockY2 = currentBlockY;
+                            nextBlockX = currentBlockX + 1;
+                            nextBlockY = currentBlockY;
                         }else{
                             throw new IllegalStateException();
                         }
@@ -186,13 +186,6 @@ public abstract class Creature extends Entity {
 
                     float nextX = x + dx * stepsToNextIntersect;
                     float nextY = y + dy * stepsToNextIntersect;
-                    int nextBlockX = (int) Math.floor(nextX);
-                    int nextBlockY = (int) Math.floor(nextY);
-
-
-
-                    nextBlockY = nextBlockY2;
-                    nextBlockX = nextBlockX2;
 
                     //Check if the distance of this ray now exceeds max radius
                     float xDist = nextX - getPosX();
@@ -203,15 +196,11 @@ public abstract class Creature extends Entity {
                     BasicCell currentCell = getContainingCell().getFloor().getCellAt(currentBlockX, currentBlockY);
                     BasicCell nextCell = getContainingCell().getFloor().getCellAt(nextBlockX, nextBlockY);
 
-                    boolean isBroke = false;
-
-
-
                     if (nextCell == null || nextCell == getContainingCell() || exceedsRange) {
                         break;
 
                     } else {
-                        isBroke = currentCell.isFilled() && nextCell.isFilled();
+                        boolean isBroke = currentCell.isFilled() && nextCell.isFilled();
                         viewableCells.add(nextCell);
 
                         if(!nextCell.canBeSeenThrough(this) && !isBroke){
