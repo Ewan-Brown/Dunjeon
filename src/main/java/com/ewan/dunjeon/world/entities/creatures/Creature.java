@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public abstract class Creature extends Entity {
     public Creature(Color c, String name) {
         super(c, name);
-        sightRange = 5;
+        sightRange = 3;
         health = 10;
         friction = 2;
     }
@@ -102,14 +102,14 @@ public abstract class Creature extends Entity {
 
                 int steps = 0;
 
+                BasicCell previousCell = null;
+
+                System.out.println("*************************");
                 while (true) {
 
-//                    System.out.println("steps = " + steps);
-//                    System.out.println("x = " + x);
-//                    System.out.println("y = " + y);
-//                    System.out.println();
-
-
+                    System.out.println();
+                    System.out.println("x = " + x);
+                    System.out.println("y = " + y);
                     //The values of the next borders to be intersected
                     int nextVerticalBorderIntersect = 0;
                     int nextHorizontalBorderIntersect = 0;
@@ -179,6 +179,7 @@ public abstract class Creature extends Entity {
                         }
                     }
 
+
                     //To ensure we're in the next block, add a delta to hop over the intersection
                     // Decrease the second term if cells are being skipped over corners
 
@@ -193,48 +194,57 @@ public abstract class Creature extends Entity {
                     float squaredDist = xDist * xDist + yDist * yDist;
                     boolean exceedsRange = squaredDist > sightRange * sightRange;
 
-                    BasicCell currentCell = getContainingCell().getFloor().getCellAt(currentBlockX, currentBlockY);
-                    BasicCell nextCell = getContainingCell().getFloor().getCellAt(nextBlockX, nextBlockY);
+                    BasicCell currentCell = getFloor().getCellAt(currentBlockX, currentBlockY);
+                    BasicCell nextCell = getFloor().getCellAt(nextBlockX, nextBlockY);
 
                     if (nextCell == null || nextCell == getContainingCell() || exceedsRange) {
                         break;
 
                     } else {
-                        boolean isBroke = currentCell.isFilled() && nextCell.isFilled();
+                        boolean isBroke = currentCell.isFilled();
+
+                        if(isBroke){
+                            System.out.println("It gone broke! :(");
+                            System.out.println("getPoint2DLoc() = " + getPoint2DLoc());
+                            System.out.println("previousCell = " + previousCell);
+                            System.out.println("currentCell = " + currentCell);
+                            System.out.println("nextCell = " + nextCell);
+                        }
+
                         viewableCells.add(nextCell);
 
-                        if(!nextCell.canBeSeenThrough(this) && !isBroke){
+//                        if(!nextCell.canBeSeenThrough(this) && !isBroke){
+                        if(!nextCell.canBeSeenThrough(this)){
                             //Figure out what wall this collides with
-
                             float intersectX = x + dx * minStepsToIntersect;
                             float intersectY = y + dy * minStepsToIntersect;
 
                             float yDiff = intersectY - (nextBlockY + 0.5f);
                             float xDiff = intersectX - (nextBlockX + 0.5f);
 
-                            float angle = (float)Math.atan2(yDiff, xDiff);
+                            float angle = (float) Math.atan2(yDiff, xDiff);
 
-                            if(angle < 0){
-                                angle += (float)Math.PI*2;
+                            if (angle < 0) {
+                                angle += (float) Math.PI * 2;
                             }
 
-                            float quarterPI = (float)Math.PI/4f;
+                            float quarterPI = (float) Math.PI / 4f;
 
                             BasicCell.CellSide visibleSide = null;
 
-                            if(angle > quarterPI * 7 || angle < quarterPI * 1){
+                            if (angle > quarterPI * 7 || angle < quarterPI * 1) {
                                 visibleSide = BasicCell.CellSide.EAST;
-                            }else if(angle < quarterPI * 3){
+                            } else if (angle < quarterPI * 3) {
                                 visibleSide = BasicCell.CellSide.SOUTH;
-                            }else if(angle < quarterPI * 5){
+                            } else if (angle < quarterPI * 5) {
                                 visibleSide = BasicCell.CellSide.WEST;
-                            }else if(angle < quarterPI * 7){
+                            } else if (angle < quarterPI * 7) {
                                 visibleSide = BasicCell.CellSide.NORTH;
                             }
 
-                            if(viewableWalls.containsKey(nextCell)){
+                            if (viewableWalls.containsKey(nextCell)) {
                                 viewableWalls.get(nextCell).add(visibleSide);
-                            }else{
+                            } else {
                                 viewableWalls.put(nextCell, new ArrayList<>(Collections.singleton(visibleSide)));
                             }
                             break;
@@ -243,6 +253,7 @@ public abstract class Creature extends Entity {
                         y = nextY;
                     }
                     steps++;
+                    previousCell = currentCell;
                 }
             }
         }
