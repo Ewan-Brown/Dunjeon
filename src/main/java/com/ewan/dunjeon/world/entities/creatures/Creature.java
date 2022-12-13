@@ -173,19 +173,9 @@ public abstract class Creature extends Entity {
                         break;
 
                     } else {
-                        boolean isBroke = currentCell.isFilled();
-
-                        if(isBroke){
-                            System.out.println("It gone broke! :(");
-                            System.out.println("getPoint2DLoc() = " + getPoint2DLoc());
-                            System.out.println("previousCell = " + previousCell);
-                            System.out.println("currentCell = " + currentCell);
-                            System.out.println("nextCell = " + nextCell);
-                        }
 
                         viewableCells.add(nextCell);
 
-//                        if(!nextCell.canBeSeenThrough(this) && !isBroke){
                         if(!nextCell.canBeSeenThrough(this)){
                             //Figure out what wall this collides with
 
