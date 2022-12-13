@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public abstract class Creature extends Entity {
     public Creature(Color c, String name) {
         super(c, name);
-        sightRange = 3;
+        sightRange = 10;
         health = 10;
         friction = 2;
     }
@@ -97,31 +97,36 @@ public abstract class Creature extends Entity {
                 float currentAngle = angleDiv * i;
                 float dx = (float) Math.cos(currentAngle);
                 float dy = (float) Math.sin(currentAngle);
+
                 float x = getPosX();
                 float y = getPosY();
+
+                int currentBlockX = (int)Math.floor(x);
+                int currentBlockY = (int)Math.floor(y);
+
+                float slope = (float) Math.tan(currentAngle);
+                float b = y - slope*x;
 
                 int steps = 0;
 
                 BasicCell previousCell = null;
 
                 System.out.println("*************************");
+                System.out.println("currentAngle = " + 180 * currentAngle / (Math.PI));
                 while (true) {
 
-                    System.out.println();
-                    System.out.println("x = " + x);
-                    System.out.println("y = " + y);
+//                    System.out.println();
+//                    System.out.println("steps = " + steps);
+//                    System.out.println("x = " + x);
+//                    System.out.println("y = " + y);
                     //The values of the next borders to be intersected
-                    int nextVerticalBorderIntersect = 0;
-                    int nextHorizontalBorderIntersect = 0;
-                    AxisAlignment rayDirection = null;
-                    AxisAlignment borderIntersectDirection = null;
+                    int nextVerticalBorderIntersect = Integer.MAX_VALUE;
+                    int nextHorizontalBorderIntersect = Integer.MAX_VALUE;
 
-                    if(steps > 10){
-                        System.out.printf("Het");
-                    }
+//                    int currentBlockX = (int)Math.floor(x);
+//                    int currentBlockY = (int)Math.floor(y);
 
                     if (dx == 0) {
-                        rayDirection = AxisAlignment.VERTICAL;
                     } else {
                         //Check if x is an exact integer
                         if(Math.ceil(x) == x){
@@ -131,7 +136,6 @@ public abstract class Creature extends Entity {
                         }
                     }
                     if (dy == 0) {
-                        rayDirection = AxisAlignment.HORIZONTAL;
                     } else {
                         //Check if y is an exact integer
                         if(Math.ceil(y) == y){
@@ -141,68 +145,47 @@ public abstract class Creature extends Entity {
                         }
                     }
 
-                    if(dx != 0 && dy != 0){
-                        rayDirection = AxisAlignment.DIAGONAL;
+                    float stepsToNextHorizontalBorderIntersect = (nextHorizontalBorderIntersect - y) / dy;
+                    float stepsToNextVerticalBorderIntersect = (nextVerticalBorderIntersect - x) / dx;
+
+//                    System.out.println("stepsToNextVerticalBorderIntersect = " + stepsToNextVerticalBorderIntersect);
+//                    System.out.println("stepsToNextHorizontalBorderIntersect = " + stepsToNextHorizontalBorderIntersect);
+
+                    AxisAlignment borderIntersectionDirection = (stepsToNextHorizontalBorderIntersect < stepsToNextVerticalBorderIntersect) ? AxisAlignment.HORIZONTAL : AxisAlignment.VERTICAL;
+
+                    float nextIntersectX;
+                    float nextIntersectY;
+                    int nextBlockX;
+                    int nextBlockY;
+
+                    if(borderIntersectionDirection == AxisAlignment.HORIZONTAL) {
+                        nextIntersectY = nextHorizontalBorderIntersect;
+                        nextIntersectX = (nextIntersectY - b)/slope;
+
+                        nextBlockX = currentBlockX;
+                        nextBlockY = (int)(currentBlockY + Math.signum(dy));
+                    }else {
+                        nextIntersectX = nextVerticalBorderIntersect;
+                        nextIntersectY = slope*nextIntersectX + b;
+
+                        nextBlockX = (int)(currentBlockX + Math.signum(dx));
+                        nextBlockY = currentBlockY;
                     }
 
+//                    System.out.println("borderIntersectionDirection = " + borderIntersectionDirection);
+//                    System.out.println("nextIntersectX = " + nextIntersectX);
+//                    System.out.println("nextIntersectY = " + nextIntersectY);
+//                    System.out.println("currentBlockX = " + currentBlockX);
+//                    System.out.println("currentBlockY = " + currentBlockY);
+//                    System.out.println("nextBlockX = " + nextBlockX);
+//                    System.out.println("nextBlockY = " + nextBlockY);
 
 
-                    float minStepsToIntersect = switch (rayDirection){
-                        case HORIZONTAL -> (nextVerticalBorderIntersect - x) / dx;
-                        case VERTICAL -> (nextHorizontalBorderIntersect - y) / dy;
-                        case DIAGONAL -> Math.min((nextVerticalBorderIntersect - x) / dx, (nextHorizontalBorderIntersect - y) / dy); //Don't worry sign is preserved :)
-                    };
-
-                    borderIntersectDirection = switch (rayDirection){
-                        case HORIZONTAL -> AxisAlignment.VERTICAL;
-                        case VERTICAL -> AxisAlignment.HORIZONTAL;
-                        case DIAGONAL -> ((nextVerticalBorderIntersect - x) / dx < (nextHorizontalBorderIntersect - y) / dy) ? AxisAlignment.VERTICAL : AxisAlignment.HORIZONTAL;
-                    };
-
-                    int currentBlockX = (int)Math.floor(x);
-                    int currentBlockY = (int)Math.floor(y);
-
-                    int nextBlockX = 0;
-                    int nextBlockY = 0;
-
-                    if(borderIntersectDirection == AxisAlignment.HORIZONTAL){
-                        int ySignum = (int)Math.signum(dy);
-
-                        if(ySignum == -1){
-                            nextBlockY = currentBlockY - 1;
-                            nextBlockX = currentBlockX;
-                        }else if(ySignum == 1){
-                            nextBlockY = currentBlockY + 1;
-                            nextBlockX = currentBlockX;
-                        }else{
-                            throw new IllegalStateException();
-                        }
-                    }else if(borderIntersectDirection == AxisAlignment.VERTICAL){
-                        int xSignum = (int)Math.signum(dx);
-
-                        if(xSignum == -1){
-                            nextBlockX = currentBlockX - 1;
-                            nextBlockY = currentBlockY;
-                        }else if(xSignum == 1){
-                            nextBlockX = currentBlockX + 1;
-                            nextBlockY = currentBlockY;
-                        }else{
-                            throw new IllegalStateException();
-                        }
-                    }
-
-
-                    //To ensure we're in the next block, add a delta to hop over the intersection
-                    // Decrease the second term if cells are being skipped over corners
-
-                    float stepsToNextIntersect = minStepsToIntersect + 0.0001f;
-
-                    float nextX = x + dx * stepsToNextIntersect;
-                    float nextY = y + dy * stepsToNextIntersect;
+//                    int nextBlockY = (int)Math.floor(nextY);
 
                     //Check if the distance of this ray now exceeds max radius
-                    float xDist = nextX - getPosX();
-                    float yDist = nextY - getPosY();
+                    float xDist = nextBlockX - getPosX();
+                    float yDist = nextBlockY - getPosY();
                     float squaredDist = xDist * xDist + yDist * yDist;
                     boolean exceedsRange = squaredDist > sightRange * sightRange;
 
@@ -228,11 +211,9 @@ public abstract class Creature extends Entity {
 //                        if(!nextCell.canBeSeenThrough(this) && !isBroke){
                         if(!nextCell.canBeSeenThrough(this)){
                             //Figure out what wall this collides with
-                            float intersectX = x + dx * minStepsToIntersect;
-                            float intersectY = y + dy * minStepsToIntersect;
 
-                            float yDiff = intersectY - (nextBlockY + 0.5f);
-                            float xDiff = intersectX - (nextBlockX + 0.5f);
+                            float yDiff = y - (nextBlockY + 0.5f);
+                            float xDiff = x - (nextBlockX + 0.5f);
 
                             float angle = (float) Math.atan2(yDiff, xDiff);
 
@@ -261,11 +242,13 @@ public abstract class Creature extends Entity {
                             }
                             break;
                         }
-                        x = nextX;
-                        y = nextY;
+                        x = nextIntersectX;
+                        y = nextIntersectY;
                     }
                     steps++;
                     previousCell = currentCell;
+                    currentBlockX = nextBlockX;
+                    currentBlockY = nextBlockY;
                 }
             }
         }
