@@ -107,24 +107,15 @@ public abstract class Creature extends Entity {
                 float slope = (float) Math.tan(currentAngle);
                 float b = y - slope*x;
 
-                int steps = 0;
 
                 BasicCell previousCell = null;
 
-                System.out.println("*************************");
-                System.out.println("currentAngle = " + 180 * currentAngle / (Math.PI));
                 while (true) {
 
-//                    System.out.println();
-//                    System.out.println("steps = " + steps);
-//                    System.out.println("x = " + x);
-//                    System.out.println("y = " + y);
                     //The values of the next borders to be intersected
                     int nextVerticalBorderIntersect = Integer.MAX_VALUE;
                     int nextHorizontalBorderIntersect = Integer.MAX_VALUE;
 
-//                    int currentBlockX = (int)Math.floor(x);
-//                    int currentBlockY = (int)Math.floor(y);
 
                     if (dx == 0) {
                     } else {
@@ -148,9 +139,6 @@ public abstract class Creature extends Entity {
                     float stepsToNextHorizontalBorderIntersect = (nextHorizontalBorderIntersect - y) / dy;
                     float stepsToNextVerticalBorderIntersect = (nextVerticalBorderIntersect - x) / dx;
 
-//                    System.out.println("stepsToNextVerticalBorderIntersect = " + stepsToNextVerticalBorderIntersect);
-//                    System.out.println("stepsToNextHorizontalBorderIntersect = " + stepsToNextHorizontalBorderIntersect);
-
                     AxisAlignment borderIntersectionDirection = (stepsToNextHorizontalBorderIntersect < stepsToNextVerticalBorderIntersect) ? AxisAlignment.HORIZONTAL : AxisAlignment.VERTICAL;
 
                     float nextIntersectX;
@@ -171,17 +159,6 @@ public abstract class Creature extends Entity {
                         nextBlockX = (int)(currentBlockX + Math.signum(dx));
                         nextBlockY = currentBlockY;
                     }
-
-//                    System.out.println("borderIntersectionDirection = " + borderIntersectionDirection);
-//                    System.out.println("nextIntersectX = " + nextIntersectX);
-//                    System.out.println("nextIntersectY = " + nextIntersectY);
-//                    System.out.println("currentBlockX = " + currentBlockX);
-//                    System.out.println("currentBlockY = " + currentBlockY);
-//                    System.out.println("nextBlockX = " + nextBlockX);
-//                    System.out.println("nextBlockY = " + nextBlockY);
-
-
-//                    int nextBlockY = (int)Math.floor(nextY);
 
                     //Check if the distance of this ray now exceeds max radius
                     float xDist = nextBlockX - getPosX();
@@ -245,7 +222,6 @@ public abstract class Creature extends Entity {
                         x = nextIntersectX;
                         y = nextIntersectY;
                     }
-                    steps++;
                     previousCell = currentCell;
                     currentBlockX = nextBlockX;
                     currentBlockY = nextBlockY;
