@@ -11,7 +11,7 @@ import java.util.List;
 //TODO Change visual processing here when necessary :)
 public class VisualProcessor {
     public static CellMemory.CellRenderData getVisual(BasicCell spotted, Entity spotter, List<BasicCell.CellSide> visibleSides){
-        return new CellMemory.CellRenderData(spotted, visibleSides, !spotted.canBeSeenThrough(spotter));
+        return new CellMemory.CellRenderData(spotted, visibleSides, spotted.isFilled());
     }
 
     public static CellMemory.FurnitureData.FurnitureRenderData getVisual(Furniture spotted, Entity spotter){

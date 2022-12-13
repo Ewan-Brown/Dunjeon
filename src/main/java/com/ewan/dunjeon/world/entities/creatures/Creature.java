@@ -179,33 +179,35 @@ public abstract class Creature extends Entity {
                         if(!nextCell.canBeSeenThrough(this)){
                             //Figure out what wall this collides with
 
-                            float yDiff = y - (nextBlockY + 0.5f);
-                            float xDiff = x - (nextBlockX + 0.5f);
+                            if(nextCell.isFilled()) {
+                                float yDiff = y - (nextBlockY + 0.5f);
+                                float xDiff = x - (nextBlockX + 0.5f);
 
-                            float angle = (float) Math.atan2(yDiff, xDiff);
+                                float angle = (float) Math.atan2(yDiff, xDiff);
 
-                            if (angle < 0) {
-                                angle += (float) Math.PI * 2;
-                            }
+                                if (angle < 0) {
+                                    angle += (float) Math.PI * 2;
+                                }
 
-                            float quarterPI = (float) Math.PI / 4f;
+                                float quarterPI = (float) Math.PI / 4f;
 
-                            BasicCell.CellSide visibleSide = null;
+                                BasicCell.CellSide visibleSide = null;
 
-                            if (angle > quarterPI * 7 || angle < quarterPI * 1) {
-                                visibleSide = BasicCell.CellSide.EAST;
-                            } else if (angle < quarterPI * 3) {
-                                visibleSide = BasicCell.CellSide.SOUTH;
-                            } else if (angle < quarterPI * 5) {
-                                visibleSide = BasicCell.CellSide.WEST;
-                            } else if (angle < quarterPI * 7) {
-                                visibleSide = BasicCell.CellSide.NORTH;
-                            }
+                                if (angle > quarterPI * 7 || angle < quarterPI * 1) {
+                                    visibleSide = BasicCell.CellSide.EAST;
+                                } else if (angle < quarterPI * 3) {
+                                    visibleSide = BasicCell.CellSide.SOUTH;
+                                } else if (angle < quarterPI * 5) {
+                                    visibleSide = BasicCell.CellSide.WEST;
+                                } else if (angle < quarterPI * 7) {
+                                    visibleSide = BasicCell.CellSide.NORTH;
+                                }
 
-                            if (viewableWalls.containsKey(nextCell)) {
-                                viewableWalls.get(nextCell).add(visibleSide);
-                            } else {
-                                viewableWalls.put(nextCell, new ArrayList<>(Collections.singleton(visibleSide)));
+                                if (viewableWalls.containsKey(nextCell)) {
+                                    viewableWalls.get(nextCell).add(visibleSide);
+                                } else {
+                                    viewableWalls.put(nextCell, new ArrayList<>(Collections.singleton(visibleSide)));
+                                }
                             }
                             break;
                         }
