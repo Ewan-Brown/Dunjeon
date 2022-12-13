@@ -28,7 +28,7 @@ public abstract class Entity implements Updateable {
 
     public String getName(){return name;}
 
-    Color color;
+    protected Color color;
 
     public Entity(Color c, String name){
         this.color = c;

@@ -2,9 +2,9 @@ package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.Creature;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.SimpleProjectile;
+import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.SoundManager;
 
@@ -20,9 +20,12 @@ import static com.ewan.dunjeon.game.Main.rand;
 public class World implements KeyListener {
 
     private static World w = new World();
+    private float time = 0;
     private SoundManager soundManager = new SoundManager();
 
-    private Creature player;
+    public float getTime(){return time;}
+
+    private Player player;
     public static World getInstance(){return w;}
 
     List<Floor> floors = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
@@ -32,11 +35,8 @@ public class World implements KeyListener {
 
 
     /**
-     * Adds a entity at a random location On a level.
-     * TODO Add exception handling when there is no valid spots
-     * @param e
-     * @param l
-     * @return
+     * Adds ,man entity at a random location On a level.
+     * <i>TODO Add exception handling when there is no valid spots</i>
      */
     public boolean addEntityRandomLoc(Entity e, Floor l){
         List<BasicCell> validCells =  l.getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).collect(Collectors.toList());
@@ -62,12 +62,11 @@ public class World implements KeyListener {
         f.addEntity(e);
     }
 
-
-
     /*
     Updates the game, returns true if the game is over.
      */
     public boolean update(){
+        time++;
         if(player.isDead()){
             System.out.println("Game over! Player dead.");
             return true;
@@ -89,26 +88,27 @@ public class World implements KeyListener {
 
     double playerInteractionDist = 1.5;
 
+    float playerSpeed = 0.03f;
 
-    public Creature getPlayer(){
+    public Player getPlayer(){
         return player;
     }
 
-    public void setPlayer(Creature p){ player = p;}
+    public void setPlayer(Player p){ player = p;}
 
     //TODO Make a nice wrapper for this to make managing controls easier!
     public void doControls(){
         if(keySet[KeyEvent.VK_UP]){
-            player.addVelocity(0.0f,-0.003f);
+            player.addVelocity(0.0f,-playerSpeed);
         }
         if(keySet[KeyEvent.VK_DOWN]){
-            player.addVelocity(0.0f,+0.003f);
+            player.addVelocity(0.0f,+playerSpeed);
         }
         if(keySet[KeyEvent.VK_LEFT]){
-            player.addVelocity(-0.003f,0.0f);
+            player.addVelocity(-playerSpeed,0.0f);
         }
         if(keySet[KeyEvent.VK_RIGHT]){
-            player.addVelocity(0.003f, 0.0f);
+            player.addVelocity(playerSpeed, 0.0f);
         }
         if(keySet[KeyEvent.VK_SPACE]){
             //Prevents instant repeat on hold
@@ -138,6 +138,12 @@ public class World implements KeyListener {
             Entity e = new SimpleProjectile(Color.RED, "Projectile");
             e.setVelocity((rand.nextFloat() - 0.5f) / 30f,(rand.nextFloat() - 0.5f) / 30f + 0.01f);
             addEntityAtLoc(e, player.getFloor(), player.getPosX(), player.getPosY());
+        }
+
+        //Test function
+        if(keySet[KeyEvent.VK_Z]){
+            keySet[KeyEvent.VK_Z] = false;
+            System.out.println(player.getPoint2DLoc());
         }
     }
 

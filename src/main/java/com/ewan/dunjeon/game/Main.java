@@ -3,7 +3,10 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
-import com.ewan.dunjeon.world.entities.*;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.world.entities.creatures.Monster;
+import com.ewan.dunjeon.world.entities.creatures.NPC;
+import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 
@@ -19,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) {
         long seed = rand.nextInt();
-        seed = -1380589433;
+        seed = -1380589431;
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 
@@ -47,15 +50,15 @@ public class Main {
 
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Creature testPlayer = new Player(Color.BLUE, "Player");
+        Player testPlayer = new Player(Color.BLUE, "Player");
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 
-        Monster testMonster = new Monster(Color.GREEN, "Monster");
-        w.addEntityRandomLoc(testMonster, startFloor);
-
-        NPC testNPC = new NPC(Color.CYAN, "NPC");
-        w.addEntityRandomLoc(testNPC, startFloor);
+//        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
+//        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
+//        w.addEntityRandomLoc(testMonster, startFloor);
+//        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
+//        w.addEntityRandomLoc(testNPC, startFloor);
 
         liveDisplay.startDrawing(w);
         while (true) {

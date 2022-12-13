@@ -1,7 +1,8 @@
 package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.world.World;
-import com.ewan.dunjeon.world.entities.Creature;
+import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
@@ -9,12 +10,16 @@ import com.ewan.dunjeon.world.level.Floor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 
 public class LiveDisplay {
-    private final int scale = 20;
+    private final int scale = 10;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
+
+//    public static ArrayList<Point> debugCells;
+    public static HashMap<Point, Color> debugCells = new HashMap<>();
 //    private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
 //    private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
     public static boolean SHOW_ALL_TILES = false;
@@ -61,6 +66,10 @@ public class LiveDisplay {
                                         processedCellColor = new Color(rawColor.getRed() / 3, rawColor.getGreen() / 3, rawColor.getBlue() / 3);
                                     }
 
+                                    Point p = new Point(x, y);
+                                    if (debugCells != null && debugCells.containsKey(p)) {
+                                        processedCellColor = debugCells.get(p);
+                                    }
 
                                     //Draw Furniture if it exists
                                     CellMemory.FurnitureData furnitureData = data.furnitureData;
@@ -73,19 +82,51 @@ public class LiveDisplay {
                                         }
 
                                     }
-                                }
-                                graphics.setColor(processedCellColor);
-                                graphics.fillRect(x * scale, y * scale, scale, scale);
-                                if (processedFurnitureColor != null) {
-                                    CellMemory.FurnitureData fData = data.furnitureData;
-                                    int fX = (int) ((fData.getPosX() - fData.getSize() / 2f) * scale);
-                                    int fY = (int) ((fData.getPosY() - fData.getSize() / 2f) * scale);
-                                    int fSize = (int) (fData.getSize() * scale);
-                                    graphics.setColor(processedFurnitureColor);
-                                    graphics.fillRect(fX, fY, fSize, fSize);
-                                    if (fData.isInteractable()) {
-                                        graphics.setColor(Color.BLACK);
-                                        graphics.drawRect(fX, fY, fSize - 1, fSize - 1);
+
+                                    graphics.setColor(processedCellColor);
+
+                                    //***************************
+                                    // RENDER WALLS IF NECESSARY
+                                    //***************************
+
+                                    int wallThickness = (int) Math.ceil(scale / 3.0);
+
+                                    int x1 = x * scale;
+                                    int x2 = x * scale + scale;
+                                    int y1 = y * scale;
+                                    int y2 = y * scale + scale;
+
+                                    if (data.cellRenderData.shouldRenderWalls()) {
+                                        for (BasicCell.CellSide cellSide : data.cellRenderData.getSides().keySet()) {
+                                            Color c = switch (data.cellRenderData.getSides().get(cellSide)) {
+                                                case SEE_PRESENT -> data.cellRenderData.getColor();
+                                                case SEEN_PREVIOUSLY -> processedCellColor;
+                                                default -> null;
+                                            };
+                                            if (c != null) {
+                                                switch (cellSide) {
+                                                    case EAST -> graphics.fillRect(x2 - wallThickness, y1, wallThickness, scale);
+                                                    case WEST -> graphics.fillRect(x1, y1, wallThickness, scale);
+                                                    case NORTH -> graphics.fillRect(x1, y1, scale, wallThickness);
+                                                    case SOUTH -> graphics.fillRect(x1, y2 - wallThickness, scale, wallThickness);
+
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        graphics.fillRect(x * scale, y * scale, scale, scale);
+                                        if (processedFurnitureColor != null) {
+                                            CellMemory.FurnitureData fData = data.furnitureData;
+                                            int fX = (int) ((fData.getPosX() - fData.getSize() / 2f) * scale);
+                                            int fY = (int) ((fData.getPosY() - fData.getSize() / 2f) * scale);
+                                            int fSize = (int) (fData.getSize() * scale);
+                                            graphics.setColor(processedFurnitureColor);
+                                            graphics.fillRect(fX, fY, fSize, fSize);
+                                            if (fData.isInteractable()) {
+                                                graphics.setColor(Color.BLACK);
+                                                graphics.drawRect(fX, fY, fSize - 1, fSize - 1);
+                                            }
+                                        }
                                     }
                                 }
 
