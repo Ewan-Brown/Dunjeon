@@ -116,17 +116,29 @@ public abstract class Creature extends Entity {
                     AxisAlignment rayDirection = null;
                     AxisAlignment borderIntersectDirection = null;
 
+                    if(steps > 10){
+                        System.out.printf("Het");
+                    }
+
                     if (dx == 0) {
                         rayDirection = AxisAlignment.VERTICAL;
                     } else {
-                        //Calculate by rounding up or down depending on direction
-                        nextVerticalBorderIntersect = (int) ((dx > 0) ? Math.ceil(x) : Math.floor(x));
+                        //Check if x is an exact integer
+                        if(Math.ceil(x) == x){
+                            nextVerticalBorderIntersect = (int) (x + Math.signum(dx));
+                        }else {
+                            nextVerticalBorderIntersect = (int) ((dx > 0) ? Math.ceil(x) : Math.floor(x));
+                        }
                     }
                     if (dy == 0) {
                         rayDirection = AxisAlignment.HORIZONTAL;
                     } else {
-                        //Calculate by rounding up or down depending on direction
-                        nextHorizontalBorderIntersect = (int) ((dy > 0) ? Math.ceil(y) : Math.floor(y));
+                        //Check if y is an exact integer
+                        if(Math.ceil(y) == y){
+                            nextHorizontalBorderIntersect = (int) (y + Math.signum(dy));
+                        }else {
+                            nextHorizontalBorderIntersect = (int) ((dy > 0) ? Math.ceil(y) : Math.floor(y));
+                        }
                     }
 
                     if(dx != 0 && dy != 0){
