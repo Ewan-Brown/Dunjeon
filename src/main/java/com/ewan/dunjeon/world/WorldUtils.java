@@ -83,8 +83,6 @@ public class WorldUtils {
         //Iterate across intersects and find tiles
         while (true) {
 
-            System.out.println("*".repeat(50));
-            System.out.println("current : " + currentX + " " + currentY);
             float nextVerticalIntersect = 0;
             float distToNextVerticalIntersect = Float.MAX_VALUE;
             float nextHorizontalIntersect = 0;
@@ -107,12 +105,6 @@ public class WorldUtils {
                 }
                 distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
             }
-
-            System.out.println("nextHorizontalIntersect = " + nextHorizontalIntersect);
-            System.out.println("nextVerticalIntersect = " + nextVerticalIntersect);
-
-            System.out.println("distToNextHorizontalIntersect = " + distToNextHorizontalIntersect);
-            System.out.println("distToNextVerticalIntersect = " + distToNextVerticalIntersect);
 
             float nextInterceptX, nextInterceptY;
 

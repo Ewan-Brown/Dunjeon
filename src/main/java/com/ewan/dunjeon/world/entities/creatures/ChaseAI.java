@@ -45,7 +45,6 @@ public class ChaseAI extends AIState {
         }
         if(!targetMemory.isOldData() && cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED)){
 
-            System.out.println("DIRECT TO TARGET!");
 
             float angle = (float)Math.atan2(targetMemory.getY() - hostEntity.getPosY(),targetMemory.getX() - hostEntity.getPosX());
 
@@ -53,7 +52,6 @@ public class ChaseAI extends AIState {
 
         }else {
 
-            System.out.println("PATHING!");
 
             boolean pathValid = true;
 

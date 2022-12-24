@@ -2,6 +2,7 @@ package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.world.Interactable;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
@@ -19,6 +20,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class Creature extends Entity {
@@ -248,16 +250,19 @@ public abstract class Creature extends Entity {
                         currentCell.getX(), currentCell.getY(), isCreatureWithinThisCell, viewableWalls.get(currentCell));
                 currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
             }
-            //Iterate through entities who are in cell within view range. May miss some entities?
 
             for (Entity entity : getFloor().getEntities()) {
                 if(entity != this && viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this)) {
-                    boolean chattable = false;
-                    if (chatInteractive == entity) {
-                        chattable = true;
+                    List<Point> intersectingTiles = WorldUtils.getIntersectedTiles(getPosX(), getPosY(), entity.getPosX(), entity.getPosY());
+                    List<CellMemory> cellMemories = new ArrayList<>();
+                    for (Point intersectingTile : intersectingTiles) {
+                        cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile));
                     }
-                    EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
-                    currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);
+                    if(cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED)) {
+                        boolean chattable = (chatInteractive == entity);
+                        EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
+                        currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);
+                    }
                 }
             }
 
