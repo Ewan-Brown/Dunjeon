@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,28 +99,28 @@ public class World implements KeyListener {
 
     //TODO Make a nice wrapper for this to make managing controls easier!
     public void doControls(){
-        if(keySet[KeyEvent.VK_UP]){
+        if(keySet.get(KeyEvent.VK_UP)){
             player.addVelocity(0.0f,-playerSpeed);
         }
-        if(keySet[KeyEvent.VK_DOWN]){
+        if(keySet.get(KeyEvent.VK_DOWN)){
             player.addVelocity(0.0f,+playerSpeed);
         }
-        if(keySet[KeyEvent.VK_LEFT]){
+        if(keySet.get(KeyEvent.VK_LEFT)){
             player.addVelocity(-playerSpeed,0.0f);
         }
-        if(keySet[KeyEvent.VK_RIGHT]){
+        if(keySet.get(KeyEvent.VK_RIGHT)){
             player.addVelocity(playerSpeed, 0.0f);
         }
-        if(keySet[KeyEvent.VK_SPACE]){
+        if(keySet.get(KeyEvent.VK_SPACE)){
             //Prevents instant repeat on hold
-            keySet[KeyEvent.VK_SPACE] = false;
+            keySet.set(KeyEvent.VK_SPACE, false);
             Interactable i = getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
             if(i != null){
                 i.onInteract(player, Interactable.InteractionType.TOUCH);
             }
         }
-        if(keySet[KeyEvent.VK_T]){
-            keySet[KeyEvent.VK_T] = false;
+        if(keySet.get(KeyEvent.VK_T)){
+            keySet.set(KeyEvent.VK_T, false);
             Interactable i = getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
             if(i != null){
                 i.onInteract(player, Interactable.InteractionType.CHAT);
@@ -127,22 +128,22 @@ public class World implements KeyListener {
         }
 
         //Display all tiles if supported
-        if(keySet[KeyEvent.VK_M]){
-            keySet[KeyEvent.VK_M] = false;
+        if(keySet.get(KeyEvent.VK_M)){
+            keySet.set(KeyEvent.VK_M, false);
             LiveDisplay.SHOW_ALL_TILES = !LiveDisplay.SHOW_ALL_TILES;
         }
 
         //Fire projectile in random direction
-        if(keySet[KeyEvent.VK_R]){
-            keySet[KeyEvent.VK_R] = false;
+        if(keySet.get(KeyEvent.VK_R)){
+            keySet.set(KeyEvent.VK_R, false);
             Entity e = new SimpleProjectile(Color.RED, "Projectile");
             e.setVelocity((rand.nextFloat() - 0.5f) / 30f,(rand.nextFloat() - 0.5f) / 30f + 0.01f);
             addEntityAtLoc(e, player.getFloor(), player.getPosX(), player.getPosY());
         }
 
         //Test function
-        if(keySet[KeyEvent.VK_Z]){
-            keySet[KeyEvent.VK_Z] = false;
+        if(keySet.get(KeyEvent.VK_Z)){
+            keySet.set(KeyEvent.VK_Z, false);
             System.out.println(player.getPoint2DLoc());
         }
     }
@@ -189,7 +190,7 @@ public class World implements KeyListener {
     }
 
 
-    private boolean[] keySet = new boolean[256];
+    private final BitSet keySet = new BitSet();
 
     @Override
     public void keyTyped(KeyEvent keyEvent) {
@@ -197,11 +198,11 @@ public class World implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        keySet[keyEvent.getKeyCode()] = true;
+        keySet.set(keyEvent.getKeyCode(), true);
     }
 
     @Override
     public void keyReleased(KeyEvent keyEvent) {
-        keySet[keyEvent.getKeyCode()] = false;
+        keySet.set(keyEvent.getKeyCode(), false);
     }
 }
