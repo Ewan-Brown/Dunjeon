@@ -2,7 +2,9 @@ package com.ewan.dunjeon.world.entities.memory;
 
 import com.ewan.dunjeon.world.level.Floor;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class FloorMemory{
@@ -24,8 +26,16 @@ public class FloorMemory{
         return cellMemoryArray[y][x];
     }
 
+    public CellMemory getDataAt(Point p){
+        return cellMemoryArray[p.y][p.x];
+    }
+
     public Stream<CellMemory> streamCellData(){
         return Arrays.stream(cellMemoryArray).flatMap(Arrays::stream);
+    }
+
+    public CellMemory getCellMemoryOfEntityMemoryLocation(EntityMemory mem){
+        return getDataAt((int)Math.floor(mem.getX()), (int)Math.floor(mem.getY()));
     }
 
     public List<EntityMemory> getEntityMemory() {return new ArrayList<>(entityMemories.values());}

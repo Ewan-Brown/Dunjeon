@@ -8,7 +8,7 @@ import java.awt.*;
 //TODO Make stairs furniture
 public class Stair extends BasicCell{
     private Stair(int x, int y, Floor f, Direction dir) {
-        super(x, y, f, Color.WHITE);
+        super(x, y, f, Color.DARK_GRAY);
         this.dir = dir;
     }
 

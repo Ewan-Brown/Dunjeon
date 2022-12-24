@@ -111,7 +111,7 @@ public class Floor {
             e.onCollideWithWall(collidedCell);
         }
 
-        e.addVelocity(fX/100f, fY/100f);
+        e.addVelocity(fX/10f, fY/10f);
 
     }
 

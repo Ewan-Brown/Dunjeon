@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ChaseAI extends AIState {
@@ -26,6 +28,7 @@ public class ChaseAI extends AIState {
 
     public ChaseAI(Creature e, long targetUUID) {
         super(e);
+        this.targetUUID = targetUUID;
     }
 
     //TODO Make this smarter by pathfinding with adjusted weights based on whether a cell has been explored or not,
@@ -35,47 +38,60 @@ public class ChaseAI extends AIState {
         EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
         Point targetPoint = new Point((int)Math.floor(targetMemory.getX()), (int)Math.floor(targetMemory.getY()));
 
-        boolean pathValid = true;
+        List<Point> intersectedCells = WorldUtils.getIntersectedTiles(hostEntity.getPosX(), hostEntity.getPosY(), targetMemory.getX(), targetMemory.getY());
+        List<CellMemory> cellMemories = new ArrayList<>();
+        for (Point intersectedCell : intersectedCells) {
+            cellMemories.add(hostEntity.getCurrentFloorMemory().getDataAt(intersectedCell));
+        }
+        if(!targetMemory.isOldData() && cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED)){
 
-        if(Objects.isNull(currentPath)){
-            pathValid = false;
-        }
-        else if(currentPath.isEmpty()){
-            pathValid = false;
-        }
-        else if(currentPath.stream().anyMatch(point -> hostEntity.getCurrentFloorMemory().getDataAt(point.x, point.y).enterable == CellMemory.EnterableStatus.CLOSED)){
-            pathValid = false;
-        }else if(!WorldUtils.isAdjacent(currentPath.get(currentPath.size()-1), targetPoint) ){
-            pathValid = false;
-        }
+            System.out.println("DIRECT TO TARGET!");
 
-        if(!pathValid){
-            Point p = new Point((int)Math.floor(targetMemory.getX()), (int)Math.floor(targetMemory.getY()));
-            float[][] weights = getWeightMapFromMemory();
-            currentPath = PathFinding.getAStarPath(weights, new Point((int)hostEntity.getPosX(), (int)hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
-            if(currentPath == null){
-                targetUnreachable = true;
-            }
-            else if(!currentPath.isEmpty()){
-                Collections.reverse(currentPath);
-            }
-        }
+            float angle = (float)Math.atan2(targetMemory.getY() - hostEntity.getPosY(),targetMemory.getX() - hostEntity.getPosX());
 
-        else{
-            Point nextNode = currentPath.get(0);
-            float targetX = nextNode.x + 0.5f;
-            float targetY = nextNode.y + 0.5f;
-            float distToNextTile = WorldUtils.getRawDistance(hostEntity.getPosX(), targetX, hostEntity.getPosY(), targetY);
-            float angleToNextTile = (float) Math.atan2(targetY - hostEntity.getPosY(), targetX - hostEntity.getPosX());
-            if(distToNextTile > WorldUtils.ENTITY_WITHIN_TILE_THRESHOLD){
-                float speed = hostEntity.getWalkSpeed() * Math.min(1, distToNextTile*2);
-                float velX = speed * (float)Math.cos(angleToNextTile);
-                float velY = speed * (float)Math.sin(angleToNextTile);
-                hostEntity.addVelocity(velX, velY);
-            }else{
-                currentPath.remove(0);
+            hostEntity.addVelocity((float)Math.cos(angle) * hostEntity.getWalkSpeed(), (float)Math.sin(angle) * hostEntity.getWalkSpeed());
+
+        }else {
+
+            System.out.println("PATHING!");
+
+            boolean pathValid = true;
+
+            if (Objects.isNull(currentPath)) {
+                pathValid = false;
+            } else if (currentPath.isEmpty()) {
+                pathValid = false;
+            } else if (currentPath.stream().anyMatch(point -> hostEntity.getCurrentFloorMemory().getDataAt(point.x, point.y).enterable == CellMemory.EnterableStatus.CLOSED)) {
+                pathValid = false;
+            } else if (!WorldUtils.isAdjacent(currentPath.get(currentPath.size() - 1), targetPoint)) {
+                pathValid = false;
             }
 
+            if (!pathValid) {
+                Point p = new Point((int) Math.floor(targetMemory.getX()), (int) Math.floor(targetMemory.getY()));
+                float[][] weights = getWeightMapFromMemory();
+                currentPath = PathFinding.getAStarPath(weights, new Point((int) hostEntity.getPosX(), (int) hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
+                if (currentPath == null) {
+                    targetUnreachable = true;
+                } else if (!currentPath.isEmpty()) {
+                    Collections.reverse(currentPath);
+                }
+            } else {
+                Point nextNode = currentPath.get(0);
+                float targetX = nextNode.x + 0.5f;
+                float targetY = nextNode.y + 0.5f;
+                float distToNextTile = WorldUtils.getRawDistance(hostEntity.getPosX(), targetX, hostEntity.getPosY(), targetY);
+                float angleToNextTile = (float) Math.atan2(targetY - hostEntity.getPosY(), targetX - hostEntity.getPosX());
+                if (distToNextTile > WorldUtils.ENTITY_WITHIN_TILE_THRESHOLD) {
+                    float speed = hostEntity.getWalkSpeed() * Math.min(1, distToNextTile * 2);
+                    float velX = speed * (float) Math.cos(angleToNextTile);
+                    float velY = speed * (float) Math.sin(angleToNextTile);
+                    hostEntity.addVelocity(velX, velY);
+                } else {
+                    currentPath.remove(0);
+                }
+
+            }
         }
 
     }
@@ -85,9 +101,16 @@ public class ChaseAI extends AIState {
         @Override
         public boolean canContinue() {
 
-            if(hostEntity.getCurrentFloorMemory().getEntity(targetUUID) != null && !targetUnreachable) {
-                EntityMemory targetMem = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
-                return (WorldUtils.getRawDistance(hostEntity.getPosX(), targetMem.getX(), hostEntity.getPosY(), targetMem.getY()) >= desiredDistToTarget);
+            EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
+
+            if(targetMemory != null && !targetUnreachable) {
+                if(!hostEntity.getCurrentFloorMemory().getCellMemoryOfEntityMemoryLocation(targetMemory).isOldData() && targetMemory.isOldData()){
+                    //Found location of entity memory but no sign of entity nearby. Stop searching you fool
+                    if((int)hostEntity.getPosX() == (int)targetMemory.getX() && (int)hostEntity.getPosY() == (int)targetMemory.getY()) {
+                        return false;
+                    }
+                }
+               return (WorldUtils.getRawDistance(hostEntity.getPosX(), targetMemory.getX(), hostEntity.getPosY(), targetMemory.getY()) >= desiredDistToTarget);
             }else{
                 return false;
             }

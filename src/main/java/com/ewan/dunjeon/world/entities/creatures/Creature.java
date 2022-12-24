@@ -59,7 +59,7 @@ public abstract class Creature extends Entity {
         return floorMemoryMap.get(f);
     }
 
-    enum AxisAlignment {
+    public enum AxisAlignment {
         VERTICAL,
         HORIZONTAL,
         DIAGONAL
@@ -250,13 +250,15 @@ public abstract class Creature extends Entity {
             }
             //Iterate through entities who are in cell within view range. May miss some entities?
 
-            for (Entity entity : getFloor().getEntities().stream().filter(entity -> entity != this && viewableCells.contains(entity.getContainingCell())).collect(Collectors.toList())) {
-                boolean chattable = false;
-                if(chatInteractive == entity){
-                    chattable = true;
+            for (Entity entity : getFloor().getEntities()) {
+                if(entity != this && viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this)) {
+                    boolean chattable = false;
+                    if (chatInteractive == entity) {
+                        chattable = true;
+                    }
+                    EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
+                    currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);
                 }
-                EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
-                currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);
             }
 
         }

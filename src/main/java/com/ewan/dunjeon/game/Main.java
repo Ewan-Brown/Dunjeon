@@ -22,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) {
         long seed = rand.nextInt();
-        seed = -1380589431;
+        seed = 1227902434;
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 
@@ -34,7 +34,7 @@ public class Main {
 
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(40, 40);
-            generator.generateLeafs(5, 10);
+            generator.generateLeafs(10, 1);
             generator.generateDoors(2, 3, 2);
             generator.generateWeightMap();
             generator.generateHalls();
@@ -55,8 +55,8 @@ public class Main {
         w.setPlayer(testPlayer);
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
-//        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
-//        w.addEntityRandomLoc(testMonster, startFloor);
+        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
+        w.addEntityRandomLoc(testMonster, startFloor);
 //        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
 //        w.addEntityRandomLoc(testNPC, startFloor);
 
