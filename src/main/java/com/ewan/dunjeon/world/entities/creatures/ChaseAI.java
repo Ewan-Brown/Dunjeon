@@ -31,8 +31,6 @@ public class ChaseAI extends AIState {
         this.targetUUID = targetUUID;
     }
 
-    //TODO Make this smarter by pathfinding with adjusted weights based on whether a cell has been explored or not,
-    // i.e add a discount to weights on unexplored cells
     public void process(){
 
         EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
