@@ -29,7 +29,12 @@ public class CreatureWithAI extends Creature {
 
     private void processAI(){
 
+        System.out.println();
+        System.out.println("CreatureWithAI.processAI");
+
         boolean currentStateCanContinue = currentState != null && currentState.getStateData().canContinue();
+
+        System.out.println("currentStateCanContinue = " + currentStateCanContinue);
 
         int highestPossibleStatePriority = -1;
         AIStateGenerator highestPriorityGenerator = null;
@@ -45,12 +50,17 @@ public class CreatureWithAI extends Creature {
             }
         }
 
+        System.out.println("highestPossibleStatePriority = " + highestPossibleStatePriority);
+
         if(highestPossibleStatePriority == -1){
             throw new IllegalStateException("No valid states found by AI at this time! This is catastrophic!");
         } else{
             if(highestPossibleStatePriority < currentStatePriority || currentStatePriority == -1 || !currentStateCanContinue){
+                System.out.println("Switching to new state!");
                 currentState = highestPriorityGenerator.AIStateSupplier.apply(this);
                 currentStatePriority = highestPossibleStatePriority;
+            }else{
+                System.out.println("Continuing with current state!");
             }
             currentState.process();
         }

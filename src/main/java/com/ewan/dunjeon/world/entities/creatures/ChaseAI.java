@@ -33,6 +33,9 @@ public class ChaseAI extends AIState {
 
     public void process(){
 
+        System.out.println();
+        System.out.println("ChaseAI.process");
+
         EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
         Point targetPoint = new Point((int)Math.floor(targetMemory.getX()), (int)Math.floor(targetMemory.getY()));
 
@@ -100,9 +103,14 @@ public class ChaseAI extends AIState {
             EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
 
             if(targetMemory != null && !targetUnreachable) {
-                if(!hostEntity.getCurrentFloorMemory().getCellMemoryOfEntityMemoryLocation(targetMemory).isOldData() && targetMemory.isOldData()){
+                CellMemory targetLastLocationCellMemory = hostEntity.getCurrentFloorMemory().getCellMemoryOfEntityMemoryLocation(targetMemory);
+                System.out.println("targetLastLocationCellMemory = " + targetLastLocationCellMemory);
+                System.out.println("targetLastLocationCellMemory Is Old? = " + targetLastLocationCellMemory.isOldData());
+                System.out.println("target Is Old? = " + targetMemory.isOldData());
+                if(!targetLastLocationCellMemory.isOldData() && targetMemory.isOldData()){
                     //Found location of entity memory but no sign of entity nearby. Stop searching you fool
-                    if((int)hostEntity.getPosX() == (int)targetMemory.getX() && (int)hostEntity.getPosY() == (int)targetMemory.getY()) {
+                    //Also stop searching if the target's last location is no longer enterable
+                    if(targetLastLocationCellMemory.enterable == CellMemory.EnterableStatus.CLOSED ||((int)hostEntity.getPosX() == (int)targetMemory.getX() && (int)hostEntity.getPosY() == (int)targetMemory.getY())){
                         return false;
                     }
                 }
