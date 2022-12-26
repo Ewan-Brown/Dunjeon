@@ -262,9 +262,6 @@ public abstract class Creature extends Entity {
                         cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile));
                     }
                     if(cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED) || true_sight_debug) {
-                        if(this instanceof Monster){
-                            System.out.println("cellMemories = " + cellMemories);
-                        }
                         boolean chattable = (chatInteractive == entity);
                         EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
                         currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);
