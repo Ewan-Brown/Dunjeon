@@ -121,7 +121,7 @@ public class WorldUtils {
                 intersectAlignment = Creature.AxisAlignment.HORIZONTAL;
             }
 
-            if (Math.abs(nextInterceptX - x1) > dx || Math.abs(nextInterceptY - y1) > dy ) {
+            if (Math.abs(nextInterceptX - x1) > Math.abs(dx) || Math.abs(nextInterceptY - y1) > Math.abs(dy) ) {
                 break;
             } else {
                 int nextTileX, nextTileY;

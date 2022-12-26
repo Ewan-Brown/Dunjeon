@@ -75,7 +75,7 @@ public class World implements KeyListener {
         soundManager.propogateSounds();
         doControls();
         getPlayer().getFloor().update();
-        getPlayer().updateViewRange();
+//        getPlayer().updateViewRange();
         return false;
     }
 

@@ -33,8 +33,6 @@ public class ChaseAI extends AIState {
 
     public void process(){
 
-        System.out.println();
-        System.out.println("ChaseAI.process");
 
         EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
         Point targetPoint = new Point((int)Math.floor(targetMemory.getX()), (int)Math.floor(targetMemory.getY()));
@@ -104,9 +102,6 @@ public class ChaseAI extends AIState {
 
             if(targetMemory != null && !targetUnreachable) {
                 CellMemory targetLastLocationCellMemory = hostEntity.getCurrentFloorMemory().getCellMemoryOfEntityMemoryLocation(targetMemory);
-                System.out.println("targetLastLocationCellMemory = " + targetLastLocationCellMemory);
-                System.out.println("targetLastLocationCellMemory Is Old? = " + targetLastLocationCellMemory.isOldData());
-                System.out.println("target Is Old? = " + targetMemory.isOldData());
                 if(!targetLastLocationCellMemory.isOldData() && targetMemory.isOldData()){
                     //Found location of entity memory but no sign of entity nearby. Stop searching you fool
                     //Also stop searching if the target's last location is no longer enterable

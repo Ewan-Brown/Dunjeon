@@ -253,13 +253,18 @@ public abstract class Creature extends Entity {
             }
 
             for (Entity entity : getFloor().getEntities()) {
-                if(entity != this && viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug) {
+                if(entity != this && (viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug)) {
+
+                    
                     List<Point> intersectingTiles = WorldUtils.getIntersectedTiles(getPosX(), getPosY(), entity.getPosX(), entity.getPosY());
                     List<CellMemory> cellMemories = new ArrayList<>();
                     for (Point intersectingTile : intersectingTiles) {
                         cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile));
                     }
                     if(cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED) || true_sight_debug) {
+                        if(this instanceof Monster){
+                            System.out.println("cellMemories = " + cellMemories);
+                        }
                         boolean chattable = (chatInteractive == entity);
                         EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
                         currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);

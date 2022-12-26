@@ -91,6 +91,10 @@ public class CellMemory extends Memory {
         CLOSED //A wall, a locked door
     }
 
+    public String toString(){
+        return String.format("%d, %d", getPoint().x, getPoint().y);
+    }
+
     public static class FurnitureData {
         private float xCenter;
         private float yCenter;
