@@ -127,10 +127,9 @@ public class World implements KeyListener {
             }
         }
 
-        //Display all tiles if supported
         if(keySet.get(KeyEvent.VK_M)){
             keySet.set(KeyEvent.VK_M, false);
-            LiveDisplay.SHOW_ALL_TILES = !LiveDisplay.SHOW_ALL_TILES;
+            LiveDisplay.SHOW_GRID = !LiveDisplay.SHOW_GRID;
         }
 
         //Fire projectile in random direction

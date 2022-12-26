@@ -165,7 +165,6 @@ public class WorldUtils {
         float slope = dy / dx;
         float b = y1 - slope * x1;
 
-
         float currentX = x1;
         float currentY = y1;
 

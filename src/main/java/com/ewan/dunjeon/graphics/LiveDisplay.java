@@ -19,19 +19,8 @@ public class LiveDisplay {
     private JFrame frame;
     private JPanel panel;
 
-//    public static ArrayList<Point> debugCells;
     public static HashMap<Point, Color> debugCells = new HashMap<>();
-//    private static List<BasicCell> DEBUG_CELLS = new ArrayList<>();
-//    private static List<Point2D[]> DEBUG_LINES = new ArrayList<>();
-    public static boolean SHOW_ALL_TILES = false;
-
-//    public static void setDebugCells(List<BasicCell> cells) {
-//        DEBUG_CELLS = cells;
-//    }
-
-//    public static void setDebugLines(List<Point2D[]> lines) {
-//        DEBUG_LINES = lines;
-//    }
+    public static boolean SHOW_GRID = false;
 
     public void startDrawing(World w){
         if(frame == null) {
@@ -90,7 +79,7 @@ public class LiveDisplay {
                                     // RENDER WALLS IF NECESSARY
                                     //***************************
 
-                                    int wallThickness = (int) Math.ceil(scale / 3.0);
+                                    int wallThickness = (int) Math.ceil(scale / 2.0);
 
                                     int x1 = x * scale;
                                     int x2 = x * scale + scale;
@@ -159,6 +148,18 @@ public class LiveDisplay {
                         
                     }
 
+                    if(SHOW_GRID) {
+
+                        graphics.setColor(Color.BLACK);
+                        for (int x = 0; x < lev.getWidth(); x++) {
+                            graphics.drawLine(x * scale, 0, x * scale, lev.getHeight() * scale);
+                        }
+
+                        for (int y = 0; y < lev.getHeight(); y++) {
+                            graphics.drawLine(0, y * scale, lev.getWidth() * scale, y * scale);
+                        }
+
+                    }
 
                 }
             };
