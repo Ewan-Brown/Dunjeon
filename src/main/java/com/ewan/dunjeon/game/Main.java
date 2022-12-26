@@ -55,8 +55,8 @@ public class Main {
         w.setPlayer(testPlayer);
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
-        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
-        w.addEntityRandomLoc(testMonster, startFloor);
+//        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
+//        w.addEntityRandomLoc(testMonster, startFloor);
 //        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
 //        w.addEntityRandomLoc(testNPC, startFloor);
 

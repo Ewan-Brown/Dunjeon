@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public class Player extends Creature {
     public Player(Color c, String name) {
         super(c, name);
-        true_sight_debug = true;
+//        true_sight_debug;
     }
 
     @Override

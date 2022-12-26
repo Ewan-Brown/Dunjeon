@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.world.World;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
@@ -97,7 +98,7 @@ public class LiveDisplay {
                                     int y2 = y * scale + scale;
 
                                     if (data.cellRenderData.shouldRenderWalls()) {
-                                        for (BasicCell.CellSide cellSide : data.cellRenderData.getSides().keySet()) {
+                                        for (WorldUtils.Side cellSide : data.cellRenderData.getSides().keySet()) {
                                             Color c = switch (data.cellRenderData.getSides().get(cellSide)) {
                                                 case SEE_PRESENT -> data.cellRenderData.getColor();
                                                 case SEEN_PREVIOUSLY -> processedCellColor;

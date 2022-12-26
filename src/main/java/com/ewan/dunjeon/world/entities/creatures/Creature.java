@@ -2,6 +2,7 @@ package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.world.Interactable;
+import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
@@ -79,7 +80,7 @@ public abstract class Creature extends Entity {
         //Update Visual Memory
         //***********
         Set<BasicCell> viewableCells = new HashSet<>();
-        HashMap<BasicCell, List<BasicCell.CellSide>> viewableWalls = new HashMap<>();
+        HashMap<BasicCell, List<WorldUtils.Side>> viewableWalls = new HashMap<>();
 
         //Use enough rays that we don't skip over whole cells.
         //Arc length : r = al
@@ -97,130 +98,35 @@ public abstract class Creature extends Entity {
 
             for (int i = 0; i < rays; i++) {
                 float currentAngle = angleDiv * i;
-                float dx = (float) Math.cos(currentAngle);
-                float dy = (float) Math.sin(currentAngle);
+                List<Pair<Point, WorldUtils.Side>> intersectedTiles = WorldUtils.getIntersectedTilesWithWall(this.getPosX(), this.getPosY(),
+                        this.getPosX() + (float)Math.cos(currentAngle) * sightRange, this.getPosY() + (float)Math.sin(currentAngle) * sightRange);
 
-                float x = getPosX();
-                float y = getPosY();
+                for (Pair<Point, WorldUtils.Side> pair : intersectedTiles) {
 
-                int currentBlockX = (int)Math.floor(x);
-                int currentBlockY = (int)Math.floor(y);
+                    Point intersectedPoint = pair.getElement0();
+                    WorldUtils.Side intersectedSide = pair.getElement1();
 
-                float slope = (float) Math.tan(currentAngle);
-                float b = y - slope*x;
+                    BasicCell cell = getFloor().getCellAt(intersectedPoint);
 
-
-                BasicCell previousCell = null;
+                    if(cell == null){
+                        break;
+                    }
+                    viewableCells.add(cell);
+                    if(!cell.canBeSeenThrough(this)){
+//
+                        if(cell.isFilled()){
+                            if (viewableWalls.containsKey(cell)) {
+                                    viewableWalls.get(cell).add(intersectedSide);
+                                } else {
+                                    viewableWalls.put(cell, new ArrayList<>(Collections.singleton(intersectedSide)));
+                                }
+                        }
+                        break;
+                    }
+                }
 
                 //TODO Reuse WorldUtils.getIntersectingTiles here. This was the prototype and can be mostly removed.
-                while (true) {
-
-                    //The values of the next borders to be intersected
-                    int nextVerticalBorderIntersect = Integer.MAX_VALUE;
-                    int nextHorizontalBorderIntersect = Integer.MAX_VALUE;
-
-
-                    if (dx == 0) {
-                    } else {
-                        //Check if x is an exact integer
-                        if(Math.ceil(x) == x){
-                            nextVerticalBorderIntersect = (int) (x + Math.signum(dx));
-                        }else {
-                            nextVerticalBorderIntersect = (int) ((dx > 0) ? Math.ceil(x) : Math.floor(x));
-                        }
-                    }
-                    if (dy == 0) {
-                    } else {
-                        //Check if y is an exact integer
-                        if(Math.ceil(y) == y){
-                            nextHorizontalBorderIntersect = (int) (y + Math.signum(dy));
-                        }else {
-                            nextHorizontalBorderIntersect = (int) ((dy > 0) ? Math.ceil(y) : Math.floor(y));
-                        }
-                    }
-
-                    float stepsToNextHorizontalBorderIntersect = (nextHorizontalBorderIntersect - y) / dy;
-                    float stepsToNextVerticalBorderIntersect = (nextVerticalBorderIntersect - x) / dx;
-
-                    AxisAlignment borderIntersectionDirection = (stepsToNextHorizontalBorderIntersect < stepsToNextVerticalBorderIntersect) ? AxisAlignment.HORIZONTAL : AxisAlignment.VERTICAL;
-
-                    float nextIntersectX;
-                    float nextIntersectY;
-                    int nextBlockX;
-                    int nextBlockY;
-
-                    if(borderIntersectionDirection == AxisAlignment.HORIZONTAL) {
-                        nextIntersectY = nextHorizontalBorderIntersect;
-                        nextIntersectX = (nextIntersectY - b)/slope;
-
-                        nextBlockX = currentBlockX;
-                        nextBlockY = (int)(currentBlockY + Math.signum(dy));
-                    }else {
-                        nextIntersectX = nextVerticalBorderIntersect;
-                        nextIntersectY = slope*nextIntersectX + b;
-
-                        nextBlockX = (int)(currentBlockX + Math.signum(dx));
-                        nextBlockY = currentBlockY;
-                    }
-
-                    //Check if the distance of this ray now exceeds max radius
-                    float xDist = nextBlockX - getPosX();
-                    float yDist = nextBlockY - getPosY();
-                    float squaredDist = xDist * xDist + yDist * yDist;
-                    boolean exceedsRange = squaredDist > sightRange * sightRange;
-
-                    BasicCell currentCell = getFloor().getCellAt(currentBlockX, currentBlockY);
-                    BasicCell nextCell = getFloor().getCellAt(nextBlockX, nextBlockY);
-
-                    if (nextCell == null || nextCell == getContainingCell() || exceedsRange) {
-                        break;
-
-                    } else {
-
-                        viewableCells.add(nextCell);
-
-                        if(!nextCell.canBeSeenThrough(this)){
-                            //Figure out what wall this collides with
-
-                            if(nextCell.isFilled()) {
-                                float yDiff = y - (nextBlockY + 0.5f);
-                                float xDiff = x - (nextBlockX + 0.5f);
-
-                                float angle = (float) Math.atan2(yDiff, xDiff);
-
-                                if (angle < 0) {
-                                    angle += (float) Math.PI * 2;
-                                }
-
-                                float quarterPI = (float) Math.PI / 4f;
-
-                                BasicCell.CellSide visibleSide = null;
-
-                                if (angle > quarterPI * 7 || angle < quarterPI * 1) {
-                                    visibleSide = BasicCell.CellSide.EAST;
-                                } else if (angle < quarterPI * 3) {
-                                    visibleSide = BasicCell.CellSide.SOUTH;
-                                } else if (angle < quarterPI * 5) {
-                                    visibleSide = BasicCell.CellSide.WEST;
-                                } else if (angle < quarterPI * 7) {
-                                    visibleSide = BasicCell.CellSide.NORTH;
-                                }
-
-                                if (viewableWalls.containsKey(nextCell)) {
-                                    viewableWalls.get(nextCell).add(visibleSide);
-                                } else {
-                                    viewableWalls.put(nextCell, new ArrayList<>(Collections.singleton(visibleSide)));
-                                }
-                            }
-                            break;
-                        }
-                        x = nextIntersectX;
-                        y = nextIntersectY;
-                    }
-                    previousCell = currentCell;
-                    currentBlockX = nextBlockX;
-                    currentBlockY = nextBlockY;
-                }
+//
             }
         }
 

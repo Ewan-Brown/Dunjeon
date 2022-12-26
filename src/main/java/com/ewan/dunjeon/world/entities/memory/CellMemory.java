@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.world.entities.memory;
 
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
@@ -12,7 +13,7 @@ import java.util.function.Predicate;
 
 //Contains cell memory data on cell and furniture
 public class CellMemory extends Memory {
-    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y, boolean isHostWithinCell, java.util.List<BasicCell.CellSide> sides) {
+    public CellMemory(CellRenderData cellRenderData, FurnitureData fData, EnterableStatus e, int x, int y, boolean isHostWithinCell, java.util.List<WorldUtils.Side> sides) {
         super();
         this.cellRenderData = cellRenderData;
         this.enterable = e;
@@ -160,11 +161,11 @@ public class CellMemory extends Memory {
             SEE_PRESENT;
         }
 
-        public CellRenderData(BasicCell c, List<BasicCell.CellSide> visibleSides, boolean shouldRenderWalls) {
+        public CellRenderData(BasicCell c, List<WorldUtils.Side> visibleSides, boolean shouldRenderWalls) {
             this.color = c.color;
-            Arrays.stream(BasicCell.CellSide.values()).forEach(cellSide -> sides.put(cellSide, CellSideVisibility.NEVER_SEEN));
+            Arrays.stream(WorldUtils.Side.values()).forEach(cellSide -> sides.put(cellSide, CellSideVisibility.NEVER_SEEN));
             if(visibleSides != null) {
-                for (BasicCell.CellSide side : visibleSides) {
+                for (WorldUtils.Side side : visibleSides) {
                     sides.put(side, CellSideVisibility.SEE_PRESENT);
                 }
             }
@@ -190,17 +191,17 @@ public class CellMemory extends Memory {
         }
 
         private Color color;
-        private final HashMap<BasicCell.CellSide, CellSideVisibility> sides = new HashMap<>();
+        private final HashMap<WorldUtils.Side, CellSideVisibility> sides = new HashMap<>();
         private boolean shouldRenderWalls;
 
         public Color getColor() {
             return color;
         }
-        public CellSideVisibility isSideVisible(BasicCell.CellSide s){
+        public CellSideVisibility isSideVisible(WorldUtils.Side s){
             return sides.get(s);
         }
 
-        public HashMap<BasicCell.CellSide, CellSideVisibility> getSides() {
+        public HashMap<WorldUtils.Side, CellSideVisibility> getSides() {
             return sides;
         }
 

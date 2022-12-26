@@ -4,6 +4,7 @@ import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.level.Floor;
 
@@ -148,4 +149,105 @@ public class WorldUtils {
         }
         return intersectedTiles;
     }
+
+    public enum Side{
+        NORTH,
+        EAST,
+        SOUTH,
+        WEST,
+        WITHIN
+    }
+    public static List<Pair<Point, Side>> getIntersectedTilesWithWall(float x1, float y1, float x2, float y2) {
+
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+
+        float slope = dy / dx;
+        float b = y1 - slope * x1;
+
+
+        float currentX = x1;
+        float currentY = y1;
+
+        //TODO ADD FIRST POINT
+        List<Pair<Point, Side>> intersectedTiles = new ArrayList<>();
+        Point currentPoint = new Point((int) Math.floor(x1), (int) Math.floor(y1));
+
+        intersectedTiles.add(new Pair<>(currentPoint, Side.WITHIN));
+
+        //Iterate across intersects and find tiles
+        while (true) {
+
+            float nextVerticalIntersect = 0;
+            float distToNextVerticalIntersect = Float.MAX_VALUE;
+            float nextHorizontalIntersect = 0;
+            float distToNextHorizontalIntersect = Float.MAX_VALUE;
+
+            Side side;
+
+            if (dx != 0) {
+                if (currentX == Math.round(currentX)) {
+                    nextVerticalIntersect = currentX + Math.signum(dx);
+
+                } else {
+                    nextVerticalIntersect = (float) ((dx > 0) ? Math.ceil(currentX) : Math.floor(currentX));
+                }
+                distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
+            }
+            if (dy != 0) {
+                if (currentY == Math.round(currentY)) {
+                    nextHorizontalIntersect = currentY + Math.signum(dy);
+                } else {
+                    nextHorizontalIntersect = (float) ((dy > 0) ? Math.ceil(currentY) : Math.floor(currentY));
+                }
+                distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
+            }
+
+            float nextInterceptX, nextInterceptY;
+
+            Creature.AxisAlignment intersectAlignment;
+
+            if (distToNextVerticalIntersect < distToNextHorizontalIntersect) {
+                nextInterceptX = nextVerticalIntersect;
+                nextInterceptY = slope * nextInterceptX + b;
+                intersectAlignment = Creature.AxisAlignment.VERTICAL;
+
+                side = (dx > 0) ? Side.WEST : Side.EAST;
+
+            } else {
+                nextInterceptY = nextHorizontalIntersect;
+                nextInterceptX = (nextInterceptY - b) / slope;
+                intersectAlignment = Creature.AxisAlignment.HORIZONTAL;
+
+                side = (dy > 0) ? Side.NORTH :Side.SOUTH;
+            }
+
+            if (Math.abs(nextInterceptX - x1) > Math.abs(dx) || Math.abs(nextInterceptY - y1) > Math.abs(dy) ) {
+                break;
+            } else {
+                int nextTileX, nextTileY;
+
+                if (intersectAlignment == Creature.AxisAlignment.VERTICAL) {
+                    if (dx > 0) {
+                        nextTileX = (int) nextInterceptX;
+                    } else {
+                        nextTileX = (int) (nextInterceptX - 1);
+                    }
+                    nextTileY = (int) Math.floor(nextInterceptY);
+                } else {
+                    if (dy > 0) {
+                        nextTileY = (int) nextInterceptY;
+                    } else {
+                        nextTileY = (int) (nextInterceptY - 1);
+                    }
+                    nextTileX = (int) Math.floor(nextInterceptX);
+                }
+                intersectedTiles.add(new Pair<>(new Point(nextTileX, nextTileY), side));
+                currentX = nextInterceptX;
+                currentY = nextInterceptY;
+            }
+        }
+        return intersectedTiles;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.world.cells;
 
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
@@ -10,7 +11,7 @@ import java.util.List;
 
 //TODO Change visual processing here when necessary :)
 public class VisualProcessor {
-    public static CellMemory.CellRenderData getVisual(BasicCell spotted, Entity spotter, List<BasicCell.CellSide> visibleSides){
+    public static CellMemory.CellRenderData getVisual(BasicCell spotted, Entity spotter, List<WorldUtils.Side> visibleSides){
         return new CellMemory.CellRenderData(spotted, visibleSides, spotted.isFilled());
     }
 

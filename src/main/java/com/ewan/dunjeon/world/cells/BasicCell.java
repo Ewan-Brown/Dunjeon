@@ -90,7 +90,4 @@ public class BasicCell implements Updateable {
         return String.format("(%d, %d)", x, y);
     }
 
-    public enum CellSide{
-        NORTH,WEST,EAST,SOUTH
-    }
 }
