@@ -129,7 +129,7 @@ public class World implements KeyListener {
 
         if(keySet.get(KeyEvent.VK_M)){
             keySet.set(KeyEvent.VK_M, false);
-            LiveDisplay.SHOW_GRID = !LiveDisplay.SHOW_GRID;
+            LiveDisplay.RENDER_GRID = !LiveDisplay.RENDER_GRID;
         }
 
         //Fire projectile in random direction

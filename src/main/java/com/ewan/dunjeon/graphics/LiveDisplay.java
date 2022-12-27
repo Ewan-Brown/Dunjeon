@@ -2,7 +2,6 @@ package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
@@ -14,13 +13,15 @@ import java.awt.*;
 import java.util.HashMap;
 
 public class LiveDisplay {
-    private final int scale = 10;
+    private final int scale = 12;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
 
     public static HashMap<Point, Color> debugCells = new HashMap<>();
-    public static boolean SHOW_GRID = false;
+    public static boolean RENDER_GRID = false;
+    public static boolean RENDER_OLD_ENTITIES = false;
+
 
     public void startDrawing(World w){
         if(frame == null) {
@@ -128,27 +129,29 @@ public class LiveDisplay {
                         graphics.fillRect((int)((p.getPosX() - p.getSize()/2) * scale), (int)((p.getPosY() - p.getSize()/2) * scale), (int)(p.getSize() * scale) , (int)(p.getSize() * scale));
 
                         for (EntityMemory memory : World.getInstance().getPlayer().getFloorMemory(lev).getEntityMemory()) {
-                            float size = memory.getSize();
-                            float x = memory.getX();
-                            float y = memory.getY();
-                            int x1 = (int)((x - size/2f) * scale);
-                            int y1 = (int)((y - size/2f) * scale);
-                            Color c = memory.getRenderData().getColor();
-                            if(memory.isOldData()){
-                                c = new Color(c.getRed()/3, c.getGreen()/3, c.getBlue()/3);
-                            }
-                            graphics.setColor(c);
-                            graphics.fillRect(x1, y1, (int)(size * scale), (int)(size * scale));
+                            if(!memory.isOldData() || RENDER_OLD_ENTITIES) {
+                                float size = memory.getSize();
+                                float x = memory.getX();
+                                float y = memory.getY();
+                                int x1 = (int) ((x - size / 2f) * scale);
+                                int y1 = (int) ((y - size / 2f) * scale);
+                                Color c = memory.getRenderData().getColor();
+                                if (memory.isOldData()) {
+                                    c = new Color(c.getRed() / 3, c.getGreen() / 3, c.getBlue() / 3);
+                                }
+                                graphics.setColor(c);
+                                graphics.fillRect(x1, y1, (int) (size * scale), (int) (size * scale));
 
-                            if (memory.isInteractable()) {
-                                graphics.setColor(Color.BLACK);
-                                graphics.drawRect(x1, y1, (int)(scale*size - 1), (int)(scale*size - 1));
+                                if (memory.isInteractable()) {
+                                    graphics.setColor(Color.BLACK);
+                                    graphics.drawRect(x1, y1, (int) (scale * size - 1), (int) (scale * size - 1));
+                                }
                             }
                         }
                         
                     }
 
-                    if(SHOW_GRID) {
+                    if(RENDER_GRID) {
 
                         graphics.setColor(Color.BLACK);
                         for (int x = 0; x < lev.getWidth(); x++) {
