@@ -21,6 +21,24 @@ public abstract class Entity implements Updateable {
     protected float friction = 10;
     private float velY;
     private long UUID;
+    private Stance stance;
+
+    public enum Stance{
+
+        LAYING(true),
+        EMBEDDED(true),
+        STANDING(false),
+        FLYING(false);
+
+        public final boolean isUnmoving;
+
+
+        Stance(boolean b){
+            isUnmoving = b;
+        }
+
+
+    }
 
     private Floor floor;
 
@@ -136,4 +154,7 @@ public abstract class Entity implements Updateable {
     public float getSpeed(){
         return (float)Math.sqrt(velX*velX+velY*velY);
     }
+
+    public Stance getStance(){return stance;}
+    public void setStance(Stance s){stance = s;}
 }

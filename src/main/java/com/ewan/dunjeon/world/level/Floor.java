@@ -3,20 +3,17 @@ package com.ewan.dunjeon.world.level;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.furniture.Furniture;
-import com.ewan.dunjeon.world.items.DroppedItem;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 
 public class Floor {
     BasicCell[][] cells;
     List<Entity> entities = new ArrayList<>();
-    List<DroppedItem> items = new ArrayList<>();
     public Floor(){}
 
     public void setCells(BasicCell[][] cells){
