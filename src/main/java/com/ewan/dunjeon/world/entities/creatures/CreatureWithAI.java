@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class CreatureWithAI extends Creature {
+public abstract class CreatureWithAI extends Creature {
 
     List<AIStateGenerator> AIStateGeneratorsByPriority = new ArrayList<>();
     int currentStatePriority = -1;

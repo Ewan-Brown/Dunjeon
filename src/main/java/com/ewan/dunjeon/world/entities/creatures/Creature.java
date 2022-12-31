@@ -11,6 +11,8 @@ import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
 import com.ewan.dunjeon.world.entities.memory.SoundMemory;
 import com.ewan.dunjeon.world.furniture.Furniture;
+import com.ewan.dunjeon.world.items.HasInventory;
+import com.ewan.dunjeon.world.items.Inventory;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.World;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public abstract class Creature extends Entity {
+public abstract class Creature extends Entity implements HasInventory {
     public Creature(Color c, String name) {
         super(c, name);
         sightRange = 10;
@@ -35,6 +37,7 @@ public abstract class Creature extends Entity {
     private float walkSpeed = 0.03f;
     private int sightRange;
     private int health;
+    private Inventory inventory;
 
     public boolean true_sight_debug = false;
 
@@ -220,5 +223,7 @@ public abstract class Creature extends Entity {
     public float getWalkSpeed() { return walkSpeed;}
 
     public Point2D getPoint2DLoc(){return new Point2D.Double(getPosX(), getPosY());}
+
+    public Inventory getInventory(){return inventory;}
 
 }
