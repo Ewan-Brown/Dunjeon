@@ -1,6 +1,4 @@
 package com.ewan.dunjeon.world.entities;
-import com.ewan.dunjeon.world.World;
-import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Updateable;
@@ -21,23 +19,13 @@ public abstract class Entity implements Updateable {
     protected float friction = 10;
     private float velY;
     private long UUID;
-    private Stance stance;
 
-    public enum Stance{
+    public ZPositionState zState;
 
-        LAYING(true),
-        EMBEDDED(true),
-        STANDING(false),
-        FLYING(false);
-
-        public final boolean isUnmoving;
-
-
-        Stance(boolean b){
-            isUnmoving = b;
-        }
-
-
+    public enum ZPositionState{
+        CEILING,
+        FLOATING,
+        GROUND
     }
 
     private Floor floor;
@@ -155,6 +143,11 @@ public abstract class Entity implements Updateable {
         return (float)Math.sqrt(velX*velX+velY*velY);
     }
 
-    public Stance getStance(){return stance;}
-    public void setStance(Stance s){stance = s;}
+    public ZPositionState getZState() {
+        return zState;
+    }
+
+    public void setZState(ZPositionState zState) {
+        this.zState = zState;
+    }
 }

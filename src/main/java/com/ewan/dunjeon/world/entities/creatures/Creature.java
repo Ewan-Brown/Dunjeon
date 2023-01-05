@@ -23,8 +23,6 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public abstract class Creature extends Entity implements HasInventory {
     public Creature(Color c, String name) {
@@ -38,6 +36,8 @@ public abstract class Creature extends Entity implements HasInventory {
     private int sightRange;
     private int health;
     private Inventory inventory;
+    private boolean autoPickup = true;
+    private float pickupRange;
 
     public boolean true_sight_debug = false;
 
@@ -48,8 +48,9 @@ public abstract class Creature extends Entity implements HasInventory {
     public void update() {
         super.update();
 
-
         updateViewRange();
+
+        //Just here as an example for generating sounds
         if(getVelX() != 0 || getVelY() != 0){
             if(Main.rand.nextDouble() < loudStepChance){
                 World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2DLoc(), getFloor(),"", "You hear a loud footstep", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
@@ -57,6 +58,9 @@ public abstract class Creature extends Entity implements HasInventory {
         }
     }
 
+    private void pickupItemsInVicinity(){
+
+    }
 
 
     public FloorMemory getCurrentFloorMemory(){return getFloorMemory(getFloor());}

@@ -135,9 +135,9 @@ public class World implements KeyListener {
         //Fire projectile in random direction
         if(keySet.get(KeyEvent.VK_R)){
             keySet.set(KeyEvent.VK_R, false);
-            Entity e = new SimpleProjectile(Color.RED, "Projectile");
-            e.setVelocity((rand.nextFloat() - 0.5f) / 30f,(rand.nextFloat() - 0.5f) / 30f + 0.01f);
-            addEntityAtLoc(e, player.getFloor(), player.getPosX(), player.getPosY());
+//            Entity e = new SimpleProjectile(Color.RED, "Projectile");
+//            e.setVelocity((rand.nextFloat() - 0.5f) / 30f,(rand.nextFloat() - 0.5f) / 30f + 0.01f);
+//            addEntityAtLoc(e, player.getFloor(), player.getPosX(), player.getPosY());
         }
 
         //Test function

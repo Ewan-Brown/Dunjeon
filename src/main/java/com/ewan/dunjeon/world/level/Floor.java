@@ -107,7 +107,9 @@ public class Floor {
         }
 
         for (BasicCell collidedCell : collidedCells) {
-            e.onCollideWithWall(collidedCell);
+            if(e.doesCollideWithWall(e)) {
+                e.onCollideWithWall(collidedCell);
+            }
         }
 
         e.addVelocity(fX/10f, fY/10f);
