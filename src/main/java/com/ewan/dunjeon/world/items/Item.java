@@ -1,21 +1,27 @@
 package com.ewan.dunjeon.world.items;
 
+import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.entities.Entity;
+
 import java.awt.*;
 import java.util.function.Supplier;
 
 public abstract class Item {
 
+    public Item(String name){
+        this.name = name;
+    }
+
     private String name;
-    Supplier<ItemRenderData> renderDataSupplier;
 
     public String getName(){return name;}
 
-    public ItemRenderData getRenderData(){
-        return renderDataSupplier.get();
-    }
+    public void onWallCollision(BasicCell c){}
 
-    public class ItemRenderData{
-        public Color c = Color.BLUE;
-    }
+    public void onEntityCollision(Entity e){}
+
+    public void onPickUp(Entity e){}
+
+    public void onDropped(Entity e){}
 
 }

@@ -6,6 +6,7 @@ import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
+import com.ewan.dunjeon.world.entities.ItemAsEntity;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
@@ -13,6 +14,7 @@ import com.ewan.dunjeon.world.entities.memory.SoundMemory;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.items.HasInventory;
 import com.ewan.dunjeon.world.items.Inventory;
+import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.World;
@@ -23,6 +25,9 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public abstract class Creature extends Entity implements HasInventory {
     public Creature(Color c, String name) {
@@ -35,9 +40,9 @@ public abstract class Creature extends Entity implements HasInventory {
     private float walkSpeed = 0.03f;
     private int sightRange;
     private int health;
-    private Inventory inventory;
-    private boolean autoPickup = true;
-    private float pickupRange;
+    private Inventory inventory = new Inventory();
+    protected boolean autoPickup = false;
+    private float pickupRange = 1;
 
     public boolean true_sight_debug = false;
 
@@ -48,6 +53,9 @@ public abstract class Creature extends Entity implements HasInventory {
     public void update() {
         super.update();
 
+        if(autoPickup){
+            pickupItemsInVicinity();
+        }
         updateViewRange();
 
         //Just here as an example for generating sounds
@@ -59,9 +67,20 @@ public abstract class Creature extends Entity implements HasInventory {
     }
 
     private void pickupItemsInVicinity(){
+        List<ItemAsEntity> itemEntitiesInVicinity = getFloor().getEntities().stream().filter(entity -> entity instanceof ItemAsEntity && WorldUtils.getRawDistance(Creature.this, entity) < pickupRange)
+                .map((i) -> (ItemAsEntity) i).toList();
+
+        for (ItemAsEntity itemAsEntity : itemEntitiesInVicinity) {
+            Item wrappedItem = itemAsEntity.getItem();
+            this.getInventory().addItem(wrappedItem);
+            getFloor().removeEntity(itemAsEntity);
+            this.onPickupItem(wrappedItem);
+            wrappedItem.onPickUp(this);
+        }
 
     }
 
+    private void onPickupItem(Item i){ }
 
     public FloorMemory getCurrentFloorMemory(){return getFloorMemory(getFloor());}
 

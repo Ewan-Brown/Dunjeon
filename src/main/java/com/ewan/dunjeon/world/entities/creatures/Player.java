@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 public class Player extends Creature {
     public Player(Color c, String name) {
         super(c, name);
+        autoPickup = true;
 //        true_sight_debug;
     }
 

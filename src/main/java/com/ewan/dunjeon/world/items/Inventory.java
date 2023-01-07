@@ -1,11 +1,14 @@
 package com.ewan.dunjeon.world.items;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class Inventory {
 
-    private List<Item> items;
+    private Set<Item> items = new HashSet<>();
 
     public void addItem(Item item){
         items.add(item);

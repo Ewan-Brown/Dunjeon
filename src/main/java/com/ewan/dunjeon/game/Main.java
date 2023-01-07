@@ -3,10 +3,12 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
+import com.ewan.dunjeon.world.entities.ItemAsEntity;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.creatures.Monster;
 import com.ewan.dunjeon.world.entities.creatures.NPC;
 import com.ewan.dunjeon.world.entities.creatures.Player;
+import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 
@@ -14,6 +16,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public class Main {
 
@@ -53,6 +56,10 @@ public class Main {
         Player testPlayer = new Player(Color.BLUE, "Player");
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
+
+        ItemAsEntity simpleItem = new ItemAsEntity(new Item("SimpleItem"){});
+
+        w.addEntityRandomLoc(simpleItem, startFloor);
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");

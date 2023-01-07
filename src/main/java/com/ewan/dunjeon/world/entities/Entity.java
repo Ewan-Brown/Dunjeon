@@ -44,6 +44,14 @@ public abstract class Entity implements Updateable {
         UUIDcounter++;
     }
 
+    public Entity(Color c, String name, float size){
+        this.color = c;
+        UUID = UUIDcounter;
+        this.name = name;
+        this.size = size;
+        UUIDcounter++;
+    }
+
     public void setPosition(float x, float y){
         posX = x;
         posY = y;
