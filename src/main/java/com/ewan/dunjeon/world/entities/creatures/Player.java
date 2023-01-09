@@ -1,16 +1,9 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-import com.ewan.dunjeon.game.Main;
-import com.ewan.dunjeon.generation.PathFinding;
-import com.ewan.dunjeon.graphics.LiveDisplay;
-import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.entities.memory.CellMemory;
+import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
 import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class Player extends Creature {
     public Player(Color c, String name) {
@@ -20,8 +13,8 @@ public class Player extends Creature {
     }
 
     @Override
-    public void processSound(RelativeSoundEvent event) {
-        super.processSound(event);
+    public void onSoundEvent(RelativeSoundEvent event) {
+        super.onSoundEvent(event);
         int sourceX = (int) event.abs().sourceLocation().getX();
         int sourceY = (int) event.abs().sourceLocation().getY();
         boolean isVisible = CreatureUtils.isCellCurrentlyVisible(this, sourceX, sourceY);
@@ -31,4 +24,10 @@ public class Player extends Creature {
         }
     }
 
+    @Override
+    protected void onPickupItem(Item i) {
+        super.onPickupItem(i);
+
+        System.out.println("Picked up item : " + i.getName());
+    }
 }

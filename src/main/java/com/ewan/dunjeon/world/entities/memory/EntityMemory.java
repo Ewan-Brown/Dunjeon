@@ -44,13 +44,16 @@ public class EntityMemory extends Memory {
         public EntityRenderData(Entity e){
             this.size = e.getSize();
             this.color = e.getColor();
+            this.Shape = e.getRenderShape();
         }
 
         private final float size;
         private final Color color;
+        private final Shape Shape;
 
         public float getSize(){ return size;}
         public Color getColor(){ return color;}
+        public Shape getShape(){ return Shape;}
     }
 
     public long getUUID() {

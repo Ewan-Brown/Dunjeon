@@ -13,6 +13,7 @@ import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 
 import java.awt.*;
+import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -57,7 +58,26 @@ public class Main {
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 
-        ItemAsEntity simpleItem = new ItemAsEntity(new Item("SimpleItem"){});
+        ItemAsEntity simpleItem = new ItemAsEntity(new Item("SimpleItem"){
+            @Override
+            public Shape getShape() {
+                Polygon p = new Polygon();
+                p.addPoint(-2, 1);
+                p.addPoint(2, 1);
+                p.addPoint(2, 3);
+                p.addPoint(4, 3);
+                p.addPoint(4, 1);
+                p.addPoint(10, 1);
+                p.addPoint(13, 0);
+                p.addPoint(10, -1);
+                p.addPoint(4, -1);
+                p.addPoint(4, -3);
+                p.addPoint(2, -3);
+                p.addPoint(2, -1);
+                p.addPoint(-2, -1);
+                return p;
+            }
+        });
 
         w.addEntityRandomLoc(simpleItem, startFloor);
 

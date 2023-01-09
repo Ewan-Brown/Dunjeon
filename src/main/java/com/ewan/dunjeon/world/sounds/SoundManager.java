@@ -20,7 +20,7 @@ public class SoundManager {
                 double decibels = event.intensity() / (dist*dist); //Intensity decreases with inverse square law
                 double angle = Math.atan2(dY, dX);
                 RelativeSoundEvent relativeSoundEvent = new RelativeSoundEvent(decibels, angle, event);
-                entity.processSound(relativeSoundEvent);
+                entity.onSoundEvent(relativeSoundEvent);
             }
         }
         events.clear();

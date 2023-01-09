@@ -17,9 +17,13 @@ public class ItemAsEntity extends Entity{
     }
 
     public ItemAsEntity(Item i, Predicate<Item> pickupPredicate) {
-        super(Color.PINK, i.getName(), 0.2f);
+        super(Color.PINK, i.getName(), 0.3f);
         this.item = i;
         this.pickupPredicate = pickupPredicate;
+    }
+
+    public Shape getRenderShape(){
+        return item.getShape();
     }
 
     public boolean canBePickedUp(){

@@ -28,6 +28,8 @@ public abstract class Entity implements Updateable {
         GROUND
     }
 
+    public Shape getRenderShape(){return null;}
+
     private Floor floor;
 
     public float getSize() { return size; }
@@ -100,7 +102,7 @@ public abstract class Entity implements Updateable {
 
     public void onCollideWithWall(BasicCell cell){};
     public void onCollideWithEntity(Entity e){ };
-    public void processSound(RelativeSoundEvent event){
+    public void onSoundEvent(RelativeSoundEvent event){
 
     }
 

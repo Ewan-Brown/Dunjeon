@@ -80,7 +80,7 @@ public abstract class Creature extends Entity implements HasInventory {
 
     }
 
-    private void onPickupItem(Item i){ }
+    protected void onPickupItem(Item i){ }
 
     public FloorMemory getCurrentFloorMemory(){return getFloorMemory(getFloor());}
 
@@ -204,7 +204,7 @@ public abstract class Creature extends Entity implements HasInventory {
         }
     }
 
-    public void processSound(RelativeSoundEvent event){
+    public void onSoundEvent(RelativeSoundEvent event){
         getFloorMemory(event.abs().sourceFloor()).addSoundMemory(new SoundMemory(
                 this.getPosX(),
                 this.getPosY(),

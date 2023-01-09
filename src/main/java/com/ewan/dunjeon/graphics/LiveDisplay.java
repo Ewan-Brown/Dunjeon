@@ -10,10 +10,11 @@ import com.ewan.dunjeon.world.level.Floor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 
 public class LiveDisplay {
-    private final int scale = 12;
+    private final int scale = 16;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
@@ -31,8 +32,9 @@ public class LiveDisplay {
             frame.setSize(600, 600);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             panel = new JPanel() {
-                public void paint(Graphics graphics) {
-                    super.paint(graphics);
+                public void paint(Graphics g) {
+                    super.paint(g);
+                    Graphics2D graphics = (Graphics2D) g;
                     graphics.setColor(Color.BLACK);
                     graphics.clearRect(0,0,getWidth(),getHeight());
                     Floor lev = w.getPlayer().getFloor();
@@ -128,6 +130,8 @@ public class LiveDisplay {
                         Creature p = w.getPlayer();
                         graphics.fillRect((int)((p.getPosX() - p.getSize()/2) * scale), (int)((p.getPosY() - p.getSize()/2) * scale), (int)(p.getSize() * scale) , (int)(p.getSize() * scale));
 
+
+                        //Draw entities
                         for (EntityMemory memory : World.getInstance().getPlayer().getFloorMemory(lev).getEntityMemory()) {
                             if(!memory.isOldData() || RENDER_OLD_ENTITIES) {
                                 float size = memory.getSize();
@@ -139,12 +143,26 @@ public class LiveDisplay {
                                 if (memory.isOldData()) {
                                     c = new Color(c.getRed() / 3, c.getGreen() / 3, c.getBlue() / 3);
                                 }
-                                graphics.setColor(c);
-                                graphics.fillRect(x1, y1, (int) (size * scale), (int) (size * scale));
 
-                                if (memory.isInteractable()) {
-                                    graphics.setColor(Color.BLACK);
-                                    graphics.drawRect(x1, y1, (int) (scale * size - 1), (int) (scale * size - 1));
+                                Shape renderPoly = memory.getRenderData().getShape();
+
+                                if(renderPoly == null) {
+                                    //TODO Old rendering
+                                    graphics.setColor(c);
+                                    graphics.fillRect(x1, y1, (int) (size * scale), (int) (size * scale));
+
+                                    if (memory.isInteractable()) {
+                                        graphics.setColor(Color.BLACK);
+                                        graphics.drawRect(x1, y1, (int) (scale * size - 1), (int) (scale * size - 1));
+                                    }
+                                }else{
+                                    //New rendering 8)
+                                    AffineTransform transform = new AffineTransform();
+                                    transform.translate(memory.getX()*scale, memory.getY()*scale);
+                                    transform.scale(scale/8f, scale/8f);
+                                    Shape transformedPoly = transform.createTransformedShape(renderPoly);
+
+                                    graphics.draw(transformedPoly);
                                 }
                             }
                         }
