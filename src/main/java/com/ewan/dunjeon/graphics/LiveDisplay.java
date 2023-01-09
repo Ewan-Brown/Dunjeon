@@ -35,6 +35,8 @@ public class LiveDisplay {
                 public void paint(Graphics g) {
                     super.paint(g);
                     Graphics2D graphics = (Graphics2D) g;
+                    graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
                     graphics.setColor(Color.BLACK);
                     graphics.clearRect(0,0,getWidth(),getHeight());
                     Floor lev = w.getPlayer().getFloor();
@@ -159,10 +161,10 @@ public class LiveDisplay {
                                     //New rendering 8)
                                     AffineTransform transform = new AffineTransform();
                                     transform.translate(memory.getX()*scale, memory.getY()*scale);
-                                    transform.scale(scale/8f, scale/8f);
+                                    transform.scale(scale/10f, scale/10f);
                                     Shape transformedPoly = transform.createTransformedShape(renderPoly);
 
-                                    graphics.draw(transformedPoly);
+                                    graphics.fill(transformedPoly);
                                 }
                             }
                         }
