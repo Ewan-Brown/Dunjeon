@@ -79,7 +79,23 @@ public class Main {
             }
         });
 
+        ItemAsEntity simpleItem2 = new ItemAsEntity(new Item("SimpleItem"){
+            @Override
+            public Shape getShape() {
+                Polygon p = new Polygon();
+                p.addPoint(-9, 1);
+                p.addPoint(8, 1);
+                p.addPoint(7, 2);
+                p.addPoint(12, 0);
+                p.addPoint(7, -2);
+                p.addPoint(8, -1);
+                p.addPoint(-9, -1);
+                return p;
+            }
+        });
+
         w.addEntityRandomLoc(simpleItem, startFloor);
+        w.addEntityRandomLoc(simpleItem2, startFloor);
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
