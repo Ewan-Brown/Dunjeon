@@ -1,16 +1,18 @@
-package com.ewan.dunjeon.world.items;
+package com.ewan.dunjeon.world.items.inventory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.ewan.dunjeon.world.items.Item;
+
+import java.util.*;
 import java.util.function.Predicate;
 
 public class Inventory {
 
-    private Set<Item> items = new HashSet<>();
+    protected List<Item> items = new ArrayList<>();
 
     public void addItem(Item item){
+        if(items.contains(item)){
+            throw new RuntimeException("Attempted to add duplicate item to inventory list : " + item.getName());
+        }
         items.add(item);
     }
 
@@ -21,6 +23,7 @@ public class Inventory {
     public Item getItem(Predicate<Item> predicate){
         return items.stream().filter(predicate).findFirst().orElseThrow();
     }
+
 
 
 }

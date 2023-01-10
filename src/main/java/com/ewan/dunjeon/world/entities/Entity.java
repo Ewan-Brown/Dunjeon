@@ -5,6 +5,7 @@ import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.cells.BasicCell;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public abstract class Entity implements Updateable {
 
@@ -16,6 +17,7 @@ public abstract class Entity implements Updateable {
     private float posX;
     private float posY;
     private float velX;
+    private float angle;
     protected float friction = 10;
     private float velY;
     private long UUID;
@@ -159,5 +161,9 @@ public abstract class Entity implements Updateable {
 
     public void setZState(ZPositionState zState) {
         this.zState = zState;
+    }
+
+    public java.util.List<Entity> getAttachedEntities(){
+        return new ArrayList<>();
     }
 }

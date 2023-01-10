@@ -1,9 +1,11 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
+import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
 import java.awt.*;
+import java.util.List;
 
 public class Player extends Creature {
     public Player(Color c, String name) {
@@ -11,6 +13,7 @@ public class Player extends Creature {
         autoPickup = true;
 //        true_sight_debug;
     }
+
 
     @Override
     public void onSoundEvent(RelativeSoundEvent event) {
@@ -29,5 +32,13 @@ public class Player extends Creature {
         super.onPickupItem(i);
 
         System.out.println("Picked up item : " + i.getName());
+    }
+
+
+
+
+    @Override
+    public List<Entity> getAttachedEntities() {
+        return super.getAttachedEntities();
     }
 }

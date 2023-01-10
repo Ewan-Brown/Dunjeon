@@ -12,8 +12,8 @@ import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
 import com.ewan.dunjeon.world.entities.memory.SoundMemory;
 import com.ewan.dunjeon.world.furniture.Furniture;
-import com.ewan.dunjeon.world.items.HasInventory;
-import com.ewan.dunjeon.world.items.Inventory;
+import com.ewan.dunjeon.world.items.inventory.HasInventory;
+import com.ewan.dunjeon.world.items.inventory.Inventory;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
@@ -25,9 +25,6 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public abstract class Creature extends Entity implements HasInventory {
     public Creature(Color c, String name) {
@@ -248,5 +245,6 @@ public abstract class Creature extends Entity implements HasInventory {
     public Point2D getPoint2DLoc(){return new Point2D.Double(getPosX(), getPosY());}
 
     public Inventory getInventory(){return inventory;}
+
 
 }

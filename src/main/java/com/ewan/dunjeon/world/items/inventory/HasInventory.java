@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.items;
+package com.ewan.dunjeon.world.items.inventory;
 
 public interface HasInventory {
 
