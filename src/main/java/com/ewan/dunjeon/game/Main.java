@@ -58,7 +58,32 @@ public class Main {
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 
-        ItemAsEntity simpleItem = new ItemAsEntity(new Item("SimpleItem"){
+        ItemAsEntity simpleItemHammer = new ItemAsEntity(new Item("Hammer") {
+            @Override
+            public Shape getShape() {
+                Polygon p = new Polygon();
+                p.addPoint(-1, 1);
+                p.addPoint(11, 1);
+                p.addPoint(11, 3);
+                p.addPoint(14, 3);
+                p.addPoint(14, 1);
+                p.addPoint(15, 1);
+                p.addPoint(15, -1);
+                p.addPoint(14, -1);
+                p.addPoint(14, -3);
+                p.addPoint(11, -3);
+                p.addPoint(11, -1);
+                p.addPoint(-1, -1);
+                return p;
+            }
+
+            @Override
+            public Point getMaxExtensionPoint() {
+                return null;
+            }
+        });
+
+        ItemAsEntity simpleItemSword = new ItemAsEntity(new Item("Sword"){
             @Override
             public Shape getShape() {
                 Polygon p = new Polygon();
@@ -77,9 +102,14 @@ public class Main {
                 p.addPoint(-2, -1);
                 return p;
             }
+
+            @Override
+            public Point getMaxExtensionPoint() {
+                return new Point(-2, 0);
+            }
         });
 
-        ItemAsEntity simpleItem2 = new ItemAsEntity(new Item("SimpleItem"){
+        ItemAsEntity simpleItemSpear = new ItemAsEntity(new Item("Spear"){
             @Override
             public Shape getShape() {
                 Polygon p = new Polygon();
@@ -92,10 +122,16 @@ public class Main {
                 p.addPoint(-9, -1);
                 return p;
             }
+
+            @Override
+            public Point getMaxExtensionPoint() {
+                return new Point(-8, 0);
+            }
         });
 
-        w.addEntityRandomLoc(simpleItem, startFloor);
-        w.addEntityRandomLoc(simpleItem2, startFloor);
+        w.addEntityRandomLoc(simpleItemSword, startFloor);
+        w.addEntityRandomLoc(simpleItemSpear, startFloor);
+        w.addEntityRandomLoc(simpleItemHammer, startFloor);
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");

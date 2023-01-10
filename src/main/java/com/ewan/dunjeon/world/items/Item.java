@@ -27,4 +27,8 @@ public abstract class Item {
 
     public abstract Shape getShape();
 
+    public Point getGripPoint(){return new Point(0,0);}
+
+    public abstract Point getMaxExtensionPoint();
+
 }
