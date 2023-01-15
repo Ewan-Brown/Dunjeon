@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
@@ -34,11 +34,14 @@ public class Player extends Creature {
         System.out.println("Picked up item : " + i.getName());
     }
 
-
-
+    public void stabWithWieldedWeapon(){
+        System.err.println("No weapon equipped!");
+    }
 
     @Override
-    public List<Entity> getAttachedEntities() {
+    public List<KinematicEntity> getAttachedEntities() {
+//        if(getWieldedItem() != null){
+//        }
         return super.getAttachedEntities();
     }
 }

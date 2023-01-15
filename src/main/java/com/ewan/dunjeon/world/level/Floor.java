@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.world.level;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class Floor {
     BasicCell[][] cells;
-    List<Entity> entities = new ArrayList<>();
+    List<KinematicEntity> entities = new ArrayList<>();
     public Floor(){}
 
     public void setCells(BasicCell[][] cells){
@@ -29,15 +29,15 @@ public class Floor {
         return furniture;
     }
 
-    public List<Entity> getEntities(){
+    public List<KinematicEntity> getEntities(){
         return entities;
     }
 
-    public void addEntity(Entity e){
+    public void addEntity(KinematicEntity e){
         entities.add(e);
     }
 
-    public void removeEntity(Entity e){
+    public void removeEntity(KinematicEntity e){
         entities.remove(e);
     }
 
@@ -69,7 +69,7 @@ public class Floor {
         getCellsAsList().forEach(BasicCell::updateFurniture);
 
         for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
+            KinematicEntity e = entities.get(i);
             e.update();
             doBoundsCheck(e);
         }
@@ -77,7 +77,7 @@ public class Floor {
     }
 
     //Assumes all entities are squares, and are no bigger than a cell
-    public void doBoundsCheck(Entity e){
+    public void doBoundsCheck(KinematicEntity e){
         float xMin = - e.getSize()/2;
         float xMax = + e.getSize()/2;
         float yMin = - e.getSize()/2;

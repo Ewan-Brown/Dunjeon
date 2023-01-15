@@ -1,11 +1,9 @@
 package com.ewan.dunjeon.world.items;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 
 import java.awt.*;
-import java.awt.geom.Area;
-import java.util.function.Supplier;
 
 public abstract class Item {
 
@@ -19,11 +17,11 @@ public abstract class Item {
 
     public void onWallCollision(BasicCell c){}
 
-    public void onEntityCollision(Entity e){}
+    public void onEntityCollision(KinematicEntity e){}
 
-    public void onPickUp(Entity e){}
+    public void onPickUp(KinematicEntity e){}
 
-    public void onDropped(Entity e){}
+    public void onDropped(KinematicEntity e){}
 
     public abstract Shape getShape();
 

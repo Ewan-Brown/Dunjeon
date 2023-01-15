@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world.entities.memory;
 
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 
 import java.awt.*;
 
@@ -41,7 +41,7 @@ public class EntityMemory extends Memory {
 
     public static class EntityRenderData{
 
-        public EntityRenderData(Entity e){
+        public EntityRenderData(KinematicEntity e){
             this.size = e.getSize();
             this.color = e.getColor();
             this.Shape = e.getRenderShape();

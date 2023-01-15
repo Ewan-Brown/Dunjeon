@@ -1,13 +1,11 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.world.Interactable;
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class NPC extends CreatureWithAI implements Interactable {
 
@@ -24,12 +22,12 @@ public class NPC extends CreatureWithAI implements Interactable {
     }
 
     @Override
-    public void onInteract(Entity interactor, InteractionType type) {
+    public void onInteract(KinematicEntity interactor, InteractionType type) {
         System.out.println("Hello, interactor.");
     }
 
     @Override
-    public Set<InteractionType> getAvailableInteractions(Entity interactor) {
+    public Set<InteractionType> getAvailableInteractions(KinematicEntity interactor) {
         return new HashSet<>(List.of(InteractionType.CHAT));
     }
 }

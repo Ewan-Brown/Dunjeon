@@ -2,10 +2,8 @@ package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.generation.PathFinding;
 import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
-import com.ewan.dunjeon.world.entities.memory.FloorMemory;
 import lombok.NonNull;
 
 import java.awt.*;
@@ -13,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 public class ChaseAI extends AIState {
 

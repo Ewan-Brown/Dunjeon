@@ -3,7 +3,7 @@ package com.ewan.dunjeon.world.furniture;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.World;
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -29,12 +29,12 @@ public class Door extends Furniture implements Interactable {
     }
 
     //TODO IF entity closes door while inside door cell, it will get closed on
-    public void onInteract(Entity e, Set<InteractionType> types) {
+    public void onInteract(KinematicEntity e, Set<InteractionType> types) {
         open = !open;
     }
 
     @Override
-    public void onInteract(Entity interactor, InteractionType type) {
+    public void onInteract(KinematicEntity interactor, InteractionType type) {
 //        System.out.println((open) ? "the door slams shut" : "the door swings open");
         String action = open ? "closes" : "opens";
         World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(10, containingCell.getPoint2D(), containingCell.getFloor(), "The door "+action, "A door" + action, AbsoluteSoundEvent.SoundType.PHYSICAL, interactor));
@@ -48,7 +48,7 @@ public class Door extends Furniture implements Interactable {
 //    }
 
     @Override
-    public Set<InteractionType> getAvailableInteractions(Entity interactor) {
+    public Set<InteractionType> getAvailableInteractions(KinematicEntity interactor) {
         return new HashSet<>(Arrays.asList(InteractionType.TOUCH));
     }
 }

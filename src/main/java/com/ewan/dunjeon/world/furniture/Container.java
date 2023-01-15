@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.world.furniture;
 
 import com.ewan.dunjeon.world.Interactable;
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -20,12 +20,12 @@ public class Container extends Furniture implements Interactable {
     }
 
     @Override
-    public void onInteract(Entity interactor, InteractionType type) {
+    public void onInteract(KinematicEntity interactor, InteractionType type) {
         unOpened = false;
     }
 
     @Override
-    public Set<InteractionType> getAvailableInteractions(Entity interactor) {
+    public Set<InteractionType> getAvailableInteractions(KinematicEntity interactor) {
         return new HashSet<>();
     }
 }

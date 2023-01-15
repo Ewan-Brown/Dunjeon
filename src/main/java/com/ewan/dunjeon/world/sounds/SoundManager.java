@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world.sounds;
 
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public class SoundManager {
 
     public void propogateSounds(){
         for (AbsoluteSoundEvent event : events) {
-            for (Entity entity : event.sourceFloor().getEntities()) {
+            for (KinematicEntity entity : event.sourceFloor().getEntities()) {
                 double dX = event.sourceLocation().getX() - entity.getPosX();
                 double dY = event.sourceLocation().getY() - entity.getPosY();
                 double dist = Math.sqrt(dX*dX + dY*dY);

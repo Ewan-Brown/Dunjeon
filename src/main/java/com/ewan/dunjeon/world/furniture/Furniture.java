@@ -1,12 +1,10 @@
 package com.ewan.dunjeon.world.furniture;
 
-import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.Updateable;
 import com.ewan.dunjeon.world.cells.BasicCell;
 
 import java.awt.*;
 
-public abstract class Furniture implements Updateable {
+public abstract class Furniture {
 
     public BasicCell containingCell;
 

@@ -1,7 +1,6 @@
 package com.ewan.dunjeon.world.sounds;
 
-import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.geom.Point2D;
@@ -10,7 +9,7 @@ import java.awt.geom.Point2D;
 /**
  * TODO CLEAN THIS UP! Make a factory for it or something this is terrible.
  */
-public record AbsoluteSoundEvent(float intensity, Point2D sourceLocation, Floor sourceFloor, String soundMessageIfVisible, String soundMessageIfNotVisible, SoundType type, Entity sourceEntity) {
+public record AbsoluteSoundEvent(float intensity, Point2D sourceLocation, Floor sourceFloor, String soundMessageIfVisible, String soundMessageIfNotVisible, SoundType type, KinematicEntity sourceEntity) {
 
     public enum SoundType{
         PHYSICAL, CHAT, AMBIENT

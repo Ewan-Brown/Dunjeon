@@ -6,17 +6,17 @@ import com.ewan.dunjeon.world.items.Item;
 import java.awt.*;
 import java.util.function.Predicate;
 
-public class ItemAsEntity extends Entity{
+public class ItemAsKinematicEntity extends KinematicEntity {
 
     final Item item;
 
     private final Predicate<Item> pickupPredicate;
 
-    public ItemAsEntity(Item i) {
+    public ItemAsKinematicEntity(Item i) {
         this(i, item -> true);
     }
 
-    public ItemAsEntity(Item i, Predicate<Item> pickupPredicate) {
+    public ItemAsKinematicEntity(Item i, Predicate<Item> pickupPredicate) {
         super(Color.PINK, i.getName(), 0.3f);
         this.item = i;
         this.pickupPredicate = pickupPredicate;
@@ -31,7 +31,7 @@ public class ItemAsEntity extends Entity{
     }
 
     @Override
-    public void onCollideWithEntity(Entity e) {
+    public void onCollideWithEntity(KinematicEntity e) {
         item.onEntityCollision(e);
     }
 

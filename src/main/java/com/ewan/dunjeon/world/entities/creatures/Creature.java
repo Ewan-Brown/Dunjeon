@@ -4,9 +4,9 @@ import com.ewan.dunjeon.game.Main;
 import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.KinematicEntity;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
-import com.ewan.dunjeon.world.entities.ItemAsEntity;
+import com.ewan.dunjeon.world.entities.ItemAsKinematicEntity;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
@@ -15,6 +15,7 @@ import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.items.inventory.HasInventory;
 import com.ewan.dunjeon.world.items.inventory.Inventory;
 import com.ewan.dunjeon.world.items.Item;
+import com.ewan.dunjeon.world.items.inventory.InventoryWithWieldedItem;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.World;
@@ -26,7 +27,7 @@ import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 
-public abstract class Creature extends Entity implements HasInventory {
+public abstract class Creature extends KinematicEntity implements HasInventory {
     public Creature(Color c, String name) {
         super(c, name);
         sightRange = 10;
@@ -37,9 +38,10 @@ public abstract class Creature extends Entity implements HasInventory {
     private float walkSpeed = 0.03f;
     private int sightRange;
     private int health;
-    private Inventory inventory = new Inventory();
+    private InventoryWithWieldedItem inventory = new InventoryWithWieldedItem();
     protected boolean autoPickup = false;
     private float pickupRange = 1;
+    ItemAttack currentAttack = null;
 
     public boolean true_sight_debug = false;
 
@@ -64,10 +66,10 @@ public abstract class Creature extends Entity implements HasInventory {
     }
 
     private void pickupItemsInVicinity(){
-        List<ItemAsEntity> itemEntitiesInVicinity = getFloor().getEntities().stream().filter(entity -> entity instanceof ItemAsEntity && WorldUtils.getRawDistance(Creature.this, entity) < pickupRange)
-                .map((i) -> (ItemAsEntity) i).toList();
+        List<ItemAsKinematicEntity> itemEntitiesInVicinity = getFloor().getEntities().stream().filter(entity -> entity instanceof ItemAsKinematicEntity && WorldUtils.getRawDistance(Creature.this, entity) < pickupRange)
+                .map((i) -> (ItemAsKinematicEntity) i).toList();
 
-        for (ItemAsEntity itemAsEntity : itemEntitiesInVicinity) {
+        for (ItemAsKinematicEntity itemAsEntity : itemEntitiesInVicinity) {
             Item wrappedItem = itemAsEntity.getItem();
             this.getInventory().addItem(wrappedItem);
             getFloor().removeEntity(itemAsEntity);
@@ -181,7 +183,7 @@ public abstract class Creature extends Entity implements HasInventory {
                 currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
             }
 
-            for (Entity entity : getFloor().getEntities()) {
+            for (KinematicEntity entity : getFloor().getEntities()) {
                 if(entity != this && (viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug)) {
 
                     
@@ -212,6 +214,10 @@ public abstract class Creature extends Entity implements HasInventory {
                 event.intensity()
         ));
     }
+
+    public void cycleWieldedItem(){inventory.cycleWieldedItem();}
+
+    public Item getWieldedItem(){return inventory.getWieldedItem();}
 
     @Override
     public boolean exists() {
