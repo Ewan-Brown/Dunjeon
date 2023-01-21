@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world.cells;
 
-import com.ewan.dunjeon.world.entities.KinematicEntity;
+import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
@@ -56,21 +56,21 @@ public class BasicCell {
     /*
      Don't forget about me :)
      */
-    public boolean canBeSeenThrough(KinematicEntity e){
+    public boolean canBeSeenThrough(Entity e){
         return canBeEntered(e);
     }
 
-    public boolean canBeEntered(KinematicEntity e){
+    public boolean canBeEntered(Entity e){
         return !filled && (furniture == null || !furniture.isBlocking());
     }
 
-    public void onEntry(KinematicEntity e) {}
+    public void onEntry(Entity e) {}
 
-    public void onExit(KinematicEntity e){}
+    public void onExit(Entity e){}
 
-    public void onDeath(KinematicEntity e){}
+    public void onDeath(Entity e){}
 
-    public void onEntityDeath(KinematicEntity e) {}
+    public void onEntityDeath(Entity e) {}
 
     public int getX(){return x;}
     public int getY(){return y;}
@@ -80,7 +80,6 @@ public class BasicCell {
     }
 
 
-    @Override
     public void update() {
 
     }

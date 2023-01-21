@@ -1,7 +1,5 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-import lombok.NonNull;
-
 public class StandAroundIdiotAI extends AIState{
 
     public StandAroundIdiotAI(Creature e) {
@@ -21,7 +19,7 @@ public class StandAroundIdiotAI extends AIState{
     }
 
     @Override
-    public @NonNull StandAroundIdiotAIStateData getStateData() {
+    public StandAroundIdiotAIStateData getStateData() {
         return new StandAroundIdiotAIStateData();
     }
 }

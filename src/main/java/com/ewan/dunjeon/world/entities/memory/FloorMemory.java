@@ -35,7 +35,7 @@ public class FloorMemory{
     }
 
     public CellMemory getCellMemoryOfEntityMemoryLocation(EntityMemory mem){
-        return getDataAt((int)Math.floor(mem.getX()), (int)Math.floor(mem.getY()));
+        return getDataAt((int)Math.floor(mem.getStateData().getX()), (int)Math.floor(mem.getStateData().getY()));
     }
 
     public List<EntityMemory> getEntityMemory() {return new ArrayList<>(entityMemories.values());}

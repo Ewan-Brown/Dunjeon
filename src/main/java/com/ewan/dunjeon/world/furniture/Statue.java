@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world.furniture;
 
-import com.ewan.dunjeon.world.entities.KinematicEntity;
+import com.ewan.dunjeon.world.entities.Entity;
 
 import java.awt.*;
 
@@ -10,7 +10,7 @@ public class Statue extends Furniture{
         return null;
     }
 
-    public void onInteract(KinematicEntity e) {
+    public void onInteract(Entity e) {
 
     }
 }

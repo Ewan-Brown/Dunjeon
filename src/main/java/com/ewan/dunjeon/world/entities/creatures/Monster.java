@@ -10,9 +10,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Monster extends CreatureWithAI {
-    private Monster(Color c, String name, List<AIStateGenerator> generators) {
-        super(c, name, generators);
-//        currentState = new ExploreAI(this);
+    private Monster(String name, List<AIStateGenerator> generators) {
+        super(name, generators);
     }
 
     public static Monster generateExploringMonster(Color c, String name){
@@ -24,7 +23,7 @@ public class Monster extends CreatureWithAI {
             return true;
         }, StandAroundIdiotAI::new));
 
-        return new Monster(c, name, gens);
+        return new Monster(name, gens);
     }
 
     @Override
@@ -35,7 +34,7 @@ public class Monster extends CreatureWithAI {
     public static Monster generateChasingMonster(Color c, String name){
         List<AIStateGenerator> gens = new ArrayList<>();
 
-        gens.add(new AIStateGenerator(creature -> creature.getCurrentFloorMemory().getEntityMemory().stream().anyMatch(entityMemory -> !entityMemory.isOldData()), creature -> new ChaseAI(creature, creature.getCurrentFloorMemory().getEntityMemory().stream().filter(entityMemory -> !entityMemory.isOldData()).findAny().orElse(null).getUUID())));
+        gens.add(new AIStateGenerator(creature -> creature.getCurrentFloorMemory().getEntityMemory().stream().anyMatch(entityMemory -> !entityMemory.isOldData()), creature -> new ChaseAI(creature, creature.getCurrentFloorMemory().getEntityMemory().stream().filter(entityMemory -> !entityMemory.isOldData()).findAny().orElse(null).getStateData().getUUID())));
 
         gens.add(new AIStateGenerator(creature -> CreatureUtils.countUnexploredVisibleCells(creature) > 0, ExploreAI::new));
 
@@ -43,7 +42,7 @@ public class Monster extends CreatureWithAI {
             return true;
         }, StandAroundIdiotAI::new));
 
-        return new Monster(c, name, gens);
+        return new Monster(name, gens);
     }
 
 

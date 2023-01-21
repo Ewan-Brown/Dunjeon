@@ -21,7 +21,6 @@ public abstract class Furniture {
     public float getPosX(){return containingCell.getX() + 0.5f;}
     public float getPosY(){return containingCell.getY() + 0.5f;}
 
-    @Override
     public void update() {
 
     }

@@ -2,7 +2,7 @@ package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.KinematicEntity;
+import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.SoundManager;
@@ -37,7 +37,7 @@ public class World implements KeyListener {
      * Adds ,man entity at a random location On a level.
      * <i>TODO Add exception handling when there is no valid spots</i>
      */
-    public boolean addEntityRandomLoc(KinematicEntity e, Floor l){
+    public boolean addEntityRandomLoc(Entity e, Floor l){
         List<BasicCell> validCells =  l.getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).collect(Collectors.toList());
         if(validCells.size() == 0) throw new Error("No valid spots for entity found");
         else {
@@ -52,7 +52,7 @@ public class World implements KeyListener {
 
     }
 
-    public void addEntityAtLoc(KinematicEntity e, Floor f, float x, float y){
+    public void addEntityAtLoc(Entity e, Floor f, float x, float y){
         BasicCell randomValidCell = f.getCellAt(x, y);
         randomValidCell.onEntry(e);
         e.onEnterCell(randomValidCell);
@@ -161,7 +161,7 @@ public class World implements KeyListener {
             }
         }
 
-        for (KinematicEntity e : getPlayer().getFloor().getEntities()) {
+        for (Entity e : getPlayer().getFloor().getEntities()) {
             if(e instanceof Interactable){
                 interactables.add((Interactable)e);
             }

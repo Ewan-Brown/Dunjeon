@@ -2,7 +2,12 @@ package com.ewan.dunjeon.world;
 
 import java.awt.*;
 
-public abstract class Collideable {
+/**
+ * Contains base collision data for an Entity. </p>
+ * S
+ */
+public abstract class CollidingObject {
+
     public abstract Shape getShape();
     public abstract CollideableRule getRule();
 

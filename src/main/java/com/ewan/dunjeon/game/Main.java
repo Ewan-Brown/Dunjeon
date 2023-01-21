@@ -3,7 +3,7 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
-import com.ewan.dunjeon.world.entities.ItemAsKinematicEntity;
+import com.ewan.dunjeon.world.entities.ItemAsEntity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.level.Floor;
@@ -49,11 +49,11 @@ public class Main {
 
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        Player testPlayer = new Player(Color.BLUE, "Player");
+        Player testPlayer = new Player("Player");
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
 
-        ItemAsKinematicEntity simpleItemHammer = new ItemAsKinematicEntity(new Item("Hammer") {
+        ItemAsEntity simpleItemHammer = new ItemAsEntity(new Item("Hammer") {
             @Override
             public Shape getShape() {
                 Polygon p = new Polygon();
@@ -78,7 +78,7 @@ public class Main {
             }
         });
 
-        ItemAsKinematicEntity simpleItemSword = new ItemAsKinematicEntity(new Item("Sword"){
+        ItemAsEntity simpleItemSword = new ItemAsEntity(new Item("Sword"){
             @Override
             public Shape getShape() {
                 Polygon p = new Polygon();
@@ -104,7 +104,7 @@ public class Main {
             }
         });
 
-        ItemAsKinematicEntity simpleItemSpear = new ItemAsKinematicEntity(new Item("Spear"){
+        ItemAsEntity simpleItemSpear = new ItemAsEntity(new Item("Spear"){
             @Override
             public Shape getShape() {
                 Polygon p = new Polygon();

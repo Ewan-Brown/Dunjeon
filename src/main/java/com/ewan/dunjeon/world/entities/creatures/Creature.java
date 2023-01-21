@@ -1,16 +1,15 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.game.Main;
+import com.ewan.dunjeon.graphics.RenderableObject;
 import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.entities.KinematicEntity;
+import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
-import com.ewan.dunjeon.world.entities.ItemAsKinematicEntity;
-import com.ewan.dunjeon.world.entities.memory.CellMemory;
-import com.ewan.dunjeon.world.entities.memory.EntityMemory;
-import com.ewan.dunjeon.world.entities.memory.FloorMemory;
-import com.ewan.dunjeon.world.entities.memory.SoundMemory;
+import com.ewan.dunjeon.world.entities.EntityStateData;
+import com.ewan.dunjeon.world.entities.ItemAsEntity;
+import com.ewan.dunjeon.world.entities.memory.*;
 import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.items.inventory.HasInventory;
 import com.ewan.dunjeon.world.items.inventory.Inventory;
@@ -27,9 +26,9 @@ import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 
-public abstract class Creature extends KinematicEntity implements HasInventory {
-    public Creature(Color c, String name) {
-        super(c, name);
+public abstract class Creature extends Entity implements HasInventory {
+    public Creature(String name) {
+        super(name);
         sightRange = 10;
         health = 10;
         friction = 2;
@@ -66,10 +65,10 @@ public abstract class Creature extends KinematicEntity implements HasInventory {
     }
 
     private void pickupItemsInVicinity(){
-        List<ItemAsKinematicEntity> itemEntitiesInVicinity = getFloor().getEntities().stream().filter(entity -> entity instanceof ItemAsKinematicEntity && WorldUtils.getRawDistance(Creature.this, entity) < pickupRange)
-                .map((i) -> (ItemAsKinematicEntity) i).toList();
+        List<ItemAsEntity> itemEntitiesInVicinity = getFloor().getEntities().stream().filter(entity -> entity instanceof ItemAsEntity && WorldUtils.getRawDistance(Creature.this, entity) < pickupRange)
+                .map((i) -> (ItemAsEntity) i).toList();
 
-        for (ItemAsKinematicEntity itemAsEntity : itemEntitiesInVicinity) {
+        for (ItemAsEntity itemAsEntity : itemEntitiesInVicinity) {
             Item wrappedItem = itemAsEntity.getItem();
             this.getInventory().addItem(wrappedItem);
             getFloor().removeEntity(itemAsEntity);
@@ -183,7 +182,7 @@ public abstract class Creature extends KinematicEntity implements HasInventory {
                 currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
             }
 
-            for (KinematicEntity entity : getFloor().getEntities()) {
+            for (Entity entity : getFloor().getEntities()) {
                 if(entity != this && (viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug)) {
 
                     
@@ -194,8 +193,11 @@ public abstract class Creature extends KinematicEntity implements HasInventory {
                     }
                     if(cellMemories.stream().noneMatch(cellMemory -> cellMemory == null || cellMemory.enterable == CellMemory.EnterableStatus.CLOSED) || true_sight_debug) {
                         boolean chattable = (chatInteractive == entity);
-                        EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
-                        currentFloorMemory.updateEntity(entity.getUUID(), entityMemory);
+//                        EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
+                        EntityStateData stateData = entity.getEntityStateData();
+                        List<RenderableObject> renderableObject = entity.getDrawables();
+                        EntityMemory em = new EntityMemory(stateData, renderableObject);
+                        currentFloorMemory.updateEntity(entity.getUUID(), em);
                     }
                 }
             }
@@ -234,10 +236,6 @@ public abstract class Creature extends KinematicEntity implements HasInventory {
             System.out.println("Entity died!");
             this.getContainingCell().onDeath(this);
         }
-    }
-
-    public Color getColor(){
-        return isDead() ? Color.RED  : color;
     }
 
     public int getSightRange(){return sightRange;}

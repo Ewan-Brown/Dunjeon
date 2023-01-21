@@ -4,7 +4,6 @@ import com.ewan.dunjeon.generation.PathFinding;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
-import lombok.NonNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -30,9 +29,9 @@ public class ChaseAI extends AIState {
 
 
         EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
-        Point targetPoint = new Point((int)Math.floor(targetMemory.getX()), (int)Math.floor(targetMemory.getY()));
+        Point targetPoint = new Point((int)Math.floor(targetMemory.getStateData().getX()), (int)Math.floor(targetMemory.getStateData().getY()));
 
-        List<Point> intersectedCells = WorldUtils.getIntersectedTiles(hostEntity.getPosX(), hostEntity.getPosY(), targetMemory.getX(), targetMemory.getY());
+        List<Point> intersectedCells = WorldUtils.getIntersectedTiles(hostEntity.getPosX(), hostEntity.getPosY(), targetMemory.getStateData().getX(), targetMemory.getStateData().getY());
         List<CellMemory> cellMemories = new ArrayList<>();
         for (Point intersectedCell : intersectedCells) {
             cellMemories.add(hostEntity.getCurrentFloorMemory().getDataAt(intersectedCell));
@@ -40,7 +39,7 @@ public class ChaseAI extends AIState {
         if(!targetMemory.isOldData() && cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED)){
 
 
-            float angle = (float)Math.atan2(targetMemory.getY() - hostEntity.getPosY(),targetMemory.getX() - hostEntity.getPosX());
+            float angle = (float)Math.atan2(targetMemory.getStateData().getY() - hostEntity.getPosY(),targetMemory.getStateData().getX() - hostEntity.getPosX());
 
             hostEntity.addVelocity((float)Math.cos(angle) * hostEntity.getWalkSpeed(), (float)Math.sin(angle) * hostEntity.getWalkSpeed());
 
@@ -60,7 +59,7 @@ public class ChaseAI extends AIState {
             }
 
             if (!pathValid) {
-                Point p = new Point((int) Math.floor(targetMemory.getX()), (int) Math.floor(targetMemory.getY()));
+                Point p = new Point((int) Math.floor(targetMemory.getStateData().getX()), (int) Math.floor(targetMemory.getStateData().getY()));
                 float[][] weights = getWeightMapFromMemory();
                 currentPath = PathFinding.getAStarPath(weights, new Point((int) hostEntity.getPosX(), (int) hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
                 if (currentPath == null) {
@@ -100,11 +99,11 @@ public class ChaseAI extends AIState {
                 if(!targetLastLocationCellMemory.isOldData() && targetMemory.isOldData()){
                     //Found location of entity memory but no sign of entity nearby. Stop searching you fool
                     //Also stop searching if the target's last location is no longer enterable
-                    if(targetLastLocationCellMemory.enterable == CellMemory.EnterableStatus.CLOSED ||((int)hostEntity.getPosX() == (int)targetMemory.getX() && (int)hostEntity.getPosY() == (int)targetMemory.getY())){
+                    if(targetLastLocationCellMemory.enterable == CellMemory.EnterableStatus.CLOSED ||((int)hostEntity.getPosX() == (int)targetMemory.getStateData().getX() && (int)hostEntity.getPosY() == (int)targetMemory.getStateData().getY())){
                         return false;
                     }
                 }
-               return (WorldUtils.getRawDistance(hostEntity.getPosX(), targetMemory.getX(), hostEntity.getPosY(), targetMemory.getY()) >= desiredDistToTarget);
+               return (WorldUtils.getRawDistance(hostEntity.getPosX(), targetMemory.getStateData().getX(), hostEntity.getPosY(), targetMemory.getStateData().getY()) >= desiredDistToTarget);
             }else{
                 return false;
             }
@@ -112,7 +111,7 @@ public class ChaseAI extends AIState {
     }
 
     @Override
-    public @NonNull AIStateData getStateData() {
+    public AIStateData getStateData() {
         return new ChaseAIStateData();
     }
 

@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.world.level;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.KinematicEntity;
+import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class Floor {
     BasicCell[][] cells;
-    List<KinematicEntity> entities = new ArrayList<>();
+    List<Entity> entities = new ArrayList<>();
     public Floor(){}
 
     public void setCells(BasicCell[][] cells){
@@ -29,15 +29,15 @@ public class Floor {
         return furniture;
     }
 
-    public List<KinematicEntity> getEntities(){
+    public List<Entity> getEntities(){
         return entities;
     }
 
-    public void addEntity(KinematicEntity e){
+    public void addEntity(Entity e){
         entities.add(e);
     }
 
-    public void removeEntity(KinematicEntity e){
+    public void removeEntity(Entity e){
         entities.remove(e);
     }
 
@@ -69,7 +69,7 @@ public class Floor {
         getCellsAsList().forEach(BasicCell::updateFurniture);
 
         for (int i = 0; i < entities.size(); i++) {
-            KinematicEntity e = entities.get(i);
+            Entity e = entities.get(i);
             e.update();
             doBoundsCheck(e);
         }
@@ -77,42 +77,43 @@ public class Floor {
     }
 
     //Assumes all entities are squares, and are no bigger than a cell
-    public void doBoundsCheck(KinematicEntity e){
-        float xMin = - e.getSize()/2;
-        float xMax = + e.getSize()/2;
-        float yMin = - e.getSize()/2;
-        float yMax = + e.getSize()/2;
-
-        Point2D upperLeft = new Point2D.Double(xMin, yMax);
-        Point2D upperRight = new Point2D.Double(xMax, yMax);
-        Point2D lowerLeft = new Point2D.Double(xMin, yMin);
-        Point2D lowerRight = new Point2D.Double(xMax, yMin);
-
-        List<Point2D> intersectingCellCoords = new ArrayList<>();
-        intersectingCellCoords.add(upperLeft);
-        intersectingCellCoords.add(upperRight);
-        intersectingCellCoords.add(lowerLeft);
-        intersectingCellCoords.add(lowerRight);
-
-        float fX = 0;
-        float fY = 0;
-        Set<BasicCell> collidedCells = new HashSet<>();
-        for (Point2D coord : intersectingCellCoords) {
-            BasicCell intersectingCell = (getCellAt((float)coord.getX() + e.getPosX(), (float)coord.getY() + e.getPosY()));
-            if(!intersectingCell.canBeEntered(e)){
-                collidedCells.add(intersectingCell);
-                fX -= coord.getX();
-                fY -= coord.getY();
-            }
-        }
-
-        for (BasicCell collidedCell : collidedCells) {
-            if(e.doesCollideWithWall(e)) {
-                e.onCollideWithWall(collidedCell);
-            }
-        }
-
-        e.addVelocity(fX/10f, fY/10f);
+    public void doBoundsCheck(Entity e){
+        System.err.println("BOUNDS CHECKING NOT IMPLEMENTED");
+//        float xMin = - e.getSize()/2;
+//        float xMax = + e.getSize()/2;
+//        float yMin = - e.getSize()/2;
+//        float yMax = + e.getSize()/2;
+//
+//        Point2D upperLeft = new Point2D.Double(xMin, yMax);
+//        Point2D upperRight = new Point2D.Double(xMax, yMax);
+//        Point2D lowerLeft = new Point2D.Double(xMin, yMin);
+//        Point2D lowerRight = new Point2D.Double(xMax, yMin);
+//
+//        List<Point2D> intersectingCellCoords = new ArrayList<>();
+//        intersectingCellCoords.add(upperLeft);
+//        intersectingCellCoords.add(upperRight);
+//        intersectingCellCoords.add(lowerLeft);
+//        intersectingCellCoords.add(lowerRight);
+//
+//        float fX = 0;
+//        float fY = 0;
+//        Set<BasicCell> collidedCells = new HashSet<>();
+//        for (Point2D coord : intersectingCellCoords) {
+//            BasicCell intersectingCell = (getCellAt((float)coord.getX() + e.getPosX(), (float)coord.getY() + e.getPosY()));
+//            if(!intersectingCell.canBeEntered(e)){
+//                collidedCells.add(intersectingCell);
+//                fX -= coord.getX();
+//                fY -= coord.getY();
+//            }
+//        }
+//
+//        for (BasicCell collidedCell : collidedCells) {
+//            if(e.doesCollideWithWall(e)) {
+//                e.onCollideWithWall(collidedCell);
+//            }
+//        }
+//
+//        e.addVelocity(fX/10f, fY/10f);
 
     }
 

@@ -4,7 +4,6 @@ import com.ewan.dunjeon.generation.PathFinding;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
-import lombok.NonNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -87,8 +86,7 @@ public class ExploreAI extends AIState {
         }
     }
 
-    @Override
-    public @NonNull AIStateData getStateData() {
+    public AIStateData getStateData() {
         return new ExploreAIStateData();
     }
 

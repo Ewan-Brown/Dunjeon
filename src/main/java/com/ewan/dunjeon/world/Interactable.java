@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.world;
 
-import com.ewan.dunjeon.world.entities.KinematicEntity;
+import com.ewan.dunjeon.world.entities.Entity;
 
 import java.util.Set;
 
@@ -9,9 +9,9 @@ public interface Interactable {
         TOUCH, CHAT
     }
 
-    public void onInteract(KinematicEntity interactor, InteractionType type);
+    public void onInteract(Entity interactor, InteractionType type);
 //    public boolean isInteractable(Entity interactor);
     public float getPosX();
     public float getPosY();
-    public Set<InteractionType> getAvailableInteractions(KinematicEntity interactor);
+    public Set<InteractionType> getAvailableInteractions(Entity interactor);
 }

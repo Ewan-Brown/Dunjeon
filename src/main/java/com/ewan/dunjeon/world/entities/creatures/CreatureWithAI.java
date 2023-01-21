@@ -15,8 +15,8 @@ public abstract class CreatureWithAI extends Creature {
 
     AIState currentState;
 
-    public CreatureWithAI(Color c, String name, List<AIStateGenerator> stateGenerators) {
-        super(c, name);
+    public CreatureWithAI(String name, List<AIStateGenerator> stateGenerators) {
+        super(name);
         this.AIStateGeneratorsByPriority = stateGenerators;
     }
 

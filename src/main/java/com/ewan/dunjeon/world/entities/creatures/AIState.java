@@ -1,7 +1,5 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-import lombok.NonNull;
-
 /**
  * Represents the current most atomic level of the goal of the host of this object - could be "Move to target", "Explore unexplored area... etc"
  * These should be linked together with conditional branches using information from the AIStateData of the current AIProcess (And possibly past AIProcesses?)
@@ -19,7 +17,6 @@ public abstract class AIState {
      */
     public abstract void process();
 
-    @NonNull
     public abstract <T extends AIStateData> T getStateData();
 
     /**

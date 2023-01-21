@@ -128,46 +128,47 @@ public class LiveDisplay {
                             }
                         }
                         //Draw Player
-                        graphics.setColor(Color.BLUE);
-                        Creature p = w.getPlayer();
-                        graphics.fillRect((int)((p.getPosX() - p.getSize()/2) * scale), (int)((p.getPosY() - p.getSize()/2) * scale), (int)(p.getSize() * scale) , (int)(p.getSize() * scale));
+//                        graphics.setColor(Color.BLUE);
+//                        Creature p = w.getPlayer();
+//                        graphics.fillRect((int)((p.getPosX() - p.getSize()/2) * scale), (int)((p.getPosY() - p.getSize()/2) * scale), (int)(p.getSize() * scale) , (int)(p.getSize() * scale));
 
 
                         //Draw entities
-                        for (EntityMemory memory : World.getInstance().getPlayer().getFloorMemory(lev).getEntityMemory()) {
-                            if(!memory.isOldData() || RENDER_OLD_ENTITIES) {
-                                float size = memory.getSize();
-                                float x = memory.getX();
-                                float y = memory.getY();
-                                int x1 = (int) ((x - size / 2f) * scale);
-                                int y1 = (int) ((y - size / 2f) * scale);
-                                Color c = memory.getRenderData().getColor();
-                                if (memory.isOldData()) {
-                                    c = new Color(c.getRed() / 3, c.getGreen() / 3, c.getBlue() / 3);
-                                }
-
-                                Shape renderPoly = memory.getRenderData().getShape();
-
-                                if(renderPoly == null) {
-                                    //TODO Old rendering
-                                    graphics.setColor(c);
-                                    graphics.fillRect(x1, y1, (int) (size * scale), (int) (size * scale));
-
-                                    if (memory.isInteractable()) {
-                                        graphics.setColor(Color.BLACK);
-                                        graphics.drawRect(x1, y1, (int) (scale * size - 1), (int) (scale * size - 1));
-                                    }
-                                }else{
-                                    //New rendering 8)
-                                    AffineTransform transform = new AffineTransform();
-                                    transform.translate(memory.getX()*scale, memory.getY()*scale);
-                                    transform.scale(scale/10f, scale/10f);
-                                    Shape transformedPoly = transform.createTransformedShape(renderPoly);
-
-                                    graphics.fill(transformedPoly);
-                                }
-                            }
-                        }
+                        System.err.println("Entity Drawing Not Implemented!");
+//                        for (EntityMemory memory : World.getInstance().getPlayer().getFloorMemory(lev).getEntityMemory()) {
+//                            if(!memory.isOldData() || RENDER_OLD_ENTITIES) {
+//                                float size = memory.getSize();
+//                                float x = memory.getX();
+//                                float y = memory.getY();
+//                                int x1 = (int) ((x - size / 2f) * scale);
+//                                int y1 = (int) ((y - size / 2f) * scale);
+//                                Color c = memory.getRenderData().getColor();
+//                                if (memory.isOldData()) {
+//                                    c = new Color(c.getRed() / 3, c.getGreen() / 3, c.getBlue() / 3);
+//                                }
+//
+//                                Shape renderPoly = memory.getRenderData().getShape();
+//
+//                                if(renderPoly == null) {
+//                                    //TODO Old rendering
+//                                    graphics.setColor(c);
+//                                    graphics.fillRect(x1, y1, (int) (size * scale), (int) (size * scale));
+//
+//                                    if (memory.isInteractable()) {
+//                                        graphics.setColor(Color.BLACK);
+//                                        graphics.drawRect(x1, y1, (int) (scale * size - 1), (int) (scale * size - 1));
+//                                    }
+//                                }else{
+//                                    //New rendering 8)
+//                                    AffineTransform transform = new AffineTransform();
+//                                    transform.translate(memory.getStateData().getX()*scale, memory.getStateData().getY()*scale);
+//                                    transform.scale(scale/10f, scale/10f);
+//                                    Shape transformedPoly = transform.createTransformedShape(renderPoly);
+//
+//                                    graphics.fill(transformedPoly);
+//                                }
+//                            }
+//                        }
                         
                     }
 
