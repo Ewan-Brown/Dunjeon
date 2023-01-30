@@ -2,6 +2,7 @@ package com.ewan.dunjeon.world.entities;
 import com.ewan.dunjeon.graphics.RenderableObject;
 import com.ewan.dunjeon.world.CollidingObject;
 import com.ewan.dunjeon.world.Pair;
+import com.ewan.dunjeon.world.entities.memory.EntityStateData;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.cells.BasicCell;
@@ -151,9 +152,13 @@ public abstract class Entity {
         p.addPoint(-1,1);
         p.addPoint(1,1);
         p.addPoint(1,-1);
+        AffineTransform shrinker = new AffineTransform();
+        shrinker.scale(0.3, 0.3);
+        Shape s = shrinker.createTransformedShape(p);
+        System.err.println("DUPLICATED CODE HERE, UNNECESSARY CALCULATIONS");
         return Collections.singletonList(new CollidingObject() {
             public Shape getShape() {
-                return p;
+                return s;
             }
 
             public CollideableRule getRule() {
@@ -163,7 +168,25 @@ public abstract class Entity {
     }
 
     public List<RenderableObject> getDrawables() {
-        return null;
+        Polygon p = new Polygon();
+        p.addPoint(-1,-1);
+        p.addPoint(-1,1);
+        p.addPoint(1,1);
+        p.addPoint(1,-1);
+        AffineTransform shrinker = new AffineTransform();
+        shrinker.scale(0.3, 0.3);
+        Shape s = shrinker.createTransformedShape(p);
+        return Collections.singletonList(new RenderableObject() {
+            @Override
+            public Shape getShape() {
+                return s;
+            }
+
+            @Override
+            public Color getColor() {
+                return Color.BLUE;
+            }
+        });
     }
 
     public EntityStateData getEntityStateData(){

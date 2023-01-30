@@ -3,8 +3,8 @@ package com.ewan.dunjeon.world.entities.creatures;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
-public class Player extends Creature {
-    public Player(String name) {
+public class TestCreature extends Creature {
+    public TestCreature(String name) {
         super(name);
         autoPickup = true;
 //        true_sight_debug;
@@ -27,10 +27,6 @@ public class Player extends Creature {
         super.onPickupItem(i);
 
         System.out.println("Picked up item : " + i.getName());
-    }
-
-    public void stabWithWieldedWeapon(){
-        System.err.println("No weapon equipped!");
     }
 
 }
