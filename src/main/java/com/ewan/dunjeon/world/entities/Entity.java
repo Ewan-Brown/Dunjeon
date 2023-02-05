@@ -22,7 +22,7 @@ public abstract class Entity {
     private float posY;
     private float velX;
     private float rotation;
-    private float rotationalSpeed;
+    private float rotationalSpeed = 0;
     protected float friction = 10;
     private float velY;
     private long UUID;
@@ -50,6 +50,10 @@ public abstract class Entity {
         posY = y;
     }
 
+    public void setRotation(float t){
+        rotation = t;
+    }
+
     public void setVelocity(float x, float y){
         velX = x;
         velY = y;
@@ -70,7 +74,6 @@ public abstract class Entity {
             if(friction != 0) {
                 velX -= velX / friction;
                 velY -= velY / friction;
-                rotationalSpeed -= rotation / friction;
             }
 
         }
@@ -145,6 +148,12 @@ public abstract class Entity {
         return new ArrayList<>();
     }
 
+    private static AffineTransform affineTransformScale = new AffineTransform();
+
+    static {
+        affineTransformScale.scale(0.4, 0.4);
+    }
+
     public List<CollidingObject> getCollidables() {
         Polygon p = new Polygon();
         p.addPoint(-1,-1);
@@ -153,7 +162,7 @@ public abstract class Entity {
         p.addPoint(1,-1);
         return Collections.singletonList(new CollidingObject() {
             public Shape getShape() {
-                return p;
+                return affineTransformScale.createTransformedShape(p);
             }
 
             public CollideableRule getRule() {
@@ -162,9 +171,33 @@ public abstract class Entity {
         });
     }
 
-    public List<RenderableObject> getDrawables() {
-        return null;
+    public List<RenderableObject> getRawDrawables() {
+        List<RenderableObject> objs = List.of(new RenderableObject() {
+            @Override
+            public Shape getShape() {
+                Polygon p = new Polygon();
+                p.addPoint(-1,-1);
+                p.addPoint(-1,1);
+                p.addPoint(1,1);
+                p.addPoint(1,-1);
+                return affineTransformScale.createTransformedShape(p);
+            }
+
+            @Override
+            public Color getColor() {
+                return new Color(120,0,120);
+            }
+        });
+        return objs;
     }
+
+//    public AffineTransform getTransform(){
+//        AffineTransform af = new AffineTransform();
+//        af.translate(posX, posY);
+//
+//        return af;
+//    }
+
 
     public EntityStateData getEntityStateData(){
         return new EntityStateData(getPosX(), getPosY(), getVelX(), getVelY(), getRotation(), getRotationSpeed(), UUID, zState, name);
