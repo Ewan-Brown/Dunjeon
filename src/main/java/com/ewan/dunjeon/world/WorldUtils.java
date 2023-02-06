@@ -7,6 +7,7 @@ import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.Math.abs;
@@ -15,6 +16,7 @@ import static java.lang.Math.abs;
 public class WorldUtils {
 
     public static final float ENTITY_WITHIN_TILE_THRESHOLD = 0.5f;
+    private static final float INTERSECTION_FLOATING_POINT_NUDGE = 0.0001f;
 
     //TODO Reduce these after by making a 'HasPosition' interface?
     public static float getRawDistance(Entity e1, Entity e2){
@@ -205,6 +207,9 @@ public class WorldUtils {
             if (distToNextVerticalIntersect < distToNextHorizontalIntersect) {
                 nextInterceptX = nextVerticalIntersect;
                 nextInterceptY = slope * nextInterceptX + b;
+                if(distToNextVerticalIntersect < INTERSECTION_FLOATING_POINT_NUDGE){
+                    nextInterceptY += INTERSECTION_FLOATING_POINT_NUDGE * Math.signum(dy); //The reason for this is to 'nudge' the intersection point if its so close to zero that floating point errors come into play in the result of y = mx+b
+                }
                 intersectAlignment = Creature.AxisAlignment.VERTICAL;
 
                 side = (dx > 0) ? Side.WEST : Side.EAST;
@@ -212,6 +217,9 @@ public class WorldUtils {
             } else {
                 nextInterceptY = nextHorizontalIntersect;
                 nextInterceptX = (nextInterceptY - b) / slope;
+                if(distToNextHorizontalIntersect < INTERSECTION_FLOATING_POINT_NUDGE){
+                    nextInterceptX += INTERSECTION_FLOATING_POINT_NUDGE * Math.signum(dx); //The reason for this is to 'nudge' the intersection point if its so close to zero that floating point errors come into play in the result of y = mx+b
+                }
                 intersectAlignment = Creature.AxisAlignment.HORIZONTAL;
 
                 side = (dy > 0) ? Side.NORTH :Side.SOUTH;
@@ -237,7 +245,12 @@ public class WorldUtils {
                     }
                     nextTileX = (int) Math.floor(nextInterceptX);
                 }
-                intersectedTiles.add(new Pair<>(new Point(nextTileX, nextTileY), side));
+                Pair<Point, Side> pair = new Pair<>(new Point(nextTileX, nextTileY), side);
+                boolean isNewTile = intersectedTiles.add(pair);
+                if(!isNewTile){
+                    throw new RuntimeException("WorldUtils.getIntersectedTilesWithWall Attempted to add a tile again to intersection list. Check if floating point issue.");
+
+                }
                 currentX = nextInterceptX;
                 currentY = nextInterceptY;
             }
