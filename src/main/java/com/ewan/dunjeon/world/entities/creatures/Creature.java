@@ -50,7 +50,6 @@ public abstract class Creature extends Entity implements HasInventory {
     @Override
     public void update() {
         super.update();
-
         if(autoPickup){
             pickupItemsInVicinity();
         }
@@ -195,7 +194,7 @@ public abstract class Creature extends Entity implements HasInventory {
                         boolean chattable = (chatInteractive == entity);
 //                        EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
                         EntityStateData stateData = entity.getEntityStateData();
-                        List<RenderableObject> renderableObject = entity.getDrawables();
+                        List<RenderableObject> renderableObject = entity.getRawDrawables();
                         EntityMemory em = new EntityMemory(stateData, renderableObject);
                         currentFloorMemory.updateEntity(entity.getUUID(), em);
                     }

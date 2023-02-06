@@ -65,6 +65,7 @@ public class World implements KeyListener {
     Updates the game, returns true if the game is over.
      */
     public boolean update(){
+        System.out.println("time = " + time);
         time++;
         if(player.isDead()){
             System.out.println("Game over! Player dead.");

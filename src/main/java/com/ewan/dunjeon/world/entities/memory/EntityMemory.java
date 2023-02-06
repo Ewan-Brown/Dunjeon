@@ -21,7 +21,7 @@ public class EntityMemory extends Memory {
     private List<RenderableObject> renderData;
     private EntityStateData stateData;
 
-    public List<RenderableObject> getRenderData() {
+    public List<RenderableObject> getRenderableObjects() {
         return renderData;
     }
     public EntityStateData getStateData() {

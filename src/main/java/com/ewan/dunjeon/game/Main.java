@@ -4,12 +4,14 @@ import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
+import com.ewan.dunjeon.world.entities.creatures.Monster;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -69,7 +71,9 @@ public class Main {
                 p.addPoint(11, -3);
                 p.addPoint(11, -1);
                 p.addPoint(-1, -1);
-                return p;
+                AffineTransform af = new AffineTransform();
+                af.scale(0.1,0.1);
+                return af.createTransformedShape(p);
             }
 
             @Override
@@ -95,7 +99,9 @@ public class Main {
                 p.addPoint(2, -3);
                 p.addPoint(2, -1);
                 p.addPoint(-2, -1);
-                return p;
+                AffineTransform af = new AffineTransform();
+                af.scale(0.1,0.1);
+                return af.createTransformedShape(p);
             }
 
             @Override
@@ -115,7 +121,9 @@ public class Main {
                 p.addPoint(7, -2);
                 p.addPoint(8, -1);
                 p.addPoint(-9, -1);
-                return p;
+                AffineTransform af = new AffineTransform();
+                af.scale(0.1,0.1);
+                return af.createTransformedShape(p);
             }
 
             @Override
@@ -128,9 +136,13 @@ public class Main {
         w.addEntityRandomLoc(simpleItemSpear, startFloor);
         w.addEntityRandomLoc(simpleItemHammer, startFloor);
 
-//        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
+        for (int i = 0; i < 20; i++) {
+            Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
-//        w.addEntityRandomLoc(testMonster, startFloor);
+            w.addEntityRandomLoc(testMonster, startFloor);
+        }
+
+
 //        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
 //        w.addEntityRandomLoc(testNPC, startFloor);
 
