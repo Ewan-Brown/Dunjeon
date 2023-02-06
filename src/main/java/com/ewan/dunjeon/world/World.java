@@ -3,7 +3,7 @@ package com.ewan.dunjeon.world;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.creatures.TestCreature;
+import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.SoundManager;
 
@@ -24,7 +24,7 @@ public class World implements KeyListener {
 
     public float getTime(){return time;}
 
-    private TestCreature testCreature;
+    private Player player;
     public static World getInstance(){return w;}
 
     List<Floor> floors = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
@@ -66,7 +66,7 @@ public class World implements KeyListener {
      */
     public boolean update(){
         time++;
-        if(testCreature.isDead()){
+        if(player.isDead()){
             System.out.println("Game over! Player dead.");
             return true;
         }
@@ -89,39 +89,39 @@ public class World implements KeyListener {
 
     float playerSpeed = 0.03f;
 
-    public TestCreature getPlayer(){
-        return testCreature;
+    public Player getPlayer(){
+        return player;
     }
 
-    public void setPlayer(TestCreature p){ testCreature = p;}
+    public void setPlayer(Player p){ player = p;}
 
     //TODO Make a nice wrapper for this to make managing controls easier!
     public void doControls(){
         if(keySet.get(KeyEvent.VK_UP)){
-            testCreature.addVelocity(0.0f,-playerSpeed);
+            player.addVelocity(0.0f,-playerSpeed);
         }
         if(keySet.get(KeyEvent.VK_DOWN)){
-            testCreature.addVelocity(0.0f,+playerSpeed);
+            player.addVelocity(0.0f,+playerSpeed);
         }
         if(keySet.get(KeyEvent.VK_LEFT)){
-            testCreature.addVelocity(-playerSpeed,0.0f);
+            player.addVelocity(-playerSpeed,0.0f);
         }
         if(keySet.get(KeyEvent.VK_RIGHT)){
-            testCreature.addVelocity(playerSpeed, 0.0f);
+            player.addVelocity(playerSpeed, 0.0f);
         }
         if(keySet.get(KeyEvent.VK_SPACE)){
             //Prevents instant repeat on hold
             keySet.set(KeyEvent.VK_SPACE, false);
             Interactable i = getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
             if(i != null){
-                i.onInteract(testCreature, Interactable.InteractionType.TOUCH);
+                i.onInteract(player, Interactable.InteractionType.TOUCH);
             }
         }
         if(keySet.get(KeyEvent.VK_T)){
             keySet.set(KeyEvent.VK_T, false);
             Interactable i = getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
             if(i != null){
-                i.onInteract(testCreature, Interactable.InteractionType.CHAT);
+                i.onInteract(player, Interactable.InteractionType.CHAT);
             }
         }
 
@@ -141,14 +141,14 @@ public class World implements KeyListener {
         //Test function
         if(keySet.get(KeyEvent.VK_Z)){
             keySet.set(KeyEvent.VK_Z, false);
-            System.out.println(testCreature.getPoint2DLoc());
+            System.out.println(player.getPoint2DLoc());
         }
     }
 
     //Returns the closest world object that supports 'type' InteractionType for the player
     public Interactable getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType type){
         Interactable closestInteractable = null;
-        Floor f = testCreature.getFloor();
+        Floor f = player.getFloor();
 
         List<Interactable> interactables = new ArrayList<>();
 

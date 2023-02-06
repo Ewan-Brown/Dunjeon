@@ -1,10 +1,8 @@
-package com.ewan.dunjeon.world.entities.memory;
+package com.ewan.dunjeon.world.entities;
 
-
-import com.ewan.dunjeon.world.entities.Entity;
 
 /**
- * Contains data used for basics of an entity
+ * This is a class used to package generic data about an entity at a given moment. <p> It is open to extension.
  */
 public class EntityStateData {
 

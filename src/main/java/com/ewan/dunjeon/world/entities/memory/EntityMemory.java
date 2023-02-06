@@ -1,14 +1,10 @@
 package com.ewan.dunjeon.world.entities.memory;
 
 import com.ewan.dunjeon.graphics.RenderableObject;
+import com.ewan.dunjeon.world.entities.EntityStateData;
 
 import java.util.List;
 
-/**
- * Bundle of data describing a hosts' memory of an observed entity
- *
- * </p> Contains data describing the state of the entity,
- */
 public class EntityMemory extends Memory {
 
     public EntityMemory(EntityStateData stateData, List<RenderableObject> renderData) {

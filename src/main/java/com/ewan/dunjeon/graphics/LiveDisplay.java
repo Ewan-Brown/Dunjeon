@@ -2,9 +2,9 @@ package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.memory.EntityStateData;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
+import com.ewan.dunjeon.world.entities.memory.EntityMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
 import com.ewan.dunjeon.world.level.Floor;
 
@@ -126,18 +126,6 @@ public class LiveDisplay {
                                 }
 
                             }
-                        }
-
-                        Entity p = w.getPlayer();
-                        EntityStateData state = p.getEntityStateData();
-                        for (RenderableObject drawable : p.getDrawables()) {
-                            AffineTransform transform = new AffineTransform();
-                            transform.scale(scale, scale);
-                            transform.rotate(state.getRotation());
-                            transform.translate(state.getX(), state.getY());
-                            Shape s = transform.createTransformedShape(drawable.getShape());
-                            graphics.setColor(drawable.getColor());
-                            graphics.fill(s);
                         }
                         //Draw Player
 //                        graphics.setColor(Color.BLUE);

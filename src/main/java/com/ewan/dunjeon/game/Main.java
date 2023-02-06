@@ -4,7 +4,7 @@ import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
-import com.ewan.dunjeon.world.entities.creatures.TestCreature;
+import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
@@ -49,9 +49,9 @@ public class Main {
 
         LiveDisplay liveDisplay = new LiveDisplay();
 
-        TestCreature testTestCreature = new TestCreature("Player");
-        w.addEntityRandomLoc(testTestCreature, startFloor);
-        w.setPlayer(testTestCreature);
+        Player testPlayer = new Player("Player");
+        w.addEntityRandomLoc(testPlayer, startFloor);
+        w.setPlayer(testPlayer);
 
         ItemAsEntity simpleItemHammer = new ItemAsEntity(new Item("Hammer") {
             @Override

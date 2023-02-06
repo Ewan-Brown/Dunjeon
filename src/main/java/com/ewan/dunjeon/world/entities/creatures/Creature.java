@@ -7,7 +7,7 @@ import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.cells.VisualProcessor;
-import com.ewan.dunjeon.world.entities.memory.EntityStateData;
+import com.ewan.dunjeon.world.entities.EntityStateData;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
 import com.ewan.dunjeon.world.entities.memory.*;
 import com.ewan.dunjeon.world.furniture.Furniture;
@@ -168,7 +168,7 @@ public abstract class Creature extends Entity implements HasInventory {
                     Furniture f = currentCell.getFurniture();
                     boolean interactable = false;
                     //FIXME This should not be in this class
-                    if(touchInteractive == f && this instanceof TestCreature){
+                    if(touchInteractive == f && this instanceof Player){
                         interactable = true;
                     }
                     //FIXME Currently, furniture is "rendered" invisible if its' color is null. This is not a good practice use of null.

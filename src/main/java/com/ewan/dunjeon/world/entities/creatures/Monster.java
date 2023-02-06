@@ -31,7 +31,6 @@ public class Monster extends CreatureWithAI {
         super.update();
     }
 
-    //In the middle of something here
     public static Monster generateChasingMonster(Color c, String name){
         List<AIStateGenerator> gens = new ArrayList<>();
 
