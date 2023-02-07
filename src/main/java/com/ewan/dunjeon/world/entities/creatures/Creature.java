@@ -185,10 +185,10 @@ public abstract class Creature extends Entity implements HasInventory {
                 if(entity != this && (viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug)) {
 
                     
-                    List<Point> intersectingTiles = WorldUtils.getIntersectedTiles(getPosX(), getPosY(), entity.getPosX(), entity.getPosY());
+                    List<Pair<Point, WorldUtils.Side>> intersectingTiles = WorldUtils.getIntersectedTilesWithWall(getPosX(), getPosY(), entity.getPosX(), entity.getPosY());
                     List<CellMemory> cellMemories = new ArrayList<>();
-                    for (Point intersectingTile : intersectingTiles) {
-                        cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile));
+                    for (Pair<Point, WorldUtils.Side> intersectingTile : intersectingTiles) {
+                        cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile.getElement0()));
                     }
                     if(cellMemories.stream().noneMatch(cellMemory -> cellMemory == null || cellMemory.enterable == CellMemory.EnterableStatus.CLOSED) || true_sight_debug) {
                         boolean chattable = (chatInteractive == entity);

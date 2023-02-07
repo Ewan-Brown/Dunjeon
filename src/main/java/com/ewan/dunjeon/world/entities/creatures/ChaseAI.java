@@ -1,6 +1,8 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.generation.PathFinding;
+import com.ewan.dunjeon.world.Pair;
+import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
@@ -31,10 +33,10 @@ public class ChaseAI extends AIState {
         EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
         Point targetPoint = new Point((int)Math.floor(targetMemory.getStateData().getX()), (int)Math.floor(targetMemory.getStateData().getY()));
 
-        List<Point> intersectedCells = WorldUtils.getIntersectedTiles(hostEntity.getPosX(), hostEntity.getPosY(), targetMemory.getStateData().getX(), targetMemory.getStateData().getY());
+        List<Pair<Point, WorldUtils.Side>> intersectedCells = WorldUtils.getIntersectedTilesWithWall(hostEntity.getPosX(), hostEntity.getPosY(), targetMemory.getStateData().getX(), targetMemory.getStateData().getY());
         List<CellMemory> cellMemories = new ArrayList<>();
-        for (Point intersectedCell : intersectedCells) {
-            cellMemories.add(hostEntity.getCurrentFloorMemory().getDataAt(intersectedCell));
+        for (Pair<Point, WorldUtils.Side> intersectedCell : intersectedCells) {
+            cellMemories.add(hostEntity.getCurrentFloorMemory().getDataAt(intersectedCell.getElement0()));
         }
         if(!targetMemory.isOldData() && cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED)){
 

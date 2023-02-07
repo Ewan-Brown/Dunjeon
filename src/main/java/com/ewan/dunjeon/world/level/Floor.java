@@ -78,7 +78,6 @@ public class Floor {
 
     //Assumes all entities are squares, and are no bigger than a cell
     public void doBoundsCheck(Entity e){
-        System.err.println("BOUNDS CHECKING NOT IMPLEMENTED");
 //        float xMin = - e.getSize()/2;
 //        float xMax = + e.getSize()/2;
 //        float yMin = - e.getSize()/2;

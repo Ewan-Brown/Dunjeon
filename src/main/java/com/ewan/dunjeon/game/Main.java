@@ -136,7 +136,7 @@ public class Main {
         w.addEntityRandomLoc(simpleItemSpear, startFloor);
         w.addEntityRandomLoc(simpleItemHammer, startFloor);
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
             w.addEntityRandomLoc(testMonster, startFloor);
