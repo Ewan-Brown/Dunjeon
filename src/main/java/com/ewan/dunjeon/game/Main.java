@@ -28,24 +28,32 @@ public class Main {
         rand.setSeed(seed);
 
         World w = World.getInstance();
-        int floorCount = 5;
+        int floorCount = 1;
         List<Stair> prevStairs = new ArrayList<>();
 
         Floor startFloor = null;
 
         for (int i = 0; i < floorCount; i++) {
-            FloorGenerator generator = new FloorGenerator(40, 40);
-            generator.generateLeafs(10, 1);
+            FloorGenerator generator = new FloorGenerator(300, 300);
+            System.out.println("1");
+            generator.generateLeafs(50,4);
+            System.out.println("2");
             generator.generateDoors(2, 3, 2);
+            System.out.println("3");
             generator.generateWeightMap();
+            System.out.println("4");
             generator.generateHalls();
+            System.out.println("5");
             prevStairs = generator.generateStairs(prevStairs, (i == floorCount-1)? 0:1);
             generator.buildCells();
+            System.out.println("6");
             generator.addFurniture();
+            System.out.println("7");
             Floor newFloor = generator.getFloor();
             if(startFloor == null){
                 startFloor = newFloor;
             }
+            System.exit(0);
             w.addLevel(newFloor);
         }
 
@@ -132,15 +140,15 @@ public class Main {
             }
         });
 
-        w.addEntityRandomLoc(simpleItemSword, startFloor);
-        w.addEntityRandomLoc(simpleItemSpear, startFloor);
-        w.addEntityRandomLoc(simpleItemHammer, startFloor);
-
-        for (int i = 0; i < 50; i++) {
-            Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
+//        w.addEntityRandomLoc(simpleItemSword, startFloor);
+//        w.addEntityRandomLoc(simpleItemSpear, startFloor);
+//        w.addEntityRandomLoc(simpleItemHammer, startFloor);
+//
+//        for (int i = 0; i < 1; i++) {
+////            Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
-            w.addEntityRandomLoc(testMonster, startFloor);
-        }
+//            w.addEntityRandomLoc(testMonster, startFloor);
+//        }
 
 
 //        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");

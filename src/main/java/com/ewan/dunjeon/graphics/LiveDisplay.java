@@ -15,7 +15,7 @@ import java.awt.geom.AffineTransform;
 import java.util.HashMap;
 
 public class LiveDisplay {
-    private final int scale = 16;
+    private final int scale = 2;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;

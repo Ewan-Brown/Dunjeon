@@ -125,13 +125,12 @@ public class FloorGenerator {
         for (Section rooms : sections) {
             for (int i = rooms.x1 -1; i <= rooms.x2+1; i++) {
                 for (int j = rooms.y1-1; j <= rooms.y2+1; j++) {
-
                     if(i == rooms.x1 -1 || i == rooms.x2 +1 || j == rooms.y1 -1 || j == rooms.y2 + 1) weightMap[j][i] += 100;
                     else weightMap[j][i] = Float.POSITIVE_INFINITY;
                 }
             }
         }
-    }
+    } 
 
     //TODO Clean this up a bit. Maybe make a nice queue of doors, and make sure that the queue is ordered such that it starts with one door from each leaf.
     public void generateHalls(){
@@ -139,16 +138,18 @@ public class FloorGenerator {
         //Ensures that each room connects to the next (so all sections are connected)
         List<Hall> halls = new ArrayList<>();
         for (int i = 0; i < sections.size()-1; i++) {
+            System.out.println("\t"+i + " / " + sections.size());
             Section l = sections.get(i);
             Section nextSection = sections.get(i+1);
 
+            System.out.println("\t\s"+"find door");
             //Try to find a door that is unused, if not just grab the first one
             Door d1 = l.doors.stream().filter(door -> door.directConnections.isEmpty()).findFirst().orElse(l.doors.get(0));
             //Grab the first door of the next leaf. Will always be unused as of yet.
             Door d2 = nextSection.doors.get(0);
-
+            System.out.println("\t\s"+"Get hall Path");
             //Create a hall from door1 to door2
-            List<Point> hall = PathFinding.getAStarPath(weightMap, d1.getPoint(), d2.getPoint(), false, PathFinding.CornerInclusionRule.NO_CORNERS, 1, false);
+            List<Point> hall = PathFinding.getAStarPath(weightMap, d1.getPoint(), d2.getPoint(), true, PathFinding.CornerInclusionRule.NO_CORNERS, 1, false);
             hall.remove(0);
             Hall p = new Hall(d1, d2, hall);
             halls.add(p);

@@ -40,7 +40,6 @@ public class ChaseAI extends AIState {
         }
         if(!targetMemory.isOldData() && cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED)){
 
-
             float angle = (float)Math.atan2(targetMemory.getStateData().getY() - hostEntity.getPosY(),targetMemory.getStateData().getX() - hostEntity.getPosX());
 
             hostEntity.addVelocity((float)Math.cos(angle) * hostEntity.getWalkSpeed(), (float)Math.sin(angle) * hostEntity.getWalkSpeed());
