@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.generation;
 
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
+import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.furniture.Container;
@@ -84,7 +85,7 @@ public class FloorGenerator {
         for (Section currentSection : sections) {
             int doorNum = (maxDoors > minDoors) ? rand.nextInt(maxDoors-minDoors) + minDoors : maxDoors;
             //List of edge pieces eligible to become doors
-            List<Point> edgePieces = currentSection.getEdgePieces(false);
+            List<Pair<Point, List<Point>>> edgePieces = currentSection.getEdgePieces(false);
 
             //Keep adding doors until either we have enough or there isn't enough space to create non-adjacent doors
             while(currentSection.doors.size() < doorNum && edgePieces.size() > 1 + doorSpacing*2){
@@ -95,9 +96,9 @@ public class FloorGenerator {
                 for (int i = possibleDoorIndex - doorSpacing; i <= possibleDoorIndex+doorSpacing; i++) {
                     int calculatedIndex = i % edgePieces.size();
                     if(calculatedIndex < 0) calculatedIndex = edgePieces.size() + calculatedIndex;
-                    neighbors.add(edgePieces.get(calculatedIndex));
+                    neighbors.add(edgePieces.get(calculatedIndex).getElement0());
                 }
-                currentSection.doors.add(new Door(edgePieces.get(possibleDoorIndex), currentSection));
+                currentSection.doors.add(new Door(edgePieces.get(possibleDoorIndex).getElement0(), currentSection));
                 edgePieces.removeAll(neighbors);
             }
             totalDoors.addAll(currentSection.doors);

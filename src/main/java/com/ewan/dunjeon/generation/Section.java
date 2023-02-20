@@ -1,5 +1,8 @@
 package com.ewan.dunjeon.generation;
 
+import com.ewan.dunjeon.world.Pair;
+import com.ewan.dunjeon.world.cells.Stair;
+
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -68,23 +71,38 @@ public class Section implements Serializable {
         return y2 - y1;
     }
 
-    List<Point> getEdgePieces(boolean includeCorners) {
-        List<Point> points = new ArrayList<>();
+    /**
+     * Returns a list of the points defining the walls of this section, each with an associated list of 'entry points' - adjacent tiles that are not walls. <p>
+     * Will (probably) not work if two sections' walls are collinear or even touching
+     * @param includeCorners whether this should return the corner walls or just 'side' walls
+     * @return returns a list of pairings => Edge/CornerPiece <-> Adjacent entry points
+     */
+    List<Pair<Point, List<Point>>> getEdgePieces(boolean includeCorners) {
+        List<Pair<Point, List<Point>>> points = new ArrayList<>();
         int cornerAdj = (includeCorners) ? 1 : 0;
         for (int i = x1 + 1; i < x2 + cornerAdj; i++) {
-            points.add(new Point(i, y1));
+            List<Point> adjacentPoints = new ArrayList<>();
+            adjacentPoints.add(new Point(i, y1-1));
+            points.add(new Pair<>(new Point(i, y1), adjacentPoints));
         }
         for (int i = y1 + 1; i < y2 + cornerAdj; i++) {
-            points.add(new Point(x2, i));
+            List<Point> adjacentPoints = new ArrayList<>();
+            adjacentPoints.add(new Point(x2+1, i));
+            points.add(new Pair<>(new Point(x2, i), adjacentPoints));
         }
         for (int i = x2 - 1; i > x1 - cornerAdj; i--) {
-            points.add(new Point(i, y2));
+            List<Point> adjacentPoints = new ArrayList<>();
+            adjacentPoints.add(new Point(i, y2+1));
+            points.add(new Pair<>(new Point(i, y2), adjacentPoints));
         }
         for (int i = y2 - 1; i > y1 - cornerAdj; i--) {
-            points.add(new Point(x1, i));
+            List<Point> adjacentPoints = new ArrayList<>();
+            adjacentPoints.add(new Point(x1-1, i));
+            points.add(new Pair<>(new Point(x1, i), adjacentPoints));
         }
         return points;
     }
+
 
     //Generate a leaf that exists within this leaf, with some certain restrictions
     Section subLeaf() {
