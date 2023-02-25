@@ -60,6 +60,26 @@ public class WorldUtils {
         return Math.abs(yDiff) < 2 && Math.abs(xDiff) < 2;
     }
 
+    /**
+     * Lists integers between i1 and i2, exclusive.
+     * @param i1
+     * @param i2
+     * @return
+     */
+    public static List<Integer> listIntsBetween(int i1, int i2){
+        List<Integer> integers = new ArrayList<>();
+        int i = i1;
+        while(true){
+            i += (int)Math.signum(i2-i1);
+            integers.add(i);
+            if(i == i2){
+                break;
+            }
+        }
+
+        return integers;
+    }
+
     public enum Side{
         NORTH,
         EAST,

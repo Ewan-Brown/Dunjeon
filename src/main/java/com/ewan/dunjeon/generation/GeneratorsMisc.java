@@ -62,12 +62,14 @@ public class GeneratorsMisc {
         int y;
         List<Door> directConnections = new ArrayList<>();
         List<Hall> hallsConnected = new ArrayList<>();
+        List<Point> entryPoints = new ArrayList<>();
         Section parentSection;
 
-        public Door(Point p, Section l){
+        public Door(Point p, Section l, List<Point> e){
             this.x = p.x;
             this.y = p.y;
             parentSection = l;
+            entryPoints = e;
         }
 
         public Point getPoint(){

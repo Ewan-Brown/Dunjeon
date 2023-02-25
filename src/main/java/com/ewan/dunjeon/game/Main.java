@@ -23,7 +23,7 @@ public class Main {
 
     public static void main(String[] args) {
         long seed = rand.nextInt();
-        seed = 1227902434;
+        seed = 575246739;
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 
@@ -36,9 +36,9 @@ public class Main {
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(30, 30);
             System.out.println("1");
-            generator.generateLeafs(7,4);
+            generator.generateLeafs(5,5);
             System.out.println("2");
-            generator.generateDoors(2, 3, 2);
+            generator.generateDoors(1, 1, 2);
             System.out.println("3");
             generator.generateWeightMap();
             System.out.println("4");
