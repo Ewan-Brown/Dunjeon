@@ -69,12 +69,9 @@ public class WorldUtils {
     public static List<Integer> listIntsBetween(int i1, int i2){
         List<Integer> integers = new ArrayList<>();
         int i = i1;
-        while(true){
+        while(i != i2){
             i += (int)Math.signum(i2-i1);
             integers.add(i);
-            if(i == i2){
-                break;
-            }
         }
 
         return integers;

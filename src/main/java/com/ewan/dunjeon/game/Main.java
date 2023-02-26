@@ -34,9 +34,9 @@ public class Main {
         Floor startFloor = null;
 
         for (int i = 0; i < floorCount; i++) {
-            FloorGenerator generator = new FloorGenerator(30, 30);
+            FloorGenerator generator = new FloorGenerator(50, 50);
             System.out.println("1");
-            generator.generateLeafs(5,5);
+            generator.generateLeafs(7,50);
             System.out.println("2");
             generator.generateDoors(1, 1, 2);
             System.out.println("3");

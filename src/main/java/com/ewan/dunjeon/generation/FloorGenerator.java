@@ -157,10 +157,13 @@ public class FloorGenerator {
         };}
 
         static Direction getDirection(int x, int y){
-            if(x == 0 && y == 0){
-                System.err.println("Uh oh");
+            Optional<Direction> directionOptional = Arrays.stream(values()).filter(direction -> direction.x == x && direction.y == y).findFirst();
+
+            if(directionOptional.isPresent()){
+                return directionOptional.get();
+            }else{
+                throw new RuntimeException("called getDirection with " + x + ", " + y);
             }
-            return Arrays.stream(values()).filter(direction -> direction.x == x && direction.y == y).findFirst().orElseThrow();
         }
 
     }
@@ -171,6 +174,7 @@ public class FloorGenerator {
         //Ensures that each room connects to the next (so all sections are connected)
         List<Hall> halls = new ArrayList<>();
         for (int i = 0; i < sections.size()-1; i++) {
+
             System.out.println("\t"+i + " / " + sections.size());
             Section l = sections.get(i);
             Section nextSection = sections.get(i+1);
@@ -218,6 +222,8 @@ public class FloorGenerator {
 
                 int direct1UnobstructedLength = 0;
                 int direct2UnobstructedLength = 0;
+                Point direct1ObstructingPoint = null;
+                Point direct2ObstructingPoint = null;
 
                 for (Point point : directPath1) {
                     float w = weightMap[point.y][point.x];
@@ -226,7 +232,8 @@ public class FloorGenerator {
                         break pathIterator;
                     }else{
                         if(w == POSITIVE_INFINITY){
-                            direct1UnobstructedLength = directPath1.indexOf(point)-1;
+                            direct1UnobstructedLength = directPath1.indexOf(point);
+                            direct1ObstructingPoint = point;
                             break;
                         }
                     }
@@ -239,7 +246,8 @@ public class FloorGenerator {
                         break pathIterator;
                     }else{
                         if(w == POSITIVE_INFINITY){
-                            direct2UnobstructedLength = directPath2.indexOf(point)-1;
+                            direct2UnobstructedLength = directPath2.indexOf(point);
+                            direct2ObstructingPoint = point;
                             break;
                         }
                     }
@@ -247,34 +255,41 @@ public class FloorGenerator {
 
                 List<Point> shorterDirectPath;
                 List<Point> selectedDirectPath;
+                Point obstructingPoint;
 
                 if(previousPoint.x == hallEndPoint.x){
-                    shorterDirectPath = directPath1;
+                    shorterDirectPath = directPath1.subList(0, direct1UnobstructedLength);
                     selectedDirectPath = directPath1;
+                    obstructingPoint = direct1ObstructingPoint;
                 }else if(previousPoint.y == hallEndPoint.y){
-                    shorterDirectPath = directPath2;
+                    shorterDirectPath = directPath2.subList(0, direct2UnobstructedLength);
                     selectedDirectPath = directPath2;
+                    obstructingPoint = direct2ObstructingPoint;
                 }
                 else if(direct1UnobstructedLength > direct2UnobstructedLength){
                     shorterDirectPath = directPath1.subList(0, direct1UnobstructedLength);
                     selectedDirectPath = directPath1;
+                    obstructingPoint = direct1ObstructingPoint;
                 }else{
                     shorterDirectPath = directPath2.subList(0, direct2UnobstructedLength);
                     selectedDirectPath = directPath2;
+                    obstructingPoint = direct2ObstructingPoint;
                 }
 
                 Point endOfDirectPath;
                 Direction directionOfEndOfPath;
-                if(shorterDirectPath.size() >= 2){
-                    endOfDirectPath = shorterDirectPath.get(shorterDirectPath.size()-1);
-                    directionOfEndOfPath = Direction.getDirection(endOfDirectPath.x - shorterDirectPath.get(shorterDirectPath.size()-2).x,
-                            endOfDirectPath.y - shorterDirectPath.get(shorterDirectPath.size()-2).y);
-                }else{
-                    //Weird edge case
-                    endOfDirectPath = previousPoint;
-                    directionOfEndOfPath = Direction.getDirection(endOfDirectPath.x - selectedDirectPath.get(0).x,
-                            endOfDirectPath.y - selectedDirectPath.get(0).y);
+                if(obstructingPoint == null){
+                    throw new NullPointerException();
                 }
+                endOfDirectPath = shorterDirectPath.get(shorterDirectPath.size()-1);
+                directionOfEndOfPath = Direction.getDirection(obstructingPoint.x - endOfDirectPath.x,
+                        obstructingPoint.y - endOfDirectPath.y);
+//                }else{
+//                    //Weird edge case
+//                    endOfDirectPath = previousPoint;
+//                    directionOfEndOfPath = Direction.getDirection(endOfDirectPath.x - selectedDirectPath.get(0).x,
+//                            endOfDirectPath.y - selectedDirectPath.get(0).y);
+//                }
 
                 if(endOfDirectPath.equals(hallEndPoint)){
                     hall.addAll(shorterDirectPath);
