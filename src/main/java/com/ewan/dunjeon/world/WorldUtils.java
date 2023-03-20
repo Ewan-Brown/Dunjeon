@@ -8,6 +8,8 @@ import com.ewan.dunjeon.world.furniture.Furniture;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntConsumer;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.abs;
 
@@ -89,17 +91,57 @@ public class WorldUtils {
         float dx = x2 - x1;
         float dy = y2 - y1;
 
+
+
         float slope = dy / dx;
         float b = y1 - slope * x1;
 
         float currentX = x1;
         float currentY = y1;
 
-        //TODO ADD FIRST POINT
         List<Pair<Point, Side>> intersectedTiles = new ArrayList<>();
         Point currentPoint = new Point((int) Math.floor(x1), (int) Math.floor(y1));
 
+        if(dx == 0){
+//            System.out.println("Here we vertically go");
+            int tileX = (int)Math.floor(x1);
+//            System.out.println("tileX = " + tileX);
+            Side intersectSide = dy > 0 ? Side.NORTH : Side.SOUTH;
+//            System.out.println("intersectSide = " + intersectSide);
+            int y1Floored = (int)Math.floor(y1);
+            int y2Ceil = (int)Math.floor(y2)+1;
+//            System.out.printf("y1(floor) : %f(%d), y2(ceil) : %f(%d)\n", y1, y1Floored, y2, y2Ceil);
+            IntStream.range(y1Floored, y2Ceil).forEach(new IntConsumer() {
+                @Override
+                public void accept(int value) {
+                    intersectedTiles.add(new Pair<>(new Point(tileX, value), intersectSide));
+                }
+            });
+//            System.out.println(intersectedTiles.size());
+            return intersectedTiles;
+        }else if(dy == 0){
+//            System.out.println();
+//            System.out.println("Here we horizontally go");
+            int tileY = (int)Math.floor(y1);
+//            System.out.println("tileY = " + tileY);
+            Side intersectSide = dx > 0 ? Side.WEST : Side.EAST;
+//            System.out.println("intersectSide = " + intersectSide);
+            int x1Floored = (int)Math.floor(x1);
+            int x2Ceil = (int)Math.floor(x2)+1;
+//            System.out.printf("x1(floor) : %f(%d), x2(ceil) : %f(%d)\n", x1, x1Floored, x2, x2Ceil);
+            IntStream.range(x1Floored, x2Ceil).forEach(new IntConsumer() {
+                @Override
+                public void accept(int value) {
+                    intersectedTiles.add(new Pair<>(new Point(value, tileY), intersectSide));
+                }
+            });
+//            System.out.println(intersectedTiles.size());
+            return intersectedTiles;
+        }
+
         intersectedTiles.add(new Pair<>(currentPoint, Side.WITHIN));
+
+
 
         //Iterate across intersects and find tiles
         while (true) {
@@ -108,13 +150,6 @@ public class WorldUtils {
             float distToNextVerticalIntersect = Float.MAX_VALUE;
             float nextHorizontalIntersect = 0;
             float distToNextHorizontalIntersect = Float.MAX_VALUE;
-
-            if(intersectedTiles.size() > 20){
-                for (Pair<Point, Side> intersectedTile : intersectedTiles) {
-                    System.out.println(intersectedTile.getElement0() + " " + intersectedTile.getElement1());
-                };
-                System.out.println("ow!");
-            }
 
             Side side;
 

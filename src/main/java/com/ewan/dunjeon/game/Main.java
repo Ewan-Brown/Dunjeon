@@ -1,7 +1,11 @@
 package com.ewan.dunjeon.game;
 
 import com.ewan.dunjeon.generation.FloorGenerator;
+import com.ewan.dunjeon.generation.GeneratorsMisc;
+import com.ewan.dunjeon.generation.Section;
 import com.ewan.dunjeon.graphics.LiveDisplay;
+import com.ewan.dunjeon.world.Pair;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
 import com.ewan.dunjeon.world.entities.creatures.Monster;
@@ -12,9 +16,11 @@ import com.ewan.dunjeon.world.World;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class Main {
 
@@ -32,31 +38,44 @@ public class Main {
         List<Stair> prevStairs = new ArrayList<>();
 
         Floor startFloor = null;
+        LiveDisplay liveDisplay = new LiveDisplay();
 
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(50, 50);
-            System.out.println("1");
-            generator.generateLeafs(7,50);
-            System.out.println("2");
+            generator.generateLeafs(5,10);
+            for (Section section : generator.getSections()) {
+                System.out.println(section);
+            }
             generator.generateDoors(1, 1, 2);
-            System.out.println("3");
             generator.generateWeightMap();
-            System.out.println("4");
-            generator.generateHalls();
-            System.out.println("5");
-            prevStairs = generator.generateStairs(prevStairs, (i == floorCount-1)? 0:1);
+//            generator.generateHalls();
+//            prevStairs = generator.generateStairs(prevStairs, (i == floorCount-1)? 0:1);
             generator.buildCells();
-            System.out.println("6");
             generator.addFurniture();
-            System.out.println("7");
             Floor newFloor = generator.getFloor();
             if(startFloor == null){
                 startFloor = newFloor;
             }
             w.addLevel(newFloor);
+
+            generator.getSplits().forEach(split -> LiveDisplay.debugLines.put(split.getLine2D(), Color.RED));
+            generator.getSplits().forEach(new Consumer<GeneratorsMisc.Split>() {
+                @Override
+                public void accept(GeneratorsMisc.Split split) {
+//                    System.out.println(split);
+                    WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2()).stream().forEach(new Consumer<Pair<Point, WorldUtils.Side>>() {
+                        @Override
+                        public void accept(Pair<Point, WorldUtils.Side> pointSidePair) {
+//                            System.out.println(pointSidePair.getElement0());
+                            LiveDisplay.debugCells.put(pointSidePair.getElement0(), Color.RED);
+                        }
+                    });
+                }
+            });
+
+
         }
 
-        LiveDisplay liveDisplay = new LiveDisplay();
 
         Player testPlayer = new Player("Player");
         w.addEntityRandomLoc(testPlayer, startFloor);

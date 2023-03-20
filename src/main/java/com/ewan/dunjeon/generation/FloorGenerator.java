@@ -2,7 +2,6 @@ package com.ewan.dunjeon.generation;
 
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
 import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.cells.Stair;
@@ -10,13 +9,8 @@ import com.ewan.dunjeon.world.furniture.Container;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
-import java.util.function.BinaryOperator;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.ewan.dunjeon.game.Main.rand;
 import static java.lang.Float.POSITIVE_INFINITY;
@@ -34,8 +28,9 @@ public class FloorGenerator {
     List<Section> sections;
     List<Door> doors;
     List<Hall> halls;
-    List<Stair> stairs;
-    Floor floor;
+    List<Stair> stairs = new ArrayList<>();
+    List<Split> splits;
+    Floor floor = new Floor();
 
     float[][] weightMap;
     BasicCell[][] cells;
@@ -43,36 +38,39 @@ public class FloorGenerator {
 //    int[][] map;
 
     public void generateLeafs(int minSize, int maxRooms){
-        ArrayList<Section> splits = new ArrayList<>(); //List of room 'splits', within which the sections will be created
-        splits.add(new Section(2,2,width-3,height-3)); //Generate first leaf as entire map, excluding 2-wide edge (Wall at edge of map + space for path)
+        ArrayList<Section> splitSections = new ArrayList<>(); //List of room 'splitSections', within which the sections will be create
+        splits = new ArrayList<>();
+        splitSections.add(new Section(2,2,width-3,height-3)); //Generate first leaf as entire map, excluding 2-wide edge (Wall at edge of map + space for path)
 
         //Split leafs until all are at desired size
         do{
             boolean finished = true;
             ArrayList<Section> newSections = new ArrayList<>();
-            for (Section section : splits) {
-                Section[] splitSections = section.split(minSize);
-                if(splitSections == null){ //If this section can't be split anymore due to sizing issues, skip it
+            for (Section section : splitSections) {
+                Pair<Section[], Split> splitResults = section.split(minSize);
+                if(splitResults.getElement0() == null){ //If this section can't be split anymore due to sizing issues, skip it
                     newSections.add(section);
                 }
                 else {//Add the split leafs to the new leafs list
                     finished = false;
-                    newSections.addAll(Arrays.asList(splitSections));
+                    newSections.addAll(Arrays.asList(splitResults.getElement0()));
+                    splits.add(splitResults.getElement1());
                 }
             }
-            splits = newSections;
+            //Discards old sections that have been split! Final splitSectionsArray will only contain the final un-split "Descendants".
+            splitSections = newSections;
 //            Display.drawMap(drawLeafsToMap(leafs, width, height, 1));
             if(finished) break;
         }while(true);
 
         //Remove leafs until we have desired number of sections if we have too many
-        for (int i = splits.size() - maxRooms; i > 0;i--){
-            splits.remove(rand.nextInt(splits.size()));
+        for (int i = splitSections.size() - maxRooms; i > 0;i--){
+            splitSections.remove(rand.nextInt(splitSections.size()));
         }
 
         //Create the actual sizings of the sections themselves. Subleaf really just means 'the leaf within the leaf'
         List<Section> rooms = new ArrayList<>();
-        for(Section f : splits){
+        for(Section f : splitSections){
             Section subSection = f.subLeaf();
             rooms.add(subSection);
         }
@@ -90,7 +88,7 @@ public class FloorGenerator {
         for (Section currentSection : sections) {
             int doorNum = (maxDoors > minDoors) ? rand.nextInt(maxDoors-minDoors) + minDoors : maxDoors;
             //List of edge pieces eligible to become doors
-            List<Pair<Point, List<Point>>> edgePieces = currentSection.getEdgePieces(false);
+            List<Pair<Point, List<Point>>> edgePieces = currentSection.getNonWallBoundedEdgePieces(false);
 
             //Keep adding doors until either we have enough or there isn't enough space to create non-adjacent doors
             while(currentSection.doors.size() < doorNum && edgePieces.size() > 1 + doorSpacing*2){
@@ -175,16 +173,16 @@ public class FloorGenerator {
         List<Hall> halls = new ArrayList<>();
         for (int i = 0; i < sections.size()-1; i++) {
 
-            System.out.println("\t"+i + " / " + sections.size());
+//            System.out.println("\t"+i + " / " + sections.size());
             Section l = sections.get(i);
             Section nextSection = sections.get(i+1);
 
-            System.out.println("\t\s"+"find door");
+//            System.out.println("\t\s"+"find door");
             //Try to find a door that is unused, if not just grab the first one
             Door d1 = l.doors.stream().filter(door -> door.directConnections.isEmpty()).findFirst().orElse(l.doors.get(0));
             //Grab the first door of the next leaf. Will always be unused.
             Door d2 = nextSection.doors.get(0);
-            System.out.println("\t\s"+"Get hall Path");
+//            System.out.println("\t\s"+"Get hall Path");
             Point startingPoint = d1.entryPoints.get(0);
 
             List<Point> hall = new ArrayList<>();
@@ -196,8 +194,7 @@ public class FloorGenerator {
                 List<Point> directPath1 = new ArrayList<>(); //X then Y
                 List<Point> directPath2 = new ArrayList<>(); //Y then X
 
-
-                //Calcualte manhattan X/Y
+                //Calculate manhattan X/Y
                 List<Integer> xVals = WorldUtils.listIntsBetween(previousPoint.x, hallEndPoint.x);
                 List<Integer> yVals = WorldUtils.listIntsBetween(previousPoint.y, hallEndPoint.y);
 
@@ -296,16 +293,9 @@ public class FloorGenerator {
                     break;
                 }
 
-
-
-
-
-
-
                 //Attempt to manoeuvre around the current obstacle
                 hall.addAll(shorterDirectPath);
 
-//                    List<Point> manoeuvrePath;
                 List<Pair<Direction, Integer>> availableManoeuvres = new ArrayList<>();
                 for (Direction availableDirection : Arrays.stream(Direction.getSideDirections(directionOfEndOfPath)).toList()) {
                     Point p = new Point(endOfDirectPath.x + availableDirection.x, endOfDirectPath.y + availableDirection.y);
@@ -334,8 +324,10 @@ public class FloorGenerator {
             }
 
             //Create a hall from door1 to door2
-            Hall p = new Hall(d1, d2, hall);
-            halls.add(p);
+            if( i == 1) {
+                Hall p = new Hall(d1, d2, hall);
+                halls.add(p);
+            }
 
 
             //Create a hall from door1 to door2
@@ -369,8 +361,6 @@ public class FloorGenerator {
 
     //Add stairs to the floor according to how many are required
     public List<Stair> generateStairs(List<Stair> connections, int downsRequired){
-        floor = new Floor();
-        stairs = new ArrayList<>();
         List<Stair> downs = new ArrayList<>();
 
         //Add connecting upwards stairs
@@ -500,4 +490,6 @@ public class FloorGenerator {
     public List<Hall> getHalls() {
         return halls;
     }
+
+    public List<Split> getSplits() { return                                                                                                                                                                                                                                                                                                                                                                                                                                     splits;}
 }

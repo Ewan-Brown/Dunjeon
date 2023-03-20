@@ -12,7 +12,9 @@ import com.ewan.dunjeon.world.level.Floor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 
 public class LiveDisplay {
     private final int scale = 8;
@@ -21,6 +23,7 @@ public class LiveDisplay {
     private JPanel panel;
 
     public static HashMap<Point, Color> debugCells = new HashMap<>();
+    public static HashMap<Line2D.Float, Color> debugLines = new HashMap<>();
     public static boolean RENDER_GRID = false;
     public static boolean RENDER_OLD_ENTITIES = false;
 
@@ -63,9 +66,6 @@ public class LiveDisplay {
                                     }
 
                                     Point p = new Point(x, y);
-                                    if (debugCells != null && debugCells.containsKey(p)) {
-                                        processedCellColor = debugCells.get(p);
-                                    }
 
                                     //Draw Furniture if it exists
                                     CellMemory.FurnitureData furnitureData = data.furnitureData;
@@ -173,6 +173,20 @@ public class LiveDisplay {
                         }
 
                     }
+
+                    debugLines.forEach((line2D, color) -> {
+                        AffineTransform af = new AffineTransform();
+                        af.scale(scale,scale);
+                        graphics.setColor(color);
+                        graphics.draw(af.createTransformedShape(line2D));
+                    });
+
+                    debugCells.forEach((point, color) -> {
+                        AffineTransform af = new AffineTransform();
+                        af.scale(scale,scale);
+                        graphics.setColor(color);
+                        graphics.draw(af.createTransformedShape(new Rectangle(point.x,point.y,1,1)));
+                    });
 
                 }
             };

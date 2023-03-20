@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.generation;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -60,9 +61,9 @@ public class GeneratorsMisc {
     public static class Door implements Serializable{
         int x;
         int y;
-        List<Door> directConnections = new ArrayList<>();
-        List<Hall> hallsConnected = new ArrayList<>();
-        List<Point> entryPoints = new ArrayList<>();
+        List<Door> directConnections;
+        List<Hall> hallsConnected;
+        List<Point> entryPoints;
         Section parentSection;
 
         public Door(Point p, Section l, List<Point> e){
@@ -70,10 +71,48 @@ public class GeneratorsMisc {
             this.y = p.y;
             parentSection = l;
             entryPoints = e;
+            hallsConnected = new ArrayList<>();
+            directConnections = new ArrayList<>();
         }
 
         public Point getPoint(){
             return new Point(x, y);
+        }
+    }
+
+    public static class Split{
+        float x1,x2,y1,y2;
+
+        public Split(float x1, float x2, float y1, float y2){
+            this.x1 = x1;
+            this.x2 = x2;
+            this.y1 = y1;
+            this.y2 = y2;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%f, %f -> %f, %f", x1, y1, x2, y2);
+        }
+
+        public Line2D.Float getLine2D(){
+            return new Line2D.Float(x1, y1, x2, y2);
+        }
+
+        public float getX1() {
+            return x1;
+        }
+
+        public float getX2() {
+            return x2;
+        }
+
+        public float getY1() {
+            return y1;
+        }
+
+        public float getY2() {
+            return y2;
         }
     }
 

@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.generation;
 
 import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.cells.Stair;
+import com.ewan.dunjeon.world.WorldUtils;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -12,11 +12,8 @@ import java.util.List;
 import static com.ewan.dunjeon.game.Main.rand;
 
 public class Section implements Serializable {
-    public void printDetails() {
-        System.out.printf("(%d, %d) - (%d, %d)\n", x1, y1, x2, y2);
-    }
-
     List<Point> availableCells;
+    List<WorldUtils.Side> wallBoundedSides;
 
     //Coords of leaf boundaries, including walls.
     int x1;
@@ -26,7 +23,7 @@ public class Section implements Serializable {
 
     List<GeneratorsMisc.Door> doors = new ArrayList<>();
 
-    Section(int x1, int y1, int x2, int y2) {
+    Section(int x1, int y1, int x2, int y2, List<WorldUtils.Side> boundedSides) {
         this.x1 = x1;
         this.x2 = x2;
         this.y1 = y1;
@@ -38,6 +35,27 @@ public class Section implements Serializable {
             }
         }
         Collections.shuffle(availableCells, rand);
+        wallBoundedSides = boundedSides;
+    }
+
+    Section(int x1, int y1, int x2, int y2) {
+        this.x1 = x1;
+        this.x2 = x2;
+        this.y1 = y1;
+        this.y2 = y2;
+        availableCells = new ArrayList<>();
+        wallBoundedSides = new ArrayList<>();
+        for (int x = x1+1; x < x2; x++) {
+            for (int y = y1+1; y < y2; y++){
+                availableCells.add(new Point(x,y));
+            }
+        }
+        Collections.shuffle(availableCells, rand);
+        wallBoundedSides = new ArrayList<>();
+        wallBoundedSides.add(WorldUtils.Side.EAST);
+        wallBoundedSides.add(WorldUtils.Side.WEST);
+        wallBoundedSides.add(WorldUtils.Side.SOUTH);
+        wallBoundedSides.add(WorldUtils.Side.NORTH);
     }
 
     public Point getRandomEmptyPoint(){
@@ -75,30 +93,38 @@ public class Section implements Serializable {
      * Returns a list of the points defining the walls of this section, each with an associated list of 'entry points' - adjacent tiles that are not walls. <p>
      * Will (probably) not work if two sections' walls are collinear or even touching
      * @param includeCorners whether this should return the corner walls or just 'side' walls
-     * @return returns a list of pairings => Edge/CornerPiece <-> Adjacent entry points
+     * @return returns a list of pairings : Edge/CornerPiece <-> Adjacent entry points
      */
-    List<Pair<Point, List<Point>>> getEdgePieces(boolean includeCorners) {
+    List<Pair<Point, List<Point>>> getNonWallBoundedEdgePieces(boolean includeCorners) {
         List<Pair<Point, List<Point>>> points = new ArrayList<>();
         int cornerAdj = (includeCorners) ? 1 : 0;
-        for (int i = x1 + 1; i < x2 + cornerAdj; i++) {
-            List<Point> adjacentPoints = new ArrayList<>();
-            adjacentPoints.add(new Point(i, y1-1));
-            points.add(new Pair<>(new Point(i, y1), adjacentPoints));
+        if(!wallBoundedSides.contains(WorldUtils.Side.NORTH)) {
+            for (int i = x1 + 1; i < x2 + cornerAdj; i++) {
+                List<Point> adjacentPoints = new ArrayList<>();
+                adjacentPoints.add(new Point(i, y1 - 1));
+                points.add(new Pair<>(new Point(i, y1), adjacentPoints));
+            }
         }
-        for (int i = y1 + 1; i < y2 + cornerAdj; i++) {
-            List<Point> adjacentPoints = new ArrayList<>();
-            adjacentPoints.add(new Point(x2+1, i));
-            points.add(new Pair<>(new Point(x2, i), adjacentPoints));
+        if(!wallBoundedSides.contains(WorldUtils.Side.EAST)) {
+            for (int i = y1 + 1; i < y2 + cornerAdj; i++) {
+                List<Point> adjacentPoints = new ArrayList<>();
+                adjacentPoints.add(new Point(x2 + 1, i));
+                points.add(new Pair<>(new Point(x2, i), adjacentPoints));
+            }
         }
-        for (int i = x2 - 1; i > x1 - cornerAdj; i--) {
-            List<Point> adjacentPoints = new ArrayList<>();
-            adjacentPoints.add(new Point(i, y2+1));
-            points.add(new Pair<>(new Point(i, y2), adjacentPoints));
+        if(!wallBoundedSides.contains(WorldUtils.Side.SOUTH)) {
+            for (int i = x2 - 1; i > x1 - cornerAdj; i--) {
+                List<Point> adjacentPoints = new ArrayList<>();
+                adjacentPoints.add(new Point(i, y2 + 1));
+                points.add(new Pair<>(new Point(i, y2), adjacentPoints));
+            }
         }
-        for (int i = y2 - 1; i > y1 - cornerAdj; i--) {
-            List<Point> adjacentPoints = new ArrayList<>();
-            adjacentPoints.add(new Point(x1-1, i));
-            points.add(new Pair<>(new Point(x1, i), adjacentPoints));
+        if(!wallBoundedSides.contains(WorldUtils.Side.WEST)) {
+            for (int i = y2 - 1; i > y1 - cornerAdj; i--) {
+                List<Point> adjacentPoints = new ArrayList<>();
+                adjacentPoints.add(new Point(x1 - 1, i));
+                points.add(new Pair<>(new Point(x1, i), adjacentPoints));
+            }
         }
         return points;
     }
@@ -128,11 +154,12 @@ public class Section implements Serializable {
         int newX2Abs = x1 + xPadding + newX2Local;
         int newY2Abs = y1 + yPadding + newY2Local;
 
-        return new Section(newX1Abs, newY1Abs, newX2Abs, newY2Abs);
+        return new Section(newX1Abs, newY1Abs, newX2Abs, newY2Abs, wallBoundedSides);
     }
 
-    Section[] split(int minSize) {
-        Section[] retVal = null;
+    Pair<Section[], GeneratorsMisc.Split> split(int minSize) {
+        Section[] retSections = null;
+        GeneratorsMisc.Split retSplit = null;
         float ratio = (float) getHeight() / (float) getWidth();
 
         //Force the split direction based on leaf ratio
@@ -141,31 +168,45 @@ public class Section implements Serializable {
         if (horizontal) {
             //Generate a y value between y1 and y2, but only possible in centered 30% (avoids tiny leafs)
             int ySplit = (int) (rand.nextInt((getHeight())) / 3f + y1 + getHeight() * (1f / 3f));
-            Section section1 = new Section(x1, y1, x2, ySplit);
-            Section section2 = new Section(x1, ySplit + 1, x2, y2);
+            List<WorldUtils.Side> section1Sides = new ArrayList(this.wallBoundedSides);
+            List<WorldUtils.Side> section2Sides = new ArrayList(this.wallBoundedSides);
+            section1Sides.remove(WorldUtils.Side.SOUTH);
+            section2Sides.remove(WorldUtils.Side.NORTH);
+            Section section1 = new Section(x1, y1, x2, ySplit - 1, section1Sides);
+            Section section2 = new Section(x1, ySplit, x2, y2, section2Sides);
+
+            retSplit = new GeneratorsMisc.Split(x1, x2, ySplit, ySplit);
 
             //Check that leaf is valid
             if (section1.getWidth() > minSize
                     && section2.getWidth() > minSize
                     && section1.getHeight() > minSize
                     && section2.getHeight() > minSize) {
-                retVal = new Section[]{section1, section2};
+                retSections = new Section[]{section1, section2};
             }
         } else {
             //Generate a x value between x1 and x2, but only possible in centered 30% (avoids tiny leafs)
             int xSplit = (int) (rand.nextInt((getWidth())) / 3f + x1 + getWidth() * (1f / 3f));
-            Section section1 = new Section(x1, y1, xSplit, y2);
-            Section section2 = new Section(xSplit + 1, y1, x2, y2);
+
+            List<WorldUtils.Side> section1Sides = new ArrayList(this.wallBoundedSides);
+            List<WorldUtils.Side> section2Sides = new ArrayList(this.wallBoundedSides);
+            section1Sides.remove(WorldUtils.Side.EAST);
+            section2Sides.remove(WorldUtils.Side.WEST);
+
+            Section section1 = new Section(x1, y1, xSplit - 1, y2, section1Sides);
+            Section section2 = new Section(xSplit, y1, x2, y2, section2Sides);
+
+            retSplit = new GeneratorsMisc.Split(xSplit, xSplit, y1, y2);
 
             //Check that leaf is valid
             if (section1.getWidth() > minSize
                     && section2.getWidth() > minSize
                     && section1.getHeight() > minSize
                     && section2.getHeight() > minSize) {
-                retVal = new Section[]{section1, section2};
+                retSections = new Section[]{section1, section2};
             }
         }
-        return retVal;
+        return new Pair<Section[], GeneratorsMisc.Split>(retSections, retSplit);
     }
 
     @Override
@@ -175,6 +216,6 @@ public class Section implements Serializable {
                 ", x2=" + x2 +
                 ", y1=" + y1 +
                 ", y2=" + y2 +
-                '}';
+                '}' + "\n\t" + wallBoundedSides+"\n";
     }
 }
