@@ -129,32 +129,66 @@ public class Section implements Serializable {
         return points;
     }
 
+    /**
+     * Generate a smaller leaf that exists within this leaf, with certain restrictions
+     * @param padding enforce a padding of unused cells within edge of section
+     * @param minSize enforce minimum size of room (including walls!)
+     * @param forceAdjacent enforce one side to be directly adjacent, ignoring padding. Allows for direct doorways instead of requiring tunneling later on
+     * @return
+     */
 
-    //Generate a leaf that exists within this leaf, with some certain restrictions
-    Section subLeaf() {
+    /**
+     * Generate a smaller leaf that exists within this leaf, with certain restrictions
+     * @param padding enforce a padding of unused cells within edge of section
+     * @param minSize enforce minimum size of room (including walls!)
+     * @param forceAdjacent enforce one side to be directly adjacent
+     * @return
+     */
+
+    Section subLeaf(int padding, int minSize, WorldUtils.Side forceAdjacent) {
+
+        if(padding < 1){
+            throw new IllegalArgumentException("Section padding of <1 not currently supported");
+        }
 
         //Calculating useful values
-        int xPadding = 1;
-        int yPadding = 1;
-        int xBoundedRange = getWidth() - xPadding * 2;
-        int yBoundedRange = getHeight() - yPadding * 2;
+        int maxWidth = getWidth() - padding*2;
+        int maxHeight = getHeight() - padding*2;
 
-        //Local - Relative to the bounded range
-        //Absolute - relative to global coords
-        int newX1Local = (int) ((float) rand.nextInt(xBoundedRange) * 0.2f);
-        int newY1Local = (int) ((float) rand.nextInt(yBoundedRange) * 0.2f);
-        int newX1Abs = x1 + xPadding + newX1Local;
-        int newY1Abs = y1 + yPadding + newY1Local;
+        int subLeafWidth = minSize == -1 ? maxWidth : rand.nextInt(maxWidth-minSize) + minSize;
+        int subLeafHeight = minSize == -1 ? maxHeight : rand.nextInt(maxHeight-minSize) + minSize;
 
-        int minWidth = (int) (xBoundedRange * 0.8f);
-        int minHeight = (int) (yBoundedRange * 0.8f);
+        int subleafRelativeX = minSize == -1 ? padding : rand.nextInt(maxWidth - subLeafWidth);
+        int subleafRelativeY = minSize == -1 ? padding : rand.nextInt(maxHeight - subLeafHeight);
 
-        int newX2Local = (int) (newX1Local + minWidth + rand.nextInt(xBoundedRange - minWidth - newX1Local));
-        int newY2Local = (int) (newY1Local + minHeight + rand.nextInt(yBoundedRange - minHeight - newY1Local));
-        int newX2Abs = x1 + xPadding + newX2Local;
-        int newY2Abs = y1 + yPadding + newY2Local;
+        if(forceAdjacent != null) {
+            switch (forceAdjacent) {
+                case NORTH -> subleafRelativeY = padding;
+                case WEST -> subleafRelativeX = padding;
+                case SOUTH -> subleafRelativeY = maxHeight - subLeafHeight;
+                case EAST -> subleafRelativeX = maxWidth - subLeafWidth;
+            }
+        }
 
-        return new Section(newX1Abs, newY1Abs, newX2Abs, newY2Abs, wallBoundedSides);
+        int subLeafAbsoluteX = subleafRelativeX + x1;
+        int subLeafAbsoluteY = subleafRelativeY + y1;
+        return new Section(subLeafAbsoluteX, subLeafAbsoluteY, subLeafAbsoluteX + subLeafWidth, subLeafAbsoluteY + subLeafHeight);
+
+
+//        int newX1Local = (int) ((float) rand.nextInt(xBoundedRange) * (1 - minScaleFactor));
+//        int newY1Local = (int) ((float) rand.nextInt(yBoundedRange) * (1 - minScaleFactor));
+//        int newX1Abs = x1 + xPadding + newX1Local;
+//        int newY1Abs = y1 + yPadding + newY1Local;
+//
+//        int minWidth = (int) (xBoundedRange * minScaleFactor);
+//        int minHeight = (int) (yBoundedRange * minScaleFactor);
+//
+//        int newX2Local = newX1Local + minWidth + rand.nextInt(xBoundedRange - minWidth - newX1Local);
+//        int newY2Local = newY1Local + minHeight + rand.nextInt(yBoundedRange - minHeight - newY1Local);
+//        int newX2Abs = x1 + xPadding + newX2Local;
+//        int newY2Abs = y1 + yPadding + newY2Local;
+
+//        return new Section(newX1Abs, newY1Abs, newX2Abs, newY2Abs, wallBoundedSides);
     }
 
     Pair<Section[], GeneratorsMisc.Split> split(int minSize) {
@@ -175,7 +209,7 @@ public class Section implements Serializable {
             Section section1 = new Section(x1, y1, x2, ySplit - 1, section1Sides);
             Section section2 = new Section(x1, ySplit, x2, y2, section2Sides);
 
-            retSplit = new GeneratorsMisc.Split(x1, x2, ySplit, ySplit);
+            retSplit = new GeneratorsMisc.Split(x1, x2+1, ySplit, ySplit);
 
             //Check that leaf is valid
             if (section1.getWidth() > minSize
@@ -196,7 +230,7 @@ public class Section implements Serializable {
             Section section1 = new Section(x1, y1, xSplit - 1, y2, section1Sides);
             Section section2 = new Section(xSplit, y1, x2, y2, section2Sides);
 
-            retSplit = new GeneratorsMisc.Split(xSplit, xSplit, y1, y2);
+            retSplit = new GeneratorsMisc.Split(xSplit, xSplit, y1, y2+1);
 
             //Check that leaf is valid
             if (section1.getWidth() > minSize

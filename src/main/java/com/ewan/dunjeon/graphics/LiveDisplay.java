@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.function.BiConsumer;
 
 public class LiveDisplay {
-    private final int scale = 8;
+    private final int scale = 6;
     private static final int furniture_padding = 1;
     private JFrame frame;
     private JPanel panel;
@@ -185,7 +185,7 @@ public class LiveDisplay {
                         AffineTransform af = new AffineTransform();
                         af.scale(scale,scale);
                         graphics.setColor(color);
-                        graphics.draw(af.createTransformedShape(new Rectangle(point.x,point.y,1,1)));
+                        graphics.fill(af.createTransformedShape(new Rectangle(point.x,point.y,1,1)));
                     });
 
                 }

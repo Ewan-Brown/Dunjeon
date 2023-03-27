@@ -26,6 +26,7 @@ public class World implements KeyListener {
 
     private Player player;
     public static World getInstance(){return w;}
+    public static void resetWorld(){w = new World();}
 
     List<Floor> floors = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
     public void addLevel(Floor l){

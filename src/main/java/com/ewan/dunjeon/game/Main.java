@@ -2,13 +2,11 @@ package com.ewan.dunjeon.game;
 
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.generation.GeneratorsMisc;
-import com.ewan.dunjeon.generation.Section;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
-import com.ewan.dunjeon.world.entities.creatures.Monster;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.level.Floor;
@@ -20,7 +18,7 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 public class Main {
 
@@ -28,28 +26,64 @@ public class Main {
     static final long UPDATE_DELAY = 16;
 
     public static void main(String[] args) {
+
+        generateWorld();
+
+        LiveDisplay liveDisplay = new LiveDisplay();
+        liveDisplay.startDrawing(World.getInstance());
+
+        new Thread(() -> {
+            while (true) {
+                if(updateCurrentWorld()){
+                    break;
+                }
+            }
+        }).start();
+
+    }
+
+    private static void generate_X_world_test(int worlds){
+        for (int i = 0; i < worlds; i++) {
+            System.out.println(i + " / " + worlds);
+            generateWorld();
+            updateCurrentWorld();
+        }
+    }
+
+    private static boolean updateCurrentWorld(){
+        World w = World.getInstance();
+        w.getPlayer().updateViewRange();
+        boolean gameOver = w.update();
+        if(gameOver){
+            return true;
+        }
+        try {
+            Thread.sleep(UPDATE_DELAY);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private static void generateWorld(){
         long seed = rand.nextInt();
-        seed = 575246739;
         System.out.println("SEED USED : " + seed);
         rand.setSeed(seed);
 
+        World.resetWorld();
         World w = World.getInstance();
         int floorCount = 1;
         List<Stair> prevStairs = new ArrayList<>();
 
         Floor startFloor = null;
-        LiveDisplay liveDisplay = new LiveDisplay();
 
         for (int i = 0; i < floorCount; i++) {
-            FloorGenerator generator = new FloorGenerator(50, 50);
-            generator.generateLeafs(5,10);
-            for (Section section : generator.getSections()) {
-                System.out.println(section);
-            }
+            FloorGenerator generator = new FloorGenerator(100, 100);
+            generator.generateLeafs(20,-1, 2);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
-//            generator.generateHalls();
-//            prevStairs = generator.generateStairs(prevStairs, (i == floorCount-1)? 0:1);
+            generator.generateHalls(2);
             generator.buildCells();
             generator.addFurniture();
             Floor newFloor = generator.getFloor();
@@ -59,104 +93,117 @@ public class Main {
             w.addLevel(newFloor);
 
             generator.getSplits().forEach(split -> LiveDisplay.debugLines.put(split.getLine2D(), Color.RED));
-            generator.getSplits().forEach(new Consumer<GeneratorsMisc.Split>() {
-                @Override
-                public void accept(GeneratorsMisc.Split split) {
-//                    System.out.println(split);
-                    WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2()).stream().forEach(new Consumer<Pair<Point, WorldUtils.Side>>() {
-                        @Override
-                        public void accept(Pair<Point, WorldUtils.Side> pointSidePair) {
-//                            System.out.println(pointSidePair.getElement0());
-                            LiveDisplay.debugCells.put(pointSidePair.getElement0(), Color.RED);
-                        }
-                    });
-                }
+            generator.getSplits().forEach(split -> {
+//                List<Pair<Point, WorldUtils.Side>> var = WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2());
+//                boolean horizontal = split.getY1() == split.bgetY2();
+//                for (Pair<Point, WorldUtils.Side> pointSidePair : var) {
+//                    Point p = pointSidePair.getElement0();
+//                    if (LiveDisplay.debugCells.containsKey(p)) {
+//                        Color currentColor = LiveDisplay.debugCells.get(p);
+//                        LiveDisplay.debugCells.put(p, currentColor.darker());
+//                    } else {
+//                        LiveDisplay.debugCells.put(p, Color.BLUE);
+//                        if(horizontal){
+//                            LiveDisplay.debugCells.put(new Point(p.x, p.y-1), Color.BLUE);
+//                        }else{
+//                            LiveDisplay.debugCells.put(new Point(p.x-1, p.y), Color.BLUE);
+//                        }
+//                    }
+//                }
+                LiveDisplay.debugLines.put(split.getLine2D(), Color.RED);
             });
 
-
+            for (GeneratorsMisc.Junction junction : generator.getJunctions()) {
+                for (int x = junction.x1; x <= junction.x2; x++) {
+                    for (int y = junction.y1; y <= junction.y2; y++) {
+                        System.out.println(x + " " + y);
+                        LiveDisplay.debugCells.put(new Point(x,y), Color.GREEN);
+                    }
+                }
+            }
         }
 
 
         Player testPlayer = new Player("Player");
         w.addEntityRandomLoc(testPlayer, startFloor);
         w.setPlayer(testPlayer);
-
-        ItemAsEntity simpleItemHammer = new ItemAsEntity(new Item("Hammer") {
-            @Override
-            public Shape getShape() {
-                Polygon p = new Polygon();
-                p.addPoint(-1, 1);
-                p.addPoint(11, 1);
-                p.addPoint(11, 3);
-                p.addPoint(14, 3);
-                p.addPoint(14, 1);
-                p.addPoint(15, 1);
-                p.addPoint(15, -1);
-                p.addPoint(14, -1);
-                p.addPoint(14, -3);
-                p.addPoint(11, -3);
-                p.addPoint(11, -1);
-                p.addPoint(-1, -1);
-                AffineTransform af = new AffineTransform();
-                af.scale(0.1,0.1);
-                return af.createTransformedShape(p);
-            }
-
-            @Override
-            public Point getMaxExtensionPoint() {
-                return null;
-            }
-        });
-
-        ItemAsEntity simpleItemSword = new ItemAsEntity(new Item("Sword"){
-            @Override
-            public Shape getShape() {
-                Polygon p = new Polygon();
-                p.addPoint(-2, 1);
-                p.addPoint(2, 1);
-                p.addPoint(2, 3);
-                p.addPoint(4, 3);
-                p.addPoint(4, 1);
-                p.addPoint(10, 1);
-                p.addPoint(13, 0);
-                p.addPoint(10, -1);
-                p.addPoint(4, -1);
-                p.addPoint(4, -3);
-                p.addPoint(2, -3);
-                p.addPoint(2, -1);
-                p.addPoint(-2, -1);
-                AffineTransform af = new AffineTransform();
-                af.scale(0.1,0.1);
-                return af.createTransformedShape(p);
-            }
-
-            @Override
-            public Point getMaxExtensionPoint() {
-                return new Point(-2, 0);
-            }
-        });
-
-        ItemAsEntity simpleItemSpear = new ItemAsEntity(new Item("Spear"){
-            @Override
-            public Shape getShape() {
-                Polygon p = new Polygon();
-                p.addPoint(-9, 1);
-                p.addPoint(8, 1);
-                p.addPoint(7, 2);
-                p.addPoint(12, 0);
-                p.addPoint(7, -2);
-                p.addPoint(8, -1);
-                p.addPoint(-9, -1);
-                AffineTransform af = new AffineTransform();
-                af.scale(0.1,0.1);
-                return af.createTransformedShape(p);
-            }
-
-            @Override
-            public Point getMaxExtensionPoint() {
-                return new Point(-8, 0);
-            }
-        });
+//
+//        ItemAsEntity simpleItemHammer = new ItemAsEntity(new Item("Hammer") {
+//            @Override
+//            public Shape getShape() {
+//                Polygon p = new Polygon();
+//                p.addPoint(-1, 1);
+//                p.addPoint(11, 1);
+//                p.addPoint(11, 3);
+//                p.addPoint(14, 3);
+//                p.addPoint(14, 1);
+//                p.addPoint(15, 1);
+//                p.addPoint(15, -1);
+//                p.addPoint(14, -1);
+//                p.addPoint(14, -3);
+//                p.addPoint(11, -3);
+//                p.addPoint(11, -1);
+//                p.addPoint(-1, -1);
+//                AffineTransform af = new AffineTransform();
+//                af.scale(0.1,0.1);
+//                return af.createTransformedShape(p);
+//            }
+//
+//            @Override
+//            public Point getMaxExtensionPoint() {
+//                return null;
+//            }
+//        });
+//
+//        ItemAsEntity simpleItemSword = new ItemAsEntity(new Item("Sword"){
+//            @Override
+//            public Shape getShape() {
+//                Polygon p = new Polygon();
+//                p.addPoint(-2, 1);
+//                p.addPoint(2, 1);
+//                p.addPoint(2, 3);
+//                p.addPoint(4, 3);
+//                p.addPoint(4, 1);
+//                p.addPoint(10, 1);
+//                p.addPoint(13, 0);
+//                p.addPoint(10, -1);
+//                p.addPoint(4, -1);
+//                p.addPoint(4, -3);
+//                p.addPoint(2, -3);
+//                p.addPoint(2, -1);
+//                p.addPoint(-2, -1);
+//                AffineTransform af = new AffineTransform();
+//                af.scale(0.1,0.1);
+//                return af.createTransformedShape(p);
+//            }
+//
+//            @Override
+//            public Point getMaxExtensionPoint() {
+//                return new Point(-2, 0);
+//            }
+//        });
+//
+//        ItemAsEntity simpleItemSpear = new ItemAsEntity(new Item("Spear"){
+//            @Override
+//            public Shape getShape() {
+//                Polygon p = new Polygon();
+//                p.addPoint(-9, 1);
+//                p.addPoint(8, 1);
+//                p.addPoint(7, 2);
+//                p.addPoint(12, 0);
+//                p.addPoint(7, -2);
+//                p.addPoint(8, -1);
+//                p.addPoint(-9, -1);
+//                AffineTransform af = new AffineTransform();
+//                af.scale(0.1,0.1);
+//                return af.createTransformedShape(p);
+//            }
+//
+//            @Override
+//            public Point getMaxExtensionPoint() {
+//                return new Point(-8, 0);
+//            }
+//        });
 
 //        w.addEntityRandomLoc(simpleItemSword, startFloor);
 //        w.addEntityRandomLoc(simpleItemSpear, startFloor);
@@ -172,18 +219,6 @@ public class Main {
 //        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
 //        w.addEntityRandomLoc(testNPC, startFloor);
 
-        liveDisplay.startDrawing(w);
-        while (true) {
-            w.getPlayer().updateViewRange();
-            boolean gameOver = w.update();
-            if(gameOver){
-                break;
-            }
-            try {
-                Thread.sleep(UPDATE_DELAY);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+
     }
 }

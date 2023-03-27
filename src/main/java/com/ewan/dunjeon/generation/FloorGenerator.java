@@ -11,6 +11,8 @@ import com.ewan.dunjeon.world.level.Floor;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.ewan.dunjeon.game.Main.rand;
 import static java.lang.Float.POSITIVE_INFINITY;
@@ -27,9 +29,10 @@ public class FloorGenerator {
 
     List<Section> sections;
     List<Door> doors;
-    List<Hall> halls;
-    List<Stair> stairs = new ArrayList<>();
+    List<Hall> totalHalls;
+    List<Stair> stairs;
     List<Split> splits;
+    List<Junction> junctions;
     Floor floor = new Floor();
 
     float[][] weightMap;
@@ -37,7 +40,7 @@ public class FloorGenerator {
 
 //    int[][] map;
 
-    public void generateLeafs(int minSize, int maxRooms){
+    public void generateLeafs(int minSize, int maxRooms, int roomPadding){
         ArrayList<Section> splitSections = new ArrayList<>(); //List of room 'splitSections', within which the sections will be create
         splits = new ArrayList<>();
         splitSections.add(new Section(2,2,width-3,height-3)); //Generate first leaf as entire map, excluding 2-wide edge (Wall at edge of map + space for path)
@@ -63,15 +66,17 @@ public class FloorGenerator {
             if(finished) break;
         }while(true);
 
-        //Remove leafs until we have desired number of sections if we have too many
-        for (int i = splitSections.size() - maxRooms; i > 0;i--){
-            splitSections.remove(rand.nextInt(splitSections.size()));
+        //Remove leafs at random until we have desired number of sections if we have too many
+        Collections.shuffle(splitSections, rand);
+        if(maxRooms != -1) {
+            for (int i = splitSections.size() - maxRooms; i > 0; i--) {
+                splitSections.remove(rand.nextInt(splitSections.size()));
+            }
         }
-
         //Create the actual sizings of the sections themselves. Subleaf really just means 'the leaf within the leaf'
         List<Section> rooms = new ArrayList<>();
         for(Section f : splitSections){
-            Section subSection = f.subLeaf();
+            Section subSection = f.subLeaf(roomPadding, -1, null);
             rooms.add(subSection);
         }
         //Shuffle these up, so there's no bias when continuing generation.
@@ -167,196 +172,36 @@ public class FloorGenerator {
     }
 
     //TODO Clean this up a bit. Maybe make a nice queue of doors, and make sure that the queue is ordered such that it starts with one door from each leaf.
-    public void generateHalls(){
+    public void generateHalls(int hallWidth){
+        System.out.println("generateHalls");
+        junctions = new ArrayList<>();
+        if(hallWidth %2 != 0){
+            throw new IllegalArgumentException("Cannot use hallwidth that isn't even for now.");
+        }
         //Create Paths. Connects one room to another in a linear path.
         //Ensures that each room connects to the next (so all sections are connected)
         List<Hall> halls = new ArrayList<>();
-        for (int i = 0; i < sections.size()-1; i++) {
 
-//            System.out.println("\t"+i + " / " + sections.size());
-            Section l = sections.get(i);
-            Section nextSection = sections.get(i+1);
+        HashMap<Point, List<Split>> hallPoints2SplitMap = new HashMap<>();
 
-//            System.out.println("\t\s"+"find door");
-            //Try to find a door that is unused, if not just grab the first one
-            Door d1 = l.doors.stream().filter(door -> door.directConnections.isEmpty()).findFirst().orElse(l.doors.get(0));
-            //Grab the first door of the next leaf. Will always be unused.
-            Door d2 = nextSection.doors.get(0);
-//            System.out.println("\t\s"+"Get hall Path");
-            Point startingPoint = d1.entryPoints.get(0);
+        getSplits().forEach(split -> WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2()).stream().map(pointSidePair -> pointSidePair.getElement0()).forEach(point -> {
 
-            List<Point> hall = new ArrayList<>();
-            Point previousPoint = startingPoint;
-            Point hallEndPoint = d2.entryPoints.get(0); //Get opposing door entry point
-            hall.add(previousPoint);
-            pathIterator:
-            while(true){
-                List<Point> directPath1 = new ArrayList<>(); //X then Y
-                List<Point> directPath2 = new ArrayList<>(); //Y then X
-
-                //Calculate manhattan X/Y
-                List<Integer> xVals = WorldUtils.listIntsBetween(previousPoint.x, hallEndPoint.x);
-                List<Integer> yVals = WorldUtils.listIntsBetween(previousPoint.y, hallEndPoint.y);
-
-                //Create the two possible manhattan paths
-                for (Integer x : xVals) {
-                        directPath1.add(new Point(x, previousPoint.y));
-                }
-
-                for (Integer y : yVals) {
-                        directPath1.add(new Point(hallEndPoint.x, y));
-                }
-
-                for (Integer y : yVals) {
-                        directPath2.add(new Point(previousPoint.x, y));
-                }
-
-                for (Integer x : xVals) {
-                        directPath2.add(new Point(x, hallEndPoint.y));
-                }
-
-                //Calculate the path length in each direction till hitting a wall or ending
-
-                int direct1UnobstructedLength = 0;
-                int direct2UnobstructedLength = 0;
-                Point direct1ObstructingPoint = null;
-                Point direct2ObstructingPoint = null;
-
-                for (Point point : directPath1) {
-                    float w = weightMap[point.y][point.x];
-                    if(point.equals(hallEndPoint)){
-                        hall.addAll(directPath1);
-                        break pathIterator;
-                    }else{
-                        if(w == POSITIVE_INFINITY){
-                            direct1UnobstructedLength = directPath1.indexOf(point);
-                            direct1ObstructingPoint = point;
-                            break;
-                        }
-                    }
-                }
-
-                for (Point point : directPath2) {
-                    float w = weightMap[point.y][point.x];
-                    if(point.equals(hallEndPoint)){
-                        hall.addAll(directPath2);
-                        break pathIterator;
-                    }else{
-                        if(w == POSITIVE_INFINITY){
-                            direct2UnobstructedLength = directPath2.indexOf(point);
-                            direct2ObstructingPoint = point;
-                            break;
-                        }
-                    }
-                }
-
-                List<Point> shorterDirectPath;
-                List<Point> selectedDirectPath;
-                Point obstructingPoint;
-
-                if(previousPoint.x == hallEndPoint.x){
-                    shorterDirectPath = directPath1.subList(0, direct1UnobstructedLength);
-                    selectedDirectPath = directPath1;
-                    obstructingPoint = direct1ObstructingPoint;
-                }else if(previousPoint.y == hallEndPoint.y){
-                    shorterDirectPath = directPath2.subList(0, direct2UnobstructedLength);
-                    selectedDirectPath = directPath2;
-                    obstructingPoint = direct2ObstructingPoint;
-                }
-                else if(direct1UnobstructedLength > direct2UnobstructedLength){
-                    shorterDirectPath = directPath1.subList(0, direct1UnobstructedLength);
-                    selectedDirectPath = directPath1;
-                    obstructingPoint = direct1ObstructingPoint;
-                }else{
-                    shorterDirectPath = directPath2.subList(0, direct2UnobstructedLength);
-                    selectedDirectPath = directPath2;
-                    obstructingPoint = direct2ObstructingPoint;
-                }
-
-                Point endOfDirectPath;
-                Direction directionOfEndOfPath;
-                if(obstructingPoint == null){
-                    throw new NullPointerException();
-                }
-                endOfDirectPath = shorterDirectPath.get(shorterDirectPath.size()-1);
-                directionOfEndOfPath = Direction.getDirection(obstructingPoint.x - endOfDirectPath.x,
-                        obstructingPoint.y - endOfDirectPath.y);
-//                }else{
-//                    //Weird edge case
-//                    endOfDirectPath = previousPoint;
-//                    directionOfEndOfPath = Direction.getDirection(endOfDirectPath.x - selectedDirectPath.get(0).x,
-//                            endOfDirectPath.y - selectedDirectPath.get(0).y);
-//                }
-
-                if(endOfDirectPath.equals(hallEndPoint)){
-                    hall.addAll(shorterDirectPath);
-                    break;
-                }
-
-                //Attempt to manoeuvre around the current obstacle
-                hall.addAll(shorterDirectPath);
-
-                List<Pair<Direction, Integer>> availableManoeuvres = new ArrayList<>();
-                for (Direction availableDirection : Arrays.stream(Direction.getSideDirections(directionOfEndOfPath)).toList()) {
-                    Point p = new Point(endOfDirectPath.x + availableDirection.x, endOfDirectPath.y + availableDirection.y);
-                    int manhattanDist =Math.abs(hallEndPoint.y - p.y) + Math.abs(hallEndPoint.x - p.x);
-                    availableManoeuvres.add(new Pair<Direction, Integer>(availableDirection, manhattanDist));
-                }
-
-                Direction lowestDistDirection = availableManoeuvres.stream().min(Comparator.comparingInt(Pair::getElement1)).orElseThrow().getElement0();
-
-                List<Point> manoeverPoints = new ArrayList<>();
-
-                int m = 0;
-                while(true){
-                    m++;
-                    Point p = new Point(endOfDirectPath.x + lowestDistDirection.x * m, endOfDirectPath.y + lowestDistDirection.y * m);
-                    Point testPoint = new Point(p.x + directionOfEndOfPath.x, p.y + directionOfEndOfPath.y);
-                    manoeverPoints.add(p);
-                    if(weightMap[testPoint.y][testPoint.x] == 0){
-                        break;
-                    }
-                }
-                hall.addAll(manoeverPoints);
-                previousPoint = manoeverPoints.get(manoeverPoints.size()-1);
-
-
+        if(!hallPoints2SplitMap.containsKey(point)){
+            hallPoints2SplitMap.put(point, new ArrayList<>());
+        }else{
+            if(hallPoints2SplitMap.get(point).contains(point)){
+                throw new RuntimeException("HallPoint associated with same split twice. Impossible...");
             }
-
-            //Create a hall from door1 to door2
-            if( i == 1) {
-                Hall p = new Hall(d1, d2, hall);
-                halls.add(p);
-            }
-
-
-            //Create a hall from door1 to door2
-////            List<Point> hall = PathFinding.getAStarPath(weightMap, d1.getPoint(), d2.getPoint(), true, PathFinding.CornerInclusionRule.NO_CORNERS, 1, false);
-////            hall.remove(0);
-////            Hall p = new Hall(d1, d2, hall);
-////            halls.add(p);
-////            for (Point point : hall) {
-////                weightMap[point.y][point.x] = 0; //Decrease weight of cells that have already been pathed!
-////            }
+            hallPoints2SplitMap.get(point).add(split);
+//            junctionPoints.add(point);
+            int halfHallWidth = hallWidth/2;
+            Junction j = new Junction(point.x-halfHallWidth, point.y-halfHallWidth, point.x+halfHallWidth - 1, point.y+halfHallWidth - 1);
+            System.out.println(junctions.size());
+            junctions.add(j);
         }
+        }));
 
-        //Connect remaining unconnected doors
-//        List<Door> unconnectedDoors = doors.stream().filter(door -> door.directConnections.isEmpty()).collect(Collectors.toList());
-//        for (int i = 0; i < unconnectedDoors.size();i++) {
-//            Door d1 = unconnectedDoors.get(i);
-//            Door d2 = doors.get(rand.nextInt(doors.size()));
-//            if(d1 == d2) continue;
-//            unconnectedDoors.remove(d2);
-//            List<Point> hall = PathFinding.getAStarPath(weightMap, d1.getPoint(), d2.getPoint(), false, PathFinding.CornerInclusionRule.NO_CORNERS, 1, false);
-//            Hall p = new Hall(d1, d2, hall);
-//            hall.remove(0);
-//            halls.add(p);
-//            for (Point point : hall) {
-//                weightMap[point.y][point.x] = 0; //Decrease weight of cells that have already been pathed!
-//            }
-//        }
-
-        this.halls = halls;
+        this.totalHalls = halls;
     }
 
     //Add stairs to the floor according to how many are required
@@ -449,8 +294,10 @@ public class FloorGenerator {
         }
 
         //Draw stairs
-        for(Stair s : stairs){
-            cells[s.getY()][s.getX()] = s;
+        if(stairs != null) {
+            for (Stair s : stairs) {
+                cells[s.getY()][s.getX()] = s;
+            }
         }
 
         //Draw doors
@@ -464,8 +311,8 @@ public class FloorGenerator {
         }
 
         //Draw paths to map
-        if(halls != null) {
-            for (Hall hall : halls) {
+        if(totalHalls != null) {
+            for (Hall hall : totalHalls) {
                 for (Point point : hall.points) {
                     cells[point.y][point.x] = new BasicCell(point.x, point.y, floor, Color.GRAY);
                     cells[point.y][point.x].setFilled(false);
@@ -488,8 +335,13 @@ public class FloorGenerator {
     }
 
     public List<Hall> getHalls() {
-        return halls;
+        return totalHalls;
+    }
+    public List<Split> getSplits() {
+        return splits;
     }
 
-    public List<Split> getSplits() { return                                                                                                                                                                                                                                                                                                                                                                                                                                     splits;}
+    public List<Junction> getJunctions(){
+        return junctions;
+    }
 }
