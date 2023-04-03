@@ -11,8 +11,6 @@ import com.ewan.dunjeon.world.level.Floor;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static com.ewan.dunjeon.game.Main.rand;
 import static java.lang.Float.POSITIVE_INFINITY;
@@ -29,16 +27,15 @@ public class FloorGenerator {
 
     List<Section> sections;
     List<Door> doors;
-    List<Hall> totalHalls;
     List<Stair> stairs;
     List<Split> splits;
     List<Junction> junctions;
+    List<Hall> halls;
     Floor floor = new Floor();
 
     float[][] weightMap;
     BasicCell[][] cells;
 
-//    int[][] map;
 
     public void generateLeafs(int minSize, int maxRooms, int roomPadding){
         ArrayList<Section> splitSections = new ArrayList<>(); //List of room 'splitSections', within which the sections will be create
@@ -159,8 +156,8 @@ public class FloorGenerator {
                 Direction.values()[(index + 1) % Direction.values().length]
         };}
 
-        static Direction getDirection(int x, int y){
-            Optional<Direction> directionOptional = Arrays.stream(values()).filter(direction -> direction.x == x && direction.y == y).findFirst();
+        static Direction getCardinalDirection(int x, int y){
+            Optional<Direction> directionOptional = Arrays.stream(values()).filter(direction -> direction.x == (int)Math.signum(x) && direction.y == (int)Math.signum(y)).findFirst();
 
             if(directionOptional.isPresent()){
                 return directionOptional.get();
@@ -173,35 +170,72 @@ public class FloorGenerator {
 
     //TODO Clean this up a bit. Maybe make a nice queue of doors, and make sure that the queue is ordered such that it starts with one door from each leaf.
     public void generateHalls(int hallWidth){
-        System.out.println("generateHalls");
         junctions = new ArrayList<>();
+
         if(hallWidth %2 != 0){
             throw new IllegalArgumentException("Cannot use hallwidth that isn't even for now.");
         }
         //Create Paths. Connects one room to another in a linear path.
         //Ensures that each room connects to the next (so all sections are connected)
-        List<Hall> halls = new ArrayList<>();
+        halls = new ArrayList<>();
 
         HashMap<Point, List<Split>> hallPoints2SplitMap = new HashMap<>();
+        int halfHallWidth = hallWidth/2;
 
-        getSplits().forEach(split -> WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2()).stream().map(pointSidePair -> pointSidePair.getElement0()).forEach(point -> {
+        for (Split split : getSplits()) {
 
-        if(!hallPoints2SplitMap.containsKey(point)){
-            hallPoints2SplitMap.put(point, new ArrayList<>());
-        }else{
-            if(hallPoints2SplitMap.get(point).contains(point)){
-                throw new RuntimeException("HallPoint associated with same split twice. Impossible...");
-            }
-            hallPoints2SplitMap.get(point).add(split);
-//            junctionPoints.add(point);
-            int halfHallWidth = hallWidth/2;
-            Junction j = new Junction(point.x-halfHallWidth, point.y-halfHallWidth, point.x+halfHallWidth - 1, point.y+halfHallWidth - 1);
-            System.out.println(junctions.size());
-            junctions.add(j);
+            Junction previousJunction = null;
+
+            //TODO This is overkill, can just use basic forloop here.'
+            List<Point> points = new ArrayList<>();
+
+//            List<Pair<Point, WorldUtils.Side>> pointSidePairList = WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2());
+
+            Direction d = Direction.getCardinalDirection(split.getX2() - split.getX1(), split.getY2() - split.getY1());
+            int currentX = split.getX1();
+            int currentY = split.getY1();
+            do{
+                points.add(new Point(currentX, currentY));
+                currentX += d.x;
+                currentY += d.y;
+            }while(currentX <= split.getX2() && currentY <= split.getY2());
+
+
+            //Add start junction
+//            hallPoints2SplitMap.put(firstPoint, new ArrayList<>(Arrays.asList(split)));
+//            Junction startJunction = new Junction(firstPoint.x-halfHallWidth, firstPoint.y-halfHallWidth, firstPoint.x+halfHallWidth - 1, firstPoint.y+halfHallWidth - 1);
+//            junctions.add(startJunction);
+
+            //Add end junction
+//            hallPoints2SplitMap.put(lastPoint, new ArrayList<>(Arrays.asList(split)));
+//            Junction endJunction = new Junction(lastPoint.x-halfHallWidth, lastPoint.y-halfHallWidth, lastPoint.x+halfHallWidth - 1, lastPoint.y+halfHallWidth - 1);
+//            junctions.add(endJunction);
+
+//            previousJunction = startJunction;
+
+
+
+//            for (Pair<Point, WorldUtils.Side> pointSidePair : pointSidePairList) {
+//                Point point = pointSidePair.getElement0();
+//                boolean isInMap = hallPoints2SplitMap.containsKey(point);
+//                if(!isInMap){
+//                    hallPoints2SplitMap.put(point, new ArrayList<>(Arrays.asList(split)));
+//                }else if (isInMap){
+//                    hallPoints2SplitMap.get(point).add(split);
+//                    Junction j = new Junction(point.x-halfHallWidth, point.y-halfHallWidth, point.x+halfHallWidth - 1, point.y+halfHallWidth - 1);
+//
+//                    junctions.add(j);
+//                    Hall h = new Hall(previousJunction, j);
+//                    halls.add(h);
+//                    previousJunction = j;
+//                }
+//            }
+
+//            Hall h = new Hall(previousJunction, endJunction);
+//            halls.add(h);
+
         }
-        }));
 
-        this.totalHalls = halls;
     }
 
     //Add stairs to the floor according to how many are required
@@ -310,15 +344,52 @@ public class FloorGenerator {
             }
         }
 
-        //Draw paths to map
-        if(totalHalls != null) {
-            for (Hall hall : totalHalls) {
-                for (Point point : hall.points) {
-                    cells[point.y][point.x] = new BasicCell(point.x, point.y, floor, Color.GRAY);
-                    cells[point.y][point.x].setFilled(false);
+        if (halls != null){
+            System.out.println(halls.size());
+            for (Hall hall : halls) {
+
+
+//
+//                for (int i = x1; i <= x2; i++) {
+//                    for (int j = y1; j <= y2; j++) {
+//                        cells[j][i] = new BasicCell(i, j, floor, Color.GRAY.darker());
+//                        cells[j][i].setFilled(false);
+//                    }
+//                }
+            }
+        }
+
+        if(junctions != null){
+            for (Junction junction : junctions) {
+                for (int i = junction.x1; i <= junction.x2; i++) {
+                    for (int j = junction.y1; j <= junction.y2; j++) {
+                        cells[j][i] = new BasicCell(i, j, floor, Color.GRAY.darker());
+                        cells[j][i].setFilled(false);
+                    }
                 }
             }
         }
+
+        if(halls != null){
+            for (Hall h : halls) {
+                for (int i = h.x1; i <= h.x2; i++) {
+                    for (int j = h.y1; j <= h.y2; j++) {
+                        cells[j][i] = new BasicCell(i, j, floor, Color.GRAY.lightGray);
+                        cells[j][i].setFilled(false);
+                    }
+                }
+            }
+        }
+
+        //Draw paths to map
+//        if(totalHalls != null) {
+//            for (Hall hall : totalHalls) {
+//                for (Point point : hall.points) {
+//                    cells[point.y][point.x] = new BasicCell(point.x, point.y, floor, Color.GRAY);
+//                    cells[point.y][point.x].setFilled(false);
+//                }
+//            }
+//        }
         floor.setCells(cells);
     }
 
@@ -335,8 +406,9 @@ public class FloorGenerator {
     }
 
     public List<Hall> getHalls() {
-        return totalHalls;
+        return halls;
     }
+
     public List<Split> getSplits() {
         return splits;
     }

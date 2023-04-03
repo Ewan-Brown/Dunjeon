@@ -1,5 +1,7 @@
 package com.ewan.dunjeon.generation;
 
+import com.ewan.dunjeon.world.Pair;
+
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.io.*;
@@ -42,25 +44,55 @@ public class GeneratorsMisc {
 
         return map;
     }
-    public static class Hall implements Serializable{
-        Door d1;
-        Door d2;
-        List<Point> points;
 
-        public Hall(Door d1, Door d2, List<Point> points) {
-            this.d1 = d1;
-            this.d2 = d2;
-            d1.directConnections.add(d2);
-            d2.directConnections.add(d1);
-            d1.hallsConnected.add(this);
-            d2.hallsConnected.add(this);
-            this.points = points;
+    public static class Hall implements Serializable{
+        List<Junction> junctions;
+
+        public int x1, y1, x2, y2;
+
+        public Hall(Junction j1, Junction j2) {
+            junctions = new ArrayList<>();
+
+
+            if(j1 != null){
+                junctions.add(j1);
+                j1.connectedHalls.add(this);
+            }
+            if(j2 != null){
+                junctions.add(j2);
+                j2.connectedHalls.add(this);
+            }
+
+            if(j1 != null && j2 != null){
+                j1.connectedJunctions.add(j2);
+                j2.connectedJunctions.add(j1);
+            }
+
+            x1 = junctions.stream().mapToInt(value -> value.x1).min().getAsInt();
+            x2 = junctions.stream().mapToInt(value -> value.x2).max().getAsInt();
+
+            y1 = junctions.stream().mapToInt(value -> value.y1).min().getAsInt();
+            y2 = junctions.stream().mapToInt(value -> value.y2).max().getAsInt();
+        }
+
+        public Hall(Junction j1, int x2, int y2) {
+            junctions = new ArrayList<>();
+
+
+            junctions.add(j1);
+            j1.connectedHalls.add(this);
+            x1 = Integer.min(j1.x1, x2);
+            y1 = Integer.min(j1.y1, y2);
+            this.x2 = Integer.max(j1.x1, x2);
+            this.y2 = Integer.max(j1.y1, y2);
         }
     }
 
     public static class Junction{
         public int x1, x2, y1, y2;
         List<Split> connectedSplits;
+        List<Junction> connectedJunctions;
+        List<Hall> connectedHalls;
 
         public Junction(int x1, int y1, int x2, int y2) {
             this.x1 = x1;
@@ -68,6 +100,8 @@ public class GeneratorsMisc {
             this.y1 = y1;
             this.y2 = y2;
             connectedSplits = new ArrayList<>();
+            connectedJunctions = new ArrayList<>();
+            connectedHalls = new ArrayList<>();
         }
     }
 
@@ -94,9 +128,9 @@ public class GeneratorsMisc {
     }
 
     public static class Split{
-        float x1,x2,y1,y2;
+        int x1,x2,y1,y2;
 
-        public Split(float x1, float x2, float y1, float y2){
+        public Split(int x1, int x2, int y1, int y2){
             this.x1 = x1;
             this.x2 = x2;
             this.y1 = y1;
@@ -112,19 +146,19 @@ public class GeneratorsMisc {
             return new Line2D.Float(x1, y1, x2, y2);
         }
 
-        public float getX1() {
+        public int getX1() {
             return x1;
         }
 
-        public float getX2() {
+        public int getX2() {
             return x2;
         }
 
-        public float getY1() {
+        public int getY1() {
             return y1;
         }
 
-        public float getY2() {
+        public int getY2() {
             return y2;
         }
     }

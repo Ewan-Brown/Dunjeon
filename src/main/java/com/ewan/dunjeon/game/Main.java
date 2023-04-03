@@ -69,7 +69,8 @@ public class Main {
     private static void generateWorld(){
         long seed = rand.nextInt();
         System.out.println("SEED USED : " + seed);
-        rand.setSeed(seed);
+//        rand.setSeed(seed);
+        rand.setSeed(1082347570);
 
         World.resetWorld();
         World w = World.getInstance();
@@ -80,7 +81,7 @@ public class Main {
 
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(100, 100);
-            generator.generateLeafs(20,-1, 2);
+            generator.generateLeafs(30,-1, 2);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
             generator.generateHalls(2);
@@ -113,13 +114,14 @@ public class Main {
                 LiveDisplay.debugLines.put(split.getLine2D(), Color.RED);
             });
 
+            System.out.println("Junctions : " + generator.getJunctions().size());
             for (GeneratorsMisc.Junction junction : generator.getJunctions()) {
-                for (int x = junction.x1; x <= junction.x2; x++) {
-                    for (int y = junction.y1; y <= junction.y2; y++) {
-                        System.out.println(x + " " + y);
-                        LiveDisplay.debugCells.put(new Point(x,y), Color.GREEN);
-                    }
-                }
+                System.out.printf("Junction : %d, %d -> %d,%d\n", junction.x1, junction.y1, junction.x2, junction.y2);
+            }
+
+            System.out.println("Halls : " + generator.getHalls().size());
+            for (GeneratorsMisc.Hall hall : generator.getHalls()) {
+                System.out.printf("Hall : %d, %d -> %d,%d\n", hall.x1, hall.y1, hall.x2, hall.y2);
             }
         }
 

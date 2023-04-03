@@ -219,7 +219,7 @@ public class Section implements Serializable {
                 retSections = new Section[]{section1, section2};
             }
         } else {
-            //Generate a x value between x1 and x2, but only possible in centered 30% (avoids tiny leafs)
+            //Generate an x value between x1 and x2, but only possible in centered 30% (avoids tiny leafs)
             int xSplit = (int) (rand.nextInt((getWidth())) / 3f + x1 + getWidth() * (1f / 3f));
 
             List<WorldUtils.Side> section1Sides = new ArrayList(this.wallBoundedSides);
