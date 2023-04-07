@@ -249,18 +249,14 @@ public class FloorGenerator {
             if(firstJunction != null && !firstJunction.containsPoint(splitPath.startPoint())){
                 Point p = splitPath.startPoint();
                 if (!createdJunctions.containsKey(p)) {
-                    Junction junction = new Junction(p.x - halfHallWidth, p.y - halfHallWidth, p.x + halfHallWidth - 1, p.y + halfHallWidth - 1);
-                    Hall h = new Hall(firstJunction, junction);
-                    junctions.add(junction);
+                    Hall h = new Hall(firstJunction, p.x - halfHallWidth, p.y - halfHallWidth, p.x + halfHallWidth - 1, p.y + halfHallWidth - 1, width-1, height-1);
                     halls.add(h);
                 }
             }
             if(previousJunction != null && !previousJunction.containsPoint(splitPath.endPoint())){
                 Point p = splitPath.endPoint();
                 if(!createdJunctions.containsKey(p)) {
-                    Junction junction = new Junction(p.x - halfHallWidth, p.y - halfHallWidth, p.x + halfHallWidth - 1, p.y + halfHallWidth - 1);
-                    Hall h = new Hall(junction, previousJunction);
-                    junctions.add(junction);
+                    Hall h = new Hall(previousJunction, p.x - halfHallWidth, p.y - halfHallWidth, p.x + halfHallWidth - 1, p.y + halfHallWidth - 1, width-1, height-1);
                     halls.add(h);
                 }
             }
@@ -382,9 +378,6 @@ public class FloorGenerator {
         if (halls != null){
             System.out.println(halls.size());
             for (Hall hall : halls) {
-
-
-//
 //                for (int i = x1; i <= x2; i++) {
 //                    for (int j = y1; j <= y2; j++) {
 //                        cells[j][i] = new BasicCell(i, j, floor, Color.GRAY.darker());
