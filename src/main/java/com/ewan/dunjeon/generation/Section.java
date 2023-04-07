@@ -191,9 +191,9 @@ public class Section implements Serializable {
 //        return new Section(newX1Abs, newY1Abs, newX2Abs, newY2Abs, wallBoundedSides);
     }
 
-    Pair<Section[], GeneratorsMisc.Split> split(int minSize) {
+    Pair<Section[], GeneratorsMisc.SplitLine> split(int minSize) {
         Section[] retSections = null;
-        GeneratorsMisc.Split retSplit = null;
+        GeneratorsMisc.SplitLine retSplitLine = null;
         float ratio = (float) getHeight() / (float) getWidth();
 
         //Force the split direction based on leaf ratio
@@ -209,7 +209,7 @@ public class Section implements Serializable {
             Section section1 = new Section(x1, y1, x2, ySplit - 1, section1Sides);
             Section section2 = new Section(x1, ySplit, x2, y2, section2Sides);
 
-            retSplit = new GeneratorsMisc.Split(x1, x2+1, ySplit, ySplit);
+            retSplitLine = new GeneratorsMisc.SplitLine(x1, x2+1, ySplit, ySplit);
 
             //Check that leaf is valid
             if (section1.getWidth() > minSize
@@ -230,7 +230,7 @@ public class Section implements Serializable {
             Section section1 = new Section(x1, y1, xSplit - 1, y2, section1Sides);
             Section section2 = new Section(xSplit, y1, x2, y2, section2Sides);
 
-            retSplit = new GeneratorsMisc.Split(xSplit, xSplit, y1, y2+1);
+            retSplitLine = new GeneratorsMisc.SplitLine(xSplit, xSplit, y1, y2+1);
 
             //Check that leaf is valid
             if (section1.getWidth() > minSize
@@ -240,7 +240,7 @@ public class Section implements Serializable {
                 retSections = new Section[]{section1, section2};
             }
         }
-        return new Pair<Section[], GeneratorsMisc.Split>(retSections, retSplit);
+        return new Pair<Section[], GeneratorsMisc.SplitLine>(retSections, retSplitLine);
     }
 
     @Override

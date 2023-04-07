@@ -1,8 +1,8 @@
 package com.ewan.dunjeon.generation;
 
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
+import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.cells.Stair;
 import com.ewan.dunjeon.world.furniture.Container;
@@ -14,6 +14,7 @@ import java.util.List;
 
 import static com.ewan.dunjeon.game.Main.rand;
 import static java.lang.Float.POSITIVE_INFINITY;
+import static java.lang.Float.intBitsToFloat;
 
 public class FloorGenerator {
 
@@ -28,7 +29,7 @@ public class FloorGenerator {
     List<Section> sections;
     List<Door> doors;
     List<Stair> stairs;
-    List<Split> splits;
+    List<SplitLine> splitLineList;
     List<Junction> junctions;
     List<Hall> halls;
     Floor floor = new Floor();
@@ -39,7 +40,7 @@ public class FloorGenerator {
 
     public void generateLeafs(int minSize, int maxRooms, int roomPadding){
         ArrayList<Section> splitSections = new ArrayList<>(); //List of room 'splitSections', within which the sections will be create
-        splits = new ArrayList<>();
+        splitLineList = new ArrayList<>();
         splitSections.add(new Section(2,2,width-3,height-3)); //Generate first leaf as entire map, excluding 2-wide edge (Wall at edge of map + space for path)
 
         //Split leafs until all are at desired size
@@ -47,14 +48,14 @@ public class FloorGenerator {
             boolean finished = true;
             ArrayList<Section> newSections = new ArrayList<>();
             for (Section section : splitSections) {
-                Pair<Section[], Split> splitResults = section.split(minSize);
+                Pair<Section[], SplitLine> splitResults = section.split(minSize);
                 if(splitResults.getElement0() == null){ //If this section can't be split anymore due to sizing issues, skip it
                     newSections.add(section);
                 }
                 else {//Add the split leafs to the new leafs list
                     finished = false;
                     newSections.addAll(Arrays.asList(splitResults.getElement0()));
-                    splits.add(splitResults.getElement1());
+                    splitLineList.add(splitResults.getElement1());
                 }
             }
             //Discards old sections that have been split! Final splitSectionsArray will only contain the final un-split "Descendants".
@@ -156,85 +157,114 @@ public class FloorGenerator {
                 Direction.values()[(index + 1) % Direction.values().length]
         };}
 
-        static Direction getCardinalDirection(int x, int y){
+        static Direction getCardinalDirection(int x, int y) {
             Optional<Direction> directionOptional = Arrays.stream(values()).filter(direction -> direction.x == (int)Math.signum(x) && direction.y == (int)Math.signum(y)).findFirst();
-
-            if(directionOptional.isPresent()){
-                return directionOptional.get();
-            }else{
-                throw new RuntimeException("called getDirection with " + x + ", " + y);
-            }
+            return directionOptional.orElseThrow();
         }
 
     }
 
+    private class SplitPath {
+        List<Point> pathPoints = new ArrayList<>();
+        List<Junction> associatedJunctions = new ArrayList<>();
+
+        Point startPoint(){return pathPoints.get(0);}
+        Point endPoint(){return pathPoints.get(pathPoints.size()-1);}
+    }
+
+
     //TODO Clean this up a bit. Maybe make a nice queue of doors, and make sure that the queue is ordered such that it starts with one door from each leaf.
     public void generateHalls(int hallWidth){
         junctions = new ArrayList<>();
+        halls = new ArrayList<>();
+        int halfHallWidth = hallWidth/2;
 
         if(hallWidth %2 != 0){
             throw new IllegalArgumentException("Cannot use hallwidth that isn't even for now.");
         }
-        //Create Paths. Connects one room to another in a linear path.
-        //Ensures that each room connects to the next (so all sections are connected)
-        halls = new ArrayList<>();
 
-        HashMap<Point, List<Split>> hallPoints2SplitMap = new HashMap<>();
-        int halfHallWidth = hallWidth/2;
+        List<SplitPath> splitPathList = new ArrayList<>();
+        HashMap<Point, List<SplitPath>> intersectionPoints = new HashMap<>();
 
-        for (Split split : getSplits()) {
-
-            Junction previousJunction = null;
-
-            //TODO This is overkill, can just use basic forloop here.'
-            List<Point> points = new ArrayList<>();
-
-//            List<Pair<Point, WorldUtils.Side>> pointSidePairList = WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2());
-
-            Direction d = Direction.getCardinalDirection(split.getX2() - split.getX1(), split.getY2() - split.getY1());
-            int currentX = split.getX1();
-            int currentY = split.getY1();
-            do{
-                points.add(new Point(currentX, currentY));
+        //Create each 'splitData' object, containing all of its points
+        for (SplitLine splitLine : getSplitLineList()) {
+            SplitPath splitPath = new SplitPath();
+            Direction d = Direction.getCardinalDirection(splitLine.getX2() - splitLine.getX1(), splitLine.getY2() - splitLine.getY1());
+            Color c = new Color(rand.nextInt());
+            int currentX = splitLine.getX1();
+            int currentY = splitLine.getY1();
+            do {
+                Point p = new Point(currentX, currentY);
+//                LiveDisplay.debugCells.put(p, c);
+                splitPath.pathPoints.add(p);
                 currentX += d.x;
                 currentY += d.y;
-            }while(currentX <= split.getX2() && currentY <= split.getY2());
-
-
-            //Add start junction
-//            hallPoints2SplitMap.put(firstPoint, new ArrayList<>(Arrays.asList(split)));
-//            Junction startJunction = new Junction(firstPoint.x-halfHallWidth, firstPoint.y-halfHallWidth, firstPoint.x+halfHallWidth - 1, firstPoint.y+halfHallWidth - 1);
-//            junctions.add(startJunction);
-
-            //Add end junction
-//            hallPoints2SplitMap.put(lastPoint, new ArrayList<>(Arrays.asList(split)));
-//            Junction endJunction = new Junction(lastPoint.x-halfHallWidth, lastPoint.y-halfHallWidth, lastPoint.x+halfHallWidth - 1, lastPoint.y+halfHallWidth - 1);
-//            junctions.add(endJunction);
-
-//            previousJunction = startJunction;
-
-
-
-//            for (Pair<Point, WorldUtils.Side> pointSidePair : pointSidePairList) {
-//                Point point = pointSidePair.getElement0();
-//                boolean isInMap = hallPoints2SplitMap.containsKey(point);
-//                if(!isInMap){
-//                    hallPoints2SplitMap.put(point, new ArrayList<>(Arrays.asList(split)));
-//                }else if (isInMap){
-//                    hallPoints2SplitMap.get(point).add(split);
-//                    Junction j = new Junction(point.x-halfHallWidth, point.y-halfHallWidth, point.x+halfHallWidth - 1, point.y+halfHallWidth - 1);
-//
-//                    junctions.add(j);
-//                    Hall h = new Hall(previousJunction, j);
-//                    halls.add(h);
-//                    previousJunction = j;
-//                }
-//            }
-
-//            Hall h = new Hall(previousJunction, endJunction);
-//            halls.add(h);
-
+            } while (currentX <= splitLine.getX2() && currentY <= splitLine.getY2());
+            splitPathList.add(splitPath);
         }
+
+
+        System.out.println("splitLineList = " + splitLineList.size());
+        System.out.println("splitPathList = " + splitPathList.size());
+
+
+
+        //Identify points of intersection
+        for (SplitPath splitPath : splitPathList) {
+            for (Point pathPoint : splitPath.pathPoints) {
+                if (!intersectionPoints.containsKey(pathPoint)){
+                    intersectionPoints.put(pathPoint, new ArrayList<>(List.of(splitPath)));
+                }else{
+                    intersectionPoints.get(pathPoint).add(splitPath);
+
+                }
+            }
+        }
+        HashMap<Point, Junction> createdJunctions = new HashMap<>();
+        for (SplitPath splitPath : splitPathList) {
+            Junction previousJunction = null;
+            Junction firstJunction = null;
+            for (Point intersectionPoint : splitPath.pathPoints.stream().filter(point -> intersectionPoints.get(point).size() > 1).toList()) {
+                Junction junction;
+                if(createdJunctions.containsKey(intersectionPoint)){
+                    junction = createdJunctions.get(intersectionPoint);
+                }
+                else{
+                    junction = new Junction(intersectionPoint.x-halfHallWidth, intersectionPoint.y-halfHallWidth, intersectionPoint.x+halfHallWidth - 1, intersectionPoint.y+halfHallWidth - 1);
+                    junctions.add(junction);
+                    createdJunctions.put(intersectionPoint, junction);
+                }
+
+                if(firstJunction == null){
+                    firstJunction = junction;
+                }
+                if(previousJunction != null){
+                    Hall h = new Hall(previousJunction, junction);
+                    halls.add(h);
+                }
+                previousJunction = junction;
+            }
+
+            if(firstJunction != null && !firstJunction.containsPoint(splitPath.startPoint())){
+                Point p = splitPath.startPoint();
+                Junction junction = new Junction(p.x-halfHallWidth, p.y-halfHallWidth, p.x+halfHallWidth - 1, p.y+halfHallWidth - 1);
+                Hall h = new Hall(firstJunction, junction);
+                junctions.add(junction);
+                halls.add(h);
+            }
+            if(previousJunction != null && !previousJunction.containsPoint(splitPath.endPoint())){
+                Point p = splitPath.endPoint();
+                Junction junction = new Junction(p.x-halfHallWidth, p.y-halfHallWidth, p.x+halfHallWidth - 1, p.y+halfHallWidth - 1);
+                Hall h = new Hall(junction, previousJunction);
+                junctions.add(junction);
+                halls.add(h);
+            }
+
+            //Add dead ends if necessary
+        }
+
+        //Count # of intersection points
+        System.out.println("# of intersections = " + intersectionPoints.values().stream().filter(paths -> paths.size() > 1).count());
 
     }
 
@@ -409,8 +439,8 @@ public class FloorGenerator {
         return halls;
     }
 
-    public List<Split> getSplits() {
-        return splits;
+    public List<SplitLine> getSplitLineList() {
+        return splitLineList;
     }
 
     public List<Junction> getJunctions(){

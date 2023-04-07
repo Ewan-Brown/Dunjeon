@@ -3,22 +3,15 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.generation.GeneratorsMisc;
 import com.ewan.dunjeon.graphics.LiveDisplay;
-import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.Stair;
-import com.ewan.dunjeon.world.entities.ItemAsEntity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
-import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class Main {
 
@@ -81,10 +74,10 @@ public class Main {
 
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(100, 100);
-            generator.generateLeafs(30,-1, 2);
+            generator.generateLeafs(10,-1, 2);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
-            generator.generateHalls(2);
+            generator.generateHalls(4);
             generator.buildCells();
             generator.addFurniture();
             Floor newFloor = generator.getFloor();
@@ -93,8 +86,8 @@ public class Main {
             }
             w.addLevel(newFloor);
 
-            generator.getSplits().forEach(split -> LiveDisplay.debugLines.put(split.getLine2D(), Color.RED));
-            generator.getSplits().forEach(split -> {
+            generator.getSplitLineList().forEach(split -> LiveDisplay.debugLines.put(split.getLine2D(), Color.RED));
+            generator.getSplitLineList().forEach(split -> {
 //                List<Pair<Point, WorldUtils.Side>> var = WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2());
 //                boolean horizontal = split.getY1() == split.bgetY2();
 //                for (Pair<Point, WorldUtils.Side> pointSidePair : var) {
@@ -121,7 +114,7 @@ public class Main {
 
             System.out.println("Halls : " + generator.getHalls().size());
             for (GeneratorsMisc.Hall hall : generator.getHalls()) {
-                System.out.printf("Hall : %d, %d -> %d,%d\n", hall.x1, hall.y1, hall.x2, hall.y2);
+//                System.out.printf("Hall : %d, %d -> %d,%d\n", hall.x1, hall.y1, hall.x2, hall.y2);
             }
         }
 
@@ -219,7 +212,7 @@ public class Main {
 
 
 //        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
-//        w.addEntityRandomLoc(testNPC, startFloor);
+//        w.addEntityRandomLoc(testNPC, startFloor);m
 
 
     }

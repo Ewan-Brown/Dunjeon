@@ -1,7 +1,5 @@
 package com.ewan.dunjeon.generation;
 
-import com.ewan.dunjeon.world.Pair;
-
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.io.*;
@@ -53,20 +51,12 @@ public class GeneratorsMisc {
         public Hall(Junction j1, Junction j2) {
             junctions = new ArrayList<>();
 
-
-            if(j1 != null){
-                junctions.add(j1);
-                j1.connectedHalls.add(this);
-            }
-            if(j2 != null){
-                junctions.add(j2);
-                j2.connectedHalls.add(this);
-            }
-
-            if(j1 != null && j2 != null){
-                j1.connectedJunctions.add(j2);
-                j2.connectedJunctions.add(j1);
-            }
+            junctions.add(j1);
+            j1.connectedHalls.add(this);
+            junctions.add(j2);
+            j2.connectedHalls.add(this);
+            j1.connectedJunctions.add(j2);
+            j2.connectedJunctions.add(j1);
 
             x1 = junctions.stream().mapToInt(value -> value.x1).min().getAsInt();
             x2 = junctions.stream().mapToInt(value -> value.x2).max().getAsInt();
@@ -90,7 +80,6 @@ public class GeneratorsMisc {
 
     public static class Junction{
         public int x1, x2, y1, y2;
-        List<Split> connectedSplits;
         List<Junction> connectedJunctions;
         List<Hall> connectedHalls;
 
@@ -99,9 +88,12 @@ public class GeneratorsMisc {
             this.x2 = x2;
             this.y1 = y1;
             this.y2 = y2;
-            connectedSplits = new ArrayList<>();
             connectedJunctions = new ArrayList<>();
             connectedHalls = new ArrayList<>();
+        }
+
+        public boolean containsPoint(Point p){
+            return (p.x <= x2 && p.x >= x2 && p.y <= y2 && p.y >= y1);
         }
     }
 
@@ -127,10 +119,10 @@ public class GeneratorsMisc {
         }
     }
 
-    public static class Split{
+    public static class SplitLine {
         int x1,x2,y1,y2;
 
-        public Split(int x1, int x2, int y1, int y2){
+        public SplitLine(int x1, int x2, int y1, int y2){
             this.x1 = x1;
             this.x2 = x2;
             this.y1 = y1;
