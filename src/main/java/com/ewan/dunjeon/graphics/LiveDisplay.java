@@ -25,7 +25,8 @@ public class LiveDisplay {
     public static HashMap<Point, Color> debugCells = new HashMap<>();
     public static HashMap<Line2D.Float, Color> debugLines = new HashMap<>();
     public static boolean RENDER_GRID = false;
-    public static boolean RENDER_OLD_ENTITIES = false;
+    public static boolean RENDER_DEBUG_LINES = false;
+    public static boolean RENDER_DEBUG_CELLS = false;
 
 
     public void startDrawing(World w){
@@ -42,7 +43,7 @@ public class LiveDisplay {
                     graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                             RenderingHints.VALUE_ANTIALIAS_ON);
                     graphics.setColor(Color.BLACK);
-                    graphics.clearRect(0,0,getWidth(),getHeight());
+                    graphics.fillRect(0,0,getWidth(),getHeight());
                     Floor lev = w.getPlayer().getFloor();
                     FloorMemory memoryFloor = World.getInstance().getPlayer().getFloorMemory(lev);
                     if(memoryFloor == null){
@@ -174,19 +175,23 @@ public class LiveDisplay {
 
                     }
 
-                    debugLines.forEach((line2D, color) -> {
-                        AffineTransform af = new AffineTransform();
-                        af.scale(scale,scale);
-                        graphics.setColor(color);
-                        graphics.draw(af.createTransformedShape(line2D));
-                    });
+                    if(RENDER_DEBUG_LINES) {
+                        debugLines.forEach((line2D, color) -> {
+                            AffineTransform af = new AffineTransform();
+                            af.scale(scale, scale);
+                            graphics.setColor(color);
+                            graphics.draw(af.createTransformedShape(line2D));
+                        });
+                    }
 
-                    debugCells.forEach((point, color) -> {
-                        AffineTransform af = new AffineTransform();
-                        af.scale(scale,scale);
-                        graphics.setColor(color);
-                        graphics.fill(af.createTransformedShape(new Rectangle(point.x,point.y,1,1)));
-                    });
+                    if(RENDER_DEBUG_CELLS) {
+                        debugCells.forEach((point, color) -> {
+                            AffineTransform af = new AffineTransform();
+                            af.scale(scale, scale);
+                            graphics.setColor(color);
+                            graphics.fill(af.createTransformedShape(new Rectangle(point.x, point.y, 1, 1)));
+                        });
+                    }
 
                 }
             };

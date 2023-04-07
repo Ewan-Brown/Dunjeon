@@ -132,6 +132,21 @@ public class World implements KeyListener {
             LiveDisplay.RENDER_GRID = !LiveDisplay.RENDER_GRID;
         }
 
+        if(keySet.get(KeyEvent.VK_N)){
+            keySet.set(KeyEvent.VK_N, false);
+            player.true_sight_debug = !player.true_sight_debug;
+        }
+
+        if(keySet.get(KeyEvent.VK_Z)){
+            keySet.set(KeyEvent.VK_Z, false);
+            LiveDisplay.RENDER_DEBUG_LINES = !LiveDisplay.RENDER_DEBUG_LINES;
+        }
+
+        if(keySet.get(KeyEvent.VK_X)){
+            keySet.set(KeyEvent.VK_X, false);
+            LiveDisplay.RENDER_DEBUG_CELLS = !LiveDisplay.RENDER_DEBUG_CELLS;
+        }
+
         //Fire projectile in random direction
         if(keySet.get(KeyEvent.VK_R)){
             keySet.set(KeyEvent.VK_R, false);
