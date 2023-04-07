@@ -74,10 +74,14 @@ public class Main {
 
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(100, 100);
-            generator.generateLeafs(15,-1, 4);
+            int hallWidth = 6; //Width of hallways
+            int roomPadding = 0; //Extra walls between the room walls and the hallways
+
+
+            generator.generateLeafs(15,-1, (hallWidth/2)+roomPadding);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
-            generator.generateHalls(6);
+            generator.generateHalls(hallWidth);
             System.out.println("Halls : " + generator.getHalls().size());
             for (GeneratorsMisc.Hall hall : generator.getHalls()) {
                 System.out.printf("Hall : %d, %d -> %d,%d\n", hall.x1, hall.y1, hall.x2, hall.y2);
