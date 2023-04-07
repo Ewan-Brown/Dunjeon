@@ -74,7 +74,7 @@ public class Main {
 
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(100, 100);
-            generator.generateLeafs(10,-1, 2);
+            generator.generateLeafs(20,-1, 2);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
             generator.generateHalls(4);

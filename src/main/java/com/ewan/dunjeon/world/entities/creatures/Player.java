@@ -7,7 +7,7 @@ public class Player extends Creature {
     public Player(String name) {
         super(name);
         autoPickup = true;
-//        true_sight_debug = true;
+        true_sight_debug = true;
     }
 
     @Override

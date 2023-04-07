@@ -245,19 +245,24 @@ public class FloorGenerator {
                 previousJunction = junction;
             }
 
+
             if(firstJunction != null && !firstJunction.containsPoint(splitPath.startPoint())){
                 Point p = splitPath.startPoint();
-                Junction junction = new Junction(p.x-halfHallWidth, p.y-halfHallWidth, p.x+halfHallWidth - 1, p.y+halfHallWidth - 1);
-                Hall h = new Hall(firstJunction, junction);
-                junctions.add(junction);
-                halls.add(h);
+                if (!createdJunctions.containsKey(p)) {
+                    Junction junction = new Junction(p.x - halfHallWidth, p.y - halfHallWidth, p.x + halfHallWidth - 1, p.y + halfHallWidth - 1);
+                    Hall h = new Hall(firstJunction, junction);
+                    junctions.add(junction);
+                    halls.add(h);
+                }
             }
             if(previousJunction != null && !previousJunction.containsPoint(splitPath.endPoint())){
                 Point p = splitPath.endPoint();
-                Junction junction = new Junction(p.x-halfHallWidth, p.y-halfHallWidth, p.x+halfHallWidth - 1, p.y+halfHallWidth - 1);
-                Hall h = new Hall(junction, previousJunction);
-                junctions.add(junction);
-                halls.add(h);
+                if(!createdJunctions.containsKey(p)) {
+                    Junction junction = new Junction(p.x - halfHallWidth, p.y - halfHallWidth, p.x + halfHallWidth - 1, p.y + halfHallWidth - 1);
+                    Hall h = new Hall(junction, previousJunction);
+                    junctions.add(junction);
+                    halls.add(h);
+                }
             }
 
             //Add dead ends if necessary
