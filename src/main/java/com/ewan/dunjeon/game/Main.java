@@ -4,6 +4,7 @@ import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.generation.GeneratorsMisc;
 import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.cells.Stair;
+import com.ewan.dunjeon.world.entities.creatures.Monster;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.World;
@@ -209,11 +210,11 @@ public class Main {
 //        w.addEntityRandomLoc(simpleItemSpear, startFloor);
 //        w.addEntityRandomLoc(simpleItemHammer, startFloor);
 //
-//        for (int i = 0; i < 1; i++) {
-////            Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
+        for (int i = 0; i < 1; i++) {
+            Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        Monster testMonster = Monster.generateChasingMonster(Color.GREEN, "Monster");
-//            w.addEntityRandomLoc(testMonster, startFloor);
-//        }
+            w.addEntityRandomLoc(testMonster, startFloor);
+        }
 
 
 //        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");

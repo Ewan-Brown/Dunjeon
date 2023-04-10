@@ -22,6 +22,10 @@ public class FloorMemory{
         entityMemories.values().forEach(Memory::setOldData);
     }
 
+    public boolean isOutOfBounds(int x,int y){
+        return x > 0 && y > 0 && y < cellMemoryArray.length && x < cellMemoryArray[0].length;
+    }
+
     public CellMemory getDataAt(int x, int y){
         return cellMemoryArray[y][x];
     }

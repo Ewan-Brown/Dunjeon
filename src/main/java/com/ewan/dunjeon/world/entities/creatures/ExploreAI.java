@@ -112,11 +112,13 @@ public class ExploreAI extends AIState {
                     for (int j = -1; j < 2; j++) {
                         if (i == 0 && j == 0) continue;
                         Point neighbor = new Point((int) currentNode.getX() + i, (int) currentNode.getY() + j);
-                        CellMemory cellMemory = currentFloorMemory.getDataAt((int) neighbor.getX(), (int) neighbor.getY());
-                        if (cellMemory != null && cellMemory.enterable == CellMemory.EnterableStatus.OPEN
-                                && !potentialDestinations.contains(neighbor) && !toExplore.contains(neighbor)
-                                && !alreadyExplored.contains(neighbor)) {
-                            toExplore.add(neighbor);
+                        if(!currentFloorMemory.isOutOfBounds((int) neighbor.getX(), (int) neighbor.getY())) {
+                            CellMemory cellMemory = currentFloorMemory.getDataAt((int) neighbor.getX(), (int) neighbor.getY());
+                            if (cellMemory != null && cellMemory.enterable == CellMemory.EnterableStatus.OPEN
+                                    && !potentialDestinations.contains(neighbor) && !toExplore.contains(neighbor)
+                                    && !alreadyExplored.contains(neighbor)) {
+                                toExplore.add(neighbor);
+                            }
                         }
                     }
                 }
