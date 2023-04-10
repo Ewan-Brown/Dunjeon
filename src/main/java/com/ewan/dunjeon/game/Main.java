@@ -75,18 +75,14 @@ public class Main {
 
         for (int i = 0; i < floorCount; i++) {
             FloorGenerator generator = new FloorGenerator(100, 100);
-            int hallWidth = 6; //Width of hallways
-            int roomPadding = 0; //Extra walls between the room walls and the hallways
+            int hallWidth = 2; //Width of hallways
+            int roomPadding = 2; //Extra walls between the room walls and the hallways
 
 
             generator.generateLeafs(15,-1, (hallWidth/2)+roomPadding);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
             generator.generateHalls(hallWidth);
-            System.out.println("Halls : " + generator.getHalls().size());
-            for (GeneratorsMisc.Hall hall : generator.getHalls()) {
-                System.out.printf("Hall : %d, %d -> %d,%d\n", hall.x1, hall.y1, hall.x2, hall.y2);
-            }
             generator.buildCells();
             generator.addFurniture();
             Floor newFloor = generator.getFloor();
@@ -115,12 +111,12 @@ public class Main {
 //                }
                 LiveDisplay.debugLines.put(split.getLine2D(), Color.RED);
             });
-
+            System.out.println("Halls : " + generator.getHalls().size());
             System.out.println("Junctions : " + generator.getJunctions().size());
-            for (GeneratorsMisc.Junction junction : generator.getJunctions()) {
-                System.out.printf("Junction : %d, %d -> %d,%d\n", junction.x1, junction.y1, junction.x2, junction.y2);
+            System.out.println("Doors : " + generator.getDoors().size());
+            for (GeneratorsMisc.Door door : generator.getDoors()) {
+                System.out.printf("Door at %d, %d\n", door.getPoint().x, door.getPoint().y);
             }
-
 
         }
 

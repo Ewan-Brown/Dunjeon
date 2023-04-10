@@ -92,11 +92,9 @@ public class FloorGenerator {
             int doorNum = (maxDoors > minDoors) ? rand.nextInt(maxDoors-minDoors) + minDoors : maxDoors;
             //List of edge pieces eligible to become doors
             List<Pair<Point, List<Point>>> edgePieces = currentSection.getNonWallBoundedEdgePieces(false);
-
             //Keep adding doors until either we have enough or there isn't enough space to create non-adjacent doors
             while(currentSection.doors.size() < doorNum && edgePieces.size() > 1 + doorSpacing*2){
                 int possibleDoorIndex = rand.nextInt(edgePieces.size());
-
                 //Remove this edge piece and neighbors from potential door list;
                 List<Point> neighbors = new ArrayList<>();
                 for (int i = possibleDoorIndex - doorSpacing; i <= possibleDoorIndex+doorSpacing; i++) {
@@ -112,6 +110,25 @@ public class FloorGenerator {
             totalDoors.addAll(currentSection.doors);
         }
         this.doors = totalDoors;
+    }
+
+    public void generateDoorways(){
+        for (Door door : doors) {
+            int dx = door.entryPoints.get(0).x - door.x;
+            int dy = door.entryPoints.get(0).y - door.y;
+            int currentX = door.entryPoints.get(0).x;
+            int currentY = door.entryPoints.get(0).y;
+            while(true){
+                if(cells[currentY][currentX].isFilled()) {
+                    cells[currentY][currentX] = new BasicCell(currentX, currentY, floor, Color.GRAY);
+                    cells[currentY][currentX].setFilled(false);
+                    currentX += dx;
+                    currentY += dy;
+                }else{
+                    break;
+                }
+            }
+        }
     }
 
     public void generateWeightMap(){
@@ -375,6 +392,7 @@ public class FloorGenerator {
             }
         }
 
+
         if (halls != null){
             System.out.println(halls.size());
             for (Hall hall : halls) {
@@ -408,6 +426,8 @@ public class FloorGenerator {
                 }
             }
         }
+
+        generateDoorways();
 
         //Draw paths to map
 //        if(totalHalls != null) {
