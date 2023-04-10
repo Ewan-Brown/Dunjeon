@@ -172,7 +172,7 @@ public class Section implements Serializable {
 
         int subLeafAbsoluteX = subleafRelativeX + x1;
         int subLeafAbsoluteY = subleafRelativeY + y1;
-        return new Section(subLeafAbsoluteX, subLeafAbsoluteY, subLeafAbsoluteX + subLeafWidth, subLeafAbsoluteY + subLeafHeight);
+        return new Section(subLeafAbsoluteX, subLeafAbsoluteY, subLeafAbsoluteX + subLeafWidth, subLeafAbsoluteY + subLeafHeight, this.wallBoundedSides);
 
 
 //        int newX1Local = (int) ((float) rand.nextInt(xBoundedRange) * (1 - minScaleFactor));
@@ -202,8 +202,8 @@ public class Section implements Serializable {
         if (horizontal) {
             //Generate a y value between y1 and y2, but only possible in centered 30% (avoids tiny leafs)
             int ySplit = (int) (rand.nextInt((getHeight())) / 3f + y1 + getHeight() * (1f / 3f));
-            List<WorldUtils.Side> section1Sides = new ArrayList(this.wallBoundedSides);
-            List<WorldUtils.Side> section2Sides = new ArrayList(this.wallBoundedSides);
+            List<WorldUtils.Side> section1Sides = new ArrayList<>(this.wallBoundedSides);
+            List<WorldUtils.Side> section2Sides = new ArrayList<>(this.wallBoundedSides);
             section1Sides.remove(WorldUtils.Side.SOUTH);
             section2Sides.remove(WorldUtils.Side.NORTH);
             Section section1 = new Section(x1, y1, x2, ySplit - 1, section1Sides);
@@ -222,8 +222,8 @@ public class Section implements Serializable {
             //Generate an x value between x1 and x2, but only possible in centered 30% (avoids tiny leafs)
             int xSplit = (int) (rand.nextInt((getWidth())) / 3f + x1 + getWidth() * (1f / 3f));
 
-            List<WorldUtils.Side> section1Sides = new ArrayList(this.wallBoundedSides);
-            List<WorldUtils.Side> section2Sides = new ArrayList(this.wallBoundedSides);
+            List<WorldUtils.Side> section1Sides = new ArrayList<>(this.wallBoundedSides);
+            List<WorldUtils.Side> section2Sides = new ArrayList<>(this.wallBoundedSides);
             section1Sides.remove(WorldUtils.Side.EAST);
             section2Sides.remove(WorldUtils.Side.WEST);
 
