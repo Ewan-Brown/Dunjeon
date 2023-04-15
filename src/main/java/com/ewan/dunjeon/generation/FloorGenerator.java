@@ -429,15 +429,6 @@ public class FloorGenerator {
 
         generateDoorways();
 
-        //Draw paths to map
-//        if(totalHalls != null) {
-//            for (Hall hall : totalHalls) {
-//                for (Point point : hall.points) {
-//                    cells[point.y][point.x] = new BasicCell(point.x, point.y, floor, Color.GRAY);
-//                    cells[point.y][point.x].setFilled(false);
-//                }
-//            }
-//        }
         floor.setCells(cells);
     }
 

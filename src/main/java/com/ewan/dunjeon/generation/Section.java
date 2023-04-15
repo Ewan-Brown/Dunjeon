@@ -173,22 +173,6 @@ public class Section implements Serializable {
         int subLeafAbsoluteX = subleafRelativeX + x1;
         int subLeafAbsoluteY = subleafRelativeY + y1;
         return new Section(subLeafAbsoluteX, subLeafAbsoluteY, subLeafAbsoluteX + subLeafWidth, subLeafAbsoluteY + subLeafHeight, this.wallBoundedSides);
-
-
-//        int newX1Local = (int) ((float) rand.nextInt(xBoundedRange) * (1 - minScaleFactor));
-//        int newY1Local = (int) ((float) rand.nextInt(yBoundedRange) * (1 - minScaleFactor));
-//        int newX1Abs = x1 + xPadding + newX1Local;
-//        int newY1Abs = y1 + yPadding + newY1Local;
-//
-//        int minWidth = (int) (xBoundedRange * minScaleFactor);
-//        int minHeight = (int) (yBoundedRange * minScaleFactor);
-//
-//        int newX2Local = newX1Local + minWidth + rand.nextInt(xBoundedRange - minWidth - newX1Local);
-//        int newY2Local = newY1Local + minHeight + rand.nextInt(yBoundedRange - minHeight - newY1Local);
-//        int newX2Abs = x1 + xPadding + newX2Local;
-//        int newY2Abs = y1 + yPadding + newY2Local;
-
-//        return new Section(newX1Abs, newY1Abs, newX2Abs, newY2Abs, wallBoundedSides);
     }
 
     Pair<Section[], GeneratorsMisc.SplitLine> split(int minSize) {
