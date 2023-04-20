@@ -20,6 +20,7 @@ import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
+import org.dyn4j.geometry.Vector2;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -31,15 +32,14 @@ public abstract class Creature extends Entity implements HasInventory {
         super(name);
         sightRange = 10;
         health = 10;
-        friction = 2;
     }
 
-    private float walkSpeed = 0.03f;
+    private double walkSpeed = 0.03f;
     private int sightRange;
     private int health;
     private InventoryWithWieldedItem inventory = new InventoryWithWieldedItem();
     protected boolean autoPickup = false;
-    private float pickupRange = 1;
+    private double pickupRange = 1;
     ItemAttack currentAttack = null;
 
     public boolean true_sight_debug = false;
@@ -56,7 +56,7 @@ public abstract class Creature extends Entity implements HasInventory {
         updateViewRange();
 
         //Just here as an example for generating sounds
-        if(getVelX() != 0 || getVelY() != 0){
+        if(getLinearVelocity().getMagnitude() != 0){
             if(Main.rand.nextDouble() < loudStepChance){
                 World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2DLoc(), getFloor(),"", "You hear a loud footstep", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
             }
@@ -108,9 +108,9 @@ public abstract class Creature extends Entity implements HasInventory {
         //Use enough rays that we don't skip over whole cells.
         //Arc length : r = al
         //  Where r is arc length, a is angle, l is length
-        float arcLength = 0.1f;
-        float angleDiv =  arcLength/sightRange;
-        int rays = (int)Math.ceil(2 * (float)Math.PI / angleDiv);
+        double arcLength = 0.1f;
+        double angleDiv =  arcLength/sightRange;
+        int rays = (int)Math.ceil(2 * (double)Math.PI / angleDiv);
 
         viewableCells.add(this.getContainingCell());
 
@@ -120,16 +120,16 @@ public abstract class Creature extends Entity implements HasInventory {
         else {
 
             for (int i = 0; i < rays; i++) {
-                float currentAngle = angleDiv * i;
-                List<Pair<Point, WorldUtils.Side>> intersectedTiles = WorldUtils.getIntersectedTilesWithWall(this.getPosX(), this.getPosY(),
-                        this.getPosX() + (float)Math.cos(currentAngle) * sightRange, this.getPosY() + (float)Math.sin(currentAngle) * sightRange);
+                double currentAngle = angleDiv * i;
+                List<Pair<Point, WorldUtils.Side>> intersectedTiles = WorldUtils.getIntersectedTilesWithWall(getWorldCenter().x, getWorldCenter().y,
+                        getWorldCenter().x + (double)Math.cos(currentAngle) * sightRange, getWorldCenter().y + (double)Math.sin(currentAngle) * sightRange);
 
                 for (Pair<Point, WorldUtils.Side> pair : intersectedTiles) {
 
                     Point intersectedPoint = pair.getElement0();
                     WorldUtils.Side intersectedSide = pair.getElement1();
 
-                    BasicCell cell = getFloor().getCellAt(intersectedPoint);
+                    BasicCell cell = getFloor().getCellAt(new Vector2(intersectedPoint.getX(), intersectedPoint.getY()));
 
                     if(cell == null){
                         break;
@@ -161,53 +161,53 @@ public abstract class Creature extends Entity implements HasInventory {
             currentFloorMemory.setAllDataToOld();
             Interactable touchInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
             Interactable chatInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
-            for (BasicCell currentCell : viewableCells) {
-                CellMemory.FurnitureData fData = null;
-                if(currentCell.getFurniture() != null){
-                    Furniture f = currentCell.getFurniture();
-                    boolean interactable = false;
-                    //FIXME This should not be in this class
-                    if(touchInteractive == f && this instanceof Player){
-                        interactable = true;
-                    }
-                    //FIXME Currently, furniture is "rendered" invisible if its' color is null. This is not a good practice use of null.
-                    fData = new CellMemory.FurnitureData(f.getPosX(), f.getPosY(), f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
-                }
-                boolean isCreatureWithinThisCell = (currentCell == this.getContainingCell());
+            System.out.println("Bring back memory logic in Creature.updateViewRange()");
+//            for (BasicCell currentCell : viewableCells) {
+//                CellMemory.FurnitureData fData = null;
+//                if(currentCell.getFurniture() != null){
+//                    Furniture f = currentCell.getFurniture();
+//                    boolean interactable = false;
+//                    //FIXME This should not be in this class
+//                    if(touchInteractive == f && this instanceof Player){
+//                        interactable = true;
+//                    }
+//                    //FIXME Currently, furniture is "rendered" invisible if its' color is null. This is not a good practice use of null.
+//
+//                    fData = new CellMemory.FurnitureData(f.getWorldCenter().x, f.getWorldCenter().y, f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
+//                }
+//                boolean isCreatureWithinThisCell = (currentCell == getContainingCell());
+//                CellMemory data = new CellMemory(VisualProcessor.getVisual(currentCell, this, viewableWalls.get(currentCell)),
+//                        fData,(currentCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED),
+//                        currentCell.getX(), currentCell.getY(), isCreatureWithinThisCell, viewableWalls.get(currentCell));
+//                currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
+//            }
 
-                CellMemory data = new CellMemory(VisualProcessor.getVisual(currentCell, this, viewableWalls.get(currentCell)),
-                        fData,(currentCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED),
-                        currentCell.getX(), currentCell.getY(), isCreatureWithinThisCell, viewableWalls.get(currentCell));
-                currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
-            }
-
-            for (Entity entity : getFloor().getEntities()) {
-                if(entity != this && (viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug)) {
-
-                    
-                    List<Pair<Point, WorldUtils.Side>> intersectingTiles = WorldUtils.getIntersectedTilesWithWall(getPosX(), getPosY(), entity.getPosX(), entity.getPosY());
-                    List<CellMemory> cellMemories = new ArrayList<>();
-                    for (Pair<Point, WorldUtils.Side> intersectingTile : intersectingTiles) {
-                        cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile.getElement0()));
-                    }
-                    if(cellMemories.stream().noneMatch(cellMemory -> cellMemory == null || cellMemory.enterable == CellMemory.EnterableStatus.CLOSED) || true_sight_debug) {
-                        boolean chattable = (chatInteractive == entity);
-//                        EntityMemory entityMemory = new EntityMemory(entity.getUUID(), entity.getPosX(), entity.getPosY(), entity.getVelX(), entity.getVelY(), entity.getSize(), chattable, VisualProcessor.getVisual(entity, this));
-                        EntityStateData stateData = entity.getEntityStateData();
-                        List<RenderableObject> renderableObject = entity.getRawDrawables();
-                        EntityMemory em = new EntityMemory(stateData, renderableObject);
-                        currentFloorMemory.updateEntity(entity.getUUID(), em);
-                    }
-                }
-            }
+//            for (Entity entity : getFloor().getEntities()) {
+//                if(entity != this && (viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug)) {
+//
+//
+//                    List<Pair<Point, WorldUtils.Side>> intersectingTiles = WorldUtils.getIntersectedTilesWithWall(getWorldCenter().x, getWorldCenter().y, entity.getWorldCenter().x, entity.getWorldCenter().y);
+//                    List<CellMemory> cellMemories = new ArrayList<>();
+//                    for (Pair<Point, WorldUtils.Side> intersectingTile : intersectingTiles) {
+//                        cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile.getElement0()));
+//                    }
+//                    if(cellMemories.stream().noneMatch(cellMemory -> cellMemory == null || cellMemory.enterable == CellMemory.EnterableStatus.CLOSED) || true_sight_debug) {
+//                        boolean chattable = (chatInteractive == entity);
+//                        EntityStateData stateData = entity.getEntityStateData();
+//                        List<RenderableObject> renderableObject = entity.getRawDrawables();
+//                        EntityMemory em = new EntityMemory(stateData, renderableObject);
+//                        currentFloorMemory.updateEntity(entity.getUUID(), em);
+//                    }
+//                }
+//            }
 
         }
     }
 
     public void onSoundEvent(RelativeSoundEvent event){
         getFloorMemory(event.abs().sourceFloor()).addSoundMemory(new SoundMemory(
-                this.getPosX(),
-                this.getPosY(),
+                this.getWorldCenter().x,
+                this.getWorldCenter().y,
                 event.abs().sourceLocation().getX(),
                 event.abs().sourceLocation().getY(),
                 false,
@@ -243,9 +243,9 @@ public abstract class Creature extends Entity implements HasInventory {
         return health;
     }
 
-    public float getWalkSpeed() { return walkSpeed;}
+    public double getWalkSpeed() { return walkSpeed;}
 
-    public Point2D getPoint2DLoc(){return new Point2D.Double(getPosX(), getPosY());}
+    public Point2D getPoint2DLoc(){return new Point2D.Double(getWorldCenter().x, getWorldCenter().y);}
 
     public Inventory getInventory(){return inventory;}
 
