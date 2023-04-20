@@ -8,7 +8,7 @@ public class Memory {
         isOldData = false;
         timeStamp = World.getInstance().getTime();
     }
-    private float timeStamp;
+    private double timeStamp;
 
     /**
      * True if this is data that is not representational of the 'present' from the hosts' point of view.
@@ -23,7 +23,7 @@ public class Memory {
 
     public void setOldData(){isOldData = true;}
 
-    public float getTimeStamp() {
+    public double getTimeStamp() {
         return timeStamp;
     }
 }

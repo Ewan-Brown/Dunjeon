@@ -16,29 +16,29 @@ import static java.lang.Math.abs;
 
 public class WorldUtils {
 
-    public static final float ENTITY_WITHIN_TILE_THRESHOLD = 0.5f;
-    private static final float INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD = 0.0001f;
+    public static final double ENTITY_WITHIN_TILE_THRESHOLD = 0.5f;
+    private static final double INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD = 0.0001f;
 
     //TODO Reduce these after by making a 'HasPosition' interface?
-    public static float getRawDistance(Entity e1, Entity e2){
+    public static double getRawDistance(Entity e1, Entity e2){
         return getRawDistance(e1.getPosX(), e2.getPosX(), e1.getPosY(), e2.getPosY());
     }
-    public static float getRawDistance(BasicCell c1, BasicCell c2){
+    public static double getRawDistance(BasicCell c1, BasicCell c2){
         return getRawDistance(c1.getX(), c2.getX(), c1.getY(), c2.getY());
     }
 
-    public static float getRawDistance(BasicCell c, Entity e){
+    public static double getRawDistance(BasicCell c, Entity e){
         return getRawDistance(c.getX(), e.getPosX(), c.getY(), e.getPosY());
     }
-    public static float getRawDistance(Furniture f, Entity e){
+    public static double getRawDistance(Furniture f, Entity e){
         return getRawDistance(f.getPosX(), e.getPosX(), f.getPosY(), e.getPosY());
     }
-    public static float getRawDistance(Interactable f, Entity e){
+    public static double getRawDistance(Interactable f, Entity e){
         return getRawDistance(f.getPosX(), e.getPosX(), f.getPosY(), e.getPosY());
     }
 
-    public static float getRawDistance(float x1, float x2, float y1, float y2){
-        return (float)Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    public static double getRawDistance(double x1, double x2, double y1, double y2){
+        return (double)Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
 
@@ -86,18 +86,18 @@ public class WorldUtils {
         WEST,
         WITHIN
     }
-    public static List<Pair<Point, Side>> getIntersectedTilesWithWall(float x1, float y1, float x2, float y2) {
+    public static List<Pair<Point, Side>> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {
 
-        float dx = x2 - x1;
-        float dy = y2 - y1;
+        double dx = x2 - x1;
+        double dy = y2 - y1;
 
 
 
-        float slope = dy / dx;
-        float b = y1 - slope * x1;
+        double slope = dy / dx;
+        double b = y1 - slope * x1;
 
-        float currentX = x1;
-        float currentY = y1;
+        double currentX = x1;
+        double currentY = y1;
 
         List<Pair<Point, Side>> intersectedTiles = new ArrayList<>();
         Point currentPoint = new Point((int) Math.floor(x1), (int) Math.floor(y1));
@@ -146,10 +146,10 @@ public class WorldUtils {
         //Iterate across intersects and find tiles
         while (true) {
 
-            float nextVerticalIntersect = 0;
-            float distToNextVerticalIntersect = Float.MAX_VALUE;
-            float nextHorizontalIntersect = 0;
-            float distToNextHorizontalIntersect = Float.MAX_VALUE;
+            double nextVerticalIntersect = 0;
+            double distToNextVerticalIntersect = Float.MAX_VALUE;
+            double nextHorizontalIntersect = 0;
+            double distToNextHorizontalIntersect = Float.MAX_VALUE;
 
             Side side;
 
@@ -158,7 +158,7 @@ public class WorldUtils {
                     nextVerticalIntersect = currentX + Math.signum(dx);
 
                 } else {
-                    nextVerticalIntersect = (float) ((dx > 0) ? Math.ceil(currentX) : Math.floor(currentX));
+                    nextVerticalIntersect = (double) ((dx > 0) ? Math.ceil(currentX) : Math.floor(currentX));
                 }
                 distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
             }
@@ -166,12 +166,12 @@ public class WorldUtils {
                 if (currentY == Math.round(currentY)) {
                     nextHorizontalIntersect = currentY + Math.signum(dy);
                 } else {
-                    nextHorizontalIntersect = (float) ((dy > 0) ? Math.ceil(currentY) : Math.floor(currentY));
+                    nextHorizontalIntersect = (double) ((dy > 0) ? Math.ceil(currentY) : Math.floor(currentY));
                 }
                 distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
             }
 
-            float nextInterceptX, nextInterceptY;
+            double nextInterceptX, nextInterceptY;
 
             Creature.AxisAlignment intersectAlignment;
 
@@ -180,8 +180,8 @@ public class WorldUtils {
                 nextInterceptY = slope * nextInterceptX + b;
 
                 if(distToNextVerticalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
-                    float delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dy);
-                    nextInterceptY = Math.round(nextInterceptY) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that floating point errors come into play in the result of y = mx+b
+                    double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dy);
+                    nextInterceptY = Math.round(nextInterceptY) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubleing point errors come into play in the result of y = mx+b
                 }
                 intersectAlignment = Creature.AxisAlignment.VERTICAL;
                 side = (dx > 0) ? Side.WEST : Side.EAST;
@@ -191,8 +191,8 @@ public class WorldUtils {
                 nextInterceptX = (nextInterceptY - b) / slope;
 
                 if(distToNextHorizontalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
-                    float delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dx);
-                    nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that floating point errors come into play in the result of y = mx+b
+                    double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dx);
+                    nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubleing point errors come into play in the result of y = mx+b
                 }
                 intersectAlignment = Creature.AxisAlignment.HORIZONTAL;
                 side = (dy > 0) ? Side.NORTH :Side.SOUTH;

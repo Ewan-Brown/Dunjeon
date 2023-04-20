@@ -19,10 +19,10 @@ import static com.ewan.dunjeon.game.Main.rand;
 public class World implements KeyListener {
 
     private static World w = new World();
-    private float time = 0;
+    private double time = 0;
     private SoundManager soundManager = new SoundManager();
 
-    public float getTime(){return time;}
+    public double getTime(){return time;}
 
     private Player player;
     public static World getInstance(){return w;}
@@ -53,7 +53,7 @@ public class World implements KeyListener {
 
     }
 
-    public void addEntityAtLoc(Entity e, Floor f, float x, float y){
+    public void addEntityAtLoc(Entity e, Floor f, double x, double y){
         BasicCell randomValidCell = f.getCellAt(x, y);
         randomValidCell.onEntry(e);
         e.onEnterCell(randomValidCell);
@@ -89,7 +89,7 @@ public class World implements KeyListener {
 
     double playerInteractionDist = 1.5;
 
-    float playerSpeed = 0.03f;
+    double playerSpeed = 0.03f;
 
     public Player getPlayer(){
         return player;
@@ -191,7 +191,7 @@ public class World implements KeyListener {
 
 //        for (Interactable interactable : interactables) {
 //            if (interactable.isInteractable(getPlayer())) {
-//                float dist = WorldUtils.getRawDistance(interactable, getPlayer());
+//                double dist = WorldUtils.getRawDistance(interactable, getPlayer());
 //                if(dist < minDist || minDist == -1){
 //                    minDist = dist;
 //                    closestInteractable = interactable;

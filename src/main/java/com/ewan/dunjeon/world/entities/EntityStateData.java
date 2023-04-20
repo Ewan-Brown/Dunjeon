@@ -6,17 +6,17 @@ package com.ewan.dunjeon.world.entities;
  */
 public class EntityStateData {
 
-    float x;
-    float y;
-    float xSpeed;
-    float ySpeed;
-    float rotation;
-    float rotationalSpeed;
+    double x;
+    double y;
+    double xSpeed;
+    double ySpeed;
+    double rotation;
+    double rotationalSpeed;
     long UUID;
     Entity.ZPositionState zState;
     String name;
 
-    public EntityStateData(float x, float y, float xSpeed, float ySpeed, float rotation, float rotationalSpeed, long UUID, Entity.ZPositionState zState, String name) {
+    public EntityStateData(double x, double y, double xSpeed, double ySpeed, double rotation, double rotationalSpeed, long UUID, Entity.ZPositionState zState, String name) {
         this.x = x;
         this.y = y;
         this.xSpeed = xSpeed;
@@ -28,27 +28,27 @@ public class EntityStateData {
         this.name = name;
     }
 
-    public float getX() {
+    public double getX() {
         return x;
     }
 
-    public float getY() {
+    public double getY() {
         return y;
     }
 
-    public float getXSpeed() {
+    public double getXSpeed() {
         return xSpeed;
     }
 
-    public float getYSpeed() {
+    public double getYSpeed() {
         return ySpeed;
     }
 
-    public float getRotation() {
+    public double getRotation() {
         return rotation;
     }
 
-    public float getRotationalSpeed() {
+    public double getRotationalSpeed() {
         return rotationalSpeed;
     }
 

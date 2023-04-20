@@ -23,7 +23,7 @@ public class GeneratorsMisc {
 
     public static final int doorSpacing = 2;
 
-    public static int[][] generateRandomMap(int width, int height, float percentOpen){
+    public static int[][] generateRandomMap(int width, int height, double percentOpen){
         int[][] map = generateFullMap(height, width, BLOCK);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {

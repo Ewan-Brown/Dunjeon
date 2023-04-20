@@ -46,7 +46,7 @@ public class ExploreAI extends AIState {
             ArrayList<CellMemory> possibleNodes = getListOfPotentialDestinations(cellMemory -> cellMemory.getExploredStatus() != CellMemory.ExploredStatus.EXPLORED_UNCHANGED);
             possibleNodes.sort((o1, o2) -> Float.compare(o1.getTimeStamp(), o2.getTimeStamp()));
             if(!possibleNodes.isEmpty()){
-                float[][] weights = getWeightMapFromMemory();
+                double[][] weights = getWeightMapFromMemory();
                 Point p = possibleNodes.get(possibleNodes.size()-1).getPoint();
                 currentPath = PathFinding.getAStarPath(weights, new Point((int)hostEntity.getPosX(), (int)hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
                 if(currentPath == null){
@@ -61,14 +61,14 @@ public class ExploreAI extends AIState {
 
         else{
             Point nextNode = currentPath.get(0);
-            float targetX = nextNode.x + 0.5f;
-            float targetY = nextNode.y + 0.5f;
-            float distToNextTile = WorldUtils.getRawDistance(hostEntity.getPosX(), targetX, hostEntity.getPosY(), targetY);
-            float angleToNextTile = (float) Math.atan2(targetY - hostEntity.getPosY(), targetX - hostEntity.getPosX());
+            double targetX = nextNode.x + 0.5f;
+            double targetY = nextNode.y + 0.5f;
+            double distToNextTile = WorldUtils.getRawDistance(hostEntity.getPosX(), targetX, hostEntity.getPosY(), targetY);
+            double angleToNextTile = (double) Math.atan2(targetY - hostEntity.getPosY(), targetX - hostEntity.getPosX());
             if(distToNextTile > WorldUtils.ENTITY_WITHIN_TILE_THRESHOLD){
-                float speed = hostEntity.getWalkSpeed() * Math.min(1, distToNextTile*2);
-                float velX = speed * (float)Math.cos(angleToNextTile);
-                float velY = speed * (float)Math.sin(angleToNextTile);
+                double speed = hostEntity.getWalkSpeed() * Math.min(1, distToNextTile*2);
+                double velX = speed * (double)Math.cos(angleToNextTile);
+                double velY = speed * (double)Math.sin(angleToNextTile);
                 hostEntity.addVelocity(velX, velY);
             }else{
                 currentPath.remove(0);
@@ -129,16 +129,16 @@ public class ExploreAI extends AIState {
     }
 
     /**
-     * Generate a map of float weights for pathfinding @PathFinding.Java
+     * Generate a map of double weights for pathfinding @PathFinding.Java
      */
-    public float[][] getWeightMapFromMemory() {
+    public double[][] getWeightMapFromMemory() {
 
-        float[][] weightMap = new float[hostEntity.getFloor().getHeight()][hostEntity.getFloor().getWidth()];
+        double[][] weightMap = new double[hostEntity.getFloor().getHeight()][hostEntity.getFloor().getWidth()];
 
         for (int y = 0; y < hostEntity.getFloor().getHeight(); y++) {
             for (int x = 0; x < hostEntity.getFloor().getWidth(); x++) {
 
-                float weight;
+                double weight;
                 CellMemory mem = hostEntity.getCurrentFloorMemory().getDataAt(x, y);
 
                 if (mem == null || mem.enterable == CellMemory.EnterableStatus.CLOSED) {

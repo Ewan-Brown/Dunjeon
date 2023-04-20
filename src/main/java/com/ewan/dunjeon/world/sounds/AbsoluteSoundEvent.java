@@ -9,7 +9,7 @@ import java.awt.geom.Point2D;
 /**
  * TODO CLEAN THIS UP! Make a factory for it or something this is terrible.
  */
-public record AbsoluteSoundEvent(float intensity, Point2D sourceLocation, Floor sourceFloor, String soundMessageIfVisible, String soundMessageIfNotVisible, SoundType type, Entity sourceEntity) {
+public record AbsoluteSoundEvent(double intensity, Point2D sourceLocation, Floor sourceFloor, String soundMessageIfVisible, String soundMessageIfNotVisible, SoundType type, Entity sourceEntity) {
 
     public enum SoundType{
         PHYSICAL, CHAT, AMBIENT

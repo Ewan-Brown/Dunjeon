@@ -17,9 +17,9 @@ public abstract class Furniture {
     public boolean isBlocking(){
         return false;
     }
-    public float getSize(){return 0.8f;}
-    public float getPosX(){return containingCell.getX() + 0.5f;}
-    public float getPosY(){return containingCell.getY() + 0.5f;}
+    public double getSize(){return 0.8f;}
+    public double getPosX(){return containingCell.getX() + 0.5f;}
+    public double getPosY(){return containingCell.getY() + 0.5f;}
 
     public void update() {
 

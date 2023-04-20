@@ -11,7 +11,7 @@ import java.awt.geom.Point2D;
 
 public class SimpleProjectile{
 
-//    private float thresholdSpeed = 0.001f;
+//    private double thresholdSpeed = 0.001f;
 //    private boolean hasCollided = false;
 
 //    public SimpleProjectile(Color c, String name) {

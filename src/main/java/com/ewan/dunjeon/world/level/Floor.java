@@ -3,6 +3,7 @@ package com.ewan.dunjeon.world.level;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.furniture.Furniture;
+import org.dyn4j.geometry.Vector2;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -70,63 +71,27 @@ public class Floor {
 
         for (int i = 0; i < entities.size(); i++) {
             Entity e = entities.get(i);
-            e.update();
-            doBoundsCheck(e);
+//            e.update();
+//            doBoundsCheck(e);
         }
 
     }
 
-    //Assumes all entities are squares, and are no bigger than a cell
-    public void doBoundsCheck(Entity e){
-//        float xMin = - e.getSize()/2;
-//        float xMax = + e.getSize()/2;
-//        float yMin = - e.getSize()/2;
-//        float yMax = + e.getSize()/2;
+
+
+//    public BasicCell getCellAt(double x, double y){
+//        return getCellAt((int)Math.floor(x),(int)Math.floor(y));
+//    }
 //
-//        Point2D upperLeft = new Point2D.Double(xMin, yMax);
-//        Point2D upperRight = new Point2D.Double(xMax, yMax);
-//        Point2D lowerLeft = new Point2D.Double(xMin, yMin);
-//        Point2D lowerRight = new Point2D.Double(xMax, yMin);
-//
-//        List<Point2D> intersectingCellCoords = new ArrayList<>();
-//        intersectingCellCoords.add(upperLeft);
-//        intersectingCellCoords.add(upperRight);
-//        intersectingCellCoords.add(lowerLeft);
-//        intersectingCellCoords.add(lowerRight);
-//
-//        float fX = 0;
-//        float fY = 0;
-//        Set<BasicCell> collidedCells = new HashSet<>();
-//        for (Point2D coord : intersectingCellCoords) {
-//            BasicCell intersectingCell = (getCellAt((float)coord.getX() + e.getPosX(), (float)coord.getY() + e.getPosY()));
-//            if(!intersectingCell.canBeEntered(e)){
-//                collidedCells.add(intersectingCell);
-//                fX -= coord.getX();
-//                fY -= coord.getY();
-//            }
-//        }
-//
-//        for (BasicCell collidedCell : collidedCells) {
-//            if(e.doesCollideWithWall(e)) {
-//                e.onCollideWithWall(collidedCell);
-//            }
-//        }
-//
-//        e.addVelocity(fX/10f, fY/10f);
+//    public BasicCell getCellAt(Point2D point){
+//        return getCellAt((double)Math.floor(point.getX()),(double)Math.floor(point.getY()));
+//    }
 
-    }
+//    public BasicCell getCellAt(Point point){
+//        return getCellAt((int)point.getX(), (int)point.y);
+//    }
 
-
-
-    public BasicCell getCellAt(float x, float y){
-        return getCellAt((int)Math.floor(x),(int)Math.floor(y));
-    }
-
-    public BasicCell getCellAt(Point2D point){
-        return getCellAt((float)Math.floor(point.getX()),(float)Math.floor(point.getY()));
-    }
-
-    public BasicCell getCellAt(Point point){
-        return getCellAt((int)point.getX(), (int)point.y);
+    public BasicCell getCellAt(Vector2 v){
+        return getCellAt((int)Math.floor(v.x), (int)Math.floor(v.y));
     }
 }

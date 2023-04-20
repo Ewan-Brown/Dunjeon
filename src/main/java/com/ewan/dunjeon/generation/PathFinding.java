@@ -10,7 +10,7 @@ import java.util.List;
 public class PathFinding {
 
 
-    public static List<Point> getAStarPath(float[][] primitiveWeightMap, Point startNode, Point targetNode, boolean print, CornerInclusionRule cornerRule, float weightAgainstTurning, boolean includeStartNodeInPath){
+    public static List<Point> getAStarPath(double[][] primitiveWeightMap, Point startNode, Point targetNode, boolean print, CornerInclusionRule cornerRule, double weightAgainstTurning, boolean includeStartNodeInPath){
 
 
         int outerCount = 0;
@@ -88,20 +88,20 @@ public class PathFinding {
 
                 //Calculate next G. equal to last cell's G + cost to move to this cell.
                 //Note that cost is multiplied by root of 2 (1.41 if diagonal movement!)
-                float successorG = getVal(gMap, currentNode) +
+                double successorG = getVal(gMap, currentNode) +
                         getVal(weightMap, successor) * ((successorPair.getElement1()) ? 1.41f : 1f);
-                float successorH = (Math.abs(targetNode.x - successor.x) + Math.abs(targetNode.y - successor.y)) / 10f; //FIXME Why is this ALWAYS Manhattan distance? FOr AI Too?
+                double successorH = (Math.abs(targetNode.x - successor.x) + Math.abs(targetNode.y - successor.y)) / 10f; //FIXME Why is this ALWAYS Manhattan distance? FOr AI Too?
 
 
                 Float currentAngleObj = getVal(prevDirMap, currentNode);
-                float successorAngle = (float)Math.atan2(successor.y - currentNode.y, successor.x - currentNode.x);
+                double successorAngle = (double)Math.atan2(successor.y - currentNode.y, successor.x - currentNode.x);
                 if(currentAngleObj != null) {
-                    if(Math.abs(currentAngleObj-successorAngle) > 0.001){ //FIXME Check if rounded floats are equivalent... Sketchy but will work
+                    if(Math.abs(currentAngleObj-successorAngle) > 0.001){ //FIXME Check if rounded doubles are equivalent... Sketchy but will work
                         successorG+=weightAgainstTurning;
                     }
                 }
 
-                float successorF = successorG + successorH;
+                double successorF = successorG + successorH;
 //                if(print) System.out.println("successorG = " + successorG);
                 if(successorG == Float.POSITIVE_INFINITY) continue; //Skip cells that are infinite weight
 

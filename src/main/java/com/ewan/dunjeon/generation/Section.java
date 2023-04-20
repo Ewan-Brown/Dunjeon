@@ -175,8 +175,8 @@ public class Section implements Serializable {
         return new Section(subLeafAbsoluteX, subLeafAbsoluteY, subLeafAbsoluteX + subLeafWidth, subLeafAbsoluteY + subLeafHeight, this.wallBoundedSides);
 
 
-//        int newX1Local = (int) ((float) rand.nextInt(xBoundedRange) * (1 - minScaleFactor));
-//        int newY1Local = (int) ((float) rand.nextInt(yBoundedRange) * (1 - minScaleFactor));
+//        int newX1Local = (int) ((double) rand.nextInt(xBoundedRange) * (1 - minScaleFactor));
+//        int newY1Local = (int) ((double) rand.nextInt(yBoundedRange) * (1 - minScaleFactor));
 //        int newX1Abs = x1 + xPadding + newX1Local;
 //        int newY1Abs = y1 + yPadding + newY1Local;
 //
@@ -194,7 +194,7 @@ public class Section implements Serializable {
     Pair<Section[], GeneratorsMisc.SplitLine> split(int minSize) {
         Section[] retSections = null;
         GeneratorsMisc.SplitLine retSplitLine = null;
-        float ratio = (float) getHeight() / (float) getWidth();
+        double ratio = (double) getHeight() / (double) getWidth();
 
         //Force the split direction based on leaf ratio
         boolean horizontal = (ratio > 1);

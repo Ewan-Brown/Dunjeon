@@ -34,7 +34,7 @@ public class FloorGenerator {
     List<Hall> halls;
     Floor floor = new Floor();
 
-    float[][] weightMap;
+    double[][] weightMap;
     BasicCell[][] cells;
 
 
@@ -132,7 +132,7 @@ public class FloorGenerator {
     }
 
     public void generateWeightMap(){
-        weightMap = new float[height][width];
+        weightMap = new double[height][width];
         //Setup weight map for pathfinding
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {

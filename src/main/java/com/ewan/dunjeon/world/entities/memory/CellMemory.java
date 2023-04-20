@@ -97,15 +97,15 @@ public class CellMemory extends Memory {
     }
 
     public static class FurnitureData {
-        private float xCenter;
-        private float yCenter;
+        private double xCenter;
+        private double yCenter;
         private boolean enterable;
-        private float size;
+        private double size;
         private boolean visible;
         private boolean interactable; //For use with player
         public FurnitureRenderData furnitureRenderData;
 
-        public FurnitureData(float xCenter, float yCenter, float size, boolean enterable, boolean visible, boolean interactable, FurnitureRenderData furnitureRenderData) {
+        public FurnitureData(double xCenter, double yCenter, double size, boolean enterable, boolean visible, boolean interactable, FurnitureRenderData furnitureRenderData) {
             this.xCenter = xCenter;
             this.yCenter = yCenter;
             this.enterable = enterable;
@@ -127,11 +127,11 @@ public class CellMemory extends Memory {
             }
         }
 
-        public float getPosX() {
+        public double getPosX() {
             return xCenter;
         }
 
-        public float getPosY() {
+        public double getPosY() {
             return yCenter;
         }
 
@@ -143,7 +143,7 @@ public class CellMemory extends Memory {
             return interactable;
         }
 
-        public float getSize() {
+        public double getSize() {
             return size;
         }
 

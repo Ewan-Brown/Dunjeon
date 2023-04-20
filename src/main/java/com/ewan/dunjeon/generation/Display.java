@@ -30,7 +30,7 @@ public class Display {
 
     public static void drawMap(int[][] map){
         int windowSize = 500;
-        int size = (int)(Math.ceil((float)windowSize / (float)map.length));
+        int size = (int)(Math.ceil((double)windowSize / (double)map.length));
         JPanel panel = new JPanel(){
             @Override
             public void paint(Graphics g) {
