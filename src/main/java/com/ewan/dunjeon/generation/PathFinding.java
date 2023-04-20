@@ -24,7 +24,7 @@ public class PathFinding {
         int height = primitiveWeightMap.length;
         int width = primitiveWeightMap[0].length;
 
-        Float[][] weightMap = new Float[height][width];
+        Double[][] weightMap = new Double[height][width];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 weightMap[y][x] = primitiveWeightMap[y][x];
@@ -35,15 +35,15 @@ public class PathFinding {
         List<Point> closedNodes = new ArrayList<>();
 
         //Heuristic, G and F from A* algorithm
-        Float[][] hMap = new Float[height][width];
-        Float[][] gMap = new Float[height][width];
-        Float[][] fMap = new Float[height][width];
+        Double[][] hMap = new Double[height][width];
+        Double[][] gMap = new Double[height][width];
+        Double[][] fMap = new Double[height][width];
 
         //Map for each node showing where the 'previous' node was if it is on the Closed List
         Point[][] prevNodeMap = new Point[height][width];
 
         //Map for each node on the closed list showing the angle that was used to enter it.
-        Float[][] prevDirMap = new Float[height][width];
+        Double[][] prevDirMap = new Double[height][width];
 
 
         int shortestDistSoFar = Integer.MAX_VALUE;
@@ -60,8 +60,8 @@ public class PathFinding {
         while (!openNodes.isEmpty()){
             outerCount++;
             openNodes.sort((t1, t2) -> {
-                Float f1 = getVal(fMap, t1);
-                Float f2 = getVal(fMap, t2);
+                Double f1 = getVal(fMap, t1);
+                Double f2 = getVal(fMap, t2);
                 return f1.compareTo(f2);
             });
             Point currentNode = openNodes.get(0);
@@ -93,7 +93,7 @@ public class PathFinding {
                 double successorH = (Math.abs(targetNode.x - successor.x) + Math.abs(targetNode.y - successor.y)) / 10f; //FIXME Why is this ALWAYS Manhattan distance? FOr AI Too?
 
 
-                Float currentAngleObj = getVal(prevDirMap, currentNode);
+                Double currentAngleObj = getVal(prevDirMap, currentNode);
                 double successorAngle = (double)Math.atan2(successor.y - currentNode.y, successor.x - currentNode.x);
                 if(currentAngleObj != null) {
                     if(Math.abs(currentAngleObj-successorAngle) > 0.001){ //FIXME Check if rounded doubles are equivalent... Sketchy but will work
@@ -173,7 +173,7 @@ public class PathFinding {
         map[p.y][p.x] = val;
     }
 
-    public static List<Pair<Point, Boolean>> getAdjacent(Point currentNode, int width, int height, CornerInclusionRule cornerRule, Float[][] weightMap){
+    public static List<Pair<Point, Boolean>> getAdjacent(Point currentNode, int width, int height, CornerInclusionRule cornerRule, Double[][] weightMap){
         List<Pair<Point, Boolean>> neighbors = new ArrayList<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
@@ -185,8 +185,8 @@ public class PathFinding {
                     if(cornerRule == CornerInclusionRule.NO_CORNERS) continue;
                     //Is corner
                     //Points representing the tiles that are clipping, need to check if these are 'blocked'
-                    boolean side1 = weightMap[y][currentNode.x] == Float.POSITIVE_INFINITY;
-                    boolean side2 = weightMap[currentNode.y][x] == Float.POSITIVE_INFINITY;
+                    boolean side1 = weightMap[y][currentNode.x] == Double.POSITIVE_INFINITY;
+                    boolean side2 = weightMap[currentNode.y][x] == Double.POSITIVE_INFINITY;
                     int clippingCount = ((side1) ? 1 : 0) + ((side2) ? 1 : 0);
                     if(clippingCount <= cornerRule.clippingCornersAllowed){
                         neighbors.add(new Pair<>(new Point(x, y), true));

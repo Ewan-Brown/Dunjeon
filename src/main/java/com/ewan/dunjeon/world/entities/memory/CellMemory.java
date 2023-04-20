@@ -8,8 +8,6 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 
 //Contains cell memory data on cell and furniture
 public class CellMemory extends Memory {
@@ -127,11 +125,11 @@ public class CellMemory extends Memory {
             }
         }
 
-        public double getPosX() {
+        public double getPositionX() {
             return xCenter;
         }
 
-        public double getPosY() {
+        public double getPositionY() {
             return yCenter;
         }
 

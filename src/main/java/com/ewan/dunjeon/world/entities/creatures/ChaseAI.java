@@ -33,16 +33,16 @@ public class ChaseAI extends AIState {
         EntityMemory targetMemory = hostEntity.getCurrentFloorMemory().getEntity(targetUUID);
         Point targetPoint = new Point((int)Math.floor(targetMemory.getStateData().getX()), (int)Math.floor(targetMemory.getStateData().getY()));
 
-        List<Pair<Point, WorldUtils.Side>> intersectedCells = WorldUtils.getIntersectedTilesWithWall(hostEntity.getPosX(), hostEntity.getPosY(), targetMemory.getStateData().getX(), targetMemory.getStateData().getY());
+        List<Pair<Point, WorldUtils.Side>> intersectedCells = WorldUtils.getIntersectedTilesWithWall(hostEntity.getWorldCenter().x, hostEntity.getWorldCenter().y, targetMemory.getStateData().getX(), targetMemory.getStateData().getY());
         List<CellMemory> cellMemories = new ArrayList<>();
         for (Pair<Point, WorldUtils.Side> intersectedCell : intersectedCells) {
             cellMemories.add(hostEntity.getCurrentFloorMemory().getDataAt(intersectedCell.getElement0()));
         }
         if(!targetMemory.isOldData() && cellMemories.stream().noneMatch(cellMemory -> cellMemory.enterable == CellMemory.EnterableStatus.CLOSED)){
 
-            double angle = (double)Math.atan2(targetMemory.getStateData().getY() - hostEntity.getPosY(),targetMemory.getStateData().getX() - hostEntity.getPosX());
-
-            hostEntity.addVelocity((double)Math.cos(angle) * hostEntity.getWalkSpeed(), (double)Math.sin(angle) * hostEntity.getWalkSpeed());
+            double angle = (double)Math.atan2(targetMemory.getStateData().getY() - hostEntity.getWorldCenter().y,targetMemory.getStateData().getX() - hostEntity.getWorldCenter().x);
+//            hostEntity.addVelocity((double)Math.cos(angle) * hostEntity.getWalkSpeed(), (double)Math.sin(angle) * hostEntity.getWalkSpeed());
+            //TODO Prepping for Dyn4J
 
         }else {
 
@@ -62,7 +62,7 @@ public class ChaseAI extends AIState {
             if (!pathValid) {
                 Point p = new Point((int) Math.floor(targetMemory.getStateData().getX()), (int) Math.floor(targetMemory.getStateData().getY()));
                 double[][] weights = getWeightMapFromMemory();
-                currentPath = PathFinding.getAStarPath(weights, new Point((int) hostEntity.getPosX(), (int) hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
+                currentPath = PathFinding.getAStarPath(weights, new Point((int) hostEntity.getWorldCenter().x, (int) hostEntity.getWorldCenter().y), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
                 if (currentPath == null) {
                     targetUnreachable = true;
                 } else if (!currentPath.isEmpty()) {
@@ -72,13 +72,14 @@ public class ChaseAI extends AIState {
                 Point nextNode = currentPath.get(0);
                 double targetX = nextNode.x + 0.5f;
                 double targetY = nextNode.y + 0.5f;
-                double distToNextTile = WorldUtils.getRawDistance(hostEntity.getPosX(), targetX, hostEntity.getPosY(), targetY);
-                double angleToNextTile = (double) Math.atan2(targetY - hostEntity.getPosY(), targetX - hostEntity.getPosX());
+                double distToNextTile = WorldUtils.getRawDistance(hostEntity.getWorldCenter().x, targetX, hostEntity.getWorldCenter().y, targetY);
+                double angleToNextTile = (double) Math.atan2(targetY - hostEntity.getWorldCenter().y, targetX - hostEntity.getWorldCenter().x);
                 if (distToNextTile > WorldUtils.ENTITY_WITHIN_TILE_THRESHOLD) {
                     double speed = hostEntity.getWalkSpeed() * Math.min(1, distToNextTile * 2);
                     double velX = speed * (double) Math.cos(angleToNextTile);
                     double velY = speed * (double) Math.sin(angleToNextTile);
-                    hostEntity.addVelocity(velX, velY);
+                    //TODO Prepping for Dyn4J
+//                    hostEntity.addVelocity(velX, velY);
                 } else {
                     currentPath.remove(0);
                 }
@@ -100,11 +101,11 @@ public class ChaseAI extends AIState {
                 if(!targetLastLocationCellMemory.isOldData() && targetMemory.isOldData()){
                     //Found location of entity memory but no sign of entity nearby. Stop searching you fool
                     //Also stop searching if the target's last location is no longer enterable
-                    if(targetLastLocationCellMemory.enterable == CellMemory.EnterableStatus.CLOSED ||((int)hostEntity.getPosX() == (int)targetMemory.getStateData().getX() && (int)hostEntity.getPosY() == (int)targetMemory.getStateData().getY())){
+                    if(targetLastLocationCellMemory.enterable == CellMemory.EnterableStatus.CLOSED ||((int)hostEntity.getWorldCenter().x == (int)targetMemory.getStateData().getX() && (int)hostEntity.getWorldCenter().y == (int)targetMemory.getStateData().getY())){
                         return false;
                     }
                 }
-               return (WorldUtils.getRawDistance(hostEntity.getPosX(), targetMemory.getStateData().getX(), hostEntity.getPosY(), targetMemory.getStateData().getY()) >= desiredDistToTarget);
+               return (WorldUtils.getRawDistance(hostEntity.getWorldCenter().x, targetMemory.getStateData().getX(), hostEntity.getWorldCenter().y, targetMemory.getStateData().getY()) >= desiredDistToTarget);
             }else{
                 return false;
             }

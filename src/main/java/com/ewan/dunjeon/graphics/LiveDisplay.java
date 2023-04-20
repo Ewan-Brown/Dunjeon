@@ -14,7 +14,6 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.HashMap;
-import java.util.function.BiConsumer;
 
 public class LiveDisplay {
     private final int scale = 6;
@@ -23,7 +22,7 @@ public class LiveDisplay {
     private JPanel panel;
 
     public static HashMap<Point, Color> debugCells = new HashMap<>();
-    public static HashMap<Line2D.Float, Color> debugLines = new HashMap<>();
+    public static HashMap<Line2D.Double, Color> debugLines = new HashMap<>();
     public static boolean RENDER_GRID = false;
     public static boolean RENDER_DEBUG_LINES = false;
     public static boolean RENDER_DEBUG_CELLS = false;
@@ -114,8 +113,8 @@ public class LiveDisplay {
                                         graphics.fillRect(x * scale, y * scale, scale, scale);
                                         if (processedFurnitureColor != null) {
                                             CellMemory.FurnitureData fData = data.furnitureData;
-                                            int fX = (int) ((fData.getPosX() - fData.getSize() / 2f) * scale);
-                                            int fY = (int) ((fData.getPosY() - fData.getSize() / 2f) * scale);
+                                            int fX = (int) ((fData.getPositionX() - fData.getSize() / 2f) * scale);
+                                            int fY = (int) ((fData.getPositionY() - fData.getSize() / 2f) * scale);
                                             int fSize = (int) (fData.getSize() * scale);
                                             graphics.setColor(processedFurnitureColor);
                                             graphics.fillRect(fX, fY, fSize, fSize);
@@ -132,15 +131,16 @@ public class LiveDisplay {
                         //Draw Player
                         graphics.setColor(Color.BLUE);
                         Creature p = w.getPlayer();
-                        for (RenderableObject drawable : p.getRawDrawables()) {
-                            g.setColor(drawable.getColor());
-                            AffineTransform af = new AffineTransform();
-                            af.scale(scale,scale);
-                            af.translate(p.getPosX(),p.getPosY());
-                            af.rotate(p.getRotation());
-                            Shape s = af.createTransformedShape(drawable.getShape());
-                            ((Graphics2D) g).fill( s);
-                        }
+                        //TODO Prepping for Dyn4J
+//                        for (RenderableObject drawable : p.getRawDrawables()) {
+//                            g.setColor(drawable.getColor());
+//                            AffineTransform af = new AffineTransform();
+//                            af.scale(scale,scale);
+//                            af.translate(p.getWorldCenter().x,p.getWorldCenter().y);
+//                            af.rotate(p.getRotation());
+//                            Shape s = af.createTransformedShape(drawable.getShape());
+//                            ((Graphics2D) g).fill( s);
+//                        }
 
 
                         for (EntityMemory entityMemory : p.getCurrentFloorMemory().getEntityMemory()) {

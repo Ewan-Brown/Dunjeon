@@ -21,21 +21,21 @@ public class WorldUtils {
 
     //TODO Reduce these after by making a 'HasPosition' interface?
     public static double getRawDistance(Entity e1, Entity e2){
-        return getRawDistance(e1.getPosX(), e2.getPosX(), e1.getPosY(), e2.getPosY());
+        return getRawDistance(e1.getWorldCenter().x, e2.getWorldCenter().x, e1.getWorldCenter().y, e2.getWorldCenter().y);
     }
     public static double getRawDistance(BasicCell c1, BasicCell c2){
         return getRawDistance(c1.getX(), c2.getX(), c1.getY(), c2.getY());
     }
 
     public static double getRawDistance(BasicCell c, Entity e){
-        return getRawDistance(c.getX(), e.getPosX(), c.getY(), e.getPosY());
+        return getRawDistance(c.getX(), e.getWorldCenter().x, c.getY(), e.getWorldCenter().y);
     }
     public static double getRawDistance(Furniture f, Entity e){
-        return getRawDistance(f.getPosX(), e.getPosX(), f.getPosY(), e.getPosY());
+        return getRawDistance(f.getPositionX(), e.getWorldCenter().x, f.getPositionY(), e.getWorldCenter().y);
     }
-    public static double getRawDistance(Interactable f, Entity e){
-        return getRawDistance(f.getPosX(), e.getPosX(), f.getPosY(), e.getPosY());
-    }
+//    public static double getRawDistance(Interactable f, Entity e){
+//        return getRawDistance(f.getWorldCenter().x, e.getWorldCenter().x, f.getWorldCenter().y, e.getWorldCenter().y);
+//    }
 
     public static double getRawDistance(double x1, double x2, double y1, double y2){
         return (double)Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));

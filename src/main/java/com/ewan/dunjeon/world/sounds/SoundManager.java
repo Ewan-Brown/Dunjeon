@@ -14,8 +14,8 @@ public class SoundManager {
     public void propogateSounds(){
         for (AbsoluteSoundEvent event : events) {
             for (Entity entity : event.sourceFloor().getEntities()) {
-                double dX = event.sourceLocation().getX() - entity.getPosX();
-                double dY = event.sourceLocation().getY() - entity.getPosY();
+                double dX = event.sourceLocation().getX() - entity.getWorldCenter().x;
+                double dY = event.sourceLocation().getY() - entity.getWorldCenter().y;
                 double dist = Math.sqrt(dX*dX + dY*dY);
                 double decibels = event.intensity() / (dist*dist); //Intensity decreases with inverse square law
                 double angle = Math.atan2(dY, dX);

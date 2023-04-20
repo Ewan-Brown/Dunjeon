@@ -161,7 +161,7 @@ public abstract class Creature extends Entity implements HasInventory {
             currentFloorMemory.setAllDataToOld();
             Interactable touchInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
             Interactable chatInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
-            System.out.println("Bring back memory logic in Creature.updateViewRange()");
+            //TODO Prepping for Dyn4J
 //            for (BasicCell currentCell : viewableCells) {
 //                CellMemory.FurnitureData fData = null;
 //                if(currentCell.getFurniture() != null){

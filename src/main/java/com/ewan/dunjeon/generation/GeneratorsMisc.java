@@ -146,8 +146,8 @@ public class GeneratorsMisc {
             return String.format("%f, %f -> %f, %f", x1, y1, x2, y2);
         }
 
-        public Line2D.Float getLine2D(){
-            return new Line2D.Float(x1, y1, x2, y2);
+        public Line2D.Double getLine2D(){
+            return new Line2D.Double(x1, y1, x2, y2);
         }
 
         public int getX1() {

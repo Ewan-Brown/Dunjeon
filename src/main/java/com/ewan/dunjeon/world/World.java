@@ -45,7 +45,8 @@ public class World implements KeyListener {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
             randomValidCell.onEntry(e);
             e.onEnterCell(randomValidCell);
-            e.setPosition(randomValidCell.getX() + 0.5f, randomValidCell.getY() + 0.5f);
+            //TODO Prepping for Dyn4J
+//            e.setPosition(randomValidCell.getX() + 0.5f, randomValidCell.getY() + 0.5f);
             e.setFloor(l);
             l.addEntity(e);
             return true;
@@ -57,7 +58,8 @@ public class World implements KeyListener {
         BasicCell randomValidCell = f.getCellAt(x, y);
         randomValidCell.onEntry(e);
         e.onEnterCell(randomValidCell);
-        e.setPosition(x, y);
+        //TODO Prepping for Dyn4J
+//        e.setPosition(x, y);
         e.setFloor(f);
         f.addEntity(e);
     }
@@ -99,17 +101,18 @@ public class World implements KeyListener {
 
     //TODO Make a nice wrapper for this to make managing controls easier!
     public void doControls(){
+        //TODO Prepping for Dyn4J
         if(keySet.get(KeyEvent.VK_UP)){
-            player.addVelocity(0.0f,-playerSpeed);
+//            player.addVelocity(0.0f,-playerSpeed);
         }
         if(keySet.get(KeyEvent.VK_DOWN)){
-            player.addVelocity(0.0f,+playerSpeed);
+//            player.addVelocity(0.0f,+playerSpeed);
         }
         if(keySet.get(KeyEvent.VK_LEFT)){
-            player.addVelocity(-playerSpeed,0.0f);
+//            player.addVelocity(-playerSpeed,0.0f);
         }
         if(keySet.get(KeyEvent.VK_RIGHT)){
-            player.addVelocity(playerSpeed, 0.0f);
+//            player.addVelocity(playerSpeed, 0.0f);
         }
         if(keySet.get(KeyEvent.VK_SPACE)){
             //Prevents instant repeat on hold
@@ -152,7 +155,7 @@ public class World implements KeyListener {
             keySet.set(KeyEvent.VK_R, false);
 //            Entity e = new SimpleProjectile(Color.RED, "Projectile");
 //            e.setVelocity((rand.nextFloat() - 0.5f) / 30f,(rand.nextFloat() - 0.5f) / 30f + 0.01f);
-//            addEntityAtLoc(e, player.getFloor(), player.getPosX(), player.getPosY());
+//            addEntityAtLoc(e, player.getFloor(), player.getWorldCenter().x, player.getWorldCenter().y);
         }
 
         //Test function
@@ -184,20 +187,12 @@ public class World implements KeyListener {
             }
         }
 
-        closestInteractable = interactables.stream()
-                .filter(interactable -> interactable.getAvailableInteractions(getPlayer()).contains(type))
-                .filter(interactable -> WorldUtils.getRawDistance(interactable, getPlayer()) < playerInteractionDist)
-                .min((o1, o2) -> (int)Math.signum(WorldUtils.getRawDistance(o1, getPlayer()) - WorldUtils.getRawDistance(o2, getPlayer()))).orElse(null);
 
-//        for (Interactable interactable : interactables) {
-//            if (interactable.isInteractable(getPlayer())) {
-//                double dist = WorldUtils.getRawDistance(interactable, getPlayer());
-//                if(dist < minDist || minDist == -1){
-//                    minDist = dist;
-//                    closestInteractable = interactable;
-//                }
-//            }
-//        }
+        //TODO Prepping for Dyn4J
+//        closestInteractable = interactables.stream()
+//                .filter(interactable -> interactable.getAvailableInteractions(getPlayer()).contains(type))
+//                .filter(interactable -> WorldUtils.getRawDistance(interactable, getPlayer()) < playerInteractionDist)
+//                .min((o1, o2) -> (int)Math.signum(WorldUtils.getRawDistance(o1, getPlayer()) - WorldUtils.getRawDistance(o2, getPlayer()))).orElse(null);
 
         return closestInteractable;
 

@@ -4,12 +4,11 @@ import com.ewan.dunjeon.generation.PathFinding;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.FloorMemory;
+import com.ewan.dunjeon.world.entities.memory.Memory;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 public class ExploreAI extends AIState {
@@ -44,11 +43,11 @@ public class ExploreAI extends AIState {
         if(!pathValid){
             //If you want to change the exploratory nature of monster - look here
             ArrayList<CellMemory> possibleNodes = getListOfPotentialDestinations(cellMemory -> cellMemory.getExploredStatus() != CellMemory.ExploredStatus.EXPLORED_UNCHANGED);
-            possibleNodes.sort((o1, o2) -> Float.compare(o1.getTimeStamp(), o2.getTimeStamp()));
+            possibleNodes.sort(Comparator.comparingDouble(Memory::getTimeStamp));
             if(!possibleNodes.isEmpty()){
                 double[][] weights = getWeightMapFromMemory();
                 Point p = possibleNodes.get(possibleNodes.size()-1).getPoint();
-                currentPath = PathFinding.getAStarPath(weights, new Point((int)hostEntity.getPosX(), (int)hostEntity.getPosY()), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
+                currentPath = PathFinding.getAStarPath(weights, new Point((int)hostEntity.getWorldCenter().x, (int)hostEntity.getWorldCenter().y), p, false, PathFinding.CornerInclusionRule.NON_CLIPPING_CORNERS, 0, true);
                 if(currentPath == null){
                     throw new IllegalStateException("Path is null!");
                 }
@@ -63,13 +62,14 @@ public class ExploreAI extends AIState {
             Point nextNode = currentPath.get(0);
             double targetX = nextNode.x + 0.5f;
             double targetY = nextNode.y + 0.5f;
-            double distToNextTile = WorldUtils.getRawDistance(hostEntity.getPosX(), targetX, hostEntity.getPosY(), targetY);
-            double angleToNextTile = (double) Math.atan2(targetY - hostEntity.getPosY(), targetX - hostEntity.getPosX());
+            double distToNextTile = WorldUtils.getRawDistance(hostEntity.getWorldCenter().x, targetX, hostEntity.getWorldCenter().y, targetY);
+            double angleToNextTile = (double) Math.atan2(targetY - hostEntity.getWorldCenter().y, targetX - hostEntity.getWorldCenter().x);
             if(distToNextTile > WorldUtils.ENTITY_WITHIN_TILE_THRESHOLD){
                 double speed = hostEntity.getWalkSpeed() * Math.min(1, distToNextTile*2);
                 double velX = speed * (double)Math.cos(angleToNextTile);
                 double velY = speed * (double)Math.sin(angleToNextTile);
-                hostEntity.addVelocity(velX, velY);
+                //TODO Prepping for Dyn4J
+//                hostEntity.addVelocity(velX, velY);
             }else{
                 currentPath.remove(0);
             }
@@ -91,7 +91,7 @@ public class ExploreAI extends AIState {
     }
 
     public ArrayList<CellMemory> getListOfPotentialDestinations(Predicate<CellMemory> criteria) {
-        Point startNode = new Point((int) Math.floor(hostEntity.getPosX()), (int) Math.floor(hostEntity.getPosY()));
+        Point startNode = new Point((int) Math.floor(hostEntity.getWorldCenter().x), (int) Math.floor(hostEntity.getWorldCenter().y));
         ArrayList<Point> toExplore = new ArrayList<>();
         ArrayList<Point> alreadyExplored = new ArrayList<>();
         ArrayList<CellMemory> potentialDestinations = new ArrayList<>();

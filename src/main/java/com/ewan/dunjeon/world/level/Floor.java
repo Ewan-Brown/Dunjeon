@@ -49,14 +49,7 @@ public class Floor {
         return cells;
     }
 
-    public BasicCell getCellAt(int x, int y){
-        if(x < 0 || y < 0 || x >= getWidth() || y >= getHeight()){
-            return null;
-        }
-        else {
-            return cells[y][x];
-        }
-    }
+
 
     public List<BasicCell> getCellsAsList(){
         List<BasicCell> cellsTotal = new ArrayList<>();
@@ -90,7 +83,18 @@ public class Floor {
 //    public BasicCell getCellAt(Point point){
 //        return getCellAt((int)point.getX(), (int)point.y);
 //    }
+    public BasicCell getCellAt(int x, int y){
+        if(x < 0 || y < 0 || x >= getWidth() || y >= getHeight()){
+            return null;
+        }
+        else {
+            return cells[y][x];
+        }
+    }
 
+    public BasicCell getCellAt(double x, double y){
+        return getCellAt((int)Math.floor(x),(int)Math.floor(y));
+    }
     public BasicCell getCellAt(Vector2 v){
         return getCellAt((int)Math.floor(v.x), (int)Math.floor(v.y));
     }
