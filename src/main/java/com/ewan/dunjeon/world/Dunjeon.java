@@ -6,6 +6,7 @@ import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.SoundManager;
+import org.dyn4j.world.World;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,17 +17,20 @@ import java.util.stream.Collectors;
 
 import static com.ewan.dunjeon.game.Main.rand;
 
-public class World implements KeyListener {
+public class Dunjeon implements KeyListener {
 
-    private static World w = new World();
+    private static Dunjeon dunjeon = new Dunjeon();
+    private static World<Entity> w = new World<>();
     private double time = 0;
     private SoundManager soundManager = new SoundManager();
 
     public double getTime(){return time;}
 
     private Player player;
-    public static World getInstance(){return w;}
-    public static void resetWorld(){w = new World();}
+    public static Dunjeon getInstance(){return dunjeon;}
+    public static void resetDunjeon(){
+        dunjeon = new Dunjeon();
+    }
 
     List<Floor> floors = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
     public void addLevel(Floor l){
@@ -46,7 +50,7 @@ public class World implements KeyListener {
             randomValidCell.onEntry(e);
             e.onEnterCell(randomValidCell);
             //TODO Prepping for Dyn4J
-//            e.setPosition(randomValidCell.getX() + 0.5f, randomValidCell.getY() + 0.5f);
+            e.translate(randomValidCell.getX() + 0.5d, randomValidCell.getY() + 0.5d);
             e.setFloor(l);
             l.addEntity(e);
             return true;

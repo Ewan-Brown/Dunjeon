@@ -34,6 +34,7 @@ public abstract class Entity extends Body {
     public String getName(){return name;}
 
     public Entity(String name){
+        super();
         UUID = UUIDcounter;
         this.name = name;
         UUIDcounter++;

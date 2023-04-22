@@ -1,23 +1,19 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.game.Main;
-import com.ewan.dunjeon.graphics.RenderableObject;
 import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.cells.VisualProcessor;
-import com.ewan.dunjeon.world.entities.EntityStateData;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
 import com.ewan.dunjeon.world.entities.memory.*;
-import com.ewan.dunjeon.world.furniture.Furniture;
 import com.ewan.dunjeon.world.items.inventory.HasInventory;
 import com.ewan.dunjeon.world.items.inventory.Inventory;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.items.inventory.InventoryWithWieldedItem;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
-import com.ewan.dunjeon.world.World;
+import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 import org.dyn4j.geometry.Vector2;
@@ -58,7 +54,7 @@ public abstract class Creature extends Entity implements HasInventory {
         //Just here as an example for generating sounds
         if(getLinearVelocity().getMagnitude() != 0){
             if(Main.rand.nextDouble() < loudStepChance){
-                World.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2DLoc(), getFloor(),"", "You hear a loud footstep", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
+                Dunjeon.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2DLoc(), getFloor(),"", "You hear a loud footstep", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
             }
         }
     }
@@ -159,8 +155,8 @@ public abstract class Creature extends Entity implements HasInventory {
 
         synchronized (currentFloorMemory) {
             currentFloorMemory.setAllDataToOld();
-            Interactable touchInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
-            Interactable chatInteractive = World.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
+            Interactable touchInteractive = Dunjeon.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
+            Interactable chatInteractive = Dunjeon.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
             //TODO Prepping for Dyn4J
 //            for (BasicCell currentCell : viewableCells) {
 //                CellMemory.FurnitureData fData = null;

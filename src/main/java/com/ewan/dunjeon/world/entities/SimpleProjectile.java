@@ -1,14 +1,5 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.game.Main;
-import com.ewan.dunjeon.world.World;
-import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
-import com.ewan.dunjeon.world.sounds.SoundManager;
-
-import java.awt.*;
-import java.awt.geom.Point2D;
-
 public class SimpleProjectile{
 
 //    private double thresholdSpeed = 0.001f;

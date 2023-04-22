@@ -1,12 +1,12 @@
 package com.ewan.dunjeon.world.entities.memory;
 
-import com.ewan.dunjeon.world.World;
+import com.ewan.dunjeon.world.Dunjeon;
 
 public class Memory {
 
     public Memory(){
         isOldData = false;
-        timeStamp = World.getInstance().getTime();
+        timeStamp = Dunjeon.getInstance().getTime();
     }
     private double timeStamp;
 

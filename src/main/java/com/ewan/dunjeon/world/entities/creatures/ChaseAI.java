@@ -2,7 +2,6 @@ package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.generation.PathFinding;
 import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.World;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.CellMemory;
 import com.ewan.dunjeon.world.entities.memory.EntityMemory;
