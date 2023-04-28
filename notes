@@ -1,8 +1,2 @@
-WIP - Simple projectile
-    Makes sound on wall hit
-    Does nothing on entity hit
-        Entity hit register not available yet...
-    0 Friction
-    Magic orb that has no friction, and constant speed.
-
-Did some profiling - try running with CPU Profiler to see some interesting results...
+Generate NPC quotes with ML data
+    Parse data from PDFs/txt of novels and single out quotations

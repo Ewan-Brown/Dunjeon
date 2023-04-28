@@ -2,12 +2,14 @@ package com.ewan.dunjeon.world.entities.memory;
 
 import com.ewan.dunjeon.world.Dunjeon;
 
+@Deprecated
 public class Memory {
 
-    public Memory(){
+    public Memory(double timestamp){
         isOldData = false;
         timeStamp = Dunjeon.getInstance().getTime();
     }
+
     private double timeStamp;
 
     /**

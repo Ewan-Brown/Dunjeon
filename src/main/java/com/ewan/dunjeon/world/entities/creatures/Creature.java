@@ -12,16 +12,15 @@ import com.ewan.dunjeon.world.items.inventory.Inventory;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.items.inventory.InventoryWithWieldedItem;
 import com.ewan.dunjeon.world.level.Floor;
-import com.ewan.dunjeon.world.sounds.AbsoluteSoundEvent;
 import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 import org.dyn4j.geometry.Vector2;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class Creature extends Entity implements HasInventory {
     public Creature(String name) {
@@ -40,7 +39,7 @@ public abstract class Creature extends Entity implements HasInventory {
 
     public boolean true_sight_debug = false;
 
-    private HashMap<Floor, FloorMemory> floorMemoryMap = new HashMap();
+    private Brain brain = new Brain();
     private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
 
     @Override
@@ -50,18 +49,11 @@ public abstract class Creature extends Entity implements HasInventory {
             pickupItemsInVicinity();
         }
         updateViewRange();
-
-        //Just here as an example for generating sounds
-        if(getLinearVelocity().getMagnitude() != 0){
-            if(Main.rand.nextDouble() < loudStepChance){
-                Dunjeon.getInstance().getSoundManager().exposeSound(new AbsoluteSoundEvent(5, getPoint2DLoc(), getFloor(),"", "You hear a loud footstep", AbsoluteSoundEvent.SoundType.PHYSICAL, this));
-            }
-        }
     }
 
     private void pickupItemsInVicinity(){
         List<ItemAsEntity> itemEntitiesInVicinity = getFloor().getEntities().stream().filter(entity -> entity instanceof ItemAsEntity && WorldUtils.getRawDistance(Creature.this, entity) < pickupRange)
-                .map((i) -> (ItemAsEntity) i).toList();
+                .map((i) -> (ItemAsEntity) i).collect(Collectors.toList());
 
         for (ItemAsEntity itemAsEntity : itemEntitiesInVicinity) {
             Item wrappedItem = itemAsEntity.getItem();
@@ -75,12 +67,6 @@ public abstract class Creature extends Entity implements HasInventory {
 
     protected void onPickupItem(Item i){ }
 
-    public FloorMemory getCurrentFloorMemory(){return getFloorMemory(getFloor());}
-
-    public FloorMemory getFloorMemory(Floor f){
-        return floorMemoryMap.get(f);
-    }
-
     public enum AxisAlignment {
         VERTICAL,
         HORIZONTAL,
@@ -88,11 +74,12 @@ public abstract class Creature extends Entity implements HasInventory {
     }
 
     public void updateViewRange(){
-        if(!floorMemoryMap.containsKey(getFloor())){
-            floorMemoryMap.put(getFloor(), new FloorMemory(getFloor()));
-        }
-
-        FloorMemory currentFloorMemory = floorMemoryMap.get(getFloor());
+        //dyn4j TODO Bring this code back
+//        if(!floorMemoryMap.containsKey(getFloor())){
+//            floorMemoryMap.put(getFloor(), new FloorMemory(getFloor()));
+//        }
+//
+//        FloorMemory currentFloorMemory = floorMemoryMap.get(getFloor());
 
 
         //***********
@@ -153,63 +140,51 @@ public abstract class Creature extends Entity implements HasInventory {
         //Update Cell/Furniture/EntityMemory
         //*************
 
-        synchronized (currentFloorMemory) {
-            currentFloorMemory.setAllDataToOld();
-            Interactable touchInteractive = Dunjeon.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
-            Interactable chatInteractive = Dunjeon.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
-            //TODO Prepping for Dyn4J
-//            for (BasicCell currentCell : viewableCells) {
-//                CellMemory.FurnitureData fData = null;
-//                if(currentCell.getFurniture() != null){
-//                    Furniture f = currentCell.getFurniture();
-//                    boolean interactable = false;
-//                    //FIXME This should not be in this class
-//                    if(touchInteractive == f && this instanceof Player){
-//                        interactable = true;
-//                    }
-//                    //FIXME Currently, furniture is "rendered" invisible if its' color is null. This is not a good practice use of null.
+//        synchronized (currentFloorMemory) {
+//            currentFloorMemory.setAllDataToOld();
+//            Interactable touchInteractive = Dunjeon.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
+//            Interactable chatInteractive = Dunjeon.getInstance().getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
+//            //TODO Prepping for Dyn4J
+////            for (BasicCell currentCell : viewableCells) {
+////                CellMemory.FurnitureData fData = null;
+////                if(currentCell.getFurniture() != null){
+////                    Furniture f = currentCell.getFurniture();
+////                    boolean interactable = false;
+////                    //FIXME This should not be in this class
+////                    if(touchInteractive == f && this instanceof Player){
+////                        interactable = true;
+////                    }
+////                    //FIXME Currently, furniture is "rendered" invisible if its' color is null. This is not a good practice use of null.
+////
+////                    fData = new CellMemory.FurnitureData(f.getWorldCenter().x, f.getWorldCenter().y, f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
+////                }
+////                boolean isCreatureWithinThisCell = (currentCell == getContainingCell());
+////                CellMemory data = new CellMemory(VisualProcessor.getVisual(currentCell, this, viewableWalls.get(currentCell)),
+////                        fData,(currentCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED),
+////                        currentCell.getX(), currentCell.getY(), isCreatureWithinThisCell, viewableWalls.get(currentCell));
+////                currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
+////            }
 //
-//                    fData = new CellMemory.FurnitureData(f.getWorldCenter().x, f.getWorldCenter().y, f.getSize(), !f.isBlocking(), f.getColor() != null, interactable, VisualProcessor.getVisual(f, this));
-//                }
-//                boolean isCreatureWithinThisCell = (currentCell == getContainingCell());
-//                CellMemory data = new CellMemory(VisualProcessor.getVisual(currentCell, this, viewableWalls.get(currentCell)),
-//                        fData,(currentCell.canBeEntered(this) ? CellMemory.EnterableStatus.OPEN : CellMemory.EnterableStatus.CLOSED),
-//                        currentCell.getX(), currentCell.getY(), isCreatureWithinThisCell, viewableWalls.get(currentCell));
-//                currentFloorMemory.updateCell(currentCell.getX(), currentCell.getY(), data);
-//            }
-
-//            for (Entity entity : getFloor().getEntities()) {
-//                if(entity != this && (viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug)) {
+////            for (Entity entity : getFloor().getEntities()) {
+////                if(entity != this && (viewableCells.contains(entity.getContainingCell()) && entity.getContainingCell().canBeSeenThrough(this) || true_sight_debug)) {
+////
+////
+////                    List<Pair<Point, WorldUtils.Side>> intersectingTiles = WorldUtils.getIntersectedTilesWithWall(getWorldCenter().x, getWorldCenter().y, entity.getWorldCenter().x, entity.getWorldCenter().y);
+////                    List<CellMemory> cellMemories = new ArrayList<>();
+////                    for (Pair<Point, WorldUtils.Side> intersectingTile : intersectingTiles) {
+////                        cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile.getElement0()));
+////                    }
+////                    if(cellMemories.stream().noneMatch(cellMemory -> cellMemory == null || cellMemory.enterable == CellMemory.EnterableStatus.CLOSED) || true_sight_debug) {
+////                        boolean chattable = (chatInteractive == entity);
+////                        EntityStateData stateData = entity.getEntityStateData();
+////                        List<RenderableObject> renderableObject = entity.getRawDrawables();
+////                        EntityMemory em = new EntityMemory(stateData, renderableObject);
+////                        currentFloorMemory.updateEntity(entity.getUUID(), em);
+////                    }
+////                }
+////            }
 //
-//
-//                    List<Pair<Point, WorldUtils.Side>> intersectingTiles = WorldUtils.getIntersectedTilesWithWall(getWorldCenter().x, getWorldCenter().y, entity.getWorldCenter().x, entity.getWorldCenter().y);
-//                    List<CellMemory> cellMemories = new ArrayList<>();
-//                    for (Pair<Point, WorldUtils.Side> intersectingTile : intersectingTiles) {
-//                        cellMemories.add(getCurrentFloorMemory().getDataAt(intersectingTile.getElement0()));
-//                    }
-//                    if(cellMemories.stream().noneMatch(cellMemory -> cellMemory == null || cellMemory.enterable == CellMemory.EnterableStatus.CLOSED) || true_sight_debug) {
-//                        boolean chattable = (chatInteractive == entity);
-//                        EntityStateData stateData = entity.getEntityStateData();
-//                        List<RenderableObject> renderableObject = entity.getRawDrawables();
-//                        EntityMemory em = new EntityMemory(stateData, renderableObject);
-//                        currentFloorMemory.updateEntity(entity.getUUID(), em);
-//                    }
-//                }
-//            }
-
-        }
-    }
-
-    public void onSoundEvent(RelativeSoundEvent event){
-        getFloorMemory(event.abs().sourceFloor()).addSoundMemory(new SoundMemory(
-                this.getWorldCenter().x,
-                this.getWorldCenter().y,
-                event.abs().sourceLocation().getX(),
-                event.abs().sourceLocation().getY(),
-                false,
-                event.direction(),
-                event.intensity()
-        ));
+//        }
     }
 
     public void cycleWieldedItem(){inventory.cycleWieldedItem();}

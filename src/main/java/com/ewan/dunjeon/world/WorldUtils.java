@@ -3,7 +3,6 @@ package com.ewan.dunjeon.world;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
-import com.ewan.dunjeon.world.furniture.Furniture;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,9 +28,6 @@ public class WorldUtils {
 
     public static double getRawDistance(BasicCell c, Entity e){
         return getRawDistance(c.getX(), e.getWorldCenter().x, c.getY(), e.getWorldCenter().y);
-    }
-    public static double getRawDistance(Furniture f, Entity e){
-        return getRawDistance(f.getPositionX(), e.getWorldCenter().x, f.getPositionY(), e.getWorldCenter().y);
     }
 //    public static double getRawDistance(Interactable f, Entity e){
 //        return getRawDistance(f.getWorldCenter().x, e.getWorldCenter().x, f.getWorldCenter().y, e.getWorldCenter().y);

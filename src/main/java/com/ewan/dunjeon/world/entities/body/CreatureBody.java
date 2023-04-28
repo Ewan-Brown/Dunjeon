@@ -1,5 +1,5 @@
 package com.ewan.dunjeon.world.entities.body;
 
-public class Body {
+public class CreatureBody {
 
 }

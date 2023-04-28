@@ -2,32 +2,28 @@ package com.ewan.dunjeon.world.level;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.furniture.Furniture;
+import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Vector2;
+import org.dyn4j.world.World;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
 
 
 public class Floor {
+    private static long UUIDCounter = 0;
+    final Long UUID;
     BasicCell[][] cells;
     List<Entity> entities = new ArrayList<>();
-    public Floor(){}
+    World<Body> w = new World<>();
+    public Floor(){
+        UUID = UUIDCounter;
+        UUIDCounter++;
+    }
 
     public void setCells(BasicCell[][] cells){
         this.cells = cells;
-    }
-
-    public List<Furniture> getFurniture(){
-        List<Furniture> furniture = new ArrayList<>();
-        Stream.of(cells).forEach(cells -> Stream.of(cells)
-                .filter(basicCell -> basicCell.getFurniture() != null)
-                .forEach(basicCell -> furniture.add(basicCell.getFurniture())));
-
-        return furniture;
     }
 
     public List<Entity> getEntities(){
@@ -49,6 +45,7 @@ public class Floor {
         return cells;
     }
 
+    public World<Body> getWorld(){return w;}
 
 
     public List<BasicCell> getCellsAsList(){
@@ -60,7 +57,6 @@ public class Floor {
     }
 
     public void update(){
-        getCellsAsList().forEach(BasicCell::updateFurniture);
 
         for (int i = 0; i < entities.size(); i++) {
             Entity e = entities.get(i);

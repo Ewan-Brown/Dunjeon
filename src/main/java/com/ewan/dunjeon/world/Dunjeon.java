@@ -1,12 +1,10 @@
 package com.ewan.dunjeon.world;
 
-import com.ewan.dunjeon.graphics.LiveDisplay;
+import com.ewan.dunjeon.graphics.Graphics2DDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
-import com.ewan.dunjeon.world.sounds.SoundManager;
-import org.dyn4j.world.World;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -20,9 +18,7 @@ import static com.ewan.dunjeon.game.Main.rand;
 public class Dunjeon implements KeyListener {
 
     private static Dunjeon dunjeon = new Dunjeon();
-    private static World<Entity> w = new World<>();
     private double time = 0;
-    private SoundManager soundManager = new SoundManager();
 
     public double getTime(){return time;}
 
@@ -53,19 +49,10 @@ public class Dunjeon implements KeyListener {
             e.translate(randomValidCell.getX() + 0.5d, randomValidCell.getY() + 0.5d);
             e.setFloor(l);
             l.addEntity(e);
+            l.getWorld().addBody(e);
             return true;
         }
 
-    }
-
-    public void addEntityAtLoc(Entity e, Floor f, double x, double y){
-        BasicCell randomValidCell = f.getCellAt(x, y);
-        randomValidCell.onEntry(e);
-        e.onEnterCell(randomValidCell);
-        //TODO Prepping for Dyn4J
-//        e.setPosition(x, y);
-        e.setFloor(f);
-        f.addEntity(e);
     }
 
     /*
@@ -78,16 +65,12 @@ public class Dunjeon implements KeyListener {
             System.out.println("Game over! Player dead.");
             return true;
         }
-        soundManager.propogateSounds();
         doControls();
         getPlayer().getFloor().update();
 //        getPlayer().updateViewRange();
         return false;
     }
 
-    public SoundManager getSoundManager(){
-        return soundManager;
-    }
 
     //**************************************************
     //PLAYER SPECIFIC TODO MOVE THIS STUFF
@@ -136,7 +119,7 @@ public class Dunjeon implements KeyListener {
 
         if(keySet.get(KeyEvent.VK_M)){
             keySet.set(KeyEvent.VK_M, false);
-            LiveDisplay.RENDER_GRID = !LiveDisplay.RENDER_GRID;
+            Graphics2DDisplay.RENDER_GRID = !Graphics2DDisplay.RENDER_GRID;
         }
 
         if(keySet.get(KeyEvent.VK_N)){
@@ -146,12 +129,12 @@ public class Dunjeon implements KeyListener {
 
         if(keySet.get(KeyEvent.VK_Z)){
             keySet.set(KeyEvent.VK_Z, false);
-            LiveDisplay.RENDER_DEBUG_LINES = !LiveDisplay.RENDER_DEBUG_LINES;
+            Graphics2DDisplay.RENDER_DEBUG_LINES = !Graphics2DDisplay.RENDER_DEBUG_LINES;
         }
 
         if(keySet.get(KeyEvent.VK_X)){
             keySet.set(KeyEvent.VK_X, false);
-            LiveDisplay.RENDER_DEBUG_CELLS = !LiveDisplay.RENDER_DEBUG_CELLS;
+            Graphics2DDisplay.RENDER_DEBUG_CELLS = !Graphics2DDisplay.RENDER_DEBUG_CELLS;
         }
 
         //Fire projectile in random direction
@@ -172,31 +155,31 @@ public class Dunjeon implements KeyListener {
     //Returns the closest world object that supports 'type' InteractionType for the player
     public Interactable getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType type){
         Interactable closestInteractable = null;
-        Floor f = player.getFloor();
-
-        List<Interactable> interactables = new ArrayList<>();
-
-        for (int x = 0; x < f.getWidth(); x++) {
-            for (int y = 0; y < f.getHeight(); y++) {
-                BasicCell currentCell = f.getCellAt(x, y);
-                if (currentCell.getFurniture() instanceof Interactable) {
-                    interactables.add((Interactable) currentCell.getFurniture());
-                }
-            }
-        }
-
-        for (Entity e : getPlayer().getFloor().getEntities()) {
-            if(e instanceof Interactable){
-                interactables.add((Interactable)e);
-            }
-        }
-
-
-        //TODO Prepping for Dyn4J
-//        closestInteractable = interactables.stream()
-//                .filter(interactable -> interactable.getAvailableInteractions(getPlayer()).contains(type))
-//                .filter(interactable -> WorldUtils.getRawDistance(interactable, getPlayer()) < playerInteractionDist)
-//                .min((o1, o2) -> (int)Math.signum(WorldUtils.getRawDistance(o1, getPlayer()) - WorldUtils.getRawDistance(o2, getPlayer()))).orElse(null);
+//        Floor f = player.getFloor();
+//
+//        List<Interactable> interactables = new ArrayList<>();
+//
+//        for (int x = 0; x < f.getWidth(); x++) {
+//            for (int y = 0; y < f.getHeight(); y++) {
+//                BasicCell currentCell = f.getCellAt(x, y);
+//                if (currentCell.getFurniture() instanceof Interactable) {
+//                    interactables.add((Interactable) currentCell.getFurniture());
+//                }
+//            }
+//        }
+//
+//        for (Entity e : getPlayer().getFloor().getEntities()) {
+//            if(e instanceof Interactable){
+//                interactables.add((Interactable)e);
+//            }
+//        }
+//
+//
+//        //TODO Prepping for Dyn4J
+////        closestInteractable = interactables.stream()
+////                .filter(interactable -> interactable.getAvailableInteractions(getPlayer()).contains(type))
+////                .filter(interactable -> WorldUtils.getRawDistance(interactable, getPlayer()) < playerInteractionDist)
+////                .min((o1, o2) -> (int)Math.signum(WorldUtils.getRawDistance(o1, getPlayer()) - WorldUtils.getRawDistance(o2, getPlayer()))).orElse(null);
 
         return closestInteractable;
 

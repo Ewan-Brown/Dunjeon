@@ -1,17 +1,7 @@
 package com.ewan.dunjeon.world.entities;
-import com.ewan.dunjeon.graphics.RenderableObject;
-import com.ewan.dunjeon.world.CollidingObject;
-import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import org.dyn4j.dynamics.Body;
-
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public abstract class Entity extends Body {
 
@@ -51,10 +41,6 @@ public abstract class Entity extends Body {
 
     public boolean exists(){
         return true;
-    }
-
-    public void onSoundEvent(RelativeSoundEvent event){
-
     }
 
     public BasicCell getContainingCell() {

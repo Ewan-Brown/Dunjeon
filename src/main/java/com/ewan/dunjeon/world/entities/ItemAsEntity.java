@@ -1,11 +1,7 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.graphics.RenderableObject;
-import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.items.Item;
 
-import java.awt.*;
-import java.util.List;
 import java.util.function.Predicate;
 
 public class ItemAsEntity extends Entity {

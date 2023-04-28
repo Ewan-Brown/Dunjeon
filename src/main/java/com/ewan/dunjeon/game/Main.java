@@ -1,8 +1,8 @@
 package com.ewan.dunjeon.game;
 
 import com.ewan.dunjeon.generation.FloorGenerator;
-import com.ewan.dunjeon.graphics.LiveDisplay;
-import com.ewan.dunjeon.world.cells.Stair;
+import com.ewan.dunjeon.graphics.Graphics2DDisplay;
+import com.ewan.dunjeon.graphics.UsingJogl;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Dunjeon;
@@ -21,8 +21,10 @@ public class Main {
 
         generateWorld();
 
-        LiveDisplay liveDisplay = new LiveDisplay();
-        liveDisplay.startDrawing(Dunjeon.getInstance());
+//        Graphics2DDisplay graphics2DDisplay = new Graphics2DDisplay();
+//        graphics2DDisplay.startDrawing(Dunjeon.getInstance());
+
+        UsingJogl jogl = new UsingJogl();
 
         new Thread(() -> {
             while (true) {
@@ -61,13 +63,11 @@ public class Main {
     private static void generateWorld(){
         long seed = rand.nextInt();
         System.out.println("SEED USED : " + seed);
-//        rand.setSeed(seed);
         rand.setSeed(1082347570);
 
         Dunjeon.resetDunjeon();
-        Dunjeon w = Dunjeon.getInstance();
+        Dunjeon d = Dunjeon.getInstance();
         int floorCount = 1;
-        List<Stair> prevStairs = new ArrayList<>();
 
         Floor startFloor = null;
 
@@ -76,25 +76,23 @@ public class Main {
             int hallWidth = 2; //Width of hallways
             int roomPadding = 2; //Extra walls between the room walls and the hallways
 
-
             generator.generateLeafs(15,-1, (hallWidth/2)+roomPadding);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
             generator.generateHalls(hallWidth);
             generator.buildCells();
-            generator.addFurniture();
             Floor newFloor = generator.getFloor();
             if(startFloor == null){
                 startFloor = newFloor;
             }
-            w.addLevel(newFloor);
+            d.addLevel(newFloor);
 
         }
 
 
         Player testPlayer = new Player("Player");
         testPlayer.addFixture(new Circle(0.3d));
-        w.addEntityRandomLoc(testPlayer, startFloor);
+        d.addEntityRandomLoc(testPlayer, startFloor);
         System.out.println(testPlayer.getWorldCenter());
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
