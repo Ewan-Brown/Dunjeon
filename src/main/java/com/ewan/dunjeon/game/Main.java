@@ -21,10 +21,6 @@ public class Main {
 
         generateWorld();
 
-//        Graphics2DDisplay graphics2DDisplay = new Graphics2DDisplay();
-//        graphics2DDisplay.startDrawing(Dunjeon.getInstance());
-
-        UsingJogl jogl = new UsingJogl();
 
         new Thread(() -> {
             while (true) {
@@ -33,6 +29,10 @@ public class Main {
                 }
             }
         }).start();
+
+        UsingJogl jogl = new UsingJogl();
+        jogl.setVisible(true);
+        jogl.start();
 
     }
 
@@ -46,7 +46,9 @@ public class Main {
 
     private static boolean updateCurrentWorld(){
         Dunjeon w = Dunjeon.getInstance();
-        w.getPlayer().updateViewRange();
+        if(w.getPlayer() != null) {
+            w.getPlayer().updateViewRange();
+        }
         boolean gameOver = w.update();
         if(gameOver){
             return true;
@@ -93,7 +95,7 @@ public class Main {
         Player testPlayer = new Player("Player");
         testPlayer.addFixture(new Circle(0.3d));
         d.addEntityRandomLoc(testPlayer, startFloor);
-        System.out.println(testPlayer.getWorldCenter());
+        d.setPlayer(testPlayer);
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        w.addEntityRandomLoc(testMonster, startFloor);

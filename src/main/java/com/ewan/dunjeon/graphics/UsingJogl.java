@@ -244,9 +244,6 @@ public class UsingJogl extends JFrame implements GLEventListener {
 		// render the scene
 		this.render(gl);
 		
-		// perform other operations at the end (it really
-		// doesn't matter if its done at the start or end)
-		this.update();
 	}
 	
 	/* (non-Javadoc)
@@ -266,28 +263,23 @@ public class UsingJogl extends JFrame implements GLEventListener {
 	}
 	
 	/**
-	 * Update the Example and World.
-	 */
-	protected void update() {
-		// get the current time
-        long time = System.nanoTime();
-        // get the elapsed time from the last iteration
-        long diff = time - this.last;
-        // set the last time
-        this.last = time;
-    	// convert from nanoseconds to seconds
-    	double elapsedTime = diff / NANO_TO_BASE;
-        // update the world with the elapsed time
-//        this.world.update(elapsedTime);
-	}
-
-	/**
 	 * Renders the example.
 	 * @param gl the OpenGL context
 	 */
 	protected void render(GL2 gl) {
 		// apply a scaling transformation
-		gl.glScaled(SCALE, SCALE, SCALE);
+//		gl.glScaled(SCALE, SCALE, SCALE);
+
+		gl.glPushMatrix();
+		gl.glColor3d(1,0,0);
+		gl.glBegin(GL.GL_TRIANGLES);
+
+		gl.glVertex2d(5,5);
+		gl.glVertex2d(-5,5);
+		gl.glVertex2d(-5,-5);
+
+		gl.glEnd();
+		gl.glPopMatrix();
 		
 		// lets move the view up some
 //		gl.glTranslated(0.0, -1.0, 0.0);
@@ -299,33 +291,5 @@ public class UsingJogl extends JFrame implements GLEventListener {
 //			// draw the object
 //			go.render(gl);
 //		}
-	}
-	
-	/**
-	 * Entry point for the example application.
-	 * @param args command line arguments
-	 */
-	public static void main(String[] args) {
-		// set the look and feel to the system look and feel
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
-		
-		// create the example JFrame
-		UsingJogl window = new UsingJogl();
-		
-		// show it
-		window.setVisible(true);
-		
-		// start it
-		window.start();
 	}
 }

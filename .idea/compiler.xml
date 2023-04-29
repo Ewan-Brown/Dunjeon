@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Dunjeon" target="17" />
+      <module name="Dunjeon" target="14" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

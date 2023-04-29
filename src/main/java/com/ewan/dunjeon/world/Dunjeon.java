@@ -61,10 +61,6 @@ public class Dunjeon implements KeyListener {
     public boolean update(){
 //        System.out.println("time = " + time);
         time++;
-        if(player.isDead()){
-            System.out.println("Game over! Player dead.");
-            return true;
-        }
         doControls();
         getPlayer().getFloor().update();
 //        getPlayer().updateViewRange();
