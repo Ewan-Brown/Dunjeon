@@ -11,7 +11,5 @@ public interface Interactable {
 
     public void onInteract(Entity interactor, InteractionType type);
 //    public boolean isInteractable(Entity interactor);
-    public float getPosX();
-    public float getPosY();
     public Set<InteractionType> getAvailableInteractions(Entity interactor);
 }

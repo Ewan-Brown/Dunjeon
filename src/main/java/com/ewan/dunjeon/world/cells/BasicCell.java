@@ -2,16 +2,17 @@ package com.ewan.dunjeon.world.cells;
 
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
-import com.ewan.dunjeon.world.furniture.Furniture;
+import org.dyn4j.dynamics.Body;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Rectangle;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-public class BasicCell {
+public class BasicCell extends Body {
     int x;
     int y;
     Floor floor;
-    Furniture furniture;
     public Color color;
 
     public boolean isFilled() {
@@ -25,6 +26,9 @@ public class BasicCell {
         this.y = y;
         this.floor = f;
         this.color = c;
+        this.addFixture(new Rectangle(1,1));
+        this.setMass(MassType.INFINITE);
+        this.translate(-0.5d, -0.5d);
     }
 
     public void setFilled(boolean f){
@@ -35,24 +39,6 @@ public class BasicCell {
 //        this.color = c;
 //    }
 
-    public Furniture getFurniture(){
-        return furniture;
-    }
-
-    public void setFurniture(Furniture f){
-        if(this.furniture != null){
-            throw new RuntimeException("Tried to add furniture to cell that already contains furniture!");
-        }
-        furniture = f;
-        f.containingCell = this;
-    }
-
-    public void updateFurniture(){
-        if(furniture!= null) {
-            furniture.update();
-        }
-    }
-
     /*
      Don't forget about me :)
      */
@@ -61,7 +47,7 @@ public class BasicCell {
     }
 
     public boolean canBeEntered(Entity e){
-        return !filled && (furniture == null || !furniture.isBlocking());
+        return !filled;
     }
 
     public void onEntry(Entity e) {}

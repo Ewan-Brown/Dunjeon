@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
+import com.ewan.dunjeon.world.entities.memory.Brain;
 import com.ewan.dunjeon.world.items.Item;
-import com.ewan.dunjeon.world.sounds.RelativeSoundEvent;
 
 public class Player extends Creature {
     public Player(String name) {
@@ -10,15 +10,8 @@ public class Player extends Creature {
     }
 
     @Override
-    public void onSoundEvent(RelativeSoundEvent event) {
-        super.onSoundEvent(event);
-        int sourceX = (int) event.abs().sourceLocation().getX();
-        int sourceY = (int) event.abs().sourceLocation().getY();
-        boolean isVisible = CreatureUtils.isCellCurrentlyVisible(this, sourceX, sourceY);
-        String message = isVisible ? event.abs().soundMessageIfVisible() : event.abs().soundMessageIfNotVisible();
-        if (!message.isEmpty()) {
-            System.out.println("[" + message + "]");
-        }
+    public Brain getBrain() {
+        return null;
     }
 
     @Override
@@ -26,10 +19,6 @@ public class Player extends Creature {
         super.onPickupItem(i);
 
         System.out.println("Picked up item : " + i.getName());
-    }
-
-    public void stabWithWieldedWeapon(){
-        System.err.println("No weapon equipped!");
     }
 
 }

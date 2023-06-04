@@ -1,11 +1,7 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.graphics.RenderableObject;
-import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.items.Item;
 
-import java.awt.*;
-import java.util.List;
 import java.util.function.Predicate;
 
 public class ItemAsEntity extends Entity {
@@ -29,35 +25,35 @@ public class ItemAsEntity extends Entity {
 //    }
 
 
-    @Override
-    public List<RenderableObject> getRawDrawables() {
-        return List.of(new RenderableObject(){
-
-            @Override
-            public Shape getShape() {
-                return item.getShape();
-            }
-
-            @Override
-            public Color getColor() {
-                return Color.BLUE;
-            }
-        });
-    }
+//    @Override
+//    public List<RenderableObject> getRawDrawables() {
+//        return List.of(new RenderableObject(){
+//
+//            @Override
+//            public Shape getShape() {
+//                return item.getShape();
+//            }
+//
+//            @Override
+//            public Color getColor() {
+//                return Color.BLUE;
+//            }
+//        });
+//    }
 
     public boolean canBePickedUp(){
         return pickupPredicate.test(item);
     }
 
-    @Override
-    public void onCollideWithEntity(Entity e) {
-        item.onEntityCollision(e);
-    }
-
-    @Override
-    public void onCollideWithWall(BasicCell cell) {
-        item.onWallCollision(cell);
-    }
+//    @Override
+//    public void onCollideWithEntity(Entity e) {
+//        item.onEntityCollision(e);
+//    }
+//
+//    @Override
+//    public void onCollideWithWall(BasicCell cell) {
+//        item.onWallCollision(cell);
+//    }
 
     public Item getItem(){return item;}
 }

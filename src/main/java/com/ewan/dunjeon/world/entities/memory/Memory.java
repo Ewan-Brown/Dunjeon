@@ -1,14 +1,16 @@
 package com.ewan.dunjeon.world.entities.memory;
 
-import com.ewan.dunjeon.world.World;
+import com.ewan.dunjeon.world.Dunjeon;
 
+@Deprecated
 public class Memory {
 
-    public Memory(){
+    public Memory(double timestamp){
         isOldData = false;
-        timeStamp = World.getInstance().getTime();
+        timeStamp = Dunjeon.getInstance().getTime();
     }
-    private float timeStamp;
+
+    private double timeStamp;
 
     /**
      * True if this is data that is not representational of the 'present' from the hosts' point of view.
@@ -23,7 +25,7 @@ public class Memory {
 
     public void setOldData(){isOldData = true;}
 
-    public float getTimeStamp() {
+    public double getTimeStamp() {
         return timeStamp;
     }
 }

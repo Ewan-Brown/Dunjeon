@@ -1,20 +1,18 @@
 package com.ewan.dunjeon.generation;
 
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
-import com.ewan.dunjeon.graphics.LiveDisplay;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.cells.Stair;
-import com.ewan.dunjeon.world.furniture.Container;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.ewan.dunjeon.game.Main.rand;
 import static java.lang.Float.POSITIVE_INFINITY;
-import static java.lang.Float.intBitsToFloat;
 
 public class FloorGenerator {
 
@@ -28,13 +26,12 @@ public class FloorGenerator {
 
     List<Section> sections;
     List<Door> doors;
-    List<Stair> stairs;
     List<SplitLine> splitLineList;
     List<Junction> junctions;
     List<Hall> halls;
     Floor floor = new Floor();
 
-    float[][] weightMap;
+    double[][] weightMap;
     BasicCell[][] cells;
 
 
@@ -132,7 +129,7 @@ public class FloorGenerator {
     }
 
     public void generateWeightMap(){
-        weightMap = new float[height][width];
+        weightMap = new double[height][width];
         //Setup weight map for pathfinding
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -241,7 +238,7 @@ public class FloorGenerator {
         for (SplitPath splitPath : splitPathList) {
             Junction previousJunction = null;
             Junction firstJunction = null;
-            for (Point intersectionPoint : splitPath.pathPoints.stream().filter(point -> intersectionPoints.get(point).size() > 1).toList()) {
+            for (Point intersectionPoint : splitPath.pathPoints.stream().filter(point -> intersectionPoints.get(point).size() > 1).collect(Collectors.toList())) {
                 Junction junction;
                 if(createdJunctions.containsKey(intersectionPoint)){
                     junction = createdJunctions.get(intersectionPoint);
@@ -284,37 +281,6 @@ public class FloorGenerator {
         //Count # of intersection points
         System.out.println("# of intersections = " + intersectionPoints.values().stream().filter(paths -> paths.size() > 1).count());
 
-    }
-
-    //Add stairs to the floor according to how many are required
-    public List<Stair> generateStairs(List<Stair> connections, int downsRequired){
-        List<Stair> downs = new ArrayList<>();
-
-        //Add connecting upwards stairs
-        for(Stair stair : connections){
-            Point p = getRandomUnusedCell();
-            Stair newStair = Stair.createConnectingUpwardsStair(p.x, p.y, floor, stair);
-            stairs.add(newStair);
-        }
-
-        //Add new downwards stairs
-        for(int i = 0; i < downsRequired; i++){
-            Point p = getRandomUnusedCell();
-            Stair newStair = Stair.createDownwardsStair(p.x, p.y, floor);
-            stairs.add(newStair);
-            downs.add(newStair);
-        }
-
-        return downs;
-    }
-
-    public void addFurniture(){
-        int chests = rand.nextInt((int)Math.ceil(sections.size()/5.0)) + 1;
-        for (int i = 0; i < chests; i++) {
-            Container c = new Container();
-            Point p = getRandomUnusedCell();
-            cells[p.y][p.x].setFurniture(c);
-        }
     }
 
     //TODO Add some handling for when there are no usable cells left?
@@ -375,19 +341,11 @@ public class FloorGenerator {
             }
         }
 
-        //Draw stairs
-        if(stairs != null) {
-            for (Stair s : stairs) {
-                cells[s.getY()][s.getX()] = s;
-            }
-        }
-
         //Draw doors
         if(doors != null) {
             for (Door door : doors) {
                 cells[door.y][door.x] = new BasicCell(door.x, door.y, floor, Color.GRAY);
                 cells[door.y][door.x].setFilled(false);
-                cells[door.y][door.x].setFurniture(new com.ewan.dunjeon.world.furniture.Door(false));
 //                cells[door.y][door.x].setColor(new Color(165,42,42, 255));
             }
         }
@@ -439,6 +397,12 @@ public class FloorGenerator {
 //            }
 //        }
         floor.setCells(cells);
+        Arrays.stream(cells).forEach(basicCells -> Arrays.stream(basicCells).forEach(new Consumer<BasicCell>() {
+            @Override
+            public void accept(BasicCell basicCell) {
+                floor.getWorld().addBody(basicCell);
+            }
+        }));
     }
 
     public Floor getFloor(){

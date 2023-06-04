@@ -5,19 +5,19 @@ import com.ewan.dunjeon.world.items.Item;
 import java.awt.geom.AffineTransform;
 
 public abstract class ItemAttack {
-    private float timeElapsed = 0;
-    private float totalTime;
+    private double timeElapsed = 0;
+    private double totalTime;
 
-    private ItemAttack(float totalTime){this.totalTime = totalTime;}
+    private ItemAttack(double totalTime){this.totalTime = totalTime;}
 
-    float getPercentComplete() {return timeElapsed/totalTime;}
+    double getPercentComplete() {return timeElapsed/totalTime;}
     public abstract AffineTransform getTransform();
 
     public static class StabAttack extends ItemAttack{
 
-        private final float stabDist;
+        private final double stabDist;
 
-        public StabAttack(float totalTime, float stabDist) {
+        public StabAttack(double totalTime, double stabDist) {
             super(totalTime);
             this.stabDist = stabDist;
         }
