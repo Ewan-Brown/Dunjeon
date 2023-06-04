@@ -5,7 +5,7 @@ import org.dyn4j.geometry.Vector2;
 import java.awt.*;
 
 /**
- * Contains final calculated drawing data to be passed to the graphics engine. Requires data from host entity to</p>
+ * Contains final calculated drawing data to be passed to the graphics engine. Requires data from host entity to properly render</p>
  */
 public abstract class RenderableElement {
 

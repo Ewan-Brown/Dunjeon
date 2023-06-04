@@ -1,11 +1,17 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
+import com.ewan.dunjeon.world.entities.memory.Brain;
 import com.ewan.dunjeon.world.items.Item;
 
 public class Player extends Creature {
     public Player(String name) {
         super(name);
         autoPickup = true;
+    }
+
+    @Override
+    public Brain getBrain() {
+        return null;
     }
 
     @Override

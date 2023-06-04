@@ -1,4 +1,5 @@
 package com.ewan.dunjeon.world.entities;
+import com.ewan.dunjeon.world.entities.memory.Brain;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import org.dyn4j.dynamics.Body;
@@ -55,5 +56,10 @@ public abstract class Entity extends Body {
         this.floor = floor;
     }
     public long getUUID(){ return UUID;}
+
+    /**
+     * Returns the 'brain' associated with this entity. Could be one that is shared between mutiple entities
+     * @return
+     */
 
 }

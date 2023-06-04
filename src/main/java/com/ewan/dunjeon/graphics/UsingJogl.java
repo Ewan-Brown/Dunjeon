@@ -24,6 +24,9 @@
  */
 package com.ewan.dunjeon.graphics;
 
+import com.ewan.dunjeon.world.Dunjeon;
+import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.entities.Entity;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
@@ -37,259 +40,137 @@ import org.dyn4j.world.World;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Class used to show a simple example of using the dyn4j project using
- * JOGL for rendering.
- * <p>
- * This class can be used as a starting point for projects.
- * @author William Bittle
- * @version 3.2.0
- * @since 3.0.0
- */
 public class UsingJogl extends JFrame implements GLEventListener {
-	/** The serial version id */
 	private static final long serialVersionUID = 5663760293144882635L;
-	
-	public static final double SCALE = 10.0;
-	
-	/** The conversion factor from nano to base */
-	public static final double NANO_TO_BASE = 1.0e9;
-	
-	/**
-	 * Custom Body class to add drawing functionality.
-	 * @author William Bittle
-	 * @version 3.0.2
-	 * @since 3.0.0
-	 */
-//	public static class GameObject extends Body {
-//		/** The color of the object */
-//		protected float[] color = new float[4];
-//
-//		/**
-//		 * Default constructor.
-//		 */
-//		public GameObject() {
-//			// randomly generate the color
-//			this.color[0] = (float)Math.random() * 0.5f + 0.5f;
-//			this.color[1] = (float)Math.random() * 0.5f + 0.5f;
-//			this.color[2] = (float)Math.random() * 0.5f + 0.5f;
-//			this.color[3] = 1.0f;
-//		}
-//
-//		/**
-//		 * Draws the body.
-//		 * <p>
-//		 * Only coded for polygons.
-//		 * @param gl the OpenGL graphics context
-//		 */
-//		public void render(GL2 gl) {
-//			// save the original transform
-//			gl.glPushMatrix();
-//
-//			// transform the coordinate system from world coordinates to local coordinates
-//			gl.glTranslated(this.transform.getTranslationX(), this.transform.getTranslationY(), 0.0);
-//			// rotate about the z-axis
-//			gl.glRotated(Math.toDegrees(this.transform.getRotationAngle()), 0.0, 0.0, 1.0);
-//
-//			// loop over all the body fixtures for this body
-//			for (BodyFixture fixture : this.fixtures) {
-//				// get the shape on the fixture
-//				Convex convex = fixture.getShape();
-//				// check the shape type
-//				if (convex instanceof Polygon) {
-//					// since Triangle, Rectangle, and Polygon are all of
-//					// type Polygon in addition to their main type
-//					Polygon p = (Polygon) convex;
-//
-//					// set the color
-//					gl.glColor4fv(this.color, 0);
-//
-//					// fill the shape
-//					gl.glBegin(GL2.GL_POLYGON);
-//					for (Vector2 v : p.getVertices()) {
-//						gl.glVertex3d(v.x, v.y, 0.0);
-//					}
-//					gl.glEnd();
-//
-//					// set the color
-//					gl.glColor4f(this.color[0] * 0.8f, this.color[1] * 0.8f, this.color[2] * 0.8f, 1.0f);
-//
-//					// draw the shape
-//					gl.glBegin(GL.GL_LINE_LOOP);
-//					for (Vector2 v : p.getVertices()) {
-//						gl.glVertex3d(v.x, v.y, 0.0);
-//					}
-//					gl.glEnd();
-//				}
-//				// circles and other curved shapes require a little more work, so to keep
-//				// this example short we only include polygon shapes; see the RenderUtilities
-//				// in the Sandbox application
-//			}
-//
-//			// set the original transform
-//			gl.glPopMatrix();
-//		}
-//	}
-	
-	/** The canvas to draw to */
-	protected GLCanvas canvas;
-	
-	/** The OpenGL animator */
-	protected Animator animator;
 
-	/** The time stamp for the last iteration */
+	protected GLCanvas canvas;
+
 	protected long last;
-	
-	/**
-	 * Default constructor for the window
-	 */
+
 	public UsingJogl() {
 		super("JOGL Example");
-		
-		// setup the JFrame
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		// create the size of the window
-		Dimension size = new Dimension(800, 600);
-		
-		// setup OpenGL capabilities
+
+		Dimension size = new Dimension(800, 800);
+
 		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
 		caps.setDoubleBuffered(true);
 		caps.setHardwareAccelerated(true);
-		
-		// create a canvas to paint to 
+
 		this.canvas = new GLCanvas(caps);
 		this.canvas.setPreferredSize(size);
 		this.canvas.setMinimumSize(size);
 		this.canvas.setMaximumSize(size);
 		this.canvas.setIgnoreRepaint(true);
 		this.canvas.addGLEventListener(this);
-		
-		// add the canvas to the JFrame
+
+		this.setLayout(new BorderLayout());
+
 		this.add(this.canvas);
-		
-		// make the JFrame not resizable
-		// (this way I dont have to worry about resize events)
 		this.setResizable(false);
-		
-		// size everything
+
 		this.pack();
 	}
-	
-	/**
-	 * Creates game objects and adds them to the world.
-	 * <p>
-	 * Basically the same shapes from the Shapes test in
-	 * the TestBed.
-	 */
 
-	/**
-	 * Start active rendering the example.
-	 * <p>
-	 * This should be called after the JFrame has been shown.
-	 */
 	public void start() {
-		// initialize the last update time
 		this.last = System.nanoTime();
-		// create an animator to animated the canvas
 		Animator animator = new Animator(this.canvas);
-		// run as fast as possible
 		animator.setRunAsFastAsPossible(true);
-		// start the animator
 		animator.start();
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.jogamp.opengl.GLEventListener#init(com.jogamp.opengl.GLAutoDrawable)
-	 */
+
 	@Override
 	public void init(GLAutoDrawable glDrawable) {
-		// get the OpenGL context
 		GL2 gl = glDrawable.getGL().getGL2();
-		
-		// set the matrix mode to projection
+
 		gl.glMatrixMode(GL2.GL_PROJECTION);
-		// initialize the matrix
 		gl.glLoadIdentity();
-		// set the view to a 2D view
-		gl.glOrtho(-400, 400, -300, 300, 0, 1);
-		
-		// switch to the model view matrix
+		gl.glOrtho(-1, 1, -1, 1, 0, 1);
+		gl.glViewport(0, 0, this.getWidth(), this.getHeight());
+
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		// initialize the matrix
 		gl.glLoadIdentity();
-		
-		// set the clear color to white
+
 		gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		
-		// set the swap interval to as fast as possible
+
 		gl.setSwapInterval(0);
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.jogamp.opengl.GLEventListener#display(com.jogamp.opengl.GLAutoDrawable)
-	 */
+
 	@Override
 	public void display(GLAutoDrawable glDrawable) {
 		// get the OpenGL context
 		GL2 gl = glDrawable.getGL().getGL2();
-		
+
 		// clear the screen
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		// switch to the model view matrix
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		// initialize the matrix (0,0) is in the center of the window
 		gl.glLoadIdentity();
-		
-		// render the scene
+
 		this.render(gl);
-		
+
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.jogamp.opengl.GLEventListener#dispose(com.jogamp.opengl.GLAutoDrawable)
-	 */
+
 	@Override
 	public void dispose(GLAutoDrawable glDrawable) {
-		// nothing to dispose from OpenGL for this example
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.jogamp.opengl.GLEventListener#reshape(com.jogamp.opengl.GLAutoDrawable, int, int, int, int)
-	 */
+
 	@Override
 	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width, int height) {
-		// do nothing since the window is not resizable
 	}
-	
+
 	/**
 	 * Renders the example.
 	 * @param gl the OpenGL context
 	 */
 	protected void render(GL2 gl) {
-		// apply a scaling transformation
-//		gl.glScaled(SCALE, SCALE, SCALE);
 
 		gl.glPushMatrix();
 		gl.glColor3d(1,0,0);
-		gl.glBegin(GL.GL_TRIANGLES);
 
-		gl.glVertex2d(5,5);
-		gl.glVertex2d(-5,5);
-		gl.glVertex2d(-5,-5);
+		// Draw things with true sight
 
-		gl.glEnd();
+		gl.glScaled(0.02, 0.02, 1.0);
+		gl.glTranslated(-50, -50,0);
+		for (BasicCell basicCell : Dunjeon.getInstance().getPlayer().getFloor().getCellsAsList()) {
+			Color c = basicCell.color;
+			gl.glColor3d(c.getRed()/255.0,c.getGreen()/255.0,c.getBlue()/255.0);
+
+			gl.glBegin(GL2.GL_POLYGON);
+
+			double lowX = basicCell.getX();
+			double lowY = basicCell.getY();
+			double highX = lowX	+ 1;
+			double highY = lowY	+ 1;
+
+			gl.glVertex2d(lowX, lowY);
+			gl.glVertex2d(highX, lowY);
+			gl.glVertex2d(highX, highY);
+			gl.glVertex2d(lowX, highY);
+
+			gl.glEnd();
+
+		}
+
+		for (Entity e : Dunjeon.getInstance().getPlayer().getFloor().getEntities()){
+			gl.glColor3d(0, 1,0);
+			gl.glBegin(GL2.GL_POLYGON);
+
+			final double SIZE = 1;
+			final double HALF_SIZE = SIZE/2;
+
+			double centerX = e.getWorldCenter().x;
+			double centerY = e.getWorldCenter().y;
+
+			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
+			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
+			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
+			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
+
+		}
+
 		gl.glPopMatrix();
-		
-		// lets move the view up some
-//		gl.glTranslated(0.0, -1.0, 0.0);
-		
-		// draw all the objects in the world
-//		for (int i = 0; i < this.world.getBodyCount(); i++) {
-//			// get the object
-//			GameObject go = (GameObject) this.world.getBody(i);
-//			// draw the object
-//			go.render(gl);
-//		}
 	}
 }

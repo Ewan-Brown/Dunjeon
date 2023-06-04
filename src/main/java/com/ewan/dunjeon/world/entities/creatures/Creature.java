@@ -38,7 +38,6 @@ public abstract class Creature extends Entity implements HasInventory {
     ItemAttack currentAttack = null;
 
     public boolean true_sight_debug = false;
-
     private Brain brain = new Brain();
     private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
 
@@ -220,5 +219,6 @@ public abstract class Creature extends Entity implements HasInventory {
 
     public Inventory getInventory(){return inventory;}
 
+    public abstract Brain getBrain();
 
 }

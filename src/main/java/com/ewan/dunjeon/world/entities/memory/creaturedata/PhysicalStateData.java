@@ -6,7 +6,7 @@ import org.dyn4j.geometry.Polygon;
 import org.dyn4j.geometry.Vector2;
 
 /**
- * This is a class used to package generic data about an entity at a given moment. contains data for rendering and knowledge
+ * Contains data for physical representation
  */
 public class PhysicalStateData extends StateData {
 

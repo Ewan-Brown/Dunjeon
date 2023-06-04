@@ -12,7 +12,6 @@ public class CellKnowledge {
 
     final int x;
     final int y;
-    boolean hasVisited; //Has the host entity actually visited this cell?
 
     public CellKnowledge(int x, int y){
         this.x = x;

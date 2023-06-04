@@ -1,5 +1,7 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
+import com.ewan.dunjeon.world.entities.memory.Brain;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,6 @@ public abstract class CreatureWithAI extends Creature {
 
     List<AIStateGenerator> AIStateGeneratorsByPriority = new ArrayList<>();
     int currentStatePriority = -1;
-
     AIState currentState;
 
     public CreatureWithAI(String name, List<AIStateGenerator> stateGenerators) {

@@ -1,6 +1,11 @@
 package com.ewan.dunjeon.world.entities.memory;
 
 public class Relationship {
-    Long hostUUID;
-    Long targetUUID;
+
+    public Relationship(long h, long t){
+        hostUUID = h;
+        targetUUID = t;
+    }
+    long hostUUID;
+    long targetUUID;
 }

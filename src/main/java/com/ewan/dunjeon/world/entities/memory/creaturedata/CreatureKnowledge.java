@@ -1,28 +1,24 @@
 package com.ewan.dunjeon.world.entities.memory.creaturedata;
 
 
-/**
- * Represents what Creature A knows about Creature B.
- * All info should be absolute (not relative to creature A) and
- * transferrable/shareable from Creature A to another, excepting Creature B
- */
-public class CreatureKnowledge {
+import com.ewan.dunjeon.world.entities.memory.StateData;
+import lombok.Getter;
+import lombok.Setter;
 
+/**
+ * Represents basic information that is known about a Creature, from another Creature's perspective.
+ */
+public class CreatureKnowledge<T> {
     final long UUID;
 
-    private PhysicalStateData lastPhysicalState;
-    private VisualStateData lastVisualState;
-    private ActionStateData lastActionState;
-    private HealthStateData lastHealthState;
+    @Getter
+    @Setter
+    PhysicalStateData physicalStateData = null;
 
+    @Getter
+    @Setter
+    VisualStateData visualStateData = null;
     public CreatureKnowledge(long id){
         UUID = id;
     }
-
-    public void updatePhysicalStateData(PhysicalStateData physicalState){
-        lastPhysicalState = physicalState;
-    }
-    public void updateVisualState(VisualStateData visualStateData){ lastVisualState = visualStateData;}
-    public void updateActionState(ActionStateData actionStateData){lastActionState = actionStateData;}
-    public void updateHealthStateData(HealthStateData healthStateData){lastHealthState = healthStateData;}
 }
