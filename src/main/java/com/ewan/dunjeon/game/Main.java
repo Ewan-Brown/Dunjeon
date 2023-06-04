@@ -93,6 +93,22 @@ public class Main {
 
             generator.getSplitLineList().forEach(split -> LiveDisplay.debugLines.put(split.getLine2D(), Color.RED));
             generator.getSplitLineList().forEach(split -> {
+//                List<Pair<Point, WorldUtils.Side>> var = WorldUtils.getIntersectedTilesWithWall(split.getX1(), split.getY1(), split.getX2(), split.getY2());
+//                boolean horizontal = split.getY1() == split.bgetY2();
+//                for (Pair<Point, WorldUtils.Side> pointSidePair : var) {
+//                    Point p = pointSidePair.getElement0();
+//                    if (LiveDisplay.debugCells.containsKey(p)) {
+//                        Color currentColor = LiveDisplay.debugCells.get(p);
+//                        LiveDisplay.debugCells.put(p, currentColor.darker());
+//                    } else {
+//                        LiveDisplay.debugCells.put(p, Color.BLUE);
+//                        if(horizontal){
+//                            LiveDisplay.debugCells.put(new Point(p.x, p.y-1), Color.BLUE);
+//                        }else{
+//                            LiveDisplay.debugCells.put(new Point(p.x-1, p.y), Color.BLUE);
+//                        }
+//                    }
+//                }
                 LiveDisplay.debugLines.put(split.getLine2D(), Color.RED);
             });
             System.out.println("Halls : " + generator.getHalls().size());

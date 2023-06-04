@@ -191,6 +191,14 @@ public abstract class Entity {
         return objs;
     }
 
+//    public AffineTransform getTransform(){
+//        AffineTransform af = new AffineTransform();
+//        af.translate(posX, posY);
+//
+//        return af;
+//    }
+
+
     public EntityStateData getEntityStateData(){
         return new EntityStateData(getPosX(), getPosY(), getVelX(), getVelY(), getRotation(), getRotationSpeed(), UUID, zState, name);
     }
