@@ -1,8 +1,31 @@
-WIP - Simple projectile
-    Makes sound on wall hit
-    Does nothing on entity hit
-        Entity hit register not available yet...
-    0 Friction
-    Magic orb that has no friction, and constant speed.
+====Big things===
+----Complete----
+Procedural World generation
+    Generates a series of connected rectangular rooms, connected by hallways. After various iterations, pretty happy with this.
+        Configurable : Max Room Count, min/max Room Size, World Size, hallway width
+Dyn4J base implementation complete
+    Underlying kinetics of entities are fully provided by this
+    
+Raytracing sight algorithm and skeleton for "memory" complete
+    Has issues... see TODO
+Simple pathing algorithms
+Simple Entity hierarchy
+Simple Entity AI - priority-ordered list of tasks
 
-Did some profiling - try running with CPU Profiler to see some interesting results...
+----TODO----
+Dyn4J - hook in for collision detection
+Flesh out memory system
+Draft various AI flows
+Simple 
+Fix the unending sight/raytracing algorithm issue. 
+    The non-visible sides of cells who have atleast one visible side occasionally highlight, but only when the problematic side is adjacent to another cell, and only for an immediate instant!
+    Between the two highlighted cells, their colinear walls should NOT be visible, yet occasionally ONE of them is lighting up. Occurs consistently at certain angle+distance from the viewer.
+    Thought it was a rounding issue when the ray clips extremely close to the corner of one of these, but should look more into what exact angles it occurs, see if theres a pattern.
+    
+    X X X X 
+ -> X   @
+ -> X
+    X X X X
+    
+====WIP====
+Trying out SynJ to see what it can do 
