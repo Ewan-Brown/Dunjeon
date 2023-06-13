@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.ewan.dunjeon.world.entities.creatures.Creature.updateViewRange;
+
 public class Main {
 
     public static final Random rand = new Random();
@@ -47,7 +49,7 @@ public class Main {
     private static boolean updateCurrentWorld(){
         Dunjeon w = Dunjeon.getInstance();
         if(w.getPlayer() != null) {
-            w.getPlayer().updateViewRange();
+            updateViewRange(w.getPlayer(), w.getPlayer().getSightRange());
         }
         boolean gameOver = w.update();
         if(gameOver){

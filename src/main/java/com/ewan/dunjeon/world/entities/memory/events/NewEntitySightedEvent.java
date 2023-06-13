@@ -1,5 +1,5 @@
 package com.ewan.dunjeon.world.entities.memory.events;
 
-public class NewEntityEvent {
+public class NewEntitySightedEvent {
     long entityUUID;
 }

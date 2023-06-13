@@ -1,14 +1,11 @@
-package com.ewan.dunjeon.world.entities.creatures;
+package com.ewan.dunjeon.world.entities.creatures.AI;
 
-import com.ewan.dunjeon.world.entities.memory.Brain;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public abstract class CreatureWithAI extends Creature {
 
@@ -61,7 +58,7 @@ public abstract class CreatureWithAI extends Creature {
     /**
      * Holds logic connecting a condition to a potential new State.
      */
-    static class AIStateGenerator{
+    protected static class AIStateGenerator{
 
         public AIStateGenerator(Predicate<Creature> validityCheck, Function<Creature, AIState> AIStateSupplier) {
             this.validityCheck = validityCheck;

@@ -1,15 +1,6 @@
-package com.ewan.dunjeon.world.entities.creatures;
+package com.ewan.dunjeon.world.entities.creatures.AI;
 
-import com.ewan.dunjeon.generation.PathFinding;
-import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
 
 public class ChaseAI extends AIState {
     public ChaseAI(Creature e) {

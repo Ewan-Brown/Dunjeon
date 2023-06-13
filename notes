@@ -1,23 +1,35 @@
 Generate NPC quotes with ML data
     Parse data from PDFs/txt of novels and single out quotations
 
+Complex entity stats
+    DF-like
+    Entity health based off of sum of parts, no 'hp' counter.
+    Each part has assigned roles and uses
 
-Combat is based off o psionic abilities. Similar to noita in most enemies don't have your abilities,
-    but a few rare ones do (parallel to wands in noita)
+3 types of combat
+    Inherent Magick
+        Like spells from Witcher
+        Illusion
+        Mind reading
+        Mind control
+        =Uses Player's Mana
+            Regained by resting in places with high mana
 
-> Telekinesis -> Hold to attract loose/flying objects into a shield
-               > Throw items from afar at enemies
-               > Grab items from afar?
-> Mind reading -> Passively/Actively (any distance, single target?) gain world info from other entities
-> Illusion -> Passively/Actively? Introduce fake knowledge into other entities
-    Simulate by creating 'ghost' entities, which are just like normal entities but don't collide
-            -> Create manipulated visual data for enemy entities.
-            > Make enemies appear to be enemies to other allies etc
-> Life drain
-> Time warping
+    Physical
+        Ranged
+        Melee
+        Works against almost all enemies
+        Fairly predictable
+    Artificial Magick ("Artifacts")
+         Like noita wands
+        =Limited usages
+        =High risk/High reward
 
 
 Instead of 'mana' being player centered, psionic energy can exist as a 'web' along the weird, where each cell is a node.
 The 'mana web' observes basic fluid dynamics when it is used up at a node, slowly 'flooding it'. Sources are living creatures
+Can think of mana as more of a gas consumed.
 
-Can think of mana as more of a gas consumed than a pla
+SOUND:
+
+Maybe this is stupid but, take my audio clips, and do some fucky shit with the data. e.x take the data, FFT it at various parameters and recreate it with inverse FFT.

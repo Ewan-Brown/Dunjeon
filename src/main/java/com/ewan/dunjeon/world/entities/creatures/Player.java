@@ -1,7 +1,10 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
+import com.ewan.dunjeon.world.entities.creatures.senses.Sense;
 import com.ewan.dunjeon.world.entities.memory.Brain;
 import com.ewan.dunjeon.world.items.Item;
+
+import java.util.List;
 
 public class Player extends Creature {
     public Player(String name) {

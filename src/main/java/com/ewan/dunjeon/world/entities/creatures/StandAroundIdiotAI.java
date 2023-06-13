@@ -1,6 +1,8 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-public class StandAroundIdiotAI extends AIState{
+import com.ewan.dunjeon.world.entities.creatures.AI.AIState;
+
+public class StandAroundIdiotAI extends AIState {
 
     public StandAroundIdiotAI(Creature e) {
         super(e);

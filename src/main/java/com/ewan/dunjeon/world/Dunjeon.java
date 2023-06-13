@@ -120,7 +120,7 @@ public class Dunjeon implements KeyListener {
 
         if(keySet.get(KeyEvent.VK_N)){
             keySet.set(KeyEvent.VK_N, false);
-            player.true_sight_debug = !player.true_sight_debug;
+//            player.true_sight_debug = !player.true_sight_debug;
         }
 
         if(keySet.get(KeyEvent.VK_Z)){

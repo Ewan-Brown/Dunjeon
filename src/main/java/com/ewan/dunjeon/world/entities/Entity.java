@@ -7,7 +7,6 @@ import org.dyn4j.dynamics.Body;
 public abstract class Entity extends Body {
 
     private static long UUIDcounter = 0;
-
     private String name;
 
     private long UUID;
@@ -57,9 +56,5 @@ public abstract class Entity extends Body {
     }
     public long getUUID(){ return UUID;}
 
-    /**
-     * Returns the 'brain' associated with this entity. Could be one that is shared between mutiple entities
-     * @return
-     */
 
 }

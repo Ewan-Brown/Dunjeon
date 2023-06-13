@@ -1,4 +1,6 @@
-package com.ewan.dunjeon.world.entities.creatures;
+package com.ewan.dunjeon.world.entities.creatures.AI;
+
+import com.ewan.dunjeon.world.entities.creatures.Creature;
 
 /**
  * Represents the current most atomic level of the goal of the host of this object - could be "Move to target", "Explore unexplored area... etc"

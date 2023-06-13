@@ -1,18 +1,15 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-import com.ewan.dunjeon.game.Main;
-import com.ewan.dunjeon.world.Interactable;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
+import com.ewan.dunjeon.world.entities.creatures.senses.Sense;
 import com.ewan.dunjeon.world.entities.memory.*;
 import com.ewan.dunjeon.world.items.inventory.HasInventory;
 import com.ewan.dunjeon.world.items.inventory.Inventory;
 import com.ewan.dunjeon.world.items.Item;
 import com.ewan.dunjeon.world.items.inventory.InventoryWithWieldedItem;
-import com.ewan.dunjeon.world.level.Floor;
-import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import org.dyn4j.geometry.Vector2;
 
@@ -35,9 +32,8 @@ public abstract class Creature extends Entity implements HasInventory {
     private InventoryWithWieldedItem inventory = new InventoryWithWieldedItem();
     protected boolean autoPickup = false;
     private double pickupRange = 1;
-    ItemAttack currentAttack = null;
 
-    public boolean true_sight_debug = false;
+//    public boolean true_sight_debug = false;
     private Brain brain = new Brain();
     private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
 
@@ -47,7 +43,7 @@ public abstract class Creature extends Entity implements HasInventory {
         if(autoPickup){
             pickupItemsInVicinity();
         }
-        updateViewRange();
+        updateViewRange(this, getSightRange());
     }
 
     private void pickupItemsInVicinity(){
@@ -72,7 +68,7 @@ public abstract class Creature extends Entity implements HasInventory {
         DIAGONAL
     }
 
-    public void updateViewRange(){
+    public static void updateViewRange(Creature c, int sightRange){
         //dyn4j TODO Bring this code back
 //        if(!floorMemoryMap.containsKey(getFloor())){
 //            floorMemoryMap.put(getFloor(), new FloorMemory(getFloor()));
@@ -94,30 +90,26 @@ public abstract class Creature extends Entity implements HasInventory {
         double angleDiv =  arcLength/sightRange;
         int rays = (int)Math.ceil(2 * (double)Math.PI / angleDiv);
 
-        viewableCells.add(this.getContainingCell());
+        viewableCells.add(c.getContainingCell());
 
-        if(true_sight_debug){
-            viewableCells.addAll(getFloor().getCellsAsList());
-        }
-        else {
 
             for (int i = 0; i < rays; i++) {
                 double currentAngle = angleDiv * i;
-                List<Pair<Point, WorldUtils.Side>> intersectedTiles = WorldUtils.getIntersectedTilesWithWall(getWorldCenter().x, getWorldCenter().y,
-                        getWorldCenter().x + (double)Math.cos(currentAngle) * sightRange, getWorldCenter().y + (double)Math.sin(currentAngle) * sightRange);
+                List<Pair<Point, WorldUtils.Side>> intersectedTiles = WorldUtils.getIntersectedTilesWithWall(c.getWorldCenter().x, c.getWorldCenter().y,
+                        c.getWorldCenter().x + (double)Math.cos(currentAngle) * sightRange, c.getWorldCenter().y + (double)Math.sin(currentAngle) * sightRange);
 
                 for (Pair<Point, WorldUtils.Side> pair : intersectedTiles) {
 
                     Point intersectedPoint = pair.getElement0();
                     WorldUtils.Side intersectedSide = pair.getElement1();
 
-                    BasicCell cell = getFloor().getCellAt(new Vector2(intersectedPoint.getX(), intersectedPoint.getY()));
+                    BasicCell cell = c.getFloor().getCellAt(new Vector2(intersectedPoint.getX(), intersectedPoint.getY()));
 
                     if(cell == null){
                         break;
                     }
                     viewableCells.add(cell);
-                    if(!cell.canBeSeenThrough(this)){
+                    if(!cell.canBeSeenThrough(c)){
 //
                         if(cell.isFilled()){
                             if (viewableWalls.containsKey(cell)) {
@@ -133,7 +125,6 @@ public abstract class Creature extends Entity implements HasInventory {
                 //TODO Reuse WorldUtils.getIntersectingTiles here. This was the prototype and can be mostly removed.
 //
             }
-        }
 
         //*************
         //Update Cell/Furniture/EntityMemory
@@ -220,5 +211,7 @@ public abstract class Creature extends Entity implements HasInventory {
     public Inventory getInventory(){return inventory;}
 
     public abstract Brain getBrain();
+
+    public abstract List<Sense> getSenses();
 
 }
