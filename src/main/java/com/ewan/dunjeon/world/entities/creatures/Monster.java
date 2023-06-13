@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.world.entities.creatures.AI.CreatureWithAI;
+import com.ewan.dunjeon.world.entities.creatures.senses.Sense;
 import com.ewan.dunjeon.world.entities.memory.Brain;
 
 import java.awt.Color;
@@ -30,6 +31,11 @@ public class Monster extends CreatureWithAI {
     @Override
     public Brain getBrain() {
         return null;
+    }
+
+    @Override
+    public List<Sense> getSenses() {
+        return new ArrayList<>();
     }
 
 

@@ -10,10 +10,16 @@ public class Player extends Creature {
     public Player(String name) {
         super(name);
         autoPickup = true;
+
     }
 
     @Override
     public Brain getBrain() {
+        return null;
+    }
+
+    @Override
+    public List<Sense> getSenses() {
         return null;
     }
 
