@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.world.entities.memory;
 
+import com.ewan.dunjeon.world.data.Data;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.ewan.dunjeon.world.entities.memory.events.Event;
 import com.ewan.dunjeon.world.entities.memory.events.EventStrategy;
@@ -22,5 +23,9 @@ public class Brain {
                 strategy.processEvent(e);
             }
         }
+    }
+
+    public void processData(Data d){
+
     }
 }

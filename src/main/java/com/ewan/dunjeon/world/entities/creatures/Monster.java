@@ -1,5 +1,7 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
+import com.ewan.dunjeon.world.data.Data;
+import com.ewan.dunjeon.world.data.DataStreamParameters;
 import com.ewan.dunjeon.world.entities.creatures.AI.CreatureWithAI;
 import com.ewan.dunjeon.world.entities.creatures.senses.Sense;
 import com.ewan.dunjeon.world.entities.memory.Brain;
@@ -34,7 +36,7 @@ public class Monster extends CreatureWithAI {
     }
 
     @Override
-    public List<Sense> getSenses() {
+    public List<Sense<? extends Data, ? extends DataStreamParameters>> getSenses() {
         return new ArrayList<>();
     }
 

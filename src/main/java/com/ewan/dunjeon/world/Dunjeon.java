@@ -2,6 +2,7 @@ package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.graphics.Graphics2DDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.data.Datastreams;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
@@ -97,21 +98,6 @@ public class Dunjeon implements KeyListener {
         if(keySet.get(KeyEvent.VK_RIGHT)){
 //            player.addVelocity(playerSpeed, 0.0f);
         }
-        if(keySet.get(KeyEvent.VK_SPACE)){
-            //Prevents instant repeat on hold
-            keySet.set(KeyEvent.VK_SPACE, false);
-            Interactable i = getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.TOUCH);
-            if(i != null){
-                i.onInteract(player, Interactable.InteractionType.TOUCH);
-            }
-        }
-        if(keySet.get(KeyEvent.VK_T)){
-            keySet.set(KeyEvent.VK_T, false);
-            Interactable i = getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType.CHAT);
-            if(i != null){
-                i.onInteract(player, Interactable.InteractionType.CHAT);
-            }
-        }
 
         if(keySet.get(KeyEvent.VK_M)){
             keySet.set(KeyEvent.VK_M, false);
@@ -148,39 +134,11 @@ public class Dunjeon implements KeyListener {
         }
     }
 
-    //Returns the closest world object that supports 'type' InteractionType for the player
-    public Interactable getPlayersNearestAvailableInteractionOfType(Interactable.InteractionType type){
-        Interactable closestInteractable = null;
-//        Floor f = player.getFloor();
-//
-//        List<Interactable> interactables = new ArrayList<>();
-//
-//        for (int x = 0; x < f.getWidth(); x++) {
-//            for (int y = 0; y < f.getHeight(); y++) {
-//                BasicCell currentCell = f.getCellAt(x, y);
-//                if (currentCell.getFurniture() instanceof Interactable) {
-//                    interactables.add((Interactable) currentCell.getFurniture());
-//                }
-//            }
-//        }
-//
-//        for (Entity e : getPlayer().getFloor().getEntities()) {
-//            if(e instanceof Interactable){
-//                interactables.add((Interactable)e);
-//            }
-//        }
-//
-//
-//        //TODO Prepping for Dyn4J
-////        closestInteractable = interactables.stream()
-////                .filter(interactable -> interactable.getAvailableInteractions(getPlayer()).contains(type))
-////                .filter(interactable -> WorldUtils.getRawDistance(interactable, getPlayer()) < playerInteractionDist)
-////                .min((o1, o2) -> (int)Math.signum(WorldUtils.getRawDistance(o1, getPlayer()) - WorldUtils.getRawDistance(o2, getPlayer()))).orElse(null);
-
-        return closestInteractable;
-
+    //****** Data streams ******//
+    private Datastreams.SightDataStream sightDataStream = new Datastreams.SightDataStream();
+    public Datastreams.SightDataStream getSightDataStream() {
+        return sightDataStream;
     }
-
 
     private final BitSet keySet = new BitSet();
 

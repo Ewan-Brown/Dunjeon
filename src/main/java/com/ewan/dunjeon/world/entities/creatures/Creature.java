@@ -2,6 +2,8 @@ package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
+import com.ewan.dunjeon.world.data.Data;
+import com.ewan.dunjeon.world.data.DataStreamParameters;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
 import com.ewan.dunjeon.world.entities.creatures.senses.Sense;
@@ -212,6 +214,6 @@ public abstract class Creature extends Entity implements HasInventory {
 
     public abstract Brain getBrain();
 
-    public abstract List<Sense> getSenses();
+    public abstract List<Sense<? extends Data, ? extends DataStreamParameters>> getSenses();
 
 }
