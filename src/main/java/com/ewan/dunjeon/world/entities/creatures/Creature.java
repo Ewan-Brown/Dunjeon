@@ -25,12 +25,10 @@ public abstract class Creature extends Entity implements HasInventory {
     public Creature(String name) {
         super(name);
         sightRange = 10;
-        health = 10;
     }
 
     private double walkSpeed = 0.03f;
     private int sightRange;
-    private int health;
     private InventoryWithWieldedItem inventory = new InventoryWithWieldedItem();
     protected boolean autoPickup = false;
     private double pickupRange = 1;
@@ -40,8 +38,8 @@ public abstract class Creature extends Entity implements HasInventory {
     private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
 
     @Override
-    public void update() {
-        super.update();
+    public void update(double stepSize) {
+        super.update(stepSize);
         if(autoPickup){
             pickupItemsInVicinity();
         }
@@ -183,28 +181,7 @@ public abstract class Creature extends Entity implements HasInventory {
 
     public Item getWieldedItem(){return inventory.getWieldedItem();}
 
-    @Override
-    public boolean exists() {
-        return !isDead();
-    }
-
-    public boolean isDead(){
-        return health <= 0;
-    }
-
-    public void applyDamage(int d){
-        health -= d;
-        if(isDead()){
-            System.out.println("Entity died!");
-            this.getContainingCell().onDeath(this);
-        }
-    }
-
     public int getSightRange(){return sightRange;}
-
-    public int getHealth() {
-        return health;
-    }
 
     public double getWalkSpeed() { return walkSpeed;}
 

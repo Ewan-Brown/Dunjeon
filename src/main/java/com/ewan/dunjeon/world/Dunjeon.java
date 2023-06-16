@@ -63,8 +63,8 @@ public class Dunjeon implements KeyListener {
 //        System.out.println("time = " + time);
         time++;
         doControls();
-        getPlayer().getFloor().update();
-//        getPlayer().updateViewRange();
+        getPlayer().getFloor().update(1D);
+
         return false;
     }
 

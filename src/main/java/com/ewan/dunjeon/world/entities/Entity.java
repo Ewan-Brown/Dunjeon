@@ -11,14 +11,6 @@ public abstract class Entity extends Body {
 
     private long UUID;
 
-    public ZPositionState zState;
-
-    public enum ZPositionState{
-        CEILING,
-        FLOATING,
-        GROUND
-    }
-
     private Floor floor;
 
     public String getName(){return name;}
@@ -32,15 +24,7 @@ public abstract class Entity extends Body {
 
     public void onEnterCell(BasicCell c){}
 
-    public void update() {
-        if(!exists()){
-            System.out.println(exists() + " " + getName());
-            throw new RuntimeException("Attempted to update dead entity");
-        }
-    }
-
-    public boolean exists(){
-        return true;
+    public void update(double stepSize) {
     }
 
     public BasicCell getContainingCell() {

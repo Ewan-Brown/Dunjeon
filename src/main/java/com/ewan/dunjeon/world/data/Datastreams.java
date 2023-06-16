@@ -8,6 +8,7 @@ public class Datastreams {
 
     public static class SightDataStream extends Datastream<Datum.EntityVisualData, SightDataStream.SightStreamParameters>{
 
+
         @Override
         public void update(Dunjeon d) {
 

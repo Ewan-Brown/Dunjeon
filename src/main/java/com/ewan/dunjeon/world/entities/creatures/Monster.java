@@ -26,8 +26,8 @@ public class Monster extends CreatureWithAI {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void update(double stepSize) {
+        super.update(stepSize);
     }
 
     @Override

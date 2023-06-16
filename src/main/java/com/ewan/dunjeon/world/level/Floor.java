@@ -56,10 +56,12 @@ public class Floor {
         return cellsTotal;
     }
 
-    public void update(){
+    public void update(double stepSize){
+        getWorld().update(stepSize);
 
         for (int i = 0; i < entities.size(); i++) {
             Entity e = entities.get(i);
+            e.update(stepSize);
 //            e.update();
 //            doBoundsCheck(e);
         }
