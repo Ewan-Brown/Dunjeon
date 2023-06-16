@@ -1,9 +1,10 @@
 package com.ewan.dunjeon.world.data;
 
-public abstract class Data {
-    protected final double timestamp;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    protected Data(double timestamp) {
-        this.timestamp = timestamp;
-    }
+@AllArgsConstructor
+@Getter
+public abstract class Data {
+    private final double timestamp;
 }

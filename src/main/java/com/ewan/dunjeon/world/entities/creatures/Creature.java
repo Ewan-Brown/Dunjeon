@@ -33,7 +33,6 @@ public abstract class Creature extends Entity implements HasInventory {
     protected boolean autoPickup = false;
     private double pickupRange = 1;
 
-//    public boolean true_sight_debug = false;
     private Brain brain = new Brain();
     private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
 

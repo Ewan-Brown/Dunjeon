@@ -5,27 +5,32 @@ import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.ewan.dunjeon.world.entities.memory.events.Event;
 import com.ewan.dunjeon.world.entities.memory.events.EventStrategy;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 //Represents all the 'knowledge' an entity has
 public class Brain {
     private HashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new HashMap<>();
     private HashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new HashMap<>();
     private HashMap<Long, Relationship> relationshipMap = new HashMap<>();
-    private HashMap<? extends Event, EventStrategy> eventStrategyMap = new HashMap<>();
-
-    public void processEvent(Event e){
+    private HashMap<Class<? extends Event>, EventStrategy<? extends Event>> eventStrategyMap = new HashMap<>();
+    private HashMap<Class<? extends Data>, DataStrategy<? extends Data>> dataStrategyMap = new HashMap<>();
+    public <E extends Event> void processEvent(E e){
         if(eventStrategyMap.containsKey(e.getClass())) {
-            EventStrategy strategy = eventStrategyMap.get(e.getClass());
-            if (strategy != null) {
-                strategy.processEvent(e);
-            }
+            @SuppressWarnings("unchecked")
+            EventStrategy<E> strategy = (EventStrategy<E>) eventStrategyMap.get(e.getClass());
+            strategy.processEvent(e);
+        }else{
+            throw new RuntimeException("Brain attempted to process event : " + e.getClass() + " but no corresponding strategy found");
         }
     }
 
-    public void processData(Data d){
-
+    public <D extends Data> void processData(D d){
+        if(dataStrategyMap.containsKey(d.getClass())) {
+            @SuppressWarnings("unchecked")
+            DataStrategy<D> strategy = (DataStrategy<D>) dataStrategyMap.get(d.getClass());
+            strategy.processData(d);
+        }else{
+            throw new RuntimeException("Brain attempted to process data : " + d.getClass() + " but no corresponding strategy found");
+        }
     }
 }
