@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.util.List;
 
-public class Datum {
+public class Datas {
     @Getter
     public static class EntityVisualData extends Data {
 

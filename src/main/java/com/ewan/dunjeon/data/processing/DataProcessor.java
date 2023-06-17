@@ -7,12 +7,14 @@ import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.ewan.dunjeon.data.Event;
 
 import java.util.HashMap;
+import java.util.List;
 
 
 public class DataProcessor {
 
     private HashMap<Class<? extends Event>, EventStrategy<? extends Event>> eventStrategyMap = new HashMap<>();
     private HashMap<Class<? extends Data>, DataStrategy<? extends Data>> dataStrategyMap = new HashMap<>();
+
     public <E extends Event> void processEvent(E e){
         if(eventStrategyMap.containsKey(e.getClass())) {
             @SuppressWarnings("unchecked")
@@ -22,7 +24,6 @@ public class DataProcessor {
             throw new RuntimeException("Brain attempted to process event : " + e.getClass() + " but no corresponding strategy found");
         }
     }
-
     public <D extends Data> void processData(D d){
         if(dataStrategyMap.containsKey(d.getClass())) {
             @SuppressWarnings("unchecked")

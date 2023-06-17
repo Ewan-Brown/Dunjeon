@@ -192,7 +192,7 @@ public abstract class Creature extends Entity implements HasInventory {
 
     public abstract BasicMemoryBank getMemoryProcessor();
 
-    public abstract List<Sense<? extends Data, ? extends DataStreamParameters>> getSenses();
+    public abstract List<Sense<? extends DataStreamParameters>> getSenses();
 
     public void destroy(){
         getSenses().forEach(Sense::destroy);

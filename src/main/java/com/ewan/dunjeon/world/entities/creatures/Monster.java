@@ -36,7 +36,7 @@ public class Monster extends CreatureWithAI {
     }
 
     @Override
-    public List<Sense<? extends Data, ? extends DataStreamParameters>> getSenses() {
+    public List<Sense<? extends DataStreamParameters>> getSenses() {
         return new ArrayList<>();
     }
 

@@ -13,16 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends Creature {
-    List<Sense<? extends Data, ? extends DataStreamParameters>> senses = new ArrayList<>();
+    List<Sense<? extends DataStreamParameters>> senses = new ArrayList<>();
     public Player(String name) {
         super(name);
         autoPickup = true;
-        Sense<? extends Data, ? extends DataStreamParameters> sightSense = new Senses.EntitySightSense(this, Dunjeon.getInstance().getSightDataStream()) {
-            @Override
-            public Datastreams.SightDataStream.SightStreamParameters calculateDatastreamParameters() {
-                return new Datastreams.SightDataStream.SightStreamParameters(10,Math.PI*2);
-            }
-        };
+        Sense<Datastreams.SightDataStream.SightStreamParameters> sightSense = new Sense<>(this, Dunjeon.getInstance().getSightDataStream(),
+                c -> new Datastreams.SightDataStream.SightStreamParameters(10,Math.PI*2, Player.this.getWorldCenter()));
         senses.add(sightSense);
 
     }
@@ -33,7 +29,7 @@ public class Player extends Creature {
     }
 
     @Override
-    public List<Sense<? extends Data, ? extends DataStreamParameters>> getSenses() {
+    public List<Sense<? extends DataStreamParameters>> getSenses() {
         return senses;
     }
 
