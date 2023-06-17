@@ -1,4 +1,6 @@
-package com.ewan.dunjeon.world.entities.memory.events;
+package com.ewan.dunjeon.data.processing;
+
+import com.ewan.dunjeon.data.Event;
 
 public interface EventStrategy<T extends Event>  {
 

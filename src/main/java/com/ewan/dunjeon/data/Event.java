@@ -1,11 +1,11 @@
-package com.ewan.dunjeon.world.entities.memory.events;
+package com.ewan.dunjeon.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class Event {
+public abstract class Event {
     private final double timestamp;
 
 }

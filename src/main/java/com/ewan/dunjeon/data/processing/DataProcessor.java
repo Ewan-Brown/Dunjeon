@@ -1,17 +1,16 @@
-package com.ewan.dunjeon.world.entities.memory;
+package com.ewan.dunjeon.data.processing;
 
-import com.ewan.dunjeon.world.data.Data;
+import com.ewan.dunjeon.data.Data;
+import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
+import com.ewan.dunjeon.world.entities.memory.Relationship;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
-import com.ewan.dunjeon.world.entities.memory.events.Event;
-import com.ewan.dunjeon.world.entities.memory.events.EventStrategy;
+import com.ewan.dunjeon.data.Event;
 
 import java.util.HashMap;
 
-//Represents all the 'knowledge' an entity has
-public class Brain {
-    private HashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new HashMap<>();
-    private HashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new HashMap<>();
-    private HashMap<Long, Relationship> relationshipMap = new HashMap<>();
+
+public class DataProcessor {
+
     private HashMap<Class<? extends Event>, EventStrategy<? extends Event>> eventStrategyMap = new HashMap<>();
     private HashMap<Class<? extends Data>, DataStrategy<? extends Data>> dataStrategyMap = new HashMap<>();
     public <E extends Event> void processEvent(E e){

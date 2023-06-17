@@ -1,10 +1,10 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-import com.ewan.dunjeon.world.data.Data;
-import com.ewan.dunjeon.world.data.DataStreamParameters;
+import com.ewan.dunjeon.data.Data;
+import com.ewan.dunjeon.data.DataStreamParameters;
+import com.ewan.dunjeon.world.entities.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.AI.CreatureWithAI;
-import com.ewan.dunjeon.world.entities.creatures.senses.Sense;
-import com.ewan.dunjeon.world.entities.memory.Brain;
+import com.ewan.dunjeon.data.Sense;
 
 import java.awt.Color;
 import java.util.*;
@@ -31,7 +31,7 @@ public class Monster extends CreatureWithAI {
     }
 
     @Override
-    public Brain getBrain() {
+    public BasicMemoryBank getMemoryProcessor() {
         return null;
     }
 

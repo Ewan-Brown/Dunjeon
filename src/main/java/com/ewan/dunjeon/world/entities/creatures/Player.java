@@ -1,12 +1,12 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.world.Dunjeon;
-import com.ewan.dunjeon.world.data.Data;
-import com.ewan.dunjeon.world.data.DataStreamParameters;
-import com.ewan.dunjeon.world.data.Datastreams;
-import com.ewan.dunjeon.world.entities.creatures.senses.Sense;
-import com.ewan.dunjeon.world.entities.creatures.senses.Senses;
-import com.ewan.dunjeon.world.entities.memory.Brain;
+import com.ewan.dunjeon.data.Data;
+import com.ewan.dunjeon.data.DataStreamParameters;
+import com.ewan.dunjeon.data.Datastreams;
+import com.ewan.dunjeon.data.Sense;
+import com.ewan.dunjeon.data.Senses;
+import com.ewan.dunjeon.world.entities.BasicMemoryBank;
 import com.ewan.dunjeon.world.items.Item;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class Player extends Creature {
     }
 
     @Override
-    public Brain getBrain() {
+    public BasicMemoryBank getMemoryProcessor() {
         return null;
     }
 

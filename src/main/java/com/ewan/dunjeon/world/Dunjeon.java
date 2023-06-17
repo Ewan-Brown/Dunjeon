@@ -2,7 +2,7 @@ package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.graphics.Graphics2DDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.data.Datastreams;
+import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;

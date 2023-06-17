@@ -1,5 +1,4 @@
 package com.ewan.dunjeon.world.entities;
-import com.ewan.dunjeon.world.entities.memory.Brain;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import org.dyn4j.dynamics.Body;

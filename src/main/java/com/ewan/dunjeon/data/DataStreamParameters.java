@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.data;
+package com.ewan.dunjeon.data;
 
 public abstract class DataStreamParameters {
 }

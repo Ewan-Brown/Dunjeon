@@ -1,8 +1,5 @@
-package com.ewan.dunjeon.world.entities.creatures.senses;
+package com.ewan.dunjeon.data;
 
-import com.ewan.dunjeon.world.data.Datastream;
-import com.ewan.dunjeon.world.data.Datastreams;
-import com.ewan.dunjeon.world.data.Datum;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 
 public class Senses {

@@ -1,13 +1,14 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
+import com.ewan.dunjeon.data.processing.DataProcessor;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.data.Data;
-import com.ewan.dunjeon.world.data.DataStreamParameters;
+import com.ewan.dunjeon.data.Data;
+import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.ItemAsEntity;
-import com.ewan.dunjeon.world.entities.creatures.senses.Sense;
-import com.ewan.dunjeon.world.entities.memory.*;
+import com.ewan.dunjeon.data.Sense;
+import com.ewan.dunjeon.world.entities.BasicMemoryBank;
 import com.ewan.dunjeon.world.items.inventory.HasInventory;
 import com.ewan.dunjeon.world.items.inventory.Inventory;
 import com.ewan.dunjeon.world.items.Item;
@@ -19,6 +20,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class Creature extends Entity implements HasInventory {
@@ -33,7 +35,7 @@ public abstract class Creature extends Entity implements HasInventory {
     protected boolean autoPickup = false;
     private double pickupRange = 1;
 
-    private Brain brain = new Brain();
+    private DataProcessor brain = new DataProcessor();
     private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
 
     @Override
@@ -188,8 +190,11 @@ public abstract class Creature extends Entity implements HasInventory {
 
     public Inventory getInventory(){return inventory;}
 
-    public abstract Brain getBrain();
+    public abstract BasicMemoryBank getMemoryProcessor();
 
     public abstract List<Sense<? extends Data, ? extends DataStreamParameters>> getSenses();
 
+    public void destroy(){
+        getSenses().forEach(Sense::destroy);
+    }
 }

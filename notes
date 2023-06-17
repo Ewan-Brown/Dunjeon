@@ -1,3 +1,25 @@
+Theme idea : Play as some sort of Venom-like parasite that hops from entity to entity.
+
+Spore scale.
+
+First scale is the classic spore experience but as a tiny organism. Simple and deceiving.
+When the player gets large enough they can infect people
+    Fairly simple but fun
+    Can be beaten quickly
+Next stage is planets
+    Complex, unclear objective but large world to interact with
+
+Then idk
+
+Create a shitty 3D solar viewer
+This gives me opportunity to do land generation, nature/wildlife simulation, city gen etc.
+This will take me foreever?
+
+World should be randomly generated. Story is sentient species together living on planet.
+link the background of this to the planet's generation.
+One idea is Outcast planet with settlers and dangerous native life, very original nice.
+Simple generation, can just be randomly placed towns
+
 Generate NPC quotes with ML data
     Parse data from PDFs/txt of novels and single out quotations
 
