@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.ewan.dunjeon.world.entities.creatures.Creature.updateViewRange;
 
 public class Main {
 
@@ -26,9 +25,7 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                if(updateCurrentWorld()){
-                    break;
-                }
+                updateCurrentWorld();
             }
         }).start();
 
@@ -46,22 +43,13 @@ public class Main {
         }
     }
 
-    private static boolean updateCurrentWorld(){
+    private static void updateCurrentWorld(){
         Dunjeon w = Dunjeon.getInstance();
-        if(w.getPlayer() != null) {
-            updateViewRange(w.getPlayer(), w.getPlayer().getSightRange());
-        }
-        boolean gameOver = w.update();
-        if(gameOver){
-            return true;
-        }
         try {
             Thread.sleep(UPDATE_DELAY);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        return false;
     }
 
     private static void generateWorld(){

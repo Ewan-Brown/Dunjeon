@@ -59,13 +59,11 @@ public class Dunjeon implements KeyListener {
     /*
     Updates the game, returns true if the game is over.
      */
-    public boolean update(){
-//        System.out.println("time = " + time);
+    public void update(){
         time++;
         doControls();
         getPlayer().getFloor().update(1D);
 
-        return false;
     }
 
 

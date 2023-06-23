@@ -48,7 +48,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 	protected long last;
 
 	public UsingJogl() {
-		super("JOGL Example");
+		super("JOGL Dunjeon");
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

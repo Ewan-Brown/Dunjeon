@@ -82,6 +82,14 @@ public class WorldUtils {
         WEST,
         WITHIN
     }
+
+
+    public enum AxisAlignment {
+        VERTICAL,
+        HORIZONTAL,
+        DIAGONAL
+    }
+
     public static List<Pair<Point, Side>> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {
 
         double dx = x2 - x1;
@@ -169,7 +177,7 @@ public class WorldUtils {
 
             double nextInterceptX, nextInterceptY;
 
-            Creature.AxisAlignment intersectAlignment;
+            AxisAlignment intersectAlignment;
 
             if (distToNextVerticalIntersect < distToNextHorizontalIntersect) {
                 nextInterceptX = nextVerticalIntersect;
@@ -179,7 +187,7 @@ public class WorldUtils {
                     double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dy);
                     nextInterceptY = Math.round(nextInterceptY) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubleing point errors come into play in the result of y = mx+b
                 }
-                intersectAlignment = Creature.AxisAlignment.VERTICAL;
+                intersectAlignment = AxisAlignment.VERTICAL;
                 side = (dx > 0) ? Side.WEST : Side.EAST;
 
             } else {
@@ -190,7 +198,7 @@ public class WorldUtils {
                     double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dx);
                     nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubleing point errors come into play in the result of y = mx+b
                 }
-                intersectAlignment = Creature.AxisAlignment.HORIZONTAL;
+                intersectAlignment = AxisAlignment.HORIZONTAL;
                 side = (dy > 0) ? Side.NORTH :Side.SOUTH;
             }
             if (Math.abs(nextInterceptX - x1) > Math.abs(dx) || Math.abs(nextInterceptY - y1) > Math.abs(dy) ) {
@@ -198,7 +206,7 @@ public class WorldUtils {
             } else {
                 int nextTileX, nextTileY;
 
-                if (intersectAlignment == Creature.AxisAlignment.VERTICAL) {
+                if (intersectAlignment == AxisAlignment.VERTICAL) {
                     if (dx > 0) {
                         nextTileX = (int) nextInterceptX;
                     } else {

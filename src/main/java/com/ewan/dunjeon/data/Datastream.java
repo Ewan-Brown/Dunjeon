@@ -1,30 +1,29 @@
 package com.ewan.dunjeon.data;
 
 import com.ewan.dunjeon.world.Dunjeon;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 public abstract class Datastream<S extends DataStreamParameters> {
-    private List<Sense<S>> subscribers = new ArrayList<>();
+    private List<Sensor<S>> subscribers = new ArrayList<>();
     public abstract void update(Dunjeon d);
-    public abstract List<Data> generateDataForParams(S params);
 
-    public void addSubscriber(Sense<S> sense){
-        subscribers.add(sense);
+    public void addSubscriber(Sensor<S> sensor){
+        subscribers.add(sensor);
     }
 
-    public void removeSubscriber(Sense<S> sense){
-        subscribers.remove(sense);
+    public void removeSubscriber(Sensor<S> sensor){
+        subscribers.remove(sensor);
     }
 
-    public List<Sense<S>> getSubscribers() {
+    public List<Sensor<S>> getSubscribers() {
         return subscribers;
     }
 
-    public abstract List<Event> retrieveEventsForParams(S params);
+    public abstract Sensor<S> constructSensorForDatastream(Creature c, Sensor.ParameterCalculator<S> pCalc);
+
 
 
 }

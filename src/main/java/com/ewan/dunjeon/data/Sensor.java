@@ -4,30 +4,28 @@ import com.ewan.dunjeon.world.entities.creatures.Creature;
 
 import java.util.List;
 
-public class Sense<P extends DataStreamParameters> {
+public class Sensor<P extends DataStreamParameters> {
     protected Creature creature;
     protected Datastream<P> datastream;
     private ParameterCalculator<P> parameterCalculator;
 
-    public Sense(Creature c, Datastream<P> d, ParameterCalculator<P> pCalc){
+    protected Sensor(Creature c, Datastream<P> d, ParameterCalculator<P> pCalc){
         creature = c;
         datastream = d;
         datastream.addSubscriber(this);
         parameterCalculator = pCalc;
     }
 
-    public final void pollData(){
-        List<Data> data = datastream.generateDataForParams(parameterCalculator.calculateParameter(creature));
-        for (Data datum : data) {
-            creature.getMemoryProcessor().processData(datum);
+    public final P getParameters(){return parameterCalculator.calculateParameter(creature);}
+
+    public final void passOnData(List<DataWrapper<? extends Data, ?>> data){
+        for (DataWrapper<? extends Data, ?> datum : data) {
+            creature.getMemoryProcessor().processWrappedData(datum);
         }
     }
 
-    public final void pollEvents(){
-        List<Event> events = datastream.retrieveEventsForParams(parameterCalculator.calculateParameter(creature));
-        for (Event event : events) {
-            creature.getMemoryProcessor().processEvent(event);
-        }
+    public final void passOnEvents(List<Event> events){
+//        List<Event> events = datastream.re(parameterCalculator.calculateParameter(creature));
     }
 
     /**
