@@ -21,6 +21,7 @@ public class BasicMemoryBank extends EventProcessor {
     private final HashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new HashMap<>();
     private final HashMap<Long, Relationship> relationshipMap = new HashMap<>();
 
+    //Unwrap data to figure out its context, and place it in the appropriate knowledge object
     @SuppressWarnings("unchecked")
     public void processWrappedData(DataWrapper<? extends Data, ?> wrappedData){
         if(wrappedData instanceof DataWrappers.EntityDataWrapper){
@@ -28,6 +29,8 @@ public class BasicMemoryBank extends EventProcessor {
 
             long UUID = ((DataWrappers.EntityDataWrapper) wrappedData).getIdentifier();
             CreatureKnowledge creatureKnowledge;
+
+            //Create knowledge object for this creature if it doesn't already exist
             if(!creatureKnowledgeHashMap.containsKey(UUID)){
                 creatureKnowledge = creatureKnowledgeHashMap.get(UUID);
             }else{
@@ -35,9 +38,9 @@ public class BasicMemoryBank extends EventProcessor {
                 creatureKnowledgeHashMap.put(UUID, creatureKnowledge);
             }
 
+            //Register the data for this creature.
             for (Datas.EntityData entityDatum : entityData) {
                 creatureKnowledge.register(entityDatum);
-
             }
         }
     }

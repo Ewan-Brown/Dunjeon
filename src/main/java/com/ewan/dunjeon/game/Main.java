@@ -47,6 +47,7 @@ public class Main {
         Dunjeon w = Dunjeon.getInstance();
         try {
             Thread.sleep(UPDATE_DELAY);
+            w.update(1.0D);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

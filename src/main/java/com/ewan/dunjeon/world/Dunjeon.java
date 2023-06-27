@@ -29,7 +29,7 @@ public class Dunjeon implements KeyListener {
         dunjeon = new Dunjeon();
     }
 
-    List<Floor> floors = new ArrayList<>(); //TODO Should this be here, or should everything be stored in a node tree...?
+    List<Floor> floors = new ArrayList<>(); // TODO Should this be here, or should everything be stored in a node tree...?
     public void addLevel(Floor l){
         floors.add(l);
     }
@@ -59,10 +59,32 @@ public class Dunjeon implements KeyListener {
     /*
     Updates the game, returns true if the game is over.
      */
-    public void update(){
-        time++;
-        doControls();
-        getPlayer().getFloor().update(1D);
+    public void update(double t){
+        this.time += t;
+
+        // To ensure data synchronization this order should be followed
+
+        // Physics update
+        // - (Pre-Dyn4J) Check for entities to be removed
+        // - (Dyn4J) Call physics updates on all entities
+        // - - Amalgamate collision events for next step
+        // - (Post-Dyn4J) Solve collision events
+        // Data update
+        // - Update datastreams
+        // - - Calculate data ... Good spot for parallelization
+        // - - Pass data to subscribers
+        // AI Update
+        // - Preprocess anything that might be useful ... another good spot for parallelization
+        // - Iterate across them, updating and/or starting new "actions"
+        // - - See if I can stick to an abstract 'Action' framework.
+        // Human interface update
+        // - Harvest UI/UX info, poll and update for controls.
+        // - Pass user UI data
+
+        // Data update
+//        doControls();
+
+//        getPlayer().getFloor().update(t);
 
     }
 
