@@ -5,9 +5,9 @@ import com.ewan.dunjeon.world.entities.creatures.Creature;
 import java.util.List;
 
 public class Sensor<P extends DataStreamParameters> {
-    protected Creature creature;
-    protected Datastream<P> datastream;
-    private ParameterCalculator<P> parameterCalculator;
+    final protected Creature creature;
+    final protected Datastream<P> datastream;
+    final private ParameterCalculator<P> parameterCalculator;
 
     protected Sensor(Creature c, Datastream<P> d, ParameterCalculator<P> pCalc){
         creature = c;
@@ -24,8 +24,10 @@ public class Sensor<P extends DataStreamParameters> {
         }
     }
 
-    public final void passOnEvents(List<Event> events){
-//        List<Event> events = datastream.re(parameterCalculator.calculateParameter(creature));
+    public final void passOnEvents(List<Event<?>> events){
+        for (Event<?> event : events) {
+            creature.getMemoryProcessor().processEventData(event);
+        }
     }
 
     /**

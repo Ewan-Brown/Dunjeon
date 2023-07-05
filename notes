@@ -55,3 +55,7 @@ Can think of mana as more of a gas consumed.
 SOUND:
 
 Maybe this is stupid but, take my audio clips, and do some fucky shit with the data. e.x take the data, FFT it at various parameters and recreate it with inverse FFT.
+
+
+Bug, world not updating:
+    Not a bug. Just too many entities idiot head

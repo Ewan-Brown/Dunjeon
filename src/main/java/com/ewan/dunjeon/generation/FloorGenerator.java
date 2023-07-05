@@ -397,12 +397,15 @@ public class FloorGenerator {
 //            }
 //        }
         floor.setCells(cells);
-        Arrays.stream(cells).forEach(basicCells -> Arrays.stream(basicCells).forEach(new Consumer<BasicCell>() {
-            @Override
-            public void accept(BasicCell basicCell) {
-                floor.getWorld().addBody(basicCell);
+        //FIXME Leaving this uncommented appears to break the physics update. I am betting that it's because they're all overlapping and not 'static'
+        int i = 0;
+        for (BasicCell[] c : cells) {
+            for (BasicCell cell : c) {
+                floor.getWorld().addBody(cell);
             }
-        }));
+        }
+        System.out.println("# of cells: " + cells.length);
+//        Arrays.stream(cells).forEach(basicCells -> Arrays.stream(basicCells).forEach(basicCell -> floor.getWorld().addBody(basicCell)));
     }
 
     public Floor getFloor(){

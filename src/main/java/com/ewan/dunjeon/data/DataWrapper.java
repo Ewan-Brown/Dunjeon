@@ -14,9 +14,11 @@ import java.util.List;
 public abstract class DataWrapper<D extends Data, I> {
     List<D> data;
     I identifier;
+    Sensor<? extends DataStreamParameters> sourceSensor;
 
-    public DataWrapper(List<D> data, I identifier) {
+    public DataWrapper(List<D> data, I identifier, Sensor<? extends DataStreamParameters> s) {
         this.data = data;
         this.identifier = identifier;
+        sourceSensor = s;
     }
 }

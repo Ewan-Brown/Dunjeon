@@ -1,27 +1,24 @@
 package com.ewan.dunjeon.world.entities;
 
-import com.ewan.dunjeon.data.Data;
-import com.ewan.dunjeon.data.DataWrapper;
-import com.ewan.dunjeon.data.DataWrappers;
-import com.ewan.dunjeon.data.Datas;
-import com.ewan.dunjeon.data.processing.EventProcessor;
+import com.ewan.dunjeon.data.*;
 import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
-import com.ewan.dunjeon.world.entities.memory.Relationship;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
-public class BasicMemoryBank extends EventProcessor {
+public class BasicMemoryBank {
 
     private final HashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new HashMap<>();
     private final HashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new HashMap<>();
-    private final HashMap<Long, Relationship> relationshipMap = new HashMap<>();
+    private final List<Event<?>> eventList = new ArrayList<>();
+
 
     //Unwrap data to figure out its context, and place it in the appropriate knowledge object
+    //TODO Should turn this series of ifs into a list of strategies....
     @SuppressWarnings("unchecked")
     public void processWrappedData(DataWrapper<? extends Data, ?> wrappedData){
         if(wrappedData instanceof DataWrappers.EntityDataWrapper){
@@ -31,7 +28,7 @@ public class BasicMemoryBank extends EventProcessor {
             CreatureKnowledge creatureKnowledge;
 
             //Create knowledge object for this creature if it doesn't already exist
-            if(!creatureKnowledgeHashMap.containsKey(UUID)){
+            if(creatureKnowledgeHashMap.containsKey(UUID)){
                 creatureKnowledge = creatureKnowledgeHashMap.get(UUID);
             }else{
                 creatureKnowledge = new CreatureKnowledge(UUID);
@@ -43,5 +40,9 @@ public class BasicMemoryBank extends EventProcessor {
                 creatureKnowledge.register(entityDatum);
             }
         }
+    }
+
+    public void processEventData(Event e){
+        eventList.add(e);
     }
 }

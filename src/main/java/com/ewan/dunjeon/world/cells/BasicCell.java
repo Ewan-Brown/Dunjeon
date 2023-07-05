@@ -2,12 +2,15 @@ package com.ewan.dunjeon.world.cells;
 
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.level.Floor;
+import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.Body;
+import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.function.Consumer;
 
 public class BasicCell extends Body {
     int x;
@@ -27,17 +30,17 @@ public class BasicCell extends Body {
         this.floor = f;
         this.color = c;
         this.addFixture(new Rectangle(1,1));
-        this.setMass(MassType.INFINITE);
-        this.translate(-0.5d, -0.5d);
+        this.setFilled(true);
+        this.fixtures.forEach(bodyFixture -> {
+            final short WALL_CATEGORY = 0x0002; // 2 in binary
+            bodyFixture.setFilter(new CategoryFilter(WALL_CATEGORY, (short) ~WALL_CATEGORY));
+        });
+//        this.translate(-0.5d, -0.5d);
     }
 
     public void setFilled(boolean f){
         filled = f;
     }
-
-//    public void setColor(Color c){
-//        this.color = c;
-//    }
 
     /*
      Don't forget about me :)

@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public abstract class Event {
-    private final double timestamp;
+public abstract class Event<D extends DataWrapper<? extends Data, ?>> {
+
+    D dataWrapper;
 
 }

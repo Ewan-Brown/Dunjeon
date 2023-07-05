@@ -1,6 +1,5 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
-import com.ewan.dunjeon.data.processing.EventProcessor;
 import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.data.Sensor;
@@ -25,7 +24,6 @@ public abstract class Creature extends Entity implements HasInventory {
     protected boolean autoPickup = false;
     private double pickupRange = 1;
 
-    private EventProcessor brain = new EventProcessor();
     private double loudStepChance = 0.001d; // Just for testing sound system - can be moved somewhere else :)
 
     @Override

@@ -24,9 +24,12 @@
  */
 package com.ewan.dunjeon.graphics;
 
+import com.ewan.dunjeon.data.Datas;
 import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
@@ -134,43 +137,93 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 		gl.glScaled(0.02, 0.02, 1.0);
 		gl.glTranslated(-50, -50,0);
-		for (BasicCell basicCell : Dunjeon.getInstance().getPlayer().getFloor().getCellsAsList()) {
-			Color c = basicCell.color;
-			gl.glColor3d(c.getRed()/255.0,c.getGreen()/255.0,c.getBlue()/255.0);
 
-			gl.glBegin(GL2.GL_POLYGON);
+		renderPerspective(gl, Dunjeon.getInstance().getPlayer());
+		gl.glPopMatrix();
+	}
 
-			double lowX = basicCell.getX();
-			double lowY = basicCell.getY();
-			double highX = lowX	+ 1;
-			double highY = lowY	+ 1;
+	public static void renderPerspective(GL2 gl, Creature c){
+		var creatureKnowledgeHashMap = c.getMemoryProcessor().getCreatureKnowledgeHashMap();
 
-			gl.glVertex2d(lowX, lowY);
-			gl.glVertex2d(highX, lowY);
-			gl.glVertex2d(highX, highY);
-			gl.glVertex2d(lowX, highY);
-
-			gl.glEnd();
-
-		}
-
-		for (Entity e : Dunjeon.getInstance().getPlayer().getFloor().getEntities()){
+		for (CreatureKnowledge value : creatureKnowledgeHashMap.values()) {
 			gl.glColor3d(0, 1,0);
 			gl.glBegin(GL2.GL_POLYGON);
-
 			final double SIZE = 1;
 			final double HALF_SIZE = SIZE/2;
 
-			double centerX = e.getWorldCenter().x;
-			double centerY = e.getWorldCenter().y;
+
+			Vector2 centerPos = value.get(Datas.EntityPositionalData.class).getPosition();
+
+//			Vector2 relativePos = centerPos.subtract(c.getWorldCenter());
+
+			Vector2 relativePos = centerPos;
+
+			double centerX = relativePos.x;
+			double centerY = relativePos.y;
+
 
 			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
 			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
 			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
 			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
-
+			gl.glEnd();
 		}
 
-		gl.glPopMatrix();
+//		System.out.println("CreatureKnowledgeHashMap size : " + creatureKnowledgeHashMap.size());
+//		for (Entity e : Dunjeon.getInstance().getPlayer().getFloor().getEntities()){
+//			gl.glColor3d(0, 1,0);
+//			gl.glBegin(GL2.GL_POLYGON);
+//
+//			final double SIZE = 1;
+//			final double HALF_SIZE = SIZE/2;
+//
+//			double centerX = e.getWorldCenter().x;
+//			double centerY = e.getWorldCenter().y;
+//
+//			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
+//			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
+//			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
+//			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
+//
+//		}
+	}
+
+	public static void renderAll(GL2 gl){
+		//		for (BasicCell basicCell : Dunjeon.getInstance().getPlayer().getFloor().getCellsAsList()) {
+//			Color c = basicCell.color;
+//			gl.glColor3d(c.getRed()/255.0,c.getGreen()/255.0,c.getBlue()/255.0);
+//
+//			gl.glBegin(GL2.GL_POLYGON);
+//
+//			double lowX = basicCell.getX();
+//			double lowY = basicCell.getY();
+//			double highX = lowX	+ 1;
+//			double highY = lowY	+ 1;
+//
+//			gl.glVertex2d(lowX, lowY);
+//			gl.glVertex2d(highX, lowY);
+//			gl.glVertex2d(highX, highY);
+//			gl.glVertex2d(lowX, highY);
+//
+//			gl.glEnd();
+//
+//		}
+
+//		for (Entity e : Dunjeon.getInstance().getPlayer().getFloor().getEntities()){
+//			gl.glColor3d(0, 1,0);
+//			gl.glBegin(GL2.GL_POLYGON);
+//
+//			final double SIZE = 1;
+//			final double HALF_SIZE = SIZE/2;
+//
+//			double centerX = e.getWorldCenter().x;
+//			double centerY = e.getWorldCenter().y;
+//
+//			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
+//			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
+//			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
+//			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
+//
+//		}
 	}
 }

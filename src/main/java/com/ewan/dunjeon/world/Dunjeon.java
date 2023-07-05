@@ -34,6 +34,13 @@ public class Dunjeon implements KeyListener {
         floors.add(l);
     }
 
+    public Dunjeon(){
+        initialize();
+    }
+
+    private void initialize() {
+
+    }
 
     /**
      * Adds ,man entity at a random location On a level.
@@ -60,31 +67,18 @@ public class Dunjeon implements KeyListener {
     Updates the game, returns true if the game is over.
      */
     public void update(double t){
+        System.out.println("Updating world, t = " + time);
         this.time += t;
 
-        // To ensure data synchronization this order should be followed
 
-        // Physics update
-        // - (Pre-Dyn4J) Check for entities to be removed
-        // - (Dyn4J) Call physics updates on all entities
-        // - - Amalgamate collision events for next step
-        // - (Post-Dyn4J) Solve collision events
-        // Data update
-        // - Update datastreams
-        // - - Calculate data ... Good spot for parallelization
-        // - - Pass data to subscribers
-        // AI Update
-        // - Preprocess anything that might be useful ... another good spot for parallelization
-        // - Iterate across them, updating and/or starting new "actions"
-        // - - See if I can stick to an abstract 'Action' framework.
-        // Human interface update
-        // - Harvest UI/UX info, poll and update for controls.
-        // - Pass user UI data
+        //Remove entities, apply physics step and collect collisions
+        getPlayer().getFloor().updatePhysics(t);
 
-        // Data update
-//        doControls();
+        //Update Datastreams!
+        sightDataStream.update(this);
 
-//        getPlayer().getFloor().update(t);
+        //Update Entities
+        getPlayer().getFloor().updateEntities(t);
 
     }
 

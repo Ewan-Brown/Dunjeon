@@ -12,22 +12,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends Creature {
-    List<Sensor<? extends DataStreamParameters>> sens = new ArrayList<>();
+    List<Sensor<? extends DataStreamParameters>> senses = new ArrayList<>();
+    BasicMemoryBank b = new BasicMemoryBank();
+
     public Player(String name) {
         super(name);
         autoPickup = true;
-        sens.add(Dunjeon.getInstance().getSightDataStream().constructSensorForDatastream(this, c -> new Datastreams.SightDataStream.SightStreamParameters(10, Math.PI, new Vector2())));
+        senses.add(Dunjeon.getInstance().getSightDataStream().constructSensorForDatastream(this, c -> new Datastreams.SightDataStream.SightStreamParameters(10, Math.PI, new Vector2())));
 
     }
 
     @Override
     public BasicMemoryBank getMemoryProcessor() {
-        return null;
+        return b;
     }
 
     @Override
     public List<Sensor<? extends DataStreamParameters>> getSensors() {
-        return sens;
+        return senses;
     }
 
     @Override
