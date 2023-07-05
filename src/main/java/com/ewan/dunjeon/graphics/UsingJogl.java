@@ -147,31 +147,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 	}
 
 	public static void renderPerspective(GL2 gl, Creature c){
-		var creatureKnowledgeHashMap = c.getMemoryProcessor().getCreatureKnowledgeHashMap();
 
-		for (CreatureKnowledge value : creatureKnowledgeHashMap.values()) {
-			gl.glColor3d(0, 1,0);
-			gl.glBegin(GL2.GL_POLYGON);
-			final double SIZE = 1;
-			final double HALF_SIZE = SIZE/2;
-
-
-			Vector2 centerPos = value.get(Datas.EntityPositionalData.class).getPosition();
-
-//			Vector2 relativePos = centerPos.subtract(c.getWorldCenter());
-
-			Vector2 relativePos = centerPos;
-
-			double centerX = relativePos.x;
-			double centerY = relativePos.y;
-
-
-			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
-			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
-			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
-			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
-			gl.glEnd();
-		}
 
 		HashMap<WorldUtils.CellPosition, CellKnowledge> map = c.getMemoryProcessor().getCellKnowledgeHashMap();
 
@@ -194,6 +170,33 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 			double centerX = relativePos.x;
 			double centerY = relativePos.y;
+
+			gl.glVertex2d(centerX, centerY);
+			gl.glVertex2d(centerX+SIZE, centerY);
+			gl.glVertex2d(centerX+SIZE, centerY+SIZE);
+			gl.glVertex2d(centerX, centerY+SIZE);
+			gl.glEnd();
+		}
+
+		var creatureKnowledgeHashMap = c.getMemoryProcessor().getCreatureKnowledgeHashMap();
+
+		for (CreatureKnowledge value : creatureKnowledgeHashMap.values()) {
+			gl.glColor3d(0, 1,0);
+			gl.glBegin(GL2.GL_POLYGON);
+			final double SIZE = 1;
+			final double HALF_SIZE = SIZE/2;
+
+
+			Vector2 centerPos = value.get(Datas.EntityPositionalData.class).getPosition();
+			System.out.println(centerPos);
+
+//			Vector2 relativePos = centerPos.subtract(c.getWorldCenter());
+
+			Vector2 relativePos = centerPos;
+
+			double centerX = relativePos.x;
+			double centerY = relativePos.y;
+
 
 			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
 			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);

@@ -28,7 +28,7 @@ public class Datastreams {
 
                 //Pretend that data calculation actually occurs here
                 Datas.EntityKineticData kineticData = new Datas.EntityKineticData(d.getTime(), new Vector2(), 0, 0);
-                Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData(d.getTime(), subscriber.creature.getWorldCenter().add(-5,-5), subscriber.creature.getUUID());
+                Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData(d.getTime(), subscriber.creature.getWorldCenter(), subscriber.creature.getUUID());
                 Long entityId = 2L;
 
                 //All data about a given entity grouped together
