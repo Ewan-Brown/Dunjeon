@@ -26,9 +26,12 @@ package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.data.Datas;
 import com.ewan.dunjeon.world.Dunjeon;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
+import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
@@ -42,6 +45,8 @@ import org.dyn4j.world.World;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UsingJogl extends JFrame implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
@@ -136,7 +141,6 @@ public class UsingJogl extends JFrame implements GLEventListener {
 		// Draw things with true sight
 
 		gl.glScaled(0.02, 0.02, 1.0);
-		gl.glTranslated(-50, -50,0);
 
 		renderPerspective(gl, Dunjeon.getInstance().getPlayer());
 		gl.glPopMatrix();
@@ -169,23 +173,36 @@ public class UsingJogl extends JFrame implements GLEventListener {
 			gl.glEnd();
 		}
 
-//		System.out.println("CreatureKnowledgeHashMap size : " + creatureKnowledgeHashMap.size());
-//		for (Entity e : Dunjeon.getInstance().getPlayer().getFloor().getEntities()){
-//			gl.glColor3d(0, 1,0);
-//			gl.glBegin(GL2.GL_POLYGON);
-//
-//			final double SIZE = 1;
-//			final double HALF_SIZE = SIZE/2;
-//
-//			double centerX = e.getWorldCenter().x;
-//			double centerY = e.getWorldCenter().y;
-//
-//			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
-//			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
-//			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
-//			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
-//
-//		}
+		HashMap<WorldUtils.CellPosition, CellKnowledge> map = c.getMemoryProcessor().getCellKnowledgeHashMap();
+
+		for (CellKnowledge cellKnowledge : map.values()) {
+			Datas.CellEnterableData enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
+			if(enterableData != null && enterableData.getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE){
+				gl.glColor3d(1, 0,1);
+			}else{
+				gl.glColor3d(0, 0,1);
+			}
+			gl.glBegin(GL2.GL_POLYGON);
+			final double SIZE = 1;
+			final double HALF_SIZE = SIZE/2;
+
+			Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getX(), cellKnowledge.getIdentifier().getY());
+
+			//			Vector2 relativePos = centerPos.subtract(c.getWorldCenter());
+
+			Vector2 relativePos = centerPos;
+
+			double centerX = relativePos.x;
+			double centerY = relativePos.y;
+
+			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
+			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
+			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
+			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
+			gl.glEnd();
+		}
+
+
 	}
 
 	public static void renderAll(GL2 gl){

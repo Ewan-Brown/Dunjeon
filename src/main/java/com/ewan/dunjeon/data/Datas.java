@@ -16,6 +16,7 @@ public class Datas {
 
     }
 
+    @Getter
     public static class CellEnterableData extends CellData {
 
         EnterableStatus enterableStatus;
@@ -25,7 +26,7 @@ public class Datas {
             enterableStatus = status;
         }
 
-        enum EnterableStatus{
+        public enum EnterableStatus{
             /**
              * This cell isn't enterable! Don't even try.
              */

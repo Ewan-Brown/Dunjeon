@@ -3,10 +3,13 @@ package com.ewan.dunjeon.world;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 
@@ -230,4 +233,21 @@ public class WorldUtils {
         return intersectedTiles;
     }
 
+    @AllArgsConstructor
+    @Getter
+    public static class CellPosition{
+        private final int x;
+        private final int y;
+        private final long floorID;
+
+        @Override
+        public boolean equals(Object obj) {
+            return (obj instanceof CellPosition) && ((CellPosition) obj).floorID == this.floorID && ((CellPosition)obj).x == this.x && ((CellPosition)obj).y == this.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y, floorID);
+        }
+    }
 }

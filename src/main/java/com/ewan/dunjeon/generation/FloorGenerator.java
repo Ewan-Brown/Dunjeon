@@ -29,7 +29,7 @@ public class FloorGenerator {
     List<SplitLine> splitLineList;
     List<Junction> junctions;
     List<Hall> halls;
-    Floor floor = new Floor();
+    Floor floor = new Floor(10, 10);
 
     double[][] weightMap;
     BasicCell[][] cells;

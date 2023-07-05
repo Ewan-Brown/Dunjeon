@@ -2,9 +2,7 @@ package com.ewan.dunjeon.world.level;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import org.dyn4j.collision.CollisionBody;
 import org.dyn4j.collision.Fixture;
 import org.dyn4j.dynamics.Body;
@@ -15,19 +13,26 @@ import org.dyn4j.world.listener.CollisionListener;
 
 import java.util.*;
 import java.util.List;
-import java.util.stream.Stream;
 
 
 public class Floor {
 
     private static long UUIDCounter = 0;
+    @Getter
     final Long UUID;
     BasicCell[][] cells;
     List<Entity> entities = new ArrayList<>();
-    World<Body> w = new World<>();
+    World<Body> world = new World<>();
     List<ManifoldCollisionData<CollisionBody<Fixture>, Fixture>> collisionDataAccumulator = new ArrayList<>();
 
-    public Floor(){
+    @Getter
+    public final int width;
+    @Getter
+    public final int height;
+
+    public Floor(int w, int h){
+        width = w;
+        height = h;
         UUID = UUIDCounter;
         UUIDCounter++;
 
@@ -53,7 +58,7 @@ public class Floor {
             };
         };
 
-        w.addCollisionListener(collisionListener);
+        world.addCollisionListener(collisionListener);
 
     }
 
@@ -80,7 +85,7 @@ public class Floor {
         return cells;
     }
 
-    public World<Body> getWorld(){return w;}
+    public World<Body> getWorld(){return world;}
 
 
     public List<BasicCell> getCellsAsList(){
@@ -98,7 +103,7 @@ public class Floor {
         collisionDataAccumulator.clear();
 
         // - (Dyn4J) Call physics update
-        w.update(stepSize);
+        world.update(stepSize);
 
     }
 

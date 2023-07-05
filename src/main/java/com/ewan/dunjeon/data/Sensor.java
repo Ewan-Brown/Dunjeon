@@ -18,7 +18,7 @@ public class Sensor<P extends DataStreamParameters> {
 
     public final P getParameters(){return parameterCalculator.calculateParameter(creature);}
 
-    public final void passOnData(List<DataWrapper<? extends Data, ?>> data){
+    public final void passOnData(List<? extends DataWrapper<? extends Data, ?>> data){
         for (DataWrapper<? extends Data, ?> datum : data) {
             creature.getMemoryProcessor().processWrappedData(datum);
         }

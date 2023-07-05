@@ -1,8 +1,11 @@
 package com.ewan.dunjeon.world.entities;
 
 import com.ewan.dunjeon.data.*;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
+import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
+import com.ewan.dunjeon.world.level.Floor;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ public class BasicMemoryBank {
 
     private final HashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new HashMap<>();
     private final HashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new HashMap<>();
+    private final HashMap<WorldUtils.CellPosition, CellKnowledge> cellKnowledgeHashMap = new HashMap<>();
     private final List<Event<?>> eventList = new ArrayList<>();
 
 
@@ -40,9 +44,29 @@ public class BasicMemoryBank {
                 creatureKnowledge.register(entityDatum);
             }
         }
+
+        //TODO Complete this
+        if(wrappedData instanceof DataWrappers.CellDataWrapper){
+            DataWrappers.CellDataWrapper wrappedCellData = (DataWrappers.CellDataWrapper) wrappedData;
+            WorldUtils.CellPosition cellIdentifier = wrappedCellData.getIdentifier();
+
+            CellKnowledge cellKnowledge;
+
+            if(cellKnowledgeHashMap.containsKey(cellIdentifier)){
+                cellKnowledge = cellKnowledgeHashMap.get(cellIdentifier);
+            }else{
+                cellKnowledge = new CellKnowledge(cellIdentifier);
+                cellKnowledgeHashMap.put(cellIdentifier, cellKnowledge);
+            }
+
+            for (Datas.CellData cellDatum : wrappedCellData.getData()) {
+                cellKnowledge.register(cellDatum);
+            }
+        }
     }
 
     public void processEventData(Event e){
         eventList.add(e);
     }
+
 }

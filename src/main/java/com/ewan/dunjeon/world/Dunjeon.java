@@ -6,6 +6,8 @@ import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -33,6 +35,7 @@ public class Dunjeon implements KeyListener {
     public void addLevel(Floor l){
         floors.add(l);
     }
+
 
     public Dunjeon(){
         initialize();

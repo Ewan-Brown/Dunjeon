@@ -3,6 +3,7 @@ package com.ewan.dunjeon.world.entities.memory.creaturedata;
 
 import com.ewan.dunjeon.data.Datas;
 import com.ewan.dunjeon.data.UpdateableData;
+import com.ewan.dunjeon.world.entities.memory.Knowledge;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,8 +13,7 @@ import java.util.HashMap;
  * Represents basic information that is known about a Creature, from another Creature's perspective.
  */
 
-public class CreatureKnowledge {
-    final long UUID;
+public class CreatureKnowledge extends Knowledge<Long, Datas.EntityData> {
 
     HashMap<Class<? extends Datas.EntityData>, Datas.EntityData> dataMap = new HashMap<>();
 
@@ -34,7 +34,7 @@ public class CreatureKnowledge {
     }
 
 
-    public CreatureKnowledge(long id){
-        UUID = id;
+    public CreatureKnowledge(Long id){
+        super(id);
     }
 }
