@@ -6,8 +6,6 @@ import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -21,9 +19,11 @@ import static com.ewan.dunjeon.game.Main.rand;
 public class Dunjeon implements KeyListener {
 
     private static Dunjeon dunjeon = new Dunjeon();
-    private double time = 0;
+    private double timeElapsed = 0;
+    private int ticksElapsed = 0;
 
-    public double getTime(){return time;}
+    public double getTimeElapsed(){return timeElapsed;}
+    public long getTicksElapsed(){return ticksElapsed;}
 
     private Player player;
     public static Dunjeon getInstance(){return dunjeon;}
@@ -70,14 +70,13 @@ public class Dunjeon implements KeyListener {
     Updates the game, returns true if the game is over.
      */
     public void update(double t){
-        this.time += t;
+        this.timeElapsed += t;
 
 
         //Remove entities, apply physics step and collect collisions
         getPlayer().getFloor().updatePhysics(t);
 
         //Update Datastreams!
-        System.out.println("Updating Datastream...");
         sightDataStream.update(this);
 
         //Update Entities

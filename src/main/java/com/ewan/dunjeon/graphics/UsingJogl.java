@@ -54,8 +54,6 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 	protected GLCanvas canvas;
 
-	protected long last;
-
 	public UsingJogl() {
 		super("JOGL Dunjeon");
 
@@ -83,7 +81,6 @@ public class UsingJogl extends JFrame implements GLEventListener {
 	}
 
 	public void start() {
-		this.last = System.nanoTime();
 		Animator animator = new Animator(this.canvas);
 		animator.setRunAsFastAsPossible(true);
 		animator.start();
@@ -187,7 +184,6 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 			if(posData != null) {
 				Vector2 centerPos = posData.getPosition();
-				System.out.println("[GRAPHICS] entity location = " + centerPos + " FloorUUID : " + posData.getFloorUUID());
 				Vector2 relativePos = new Vector2(c.getWorldCenter().to(centerPos));
 
 

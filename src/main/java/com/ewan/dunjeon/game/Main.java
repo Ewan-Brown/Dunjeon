@@ -6,11 +6,11 @@ import com.ewan.dunjeon.graphics.UsingJogl;
 import com.ewan.dunjeon.world.entities.creatures.Player;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Dunjeon;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.dyn4j.geometry.Circle;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.function.Consumer;
 
 
 public class Main {
@@ -27,7 +27,7 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                updateCurrentWorld();
+                updateCurrentWorld(100);
             }
         }).start();
 
@@ -45,6 +45,32 @@ public class Main {
         }
     }
 
+    private static List<Long> durations = new ArrayList<>();
+
+    private static void updateCurrentWorld(int dataSamples){
+        Dunjeon w = Dunjeon.getInstance();
+        try {
+            Thread.sleep(UPDATE_DELAY);
+            long t0 = System.nanoTime();
+            w.update(1.0D);
+            long t1 = System.nanoTime();
+            durations.add(t1 - t0);
+
+            if(durations.size() == dataSamples){
+                DescriptiveStatistics stats = new DescriptiveStatistics();
+                durations.forEach(v -> stats.addValue((double)v/1000000D));
+                System.out.println("******* WORLD UPDATE DATA *******");
+                System.out.println("Data sample size : " + dataSamples);
+                System.out.println("Mean duration : " + stats.getMean());
+                System.out.println("Standard Deviation : " + stats.getStandardDeviation());
+                System.out.println("Skewness : " + stats.getSkewness());
+                durations.clear();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void updateCurrentWorld(){
         Dunjeon w = Dunjeon.getInstance();
         try {
@@ -54,6 +80,7 @@ public class Main {
             e.printStackTrace();
         }
     }
+
 
     private static void generateWorld(){
         long seed = rand.nextInt();

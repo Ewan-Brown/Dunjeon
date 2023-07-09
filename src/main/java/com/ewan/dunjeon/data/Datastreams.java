@@ -25,23 +25,30 @@ public class Datastreams {
 
                 //************* Entity Data *********************//
 
-                //Pretend that data calculation actually occurs here
-                Datas.EntityKineticData kineticData = new Datas.EntityKineticData(d.getTime(), new Vector2(), 0, 0);
-                Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData(d.getTime(), new Vector2(0,0), subscriber.creature.getUUID());
-                Long entityId = 2L;
+                List<DataWrappers.EntityDataWrapper> entityDataWrappers = new ArrayList<>();
 
-                //All data about a given entity grouped together
-                List<Datas.EntityData> entityDataAmalgamated = List.of(kineticData, positionalData);
+                for (int i = 0; i < 0; i++) {
+                    //Pretend that data calculation actually occurs here
+                    Datas.EntityKineticData kineticData = new Datas.EntityKineticData(d.getTimeElapsed(), new Vector2(), 0, 0);
+                    Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData(d.getTimeElapsed(), (new Vector2(subscriber.creature.getWorldCenter())).add(Math.random(), Math.random()), subscriber.creature.getUUID());
+                    Long entityId = (long) i;
 
-                //Now give it context, with the entity ID and a link to this sensor, and wrap it together nicely
-                DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(entityDataAmalgamated, entityId, subscriber);
+                    //All data about a given entity grouped together
+                    List<Datas.EntityData> entityDataAmalgamated = List.of(kineticData, positionalData);
+
+                    //Now give it context, with the entity ID and a link to this sensor, and wrap it together nicely
+                    DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(entityDataAmalgamated, entityId, subscriber);
+                    entityDataWrappers.add(entityDataWrapper);
+                }
+
+
 
                 //************* Cell Data *********************//
 
 
                 List<DataWrappers.CellDataWrapper> cellDataAmalgamated = new ArrayList<>();
                 for (BasicCell basicCell : subscriber.creature.getFloor().getCellsAsList()) {
-                        Datas.CellData cellData = (new Datas.CellEnterableData(d.getTime(), basicCell.canBeEntered(subscriber.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
+                        Datas.CellData cellData = (new Datas.CellEnterableData(d.getTimeElapsed(), basicCell.canBeEntered(subscriber.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
                         DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell.getX(), basicCell.getY(), subscriber.creature.getFloor().getUUID()), subscriber);
                         cellDataAmalgamated.add(cellDataWrapper);
                 }
@@ -49,7 +56,7 @@ public class Datastreams {
 
                 //************* PUSH *********************//
 
-                subscriber.passOnData(List.of(entityDataWrapper));
+                subscriber.passOnData(entityDataWrappers);
                 subscriber.passOnData(cellDataAmalgamated);
 
             }
