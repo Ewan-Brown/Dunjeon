@@ -97,7 +97,6 @@ public class Floor {
     }
 
     public void updatePhysics(double stepSize){
-        System.out.println("Updating floor physics");
         // Physics update
         // - (Pre-Dyn4J) Check for entities to be removed, clear accumulators
         collisionDataAccumulator.clear();
@@ -108,7 +107,6 @@ public class Floor {
     }
 
     public void updateEntities(double stepSize){
-        System.out.println("Updating floor entities");
 
 
         // AI Update

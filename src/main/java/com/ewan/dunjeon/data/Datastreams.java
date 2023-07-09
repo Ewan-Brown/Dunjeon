@@ -18,7 +18,6 @@ public class Datastreams {
         //Worry about performance LATER we can think about caching or something
         @Override
         public void update(Dunjeon d) {
-            System.out.println("updating datastream: " + getClass());
             for (Sensor<SightStreamParameters> subscriber : getSubscribers()) {
 
                 //Get necessary parameters from subscriber
@@ -28,7 +27,7 @@ public class Datastreams {
 
                 //Pretend that data calculation actually occurs here
                 Datas.EntityKineticData kineticData = new Datas.EntityKineticData(d.getTime(), new Vector2(), 0, 0);
-                Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData(d.getTime(), subscriber.creature.getWorldCenter(), subscriber.creature.getUUID());
+                Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData(d.getTime(), new Vector2(0,0), subscriber.creature.getUUID());
                 Long entityId = 2L;
 
                 //All data about a given entity grouped together

@@ -20,6 +20,7 @@ public class BasicMemoryBank {
     private final HashMap<WorldUtils.CellPosition, CellKnowledge> cellKnowledgeHashMap = new HashMap<>();
     private final List<Event<?>> eventList = new ArrayList<>();
 
+    //TODO Add structure so that we can have a list of indexed knowledges with identifiers, and 'non-indexed' ones that only decay and are never updated again. i.e decoy 'entities' that will never later get updated, and can cut down on some performance hits?
 
     //Unwrap data to figure out its context, and place it in the appropriate knowledge object
     //TODO Should turn this series of ifs into a list of strategies....
@@ -28,7 +29,7 @@ public class BasicMemoryBank {
         if(wrappedData instanceof DataWrappers.EntityDataWrapper){
             List<Datas.EntityData> entityData = (List<Datas.EntityData>) wrappedData.getData();
 
-            long UUID = ((DataWrappers.EntityDataWrapper) wrappedData).getIdentifier();
+            Long UUID = ((DataWrappers.EntityDataWrapper) wrappedData).getIdentifier();
             CreatureKnowledge creatureKnowledge;
 
             //Create knowledge object for this creature if it doesn't already exist

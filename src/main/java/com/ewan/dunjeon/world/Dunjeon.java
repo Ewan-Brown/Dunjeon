@@ -70,7 +70,6 @@ public class Dunjeon implements KeyListener {
     Updates the game, returns true if the game is over.
      */
     public void update(double t){
-        System.out.println("Updating world, t = " + time);
         this.time += t;
 
 
@@ -78,6 +77,7 @@ public class Dunjeon implements KeyListener {
         getPlayer().getFloor().updatePhysics(t);
 
         //Update Datastreams!
+        System.out.println("Updating Datastream...");
         sightDataStream.update(this);
 
         //Update Entities
@@ -147,7 +147,6 @@ public class Dunjeon implements KeyListener {
         //Test function
         if(keySet.get(KeyEvent.VK_Z)){
             keySet.set(KeyEvent.VK_Z, false);
-            System.out.println(player.getPoint2DLoc());
         }
     }
 

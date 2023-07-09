@@ -47,6 +47,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 public class UsingJogl extends JFrame implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
@@ -160,13 +161,9 @@ public class UsingJogl extends JFrame implements GLEventListener {
 			}
 			gl.glBegin(GL2.GL_POLYGON);
 			final double SIZE = 1;
-			final double HALF_SIZE = SIZE/2;
 
 			Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getX(), cellKnowledge.getIdentifier().getY());
-
-			//			Vector2 relativePos = centerPos.subtract(c.getWorldCenter());
-
-			Vector2 relativePos = centerPos;
+			Vector2 relativePos = new Vector2(c.getWorldCenter().to(centerPos));
 
 			double centerX = relativePos.x;
 			double centerY = relativePos.y;
@@ -186,23 +183,23 @@ public class UsingJogl extends JFrame implements GLEventListener {
 			final double SIZE = 1;
 			final double HALF_SIZE = SIZE/2;
 
+			Datas.EntityPositionalData posData = value.get(Datas.EntityPositionalData.class);
 
-			Vector2 centerPos = value.get(Datas.EntityPositionalData.class).getPosition();
-			System.out.println(centerPos);
-
-//			Vector2 relativePos = centerPos.subtract(c.getWorldCenter());
-
-			Vector2 relativePos = centerPos;
-
-			double centerX = relativePos.x;
-			double centerY = relativePos.y;
+			if(posData != null) {
+				Vector2 centerPos = posData.getPosition();
+				System.out.println("[GRAPHICS] entity location = " + centerPos + " FloorUUID : " + posData.getFloorUUID());
+				Vector2 relativePos = new Vector2(c.getWorldCenter().to(centerPos));
 
 
-			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
-			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
-			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
-			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
-			gl.glEnd();
+				double centerX = relativePos.x;
+				double centerY = relativePos.y;
+
+				gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
+				gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
+				gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
+				gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
+				gl.glEnd();
+			}
 		}
 
 

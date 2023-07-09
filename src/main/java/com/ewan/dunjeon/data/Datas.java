@@ -87,6 +87,7 @@ public class Datas {
 
         public EntityPositionalData(double timestamp, Vector2 pos, long floorID) {
             super(timestamp);
+            System.out.println("[DATA] EntityPositionalData created with : " + pos.toString());
             position = pos;
             floorUUID = floorID;
         }

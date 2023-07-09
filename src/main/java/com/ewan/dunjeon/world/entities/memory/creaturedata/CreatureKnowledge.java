@@ -20,12 +20,21 @@ public class CreatureKnowledge extends Knowledge<Long, Datas.EntityData> {
     @SuppressWarnings("unchecked")
     public <T extends Datas.EntityData > void register(T object){
 
+        if(object instanceof Datas.EntityPositionalData){
+            Datas.EntityPositionalData pos = (Datas.EntityPositionalData) object;
+            System.out.println("[KNOWLEDGE] Registering positional data : " + pos.getPosition());
+        }
+
         //If this is a type of data that is updateable (and is already registered) then update it, otherwise overwrite/add it.
         Class<T> clazz = (Class<T>) object.getClass();
         if(dataMap.containsKey(clazz) && dataMap.get(clazz) instanceof UpdateableData){
             ((UpdateableData<T>) dataMap.get(clazz)).updateWithData(object);
         }else{
             dataMap.put(clazz, object);
+        }
+
+        if(object instanceof Datas.EntityPositionalData){
+            System.out.println("[KNOWLEDGE] registered entity data is now : " + ((Datas.EntityPositionalData)dataMap.get(Datas.EntityPositionalData.class)).getPosition());
         }
     }
 
