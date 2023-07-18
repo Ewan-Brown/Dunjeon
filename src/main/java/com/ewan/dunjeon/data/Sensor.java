@@ -1,10 +1,11 @@
 package com.ewan.dunjeon.data;
 
 import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
 
 import java.util.List;
 
-public class Sensor<P extends DataStreamParameters> {
+public class Sensor<P extends DataStreamParameters> implements KnowledgeFragment.Source {
     final protected Creature creature;
     final protected Datastream<P> datastream;
     final private ParameterCalculator<P> parameterCalculator;

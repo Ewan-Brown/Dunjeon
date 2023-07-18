@@ -27,17 +27,17 @@ public class Datastreams {
 
                 List<DataWrappers.EntityDataWrapper> entityDataWrappers = new ArrayList<>();
 
-                for (int i = 0; i < 0; i++) {
+                for (int i = 0; i < 100; i++) {
                     //Pretend that data calculation actually occurs here
-                    Datas.EntityKineticData kineticData = new Datas.EntityKineticData(d.getTimeElapsed(), new Vector2(), 0, 0);
-                    Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData(d.getTimeElapsed(), (new Vector2(subscriber.creature.getWorldCenter())).add(Math.random(), Math.random()), subscriber.creature.getUUID());
+                    Datas.EntityKineticData kineticData = new Datas.EntityKineticData(new Vector2(), 0, 0);
+                    Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((new Vector2(subscriber.creature.getWorldCenter())).add(Math.random(), Math.random()), subscriber.creature.getUUID());
                     Long entityId = (long) i;
 
                     //All data about a given entity grouped together
                     List<Datas.EntityData> entityDataAmalgamated = List.of(kineticData, positionalData);
 
                     //Now give it context, with the entity ID and a link to this sensor, and wrap it together nicely
-                    DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(entityDataAmalgamated, entityId, subscriber);
+                    DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(entityDataAmalgamated, entityId, subscriber, d.getTimeElapsed());
                     entityDataWrappers.add(entityDataWrapper);
                 }
 
@@ -48,8 +48,8 @@ public class Datastreams {
 
                 List<DataWrappers.CellDataWrapper> cellDataAmalgamated = new ArrayList<>();
                 for (BasicCell basicCell : subscriber.creature.getFloor().getCellsAsList()) {
-                        Datas.CellData cellData = (new Datas.CellEnterableData(d.getTimeElapsed(), basicCell.canBeEntered(subscriber.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
-                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell.getX(), basicCell.getY(), subscriber.creature.getFloor().getUUID()), subscriber);
+                        Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(subscriber.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
+                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell.getX(), basicCell.getY(), subscriber.creature.getFloor().getUUID()), subscriber, d.getTimeElapsed());
                         cellDataAmalgamated.add(cellDataWrapper);
                 }
 

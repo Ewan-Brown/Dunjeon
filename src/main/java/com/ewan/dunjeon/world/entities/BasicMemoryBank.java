@@ -1,8 +1,10 @@
 package com.ewan.dunjeon.world.entities;
 
 import com.ewan.dunjeon.data.*;
+import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
+import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
 import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.ewan.dunjeon.world.level.Floor;
@@ -42,9 +44,11 @@ public class BasicMemoryBank {
 
             //Register the data for this creature.
             for (Datas.EntityData entityDatum : entityData) {
-                creatureKnowledge.register(entityDatum);
+                KnowledgeFragment kFragment = new KnowledgeFragment<>(entityDatum, wrappedData.getSourceSensor(), wrappedData.getTimestamp());
+                creatureKnowledge.register(kFragment);
             }
         }
+
 
         //TODO Complete this
         if(wrappedData instanceof DataWrappers.CellDataWrapper){
@@ -61,7 +65,8 @@ public class BasicMemoryBank {
             }
 
             for (Datas.CellData cellDatum : wrappedCellData.getData()) {
-                cellKnowledge.register(cellDatum);
+                KnowledgeFragment kFragment = new KnowledgeFragment<>(cellDatum, wrappedData.getSourceSensor(), wrappedData.getTimestamp());
+                cellKnowledge.register(kFragment);
             }
         }
     }

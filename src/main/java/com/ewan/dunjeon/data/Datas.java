@@ -1,30 +1,28 @@
 package com.ewan.dunjeon.data;
 
 import com.ewan.dunjeon.graphics.RenderableElement;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
 
+/**
+ * The heriarchy of data types defines what they are attached to. This allows datawrappers to restrict the type associated with them.
+ * e.x CellData is an abstract class for any data that is per-cell
+ * Cell color, cell physical state are all must all directly extend CellData
+ */
 public class Datas {
 
     public static abstract class CellData extends Data {
 
-        protected CellData(double timestamp) {
-            super(timestamp);
-        }
-
     }
 
     @Getter
+    @AllArgsConstructor
     public static class CellEnterableData extends CellData {
 
         EnterableStatus enterableStatus;
-
-        protected CellEnterableData(double timestamp, EnterableStatus status) {
-            super(timestamp);
-            enterableStatus = status;
-        }
 
         public enum EnterableStatus{
             /**
@@ -47,51 +45,33 @@ public class Datas {
 
     }
 
-    public static class CellVisualData extends CellData implements UpdateableData<CellVisualData>{
-        protected CellVisualData(double timestamp) {
-            super(timestamp);
-        }
-
-        @Override
-        public void updateWithData(CellVisualData data) {
-
-        }
+    public abstract static class CellVisualData extends CellData{
 
     }
 
 
-    @Getter
     public static abstract class EntityData extends Data {
 
-        protected EntityData(double timestamp) {
-            super(timestamp);
-        }
     }
 
     @Getter
+    @AllArgsConstructor
     public static class EntityVisualData extends EntityData {
 
         private final List<RenderableElement> renderableElementList;
 
-        public EntityVisualData(double timestamp, List<RenderableElement> renderableElements) {
-            super(timestamp);
-            renderableElementList = renderableElements;
-        }
     }
 
     @Getter
+    @AllArgsConstructor
     public static class EntityPositionalData extends EntityData {
 
         private final Vector2 position;
         private final long floorUUID;
 
-        public EntityPositionalData(double timestamp, Vector2 pos, long floorID) {
-            super(timestamp);
-            position = pos;
-            floorUUID = floorID;
-        }
     }
 
+    @AllArgsConstructor
     @Getter
     public static class EntityKineticData extends EntityData {
 
@@ -99,12 +79,6 @@ public class Datas {
         private final double rotation;
         private final double rotationalSpeed;
 
-        public EntityKineticData(double timestamp, Vector2 speed, double rotation, double rotationalSpeed) {
-            super(timestamp);
-            this.speed = speed;
-            this.rotation = rotation;
-            this.rotationalSpeed = rotationalSpeed;
-        }
     }
 
 }
