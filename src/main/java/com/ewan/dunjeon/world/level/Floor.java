@@ -58,6 +58,7 @@ public class Floor {
             };
         };
 
+        world.setGravity(0,0);
         world.addCollisionListener(collisionListener);
 
     }

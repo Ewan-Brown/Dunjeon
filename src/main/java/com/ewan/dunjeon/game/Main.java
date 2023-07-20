@@ -1,16 +1,16 @@
 package com.ewan.dunjeon.game;
 
 import com.ewan.dunjeon.generation.FloorGenerator;
-import com.ewan.dunjeon.graphics.Graphics2DDisplay;
 import com.ewan.dunjeon.graphics.UsingJogl;
-import com.ewan.dunjeon.world.entities.creatures.Player;
+import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Dunjeon;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.dyn4j.geometry.Circle;
+import org.dyn4j.geometry.Mass;
+import org.dyn4j.geometry.Vector2;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 
 public class Main {
@@ -112,10 +112,11 @@ public class Main {
         }
 
 
-        Player testPlayer = new Player("Player");
-        testPlayer.addFixture(new Circle(0.3d));
-        d.addEntityRandomLoc(testPlayer, startFloor);
-        d.setPlayer(testPlayer);
+        TestSubject testSubject = new TestSubject("Player");
+        testSubject.addFixture(new Circle(0.3d));
+        testSubject.setMass(new Mass(new Vector2(0,0), 1.0, 1));
+        d.addEntityRandomLoc(testSubject, startFloor);
+        d.setPlayer(testSubject);
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        w.addEntityRandomLoc(testMonster, startFloor);

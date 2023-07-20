@@ -4,7 +4,7 @@ import com.ewan.dunjeon.graphics.Graphics2DDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.creatures.Player;
+import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.level.Floor;
 
 import java.awt.event.KeyEvent;
@@ -25,7 +25,7 @@ public class Dunjeon implements KeyListener {
     public double getTimeElapsed(){return timeElapsed;}
     public long getTicksElapsed(){return ticksElapsed;}
 
-    private Player player;
+    private TestSubject testSubject;
     public static Dunjeon getInstance(){return dunjeon;}
     public static void resetDunjeon(){
         dunjeon = new Dunjeon();
@@ -54,8 +54,6 @@ public class Dunjeon implements KeyListener {
         if(validCells.size() == 0) throw new Error("No valid spots for entity found");
         else {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
-            randomValidCell.onEntry(e);
-            e.onEnterCell(randomValidCell);
             //TODO Prepping for Dyn4J
             e.translate(randomValidCell.getX() + 0.5d, randomValidCell.getY() + 0.5d);
             e.setFloor(l);
@@ -93,11 +91,11 @@ public class Dunjeon implements KeyListener {
 
     double playerSpeed = 0.03f;
 
-    public Player getPlayer(){
-        return player;
+    public TestSubject getPlayer(){
+        return testSubject;
     }
 
-    public void setPlayer(Player p){ player = p;}
+    public void setPlayer(TestSubject p){ testSubject = p;}
 
     //TODO Make a nice wrapper for this to make managing controls easier!
     public void doControls(){

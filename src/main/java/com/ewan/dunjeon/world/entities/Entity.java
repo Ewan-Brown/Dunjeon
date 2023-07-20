@@ -21,13 +21,8 @@ public abstract class Entity extends Body {
         UUIDcounter++;
     }
 
-    public void onEnterCell(BasicCell c){}
 
     public void update(double stepSize) {
-    }
-
-    public BasicCell getContainingCell() {
-        return getFloor().getCellAt(getWorldCenter());
     }
 
     public Floor getFloor() {

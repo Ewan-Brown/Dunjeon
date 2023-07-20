@@ -27,19 +27,17 @@ public class Datastreams {
 
                 List<DataWrappers.EntityDataWrapper> entityDataWrappers = new ArrayList<>();
 
-                for (int i = 0; i < 100; i++) {
-                    //Pretend that data calculation actually occurs here
-                    Datas.EntityKineticData kineticData = new Datas.EntityKineticData(new Vector2(), 0, 0);
-                    Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((new Vector2(subscriber.creature.getWorldCenter())).add(Math.random(), Math.random()), subscriber.creature.getUUID());
-                    Long entityId = (long) i;
+                //Pretend that data calculation actually occurs here
+                Datas.EntityKineticData kineticData = new Datas.EntityKineticData(new Vector2(), 0, 0);
+                Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((subscriber.creature.getWorldCenter()), subscriber.creature.getUUID());
+                Long entityId = 1L;
 
-                    //All data about a given entity grouped together
-                    List<Datas.EntityData> entityDataAmalgamated = List.of(kineticData, positionalData);
+                //All data about a given entity grouped together
+                List<Datas.EntityData> entityDataAmalgamated = List.of(kineticData, positionalData);
 
-                    //Now give it context, with the entity ID and a link to this sensor, and wrap it together nicely
-                    DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(entityDataAmalgamated, entityId, subscriber, d.getTimeElapsed());
-                    entityDataWrappers.add(entityDataWrapper);
-                }
+                //Now give it context, with the entity ID and a link to this sensor, and wrap it together nicely
+                DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(entityDataAmalgamated, entityId, subscriber, d.getTimeElapsed());
+                entityDataWrappers.add(entityDataWrapper);
 
 
 

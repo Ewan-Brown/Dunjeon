@@ -397,8 +397,6 @@ public class FloorGenerator {
 //            }
 //        }
         floor.setCells(cells);
-        //FIXME Leaving this uncommented appears to break the physics update. I am betting that it's because they're all overlapping and not 'static'
-        int i = 0;
         for (BasicCell[] c : cells) {
             for (BasicCell cell : c) {
                 floor.getWorld().addBody(cell);
