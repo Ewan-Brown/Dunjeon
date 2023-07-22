@@ -54,7 +54,6 @@ public class Dunjeon implements KeyListener {
         if(validCells.size() == 0) throw new Error("No valid spots for entity found");
         else {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
-            //TODO Prepping for Dyn4J
             e.translate(randomValidCell.getX() + 0.5d, randomValidCell.getY() + 0.5d);
             e.setFloor(l);
             l.addEntity(e);
@@ -77,7 +76,10 @@ public class Dunjeon implements KeyListener {
         //Update Datastreams!
         sightDataStream.update(this);
 
-        //Update Entities
+        //Update Controllers!
+        getPlayer().getFloor().updateCreatureControllers(t);
+
+        //Update Entities!
         getPlayer().getFloor().updateEntities(t);
 
     }

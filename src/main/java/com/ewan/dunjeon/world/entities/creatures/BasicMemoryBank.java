@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.entities;
+package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.data.*;
 import com.ewan.dunjeon.world.Dunjeon;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Getter
-public class BasicMemoryBank {
+public class BasicMemoryBank extends AbstractMemoryBank{
 
     private final HashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new HashMap<>();
     private final HashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new HashMap<>();

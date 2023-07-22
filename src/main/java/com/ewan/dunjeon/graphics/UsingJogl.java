@@ -29,6 +29,7 @@ import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
 import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
@@ -144,8 +145,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 		gl.glPopMatrix();
 	}
 
-	public static void renderPerspective(GL2 gl, Creature c){
-
+	public static void renderPerspective(GL2 gl, Creature<BasicMemoryBank> c){
 
 		HashMap<WorldUtils.CellPosition, CellKnowledge> map = c.getMemoryProcessor().getCellKnowledgeHashMap();
 

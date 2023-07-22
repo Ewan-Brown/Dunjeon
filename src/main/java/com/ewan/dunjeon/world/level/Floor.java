@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.world.level;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
+import com.ewan.dunjeon.world.entities.AI.CreatureController;
 import com.ewan.dunjeon.world.entities.Entity;
 import lombok.Getter;
 import org.dyn4j.collision.CollisionBody;
@@ -21,9 +22,10 @@ public class Floor {
     @Getter
     final Long UUID;
     BasicCell[][] cells;
-    List<Entity> entities = new ArrayList<>();
+    Set<Entity> entities = new HashSet<>();
+    Set<CreatureController<?>> creatureControllers = new HashSet<>();
     World<Body> world = new World<>();
-    List<ManifoldCollisionData<CollisionBody<Fixture>, Fixture>> collisionDataAccumulator = new ArrayList<>();
+    Set<ManifoldCollisionData<CollisionBody<Fixture>, Fixture>> collisionDataAccumulator = new HashSet<>();
 
     @Getter
     public final int width;
@@ -41,12 +43,12 @@ public class Floor {
 
             @Override
             public boolean collision(BroadphaseCollisionData collision) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean collision(NarrowphaseCollisionData collision) {
-                return false;
+                return true;
             }
 
             @SuppressWarnings("unchecked")
@@ -67,7 +69,7 @@ public class Floor {
         this.cells = cells;
     }
 
-    public List<Entity> getEntities(){
+    public Set<Entity> getEntities(){
         return entities;
     }
 
@@ -78,9 +80,6 @@ public class Floor {
     public void removeEntity(Entity e){
         entities.remove(e);
     }
-
-    public int getWidth(){return cells[0].length;}
-    public int getHeight(){return cells.length;}
 
     public BasicCell[][] getCells() {
         return cells;
@@ -109,37 +108,18 @@ public class Floor {
 
     public void updateEntities(double stepSize){
 
-
-        // AI Update
-        // - Preprocess anything that might be useful ... another good spot for parallelization
-        // - Iterate across them, updating and/or starting new "actions"
-        // - - See if I can stick to an abstract 'Action' framework.
-        // Human interface update
-        // - Harvest UI/UX info, poll and update for controls.
-        // - Pass user UI data
-
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
-            e.update(stepSize);
-//            e.update();
-//            doBoundsCheck(e);
+        for (Entity entity : entities) {
+            entity.update(stepSize);
         }
 
     }
 
+    public void updateCreatureControllers(double stepSize){
+        for (CreatureController<?> creatureController : creatureControllers) {
+            creatureController.update();
+        }
+    }
 
-
-//    public BasicCell getCellAt(double x, double y){
-//        return getCellAt((int)Math.floor(x),(int)Math.floor(y));
-//    }
-//
-//    public BasicCell getCellAt(Point2D point){
-//        return getCellAt((double)Math.floor(point.getX()),(double)Math.floor(point.getY()));
-//    }
-
-//    public BasicCell getCellAt(Point point){
-//        return getCellAt((int)point.getX(), (int)point.y);
-//    }
     public BasicCell getCellAt(int x, int y){
         if(x < 0 || y < 0 || x >= getWidth() || y >= getHeight()){
             return null;
@@ -147,6 +127,10 @@ public class Floor {
         else {
             return cells[y][x];
         }
+    }
+
+    public void addCreatureController(CreatureController<?> c){
+        creatureControllers.add(c);
     }
 
     public BasicCell getCellAt(double x, double y){

@@ -22,6 +22,10 @@ public abstract class Entity extends Body {
     }
 
 
+    /**
+     * Update anything realted to the physical aspect of this entity (NOT AI)
+     * @param stepSize
+     */
     public void update(double stepSize) {
     }
 

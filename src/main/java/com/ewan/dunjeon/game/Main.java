@@ -2,6 +2,7 @@ package com.ewan.dunjeon.game;
 
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.UsingJogl;
+import com.ewan.dunjeon.world.entities.AI.TestSubjectAI;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.Dunjeon;
@@ -117,6 +118,8 @@ public class Main {
         testSubject.setMass(new Mass(new Vector2(0,0), 1.0, 1));
         d.addEntityRandomLoc(testSubject, startFloor);
         d.setPlayer(testSubject);
+
+        startFloor.addCreatureController(new TestSubjectAI(testSubject));
 
 //        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
 //        w.addEntityRandomLoc(testMonster, startFloor);

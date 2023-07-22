@@ -4,17 +4,15 @@ import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.data.Sensor;
-import com.ewan.dunjeon.world.entities.BasicMemoryBank;
-import com.ewan.dunjeon.world.entities.creaturecontroller.CreatureInterface;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestSubject extends Creature {
+public class TestSubject extends Creature<BasicMemoryBank> {
     List<Sensor<? extends DataStreamParameters>> senses = new ArrayList<>();
     BasicMemoryBank b = new BasicMemoryBank();
-    final TestSubjectInterface subjectInterface = new TestSubjectInterface();
+    private final TestSubjectInterface subjectInterface = new TestSubjectInterface();
 
     public TestSubject(String name) {
         super(name);
@@ -24,8 +22,6 @@ public class TestSubject extends Creature {
 
     public void update(double stepSize) {
         super.update(stepSize);
-        getInterface().moveInDirection(new Vector2(-1,-1), 0.1);
-        System.out.println(getWorldCenter());
     }
 
 
@@ -42,13 +38,14 @@ public class TestSubject extends Creature {
     }
 
 
-    public class TestSubjectInterface extends CreatureInterface{
+    public class TestSubjectInterface extends CreatureControls {
         public void moveInDirection(Vector2 v, double throttle){
             assert throttle >= 0 && throttle <= 1;
             v = v.getNormalized();
             v.multiply(throttle);
             TestSubject.super.applyForce(v);
         }
+
     }
 
 }
