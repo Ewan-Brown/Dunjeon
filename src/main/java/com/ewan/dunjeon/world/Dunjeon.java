@@ -44,31 +44,7 @@ public class Dunjeon{
     }
 
 
-    public Dunjeon(){
-        initialize();
-    }
-
-    private void initialize() {
-
-    }
-
-    /**
-     * Adds ,man entity at a random location On a level.
-     * <i>TODO Add exception handling when there is no valid spots</i>
-     */
-    public boolean addEntityRandomLoc(Entity e, Floor l){
-        List<BasicCell> validCells =  l.getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).collect(Collectors.toList());
-        if(validCells.size() == 0) throw new Error("No valid spots for entity found");
-        else {
-            BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
-            e.translate(randomValidCell.getX() + 0.5d, randomValidCell.getY() + 0.5d);
-            e.setFloor(l);
-            l.addEntity(e);
-            l.getWorld().addBody(e);
-            return true;
-        }
-
-    }
+    public Dunjeon(){}
 
     /*
     Updates the game, returns true if the game is over.

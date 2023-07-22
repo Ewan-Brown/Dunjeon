@@ -116,7 +116,7 @@ public class Main {
         TestSubject testSubject = new TestSubject("Player");
         testSubject.addFixture(new Circle(0.3d));
         testSubject.setMass(new Mass(new Vector2(0,0), 1.0, 1));
-        d.addEntityRandomLoc(testSubject, startFloor);
+        startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);
 
         startFloor.addCreatureController(new TestSubjectAI(testSubject));
