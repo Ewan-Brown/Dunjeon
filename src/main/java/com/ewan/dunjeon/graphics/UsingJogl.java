@@ -29,8 +29,10 @@ import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.creatures.AbstractMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
 import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
@@ -52,6 +54,10 @@ import java.util.Vector;
 
 public class UsingJogl extends JFrame implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
+
+	private static final Map<Class<? extends Creature>, RenderStrategy<? extends Creature>> strategyMap = new HashMap<>();
+
+
 
 	protected GLCanvas canvas;
 
@@ -145,60 +151,19 @@ public class UsingJogl extends JFrame implements GLEventListener {
 		gl.glPopMatrix();
 	}
 
-	public static void renderPerspective(GL2 gl, Creature<BasicMemoryBank> c){
-
-		HashMap<WorldUtils.CellPosition, CellKnowledge> map = c.getMemoryProcessor().getCellKnowledgeHashMap();
-
-		for (CellKnowledge cellKnowledge : map.values()) {
-			Datas.CellEnterableData enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
-			if(enterableData != null && enterableData.getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE){
-				gl.glColor3d(1, 0,1);
-			}else{
-				gl.glColor3d(0, 0,1);
-			}
-			gl.glBegin(GL2.GL_POLYGON);
-			final double SIZE = 1;
-
-			Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getX(), cellKnowledge.getIdentifier().getY());
-			Vector2 relativePos = new Vector2(c.getWorldCenter().to(centerPos));
-
-			double centerX = relativePos.x;
-			double centerY = relativePos.y;
-
-			gl.glVertex2d(centerX, centerY);
-			gl.glVertex2d(centerX+SIZE, centerY);
-			gl.glVertex2d(centerX+SIZE, centerY+SIZE);
-			gl.glVertex2d(centerX, centerY+SIZE);
-			gl.glEnd();
+	@SuppressWarnings("unchecked")
+	public static <T extends Creature> void renderPerspective(GL2 gl, T c){
+		RenderStrategy<T> r = (RenderStrategy<T>) strategyMap.get(c.getClass()); //Trust me :)
+		if(r == null){
+			throw new RuntimeException("Attempted to retrieve non-existant render strategy for creature of type:" + c.getClass());
+		}else{
+			r.render(c, gl);
 		}
 
-		var creatureKnowledgeHashMap = c.getMemoryProcessor().getCreatureKnowledgeHashMap();
+	}
 
-		for (CreatureKnowledge value : creatureKnowledgeHashMap.values()) {
-			gl.glColor3d(0, 1,0);
-			gl.glBegin(GL2.GL_POLYGON);
-			final double SIZE = 1;
-			final double HALF_SIZE = SIZE/2;
-
-			Datas.EntityPositionalData posData = value.get(Datas.EntityPositionalData.class);
-
-			if(posData != null) {
-				Vector2 centerPos = posData.getPosition();
-				Vector2 relativePos = new Vector2(c.getWorldCenter().to(centerPos));
-
-
-				double centerX = relativePos.x;
-				double centerY = relativePos.y;
-
-				gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
-				gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
-				gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
-				gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
-				gl.glEnd();
-			}
-		}
-
-
+	public interface RenderStrategy<T extends Creature> {
+		void render(T creature, GL2 gl);
 	}
 
 	public static void renderAll(GL2 gl){
@@ -239,4 +204,59 @@ public class UsingJogl extends JFrame implements GLEventListener {
 //
 //		}
 	}
+
+	static {{
+		strategyMap.put(TestSubject.class, (RenderStrategy<TestSubject>) (creature, gl) -> {
+			var cellKnowledgeMap = creature.getMemoryProcessor().getCellKnowledgeHashMap();
+
+			for (CellKnowledge cellKnowledge : cellKnowledgeMap.values()) {
+				Datas.CellEnterableData enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
+				if (enterableData != null && enterableData.getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
+					gl.glColor3d(1, 0, 1);
+				} else {
+					gl.glColor3d(0, 0, 1);
+				}
+				gl.glBegin(GL2.GL_POLYGON);
+				final double SIZE = 1;
+
+				Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getX(), cellKnowledge.getIdentifier().getY());
+				Vector2 relativePos = new Vector2(creature.getWorldCenter().to(centerPos));
+
+				double centerX = relativePos.x;
+				double centerY = relativePos.y;
+
+				gl.glVertex2d(centerX, centerY);
+				gl.glVertex2d(centerX + SIZE, centerY);
+				gl.glVertex2d(centerX + SIZE, centerY + SIZE);
+				gl.glVertex2d(centerX, centerY + SIZE);
+				gl.glEnd();
+			}
+
+			var creatureKnowledgeMap = creature.getMemoryProcessor().getCreatureKnowledgeHashMap();
+
+			for (CreatureKnowledge value : creatureKnowledgeMap.values()) {
+				gl.glColor3d(0, 1, 0);
+				gl.glBegin(GL2.GL_POLYGON);
+				final double SIZE = 1;
+				final double HALF_SIZE = SIZE / 2;
+
+				Datas.EntityPositionalData posData = value.get(Datas.EntityPositionalData.class);
+
+				if (posData != null) {
+					Vector2 centerPos = posData.getPosition();
+					Vector2 relativePos = new Vector2(creature.getWorldCenter().to(centerPos));
+
+
+					double centerX = relativePos.x;
+					double centerY = relativePos.y;
+
+					gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
+					gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
+					gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
+					gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
+					gl.glEnd();
+				}
+			}
+		});
+	}}
 }

@@ -88,7 +88,6 @@ public class Main {
         System.out.println("SEED USED : " + seed);
         rand.setSeed(1082347570);
 
-        Dunjeon.resetDunjeon();
         Dunjeon d = Dunjeon.getInstance();
         int floorCount = 1;
 

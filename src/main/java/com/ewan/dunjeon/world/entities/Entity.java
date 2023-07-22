@@ -6,7 +6,7 @@ import org.dyn4j.dynamics.Body;
 public abstract class Entity extends Body {
 
     private static long UUIDcounter = 0;
-    private String name;
+    private final String name;
 
     private long UUID;
 
@@ -20,7 +20,6 @@ public abstract class Entity extends Body {
         this.name = name;
         UUIDcounter++;
     }
-
 
     /**
      * Update anything realted to the physical aspect of this entity (NOT AI)

@@ -25,7 +25,6 @@ public class Graphics2DDisplay {
     public void startDrawing(Dunjeon w){
         if(frame == null) {
             frame = new JFrame();
-            frame.addKeyListener(w);
             frame.setFocusable(true);
             frame.setSize(600, 600);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

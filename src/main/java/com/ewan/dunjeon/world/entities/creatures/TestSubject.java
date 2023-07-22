@@ -9,7 +9,7 @@ import org.dyn4j.geometry.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestSubject extends Creature<BasicMemoryBank> {
+public class TestSubject extends Creature {
     List<Sensor<? extends DataStreamParameters>> senses = new ArrayList<>();
     BasicMemoryBank b = new BasicMemoryBank();
     private final TestSubjectInterface subjectInterface = new TestSubjectInterface();

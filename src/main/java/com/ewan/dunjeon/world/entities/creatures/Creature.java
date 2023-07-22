@@ -7,7 +7,7 @@ import org.apache.commons.math3.analysis.function.Abs;
 
 import java.util.List;
 
-public abstract class Creature<A extends AbstractMemoryBank> extends Entity{
+public abstract class Creature extends Entity{
     public Creature(String name) {
         super(name);
     }
@@ -24,6 +24,6 @@ public abstract class Creature<A extends AbstractMemoryBank> extends Entity{
         getSensors().forEach(Sensor::destroy);
     }
 
-    public abstract A getMemoryProcessor();
+    public abstract AbstractMemoryBank getMemoryProcessor();
 
 }

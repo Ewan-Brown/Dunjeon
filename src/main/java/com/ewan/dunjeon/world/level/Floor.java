@@ -14,7 +14,6 @@ import org.dyn4j.world.listener.CollisionListener;
 
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.ewan.dunjeon.game.Main.rand;
 
@@ -136,7 +135,7 @@ public class Floor {
         creatureControllers.add(c);
     }
 
-    public boolean addEntityRandomLoc(Entity e){
+    public void addEntityRandomLoc(Entity e){
         List<BasicCell> validCells =  getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).toList();
         if(validCells.size() == 0) throw new Error("No valid spots for entity found");
         else {
@@ -145,7 +144,6 @@ public class Floor {
             e.setFloor(this);
             addEntity(e);
             getWorld().addBody(e);
-            return true;
         }
 
     }

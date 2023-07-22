@@ -4,6 +4,8 @@ import com.ewan.dunjeon.graphics.Graphics2DDisplay;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.world.entities.Entity;
+import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
+import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.level.Floor;
 import lombok.Getter;
@@ -32,19 +34,13 @@ public class Dunjeon{
     @Getter
     private int ticksElapsed = 0;
 
-    private TestSubject testSubject;
+    private Creature testSubject;
     public static Dunjeon getInstance(){return dunjeon;}
-    public static void resetDunjeon(){
-        dunjeon = new Dunjeon();
-    }
 
     List<Floor> floors = new ArrayList<>(); // TODO Should this be here, or should everything be stored in a node tree...?
     public void addLevel(Floor l){
         floors.add(l);
     }
-
-
-    public Dunjeon(){}
 
     /*
     Updates the game, returns true if the game is over.
@@ -73,11 +69,11 @@ public class Dunjeon{
     //PLAYER SPECIFIC TODO MOVE THIS STUFF
     //**************************************************
 
-    public TestSubject getPlayer(){
+    public Creature getPlayer(){
         return testSubject;
     }
 
-    public void setPlayer(TestSubject p){ testSubject = p;}
+    public void setPlayer(Creature p){ testSubject = p;}
 
     //****** Data streams ******//
     private Datastreams.SightDataStream sightDataStream = new Datastreams.SightDataStream();
