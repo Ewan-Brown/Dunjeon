@@ -6,6 +6,7 @@ import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.world.entities.Entity;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.level.Floor;
+import lombok.Getter;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,14 +17,20 @@ import java.util.stream.Collectors;
 
 import static com.ewan.dunjeon.game.Main.rand;
 
-public class Dunjeon implements KeyListener {
+public class Dunjeon{
 
     private static Dunjeon dunjeon = new Dunjeon();
-    private double timeElapsed = 0;
-    private int ticksElapsed = 0;
 
-    public double getTimeElapsed(){return timeElapsed;}
-    public long getTicksElapsed(){return ticksElapsed;}
+    /**
+     * How much in-world time has passed
+     */
+    @Getter
+    private double timeElapsed = 0;
+    /**
+     * How many individual world updates have occured
+     */
+    @Getter
+    private int ticksElapsed = 0;
 
     private TestSubject testSubject;
     public static Dunjeon getInstance(){return dunjeon;}
@@ -68,6 +75,7 @@ public class Dunjeon implements KeyListener {
      */
     public void update(double t){
         this.timeElapsed += t;
+        this.ticksElapsed += 1;
 
 
         //Remove entities, apply physics step and collect collisions
@@ -89,65 +97,11 @@ public class Dunjeon implements KeyListener {
     //PLAYER SPECIFIC TODO MOVE THIS STUFF
     //**************************************************
 
-    double playerInteractionDist = 1.5;
-
-    double playerSpeed = 0.03f;
-
     public TestSubject getPlayer(){
         return testSubject;
     }
 
     public void setPlayer(TestSubject p){ testSubject = p;}
-
-    //TODO Make a nice wrapper for this to make managing controls easier!
-    public void doControls(){
-        //TODO Prepping for Dyn4J
-        if(keySet.get(KeyEvent.VK_UP)){
-//            player.addVelocity(0.0f,-playerSpeed);
-        }
-        if(keySet.get(KeyEvent.VK_DOWN)){
-//            player.addVelocity(0.0f,+playerSpeed);
-        }
-        if(keySet.get(KeyEvent.VK_LEFT)){
-//            player.addVelocity(-playerSpeed,0.0f);
-        }
-        if(keySet.get(KeyEvent.VK_RIGHT)){
-//            player.addVelocity(playerSpeed, 0.0f);
-        }
-
-        if(keySet.get(KeyEvent.VK_M)){
-            keySet.set(KeyEvent.VK_M, false);
-            Graphics2DDisplay.RENDER_GRID = !Graphics2DDisplay.RENDER_GRID;
-        }
-
-        if(keySet.get(KeyEvent.VK_N)){
-            keySet.set(KeyEvent.VK_N, false);
-//            player.true_sight_debug = !player.true_sight_debug;
-        }
-
-        if(keySet.get(KeyEvent.VK_Z)){
-            keySet.set(KeyEvent.VK_Z, false);
-            Graphics2DDisplay.RENDER_DEBUG_LINES = !Graphics2DDisplay.RENDER_DEBUG_LINES;
-        }
-
-        if(keySet.get(KeyEvent.VK_X)){
-            keySet.set(KeyEvent.VK_X, false);
-            Graphics2DDisplay.RENDER_DEBUG_CELLS = !Graphics2DDisplay.RENDER_DEBUG_CELLS;
-        }
-
-        //Fire projectile in random direction
-        if(keySet.get(KeyEvent.VK_R)){
-            keySet.set(KeyEvent.VK_R, false);
-//            Entity e = new SimpleProjectile(Color.RED, "Projectile");
-//            e.setVelocity((rand.nextFloat() - 0.5f) / 30f,(rand.nextFloat() - 0.5f) / 30f + 0.01f);
-//            addEntityAtLoc(e, player.getFloor(), player.getWorldCenter().x, player.getWorldCenter().y);
-        }
-
-        //Test function
-        if(keySet.get(KeyEvent.VK_Z)){
-            keySet.set(KeyEvent.VK_Z, false);
-        }
-    }
 
     //****** Data streams ******//
     private Datastreams.SightDataStream sightDataStream = new Datastreams.SightDataStream();
@@ -155,19 +109,4 @@ public class Dunjeon implements KeyListener {
         return sightDataStream;
     }
 
-    private final BitSet keySet = new BitSet();
-
-    @Override
-    public void keyTyped(KeyEvent keyEvent) {
-    }
-
-    @Override
-    public void keyPressed(KeyEvent keyEvent) {
-        keySet.set(keyEvent.getKeyCode(), true);
-    }
-
-    @Override
-    public void keyReleased(KeyEvent keyEvent) {
-        keySet.set(keyEvent.getKeyCode(), false);
-    }
 }
