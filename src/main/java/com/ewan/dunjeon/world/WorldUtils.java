@@ -2,9 +2,9 @@ package com.ewan.dunjeon.world;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.creatures.Creature;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.dyn4j.geometry.Vector2;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -26,11 +26,11 @@ public class WorldUtils {
         return getRawDistance(e1.getWorldCenter().x, e2.getWorldCenter().x, e1.getWorldCenter().y, e2.getWorldCenter().y);
     }
     public static double getRawDistance(BasicCell c1, BasicCell c2){
-        return getRawDistance(c1.getX(), c2.getX(), c1.getY(), c2.getY());
+        return getRawDistance(c1.getIntegerX(), c2.getIntegerX(), c1.getIntegerY(), c2.getIntegerY());
     }
 
     public static double getRawDistance(BasicCell c, Entity e){
-        return getRawDistance(c.getX(), e.getWorldCenter().x, c.getY(), e.getWorldCenter().y);
+        return getRawDistance(c.getIntegerX(), e.getWorldCenter().x, c.getIntegerY(), e.getWorldCenter().y);
     }
 //    public static double getRawDistance(Interactable f, Entity e){
 //        return getRawDistance(f.getWorldCenter().x, e.getWorldCenter().x, f.getWorldCenter().y, e.getWorldCenter().y);
@@ -45,7 +45,7 @@ public class WorldUtils {
         if(b1 == b2){
             throw new IllegalArgumentException();
         }else {
-            return isAdjacent(b1.getX(), b1.getY(), b2.getX(), b2.getY());
+            return isAdjacent(b1.getIntegerX(), b1.getIntegerY(), b2.getIntegerX(), b2.getIntegerY());
         }
     }
     public static boolean isAdjacent(Point b1, Point b2){
@@ -236,18 +236,17 @@ public class WorldUtils {
     @AllArgsConstructor
     @Getter
     public static class CellPosition{
-        private final int x;
-        private final int y;
+        private final Vector2 position;
         private final long floorID;
 
         @Override
         public boolean equals(Object obj) {
-            return (obj instanceof CellPosition) && ((CellPosition) obj).floorID == this.floorID && ((CellPosition)obj).x == this.x && ((CellPosition)obj).y == this.y;
+            return (obj instanceof CellPosition) && ((CellPosition) obj).floorID == this.floorID && position.equals(((CellPosition) obj).getPosition());
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(x, y, floorID);
+            return Objects.hash(position, floorID);
         }
     }
 }

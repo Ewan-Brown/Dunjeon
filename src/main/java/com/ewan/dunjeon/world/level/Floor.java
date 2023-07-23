@@ -45,17 +45,20 @@ public class Floor {
 
             @Override
             public boolean collision(BroadphaseCollisionData collision) {
+                System.out.println("Floor.collision - Broadphase");
                 return true;
             }
 
             @Override
             public boolean collision(NarrowphaseCollisionData collision) {
+                System.out.println("Floor.collision - Narrowphase");
                 return true;
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public boolean collision(ManifoldCollisionData collision) {
+                System.out.println("Floor.collision - Manifolfd");
                 collisionDataAccumulator.add(collision);
                 return true;
 
@@ -63,7 +66,7 @@ public class Floor {
         };
 
         world.setGravity(0,0);
-        world.addCollisionListener(collisionListener);
+//        world.addCollisionListener(collisionListener);
 
     }
 
@@ -140,7 +143,7 @@ public class Floor {
         if(validCells.size() == 0) throw new Error("No valid spots for entity found");
         else {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
-            e.translate(randomValidCell.getX() + 0.5d, randomValidCell.getY() + 0.5d);
+            e.translate(randomValidCell.getIntegerX() + 0.5d, randomValidCell.getIntegerY() + 0.5d);
             e.setFloor(this);
             addEntity(e);
             getWorld().addBody(e);

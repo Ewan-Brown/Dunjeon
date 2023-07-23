@@ -9,6 +9,7 @@ import com.ewan.dunjeon.world.Dunjeon;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Mass;
+import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.*;
@@ -28,7 +29,7 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                updateCurrentWorld(100);
+                updateCurrentWorld();
             }
         }).start();
 
@@ -111,22 +112,13 @@ public class Main {
 
         }
 
-
         TestSubject testSubject = new TestSubject("Player");
         testSubject.addFixture(new Circle(0.3d));
-        testSubject.setMass(new Mass(new Vector2(0,0), 1.0, 1));
+        testSubject.setMass(MassType.NORMAL);
         startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);
 
         startFloor.addCreatureController(new TestSubjectAI(testSubject));
-
-//        Monster testMonster = Monster.generateExploringMonster(Color.GREEN, "Monster");
-//        w.addEntityRandomLoc(testMonster, startFloor);
-
-
-//        NPC testNPC = NPC.generateDumbNPC(Color.CYAN, "NPC");
-//        w.addEntityRandomLoc(testNPC, startFloor);m
-
 
     }
 }

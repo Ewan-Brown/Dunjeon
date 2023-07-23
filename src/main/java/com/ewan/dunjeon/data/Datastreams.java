@@ -47,7 +47,7 @@ public class Datastreams {
                 List<DataWrappers.CellDataWrapper> cellDataAmalgamated = new ArrayList<>();
                 for (BasicCell basicCell : subscriber.creature.getFloor().getCellsAsList()) {
                         Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(subscriber.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
-                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell.getX(), basicCell.getY(), subscriber.creature.getFloor().getUUID()), subscriber, d.getTimeElapsed());
+                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell.getWorldCenter(), subscriber.creature.getFloor().getUUID()), subscriber, d.getTimeElapsed());
                         cellDataAmalgamated.add(cellDataWrapper);
                 }
 

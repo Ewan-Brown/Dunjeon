@@ -2,6 +2,7 @@ package com.ewan.dunjeon.world.entities;
 import com.ewan.dunjeon.world.level.Floor;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import org.dyn4j.dynamics.Body;
+import org.dyn4j.geometry.MassType;
 
 public abstract class Entity extends Body {
 

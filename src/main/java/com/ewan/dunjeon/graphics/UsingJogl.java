@@ -219,7 +219,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 				gl.glBegin(GL2.GL_POLYGON);
 				final double SIZE = 1;
 
-				Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getX(), cellKnowledge.getIdentifier().getY());
+				Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getPosition());
 				Vector2 relativePos = new Vector2(creature.getWorldCenter().to(centerPos));
 
 				double centerX = relativePos.x;
