@@ -2,15 +2,14 @@ package com.ewan.dunjeon.game;
 
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.UsingJogl;
+import com.ewan.dunjeon.input.KeyBank;
 import com.ewan.dunjeon.world.entities.AI.TestSubjectAI;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
-import com.ewan.dunjeon.world.level.Floor;
+import com.ewan.dunjeon.world.floor.Floor;
 import com.ewan.dunjeon.world.Dunjeon;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.dyn4j.geometry.Circle;
-import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
-import org.dyn4j.geometry.Vector2;
 
 import java.util.*;
 
@@ -19,6 +18,7 @@ public class Main {
 
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
+    private static KeyBank keyBank = new KeyBank();
 
     public static void main(String[] args) {
 
@@ -34,7 +34,11 @@ public class Main {
         }).start();
 
         UsingJogl jogl = new UsingJogl();
+        System.out.println("adding keylistener");
+        jogl.getCanvas().addKeyListener(keyBank);
         jogl.setVisible(true);
+        jogl.setFocusable(true);
+        jogl.requestFocusInWindow();
         jogl.start();
 
     }
@@ -118,7 +122,7 @@ public class Main {
         startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);
 
-        startFloor.addCreatureController(new TestSubjectAI(testSubject));
+        startFloor.addCreatureController(new TestSubjectAI(testSubject, keyBank));
 
     }
 }

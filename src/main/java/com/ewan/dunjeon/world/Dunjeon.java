@@ -1,23 +1,12 @@
 package com.ewan.dunjeon.world;
 
-import com.ewan.dunjeon.graphics.Graphics2DDisplay;
-import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.data.Datastreams;
-import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
-import com.ewan.dunjeon.world.entities.creatures.TestSubject;
-import com.ewan.dunjeon.world.level.Floor;
+import com.ewan.dunjeon.world.floor.Floor;
 import lombok.Getter;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.ewan.dunjeon.game.Main.rand;
 
 public class Dunjeon{
 
@@ -48,7 +37,7 @@ public class Dunjeon{
     public void update(double t){
         this.timeElapsed += t;
         this.ticksElapsed += 1;
-
+//        System.out.println("Floor updated, t = "+ timeElapsed);
 
         //Remove entities, apply physics step and collect collisions
         getPlayer().getFloor().updatePhysics(t);

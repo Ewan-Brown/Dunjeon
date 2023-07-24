@@ -1,13 +1,11 @@
 package com.ewan.dunjeon.world.entities.creatures;
 
 import com.ewan.dunjeon.data.*;
-import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
 import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
 import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
-import com.ewan.dunjeon.world.level.Floor;
 import lombok.Getter;
 
 import java.util.ArrayList;

@@ -39,6 +39,7 @@ import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
+import lombok.Getter;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Polygon;
@@ -59,6 +60,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 
 
+	@Getter
 	protected GLCanvas canvas;
 
 	public UsingJogl() {

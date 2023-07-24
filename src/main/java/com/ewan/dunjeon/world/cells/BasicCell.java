@@ -1,11 +1,9 @@
 package com.ewan.dunjeon.world.cells;
 
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.level.Floor;
+import com.ewan.dunjeon.world.floor.Floor;
 import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.Body;
-import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.dynamics.Force;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 

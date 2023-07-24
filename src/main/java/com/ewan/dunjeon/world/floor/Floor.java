@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.level;
+package com.ewan.dunjeon.world.floor;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.AI.CreatureController;

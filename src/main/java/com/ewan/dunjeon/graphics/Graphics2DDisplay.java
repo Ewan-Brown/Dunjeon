@@ -2,7 +2,7 @@ package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.level.Floor;
+import com.ewan.dunjeon.world.floor.Floor;
 
 import javax.swing.*;
 import java.awt.*;

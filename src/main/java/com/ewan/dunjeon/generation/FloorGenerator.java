@@ -3,12 +3,11 @@ package com.ewan.dunjeon.generation;
 import com.ewan.dunjeon.generation.GeneratorsMisc.*;
 import com.ewan.dunjeon.world.Pair;
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.level.Floor;
+import com.ewan.dunjeon.world.floor.Floor;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.ewan.dunjeon.game.Main.rand;
