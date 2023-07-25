@@ -28,13 +28,11 @@ public class KeyBank implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        System.out.println("Zoop1");
     }
 
     @Override
     @SuppressWarnings("StatementWithEmptyBody")
     public void keyPressed(KeyEvent e) {
-        System.out.println("Zoop2");
         int c = e.getKeyCode();
         if(!keySet.get(c)){
             keysDown.add(c);
@@ -46,7 +44,6 @@ public class KeyBank implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        System.out.println("Zoop3");
         int c = e.getKeyCode();
         keysUp.add(c);
         keySet.set(c, false);

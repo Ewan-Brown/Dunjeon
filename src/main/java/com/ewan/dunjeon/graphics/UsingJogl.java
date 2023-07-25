@@ -49,7 +49,10 @@ import org.dyn4j.world.World;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -150,6 +153,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 		gl.glScaled(0.02, 0.02, 1.0);
 
 		renderPerspective(gl, Dunjeon.getInstance().getPlayer());
+//		renderAll(gl);
 		gl.glPopMatrix();
 	}
 
@@ -169,47 +173,20 @@ public class UsingJogl extends JFrame implements GLEventListener {
 	}
 
 	public static void renderAll(GL2 gl){
-		//		for (BasicCell basicCell : Dunjeon.getInstance().getPlayer().getFloor().getCellsAsList()) {
-//			Color c = basicCell.color;
-//			gl.glColor3d(c.getRed()/255.0,c.getGreen()/255.0,c.getBlue()/255.0);
-//
-//			gl.glBegin(GL2.GL_POLYGON);
-//
-//			double lowX = basicCell.getX();
-//			double lowY = basicCell.getY();
-//			double highX = lowX	+ 1;
-//			double highY = lowY	+ 1;
-//
-//			gl.glVertex2d(lowX, lowY);
-//			gl.glVertex2d(highX, lowY);
-//			gl.glVertex2d(highX, highY);
-//			gl.glVertex2d(lowX, highY);
-//
-//			gl.glEnd();
-//
-//		}
-
-//		for (Entity e : Dunjeon.getInstance().getPlayer().getFloor().getEntities()){
-//			gl.glColor3d(0, 1,0);
-//			gl.glBegin(GL2.GL_POLYGON);
-//
-//			final double SIZE = 1;
-//			final double HALF_SIZE = SIZE/2;
-//
-//			double centerX = e.getWorldCenter().x;
-//			double centerY = e.getWorldCenter().y;
-//
-//			gl.glVertex2d(centerX-HALF_SIZE, centerY-HALF_SIZE);
-//			gl.glVertex2d(centerX+HALF_SIZE, centerY-HALF_SIZE);
-//			gl.glVertex2d(centerX+HALF_SIZE, centerY+HALF_SIZE);
-//			gl.glVertex2d(centerX-HALF_SIZE, centerY+HALF_SIZE);
-//
-//		}
+		List<Body> bodyList = new ArrayList<>();
+		for (Body body : bodyList) {
+			for (BodyFixture fixture : body.getFixtures()) {
+//				fixture.getShape().getFoci()
+//				fixture.getShape();
+			}
+		}
 	}
 
 	static {{
 		strategyMap.put(TestSubject.class, (RenderStrategy<TestSubject>) (creature, gl) -> {
 			var cellKnowledgeMap = creature.getMemoryProcessor().getCellKnowledgeHashMap();
+			final double SIZE = 1;
+			final double HALF_SIZE = SIZE/2;
 
 			for (CellKnowledge cellKnowledge : cellKnowledgeMap.values()) {
 				Datas.CellEnterableData enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
@@ -219,7 +196,6 @@ public class UsingJogl extends JFrame implements GLEventListener {
 					gl.glColor3d(0, 0, 1);
 				}
 				gl.glBegin(GL2.GL_POLYGON);
-				final double SIZE = 1;
 
 				Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getPosition());
 				Vector2 relativePos = new Vector2(creature.getWorldCenter().to(centerPos));
@@ -227,10 +203,10 @@ public class UsingJogl extends JFrame implements GLEventListener {
 				double centerX = relativePos.x;
 				double centerY = relativePos.y;
 
-				gl.glVertex2d(centerX, centerY);
-				gl.glVertex2d(centerX + SIZE, centerY);
-				gl.glVertex2d(centerX + SIZE, centerY + SIZE);
-				gl.glVertex2d(centerX, centerY + SIZE);
+				gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
+				gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
+				gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
+				gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
 				gl.glEnd();
 			}
 
@@ -239,8 +215,6 @@ public class UsingJogl extends JFrame implements GLEventListener {
 			for (CreatureKnowledge value : creatureKnowledgeMap.values()) {
 				gl.glColor3d(0, 1, 0);
 				gl.glBegin(GL2.GL_POLYGON);
-				final double SIZE = 1;
-				final double HALF_SIZE = SIZE / 2;
 
 				Datas.EntityPositionalData posData = value.get(Datas.EntityPositionalData.class);
 

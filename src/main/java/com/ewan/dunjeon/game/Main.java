@@ -10,6 +10,7 @@ import com.ewan.dunjeon.world.Dunjeon;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Rectangle;
 
 import java.util.*;
 
@@ -34,7 +35,6 @@ public class Main {
         }).start();
 
         UsingJogl jogl = new UsingJogl();
-        System.out.println("adding keylistener");
         jogl.getCanvas().addKeyListener(keyBank);
         jogl.setVisible(true);
         jogl.setFocusable(true);
@@ -117,7 +117,7 @@ public class Main {
         }
 
         TestSubject testSubject = new TestSubject("Player");
-        testSubject.addFixture(new Circle(0.3d));
+        testSubject.addFixture(new Rectangle(1,1));
         testSubject.setMass(MassType.NORMAL);
         startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);

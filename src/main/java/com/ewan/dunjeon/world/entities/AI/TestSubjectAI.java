@@ -26,7 +26,6 @@ public class TestSubjectAI extends CreatureController<TestSubject> {
 
     @Override
     public void update() {
-        System.out.println(keys.getKeysDown());
         TestSubject.TestSubjectInterface creatureInterface = getConnectedCreature().getInterface();
         BasicMemoryBank memoryBank = getConnectedCreature().getMemoryProcessor();
         Vector2 nominalDirection = new Vector2(0,0);
@@ -37,6 +36,6 @@ public class TestSubjectAI extends CreatureController<TestSubject> {
         }
         nominalDirection = nominalDirection.getNormalized();
 
-        creatureInterface.moveInDirection(nominalDirection, 1);
+        creatureInterface.moveInDirection(nominalDirection, 3);
     }
 }
