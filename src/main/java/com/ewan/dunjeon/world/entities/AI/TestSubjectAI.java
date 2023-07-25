@@ -29,13 +29,24 @@ public class TestSubjectAI extends CreatureController<TestSubject> {
         TestSubject.TestSubjectInterface creatureInterface = getConnectedCreature().getInterface();
         BasicMemoryBank memoryBank = getConnectedCreature().getMemoryProcessor();
         Vector2 nominalDirection = new Vector2(0,0);
+        Vector2 moveDirection;
         for (Map.Entry<Integer, Vector2> entry : directionalKeys.entrySet()) {
             if(keys.getKeySet().get(entry.getKey())){
                 nominalDirection.add(entry.getValue());
             }
         }
-        nominalDirection = nominalDirection.getNormalized();
+        if(nominalDirection.getMagnitude() == 0){
+            moveDirection = creatureInterface.getCurrentSpeed().copy().multiply(-3);
+        }else {
+            nominalDirection = nominalDirection.getNormalized();
+            nominalDirection.multiply(5);
+            Vector2 desiredSpeed = nominalDirection;
+            Vector2 creatureSpeed = creatureInterface.getCurrentSpeed();
+            Vector2 diff = creatureSpeed.to(desiredSpeed);
+            moveDirection = diff.setMagnitude(diff.getMagnitudeSquared());
+        }
 
-        creatureInterface.moveInDirection(nominalDirection, 3);
+
+        creatureInterface.moveInDirection(moveDirection);
     }
 }

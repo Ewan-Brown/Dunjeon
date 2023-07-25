@@ -8,9 +8,7 @@ import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.floor.Floor;
 import com.ewan.dunjeon.world.Dunjeon;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.dyn4j.geometry.Circle;
-import org.dyn4j.geometry.MassType;
-import org.dyn4j.geometry.Rectangle;
+import org.dyn4j.geometry.*;
 
 import java.util.*;
 
@@ -118,7 +116,8 @@ public class Main {
 
         TestSubject testSubject = new TestSubject("Player");
         testSubject.addFixture(new Rectangle(1,1));
-        testSubject.setMass(MassType.NORMAL);
+//        testSubject.setMass(MassType.NORMAL);
+        testSubject.setMass(new Mass(new Vector2(),1,1));
         startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);
 

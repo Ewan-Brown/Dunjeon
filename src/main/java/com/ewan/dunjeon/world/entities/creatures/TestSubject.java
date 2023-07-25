@@ -39,12 +39,11 @@ public class TestSubject extends Creature {
 
 
     public class TestSubjectInterface extends CreatureControls {
-        public void moveInDirection(Vector2 v, double throttle){
-            assert throttle >= 0 && throttle <= 1;
-            v = v.getNormalized();
-            v.multiply(throttle);
+        public void moveInDirection(Vector2 v){
             TestSubject.super.applyForce(v);
         }
+
+        public Vector2 getCurrentSpeed(){return TestSubject.super.getLinearVelocity();}
 
     }
 
