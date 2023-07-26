@@ -172,54 +172,64 @@ public class UsingJogl extends JFrame implements GLEventListener {
 	}
 
 	static {{
-		strategyMap.put(TestSubject.class, (RenderStrategy<TestSubject>) (creature, gl) -> {
-			var cellKnowledgeMap = creature.getMemoryBank().getCellKnowledgeHashMap();
-			final double SIZE = 1;
-			final double HALF_SIZE = SIZE/2;
+		strategyMap.put(TestSubject.class, new RenderStrategy<TestSubject>() {
+			final Vector2 lastCameraPos = new Vector2();
+			@Override
+			public void render(TestSubject creature, GL2 gl) {
+				var cellKnowledgeMap = creature.getMemoryBank().getCellKnowledgeHashMap();
+				final double SIZE = 1;
+				final double HALF_SIZE = SIZE / 2;
 
-			for (CellKnowledge cellKnowledge : cellKnowledgeMap.values()) {
-				Datas.CellEnterableData enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
-				if (enterableData != null && enterableData.getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
-					gl.glColor3d(1, 0, 1);
-				} else {
-					gl.glColor3d(0, 0, 1);
-				}
-				gl.glBegin(GL2.GL_POLYGON);
-
-				Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getPosition());
-				Vector2 relativePos = new Vector2(creature.getWorldCenter().to(centerPos));
-
-				double centerX = relativePos.x;
-				double centerY = relativePos.y;
-
-				gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
-				gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
-				gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
-				gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
-				gl.glEnd();
-			}
-
-			var creatureKnowledgeMap = creature.getMemoryBank().getCreatureKnowledgeHashMap();
-
-			for (CreatureKnowledge value : creatureKnowledgeMap.values()) {
-				gl.glColor3d(0, 1, 0);
-				gl.glBegin(GL2.GL_POLYGON);
-
-				Datas.EntityPositionalData posData = value.get(Datas.EntityPositionalData.class);
-
-				if (posData != null) {
-					Vector2 centerPos = posData.getPosition();
-					Vector2 relativePos = new Vector2(creature.getWorldCenter().to(centerPos));
+				Vector2 cameraDiff =  lastCameraPos.difference(creature.getWorldCenter());
+				lastCameraPos.subtract(cameraDiff.multiply(0.001));
 
 
-					double centerX = relativePos.x;
-					double centerY = relativePos.y;
+				gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
+//				gl.glTranslated(-creature.getWorldCenter().x, -creature.getWorldCenter().y, 0);
+
+				for (CellKnowledge cellKnowledge : cellKnowledgeMap.values()) {
+					Datas.CellEnterableData enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
+					if (enterableData != null && enterableData.getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
+						gl.glColor3d(1, 0, 1);
+					} else {
+						gl.glColor3d(0, 0, 1);
+					}
+					gl.glBegin(GL2.GL_POLYGON);
+
+					Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getPosition());
+//				Vector2 relativePos = new Vector2(creature.getWorldCenter().to(centerPos));
+//				Vector2 relativePos = new Vector2(centerPos);
+
+					double centerX = centerPos.x;
+					double centerY = centerPos.y;
 
 					gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
 					gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
 					gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
 					gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
 					gl.glEnd();
+				}
+
+				var creatureKnowledgeMap = creature.getMemoryBank().getCreatureKnowledgeHashMap();
+
+				for (CreatureKnowledge value : creatureKnowledgeMap.values()) {
+					gl.glColor3d(0, 1, 0);
+					gl.glBegin(GL2.GL_POLYGON);
+
+					Datas.EntityPositionalData posData = value.get(Datas.EntityPositionalData.class);
+
+					if (posData != null) {
+						Vector2 centerPos = posData.getPosition();
+
+						double centerX = centerPos.x;
+						double centerY = centerPos.y;
+
+						gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
+						gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
+						gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
+						gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
+						gl.glEnd();
+					}
 				}
 			}
 		});
