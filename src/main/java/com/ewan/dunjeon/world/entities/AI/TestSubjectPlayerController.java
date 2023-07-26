@@ -1,7 +1,6 @@
 package com.ewan.dunjeon.world.entities.AI;
 
 import com.ewan.dunjeon.input.KeyBank;
-import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import org.dyn4j.geometry.Vector2;
 
@@ -9,12 +8,12 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestSubjectAI extends CreatureController<TestSubject> {
+public class TestSubjectPlayerController extends CreatureController<TestSubject> {
 
     private final KeyBank keys;
     private final HashMap<Integer, Vector2> directionalKeys = new HashMap<>();
 
-    public TestSubjectAI(TestSubject connectedCreature, KeyBank keys) {
+    public TestSubjectPlayerController(TestSubject connectedCreature, KeyBank keys) {
         super(connectedCreature);
         this.keys = keys;
         directionalKeys.put(KeyEvent.VK_W, new Vector2(0, 1));
@@ -27,7 +26,6 @@ public class TestSubjectAI extends CreatureController<TestSubject> {
     @Override
     public void update() {
         TestSubject.TestSubjectInterface creatureInterface = getConnectedCreature().getInterface();
-        BasicMemoryBank memoryBank = getConnectedCreature().getMemoryProcessor();
         Vector2 nominalDirection = new Vector2(0,0);
         Vector2 moveDirection;
         for (Map.Entry<Integer, Vector2> entry : directionalKeys.entrySet()) {
@@ -36,10 +34,10 @@ public class TestSubjectAI extends CreatureController<TestSubject> {
             }
         }
         if(nominalDirection.getMagnitude() == 0){
-            moveDirection = creatureInterface.getCurrentSpeed().copy().multiply(-3);
+            moveDirection = creatureInterface.getCurrentSpeed().copy().multiply(-5);
         }else {
             nominalDirection = nominalDirection.getNormalized();
-            nominalDirection.multiply(5);
+            nominalDirection.multiply(10);
             Vector2 desiredSpeed = nominalDirection;
             Vector2 creatureSpeed = creatureInterface.getCurrentSpeed();
             Vector2 diff = creatureSpeed.to(desiredSpeed);

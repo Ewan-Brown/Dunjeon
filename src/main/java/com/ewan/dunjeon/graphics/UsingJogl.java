@@ -26,14 +26,8 @@ package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.data.Datas;
 import com.ewan.dunjeon.world.Dunjeon;
-import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.creatures.AbstractMemoryBank;
-import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
-import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
 import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.jogamp.opengl.*;
@@ -42,19 +36,14 @@ import com.jogamp.opengl.util.Animator;
 import lombok.Getter;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.geometry.Polygon;
-import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.*;
-import org.dyn4j.world.World;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 public class UsingJogl extends JFrame implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
@@ -150,7 +139,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 		// Draw things with true sight
 
-		gl.glScaled(0.02, 0.02, 1.0);
+		gl.glScaled(0.06, 0.06, 1.0);
 
 		renderPerspective(gl, Dunjeon.getInstance().getPlayer());
 //		renderAll(gl);
@@ -184,7 +173,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 	static {{
 		strategyMap.put(TestSubject.class, (RenderStrategy<TestSubject>) (creature, gl) -> {
-			var cellKnowledgeMap = creature.getMemoryProcessor().getCellKnowledgeHashMap();
+			var cellKnowledgeMap = creature.getMemoryBank().getCellKnowledgeHashMap();
 			final double SIZE = 1;
 			final double HALF_SIZE = SIZE/2;
 
@@ -210,7 +199,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 				gl.glEnd();
 			}
 
-			var creatureKnowledgeMap = creature.getMemoryProcessor().getCreatureKnowledgeHashMap();
+			var creatureKnowledgeMap = creature.getMemoryBank().getCreatureKnowledgeHashMap();
 
 			for (CreatureKnowledge value : creatureKnowledgeMap.values()) {
 				gl.glColor3d(0, 1, 0);

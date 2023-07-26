@@ -3,7 +3,7 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.UsingJogl;
 import com.ewan.dunjeon.input.KeyBank;
-import com.ewan.dunjeon.world.entities.AI.TestSubjectAI;
+import com.ewan.dunjeon.world.entities.AI.TestSubjectPlayerController;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.floor.Floor;
 import com.ewan.dunjeon.world.Dunjeon;
@@ -121,7 +121,7 @@ public class Main {
         startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);
 
-        startFloor.addCreatureController(new TestSubjectAI(testSubject, keyBank));
+        startFloor.addCreatureController(new TestSubjectPlayerController(testSubject, keyBank));
 
     }
 }

@@ -25,7 +25,7 @@ public class TestSubject extends Creature {
     }
 
 
-    public BasicMemoryBank getMemoryProcessor() {
+    public BasicMemoryBank getMemoryBank() {
         return b;
     }
 
