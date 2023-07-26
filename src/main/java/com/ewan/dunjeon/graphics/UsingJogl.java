@@ -224,10 +224,10 @@ public class UsingJogl extends JFrame implements GLEventListener {
 						double centerX = centerPos.x;
 						double centerY = centerPos.y;
 
-						gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
-						gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
-						gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
-						gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
+						gl.glVertex2d(centerX - HALF_SIZE/2, centerY - HALF_SIZE/2);
+						gl.glVertex2d(centerX + HALF_SIZE/2, centerY - HALF_SIZE/2);
+						gl.glVertex2d(centerX + HALF_SIZE/2, centerY + HALF_SIZE/2);
+						gl.glVertex2d(centerX - HALF_SIZE/2, centerY + HALF_SIZE/2);
 						gl.glEnd();
 					}
 				}
