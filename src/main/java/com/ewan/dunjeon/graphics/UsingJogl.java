@@ -183,53 +183,56 @@ public class UsingJogl extends JFrame implements GLEventListener {
 				Vector2 cameraDiff =  lastCameraPos.difference(creature.getWorldCenter());
 				lastCameraPos.subtract(cameraDiff.multiply(0.001));
 
-
 				gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
-//				gl.glTranslated(-creature.getWorldCenter().x, -creature.getWorldCenter().y, 0);
 
 				for (CellKnowledge cellKnowledge : cellKnowledgeMap.values()) {
+					gl.glPushMatrix();
 					Datas.CellEnterableData enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
 					if (enterableData != null && enterableData.getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
 						gl.glColor3d(1, 0, 1);
 					} else {
 						gl.glColor3d(0, 0, 1);
 					}
-					gl.glBegin(GL2.GL_POLYGON);
 
 					Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getPosition());
-//				Vector2 relativePos = new Vector2(creature.getWorldCenter().to(centerPos));
-//				Vector2 relativePos = new Vector2(centerPos);
+					gl.glTranslated(centerPos.x, centerPos.y, 0);
 
-					double centerX = centerPos.x;
-					double centerY = centerPos.y;
-
-					gl.glVertex2d(centerX - HALF_SIZE, centerY - HALF_SIZE);
-					gl.glVertex2d(centerX + HALF_SIZE, centerY - HALF_SIZE);
-					gl.glVertex2d(centerX + HALF_SIZE, centerY + HALF_SIZE);
-					gl.glVertex2d(centerX - HALF_SIZE, centerY + HALF_SIZE);
+					gl.glBegin(GL2.GL_POLYGON);
+					gl.glVertex2d(-HALF_SIZE, -HALF_SIZE);
+					gl.glVertex2d(HALF_SIZE, -HALF_SIZE);
+					gl.glVertex2d(HALF_SIZE, HALF_SIZE);
+					gl.glVertex2d(-HALF_SIZE, HALF_SIZE);
 					gl.glEnd();
+					gl.glPopMatrix();
 				}
 
 				var creatureKnowledgeMap = creature.getMemoryBank().getCreatureKnowledgeHashMap();
 
 				for (CreatureKnowledge value : creatureKnowledgeMap.values()) {
+					gl.glPushMatrix();
 					gl.glColor3d(0, 1, 0);
-					gl.glBegin(GL2.GL_POLYGON);
 
-					Datas.EntityPositionalData posData = value.get(Datas.EntityPositionalData.class);
+
+					var posData = value.get(Datas.EntityPositionalData.class);
+					var kinData = value.get(Datas.EntityKineticData.class);
 
 					if (posData != null) {
 						Vector2 centerPos = posData.getPosition();
 
-						double centerX = centerPos.x;
-						double centerY = centerPos.y;
+						gl.glTranslated(centerPos.x, centerPos.y, 0);
+						if(kinData != null){
+							gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
+						}
 
-						gl.glVertex2d(centerX - HALF_SIZE/2, centerY - HALF_SIZE/2);
-						gl.glVertex2d(centerX + HALF_SIZE/2, centerY - HALF_SIZE/2);
-						gl.glVertex2d(centerX + HALF_SIZE/2, centerY + HALF_SIZE/2);
-						gl.glVertex2d(centerX - HALF_SIZE/2, centerY + HALF_SIZE/2);
+						gl.glBegin(GL2.GL_POLYGON);
+						gl.glVertex2d(-HALF_SIZE/2, -HALF_SIZE/2);
+						gl.glVertex2d(HALF_SIZE/2, -HALF_SIZE/2);
+						gl.glVertex2d(HALF_SIZE/2, HALF_SIZE/2);
+						gl.glVertex2d(-HALF_SIZE/2, HALF_SIZE/2);
 						gl.glEnd();
 					}
+					gl.glPopMatrix();
+
 				}
 			}
 		});

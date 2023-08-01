@@ -7,5 +7,5 @@ import com.ewan.dunjeon.data.Event;
 public abstract class AbstractMemoryBank {
 
     public abstract void processWrappedData(DataWrapper<? extends Data, ?> wrappedData);
-    public abstract void processEventData(Event e);
+    public abstract void processEventData(Event<?> e);
 }

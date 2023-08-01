@@ -13,7 +13,7 @@ public abstract class CreatureController<C extends Creature> {
     public abstract void update();
 
     @Getter
-    private C connectedCreature;
+    private final C connectedCreature;
 
 
 }

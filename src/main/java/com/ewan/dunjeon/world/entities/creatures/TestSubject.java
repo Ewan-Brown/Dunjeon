@@ -39,8 +39,15 @@ public class TestSubject extends Creature {
 
 
     public class TestSubjectInterface extends CreatureControls {
+
+        public long getUUID(){return TestSubject.super.getUUID();}
+
         public void moveInDirection(Vector2 v){
             TestSubject.super.applyForce(v);
+        }
+
+        public void turn(double d){
+            TestSubject.super.applyTorque(d);
         }
 
         public Vector2 getCurrentSpeed(){return TestSubject.super.getLinearVelocity();}

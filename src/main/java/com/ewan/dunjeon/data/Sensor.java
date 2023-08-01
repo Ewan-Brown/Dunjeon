@@ -25,8 +25,8 @@ public class Sensor<P extends DataStreamParameters> implements KnowledgeFragment
         }
     }
 
-    public final void passOnEvents(List<Event<?>> events){
-        for (Event<?> event : events) {
+    public final void passOnEvents(List<Event<DataWrapper<? extends Data, ?>>> events){
+        for (Event<DataWrapper<? extends Data, ?>> event : events) {
             creature.getMemoryBank().processEventData(event);
         }
     }

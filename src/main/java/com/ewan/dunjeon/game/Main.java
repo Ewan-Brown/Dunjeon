@@ -3,6 +3,7 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.UsingJogl;
 import com.ewan.dunjeon.input.KeyBank;
+import com.ewan.dunjeon.world.entities.AI.TestSubjectAIController;
 import com.ewan.dunjeon.world.entities.AI.TestSubjectPlayerController;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.floor.Floor;
@@ -115,13 +116,19 @@ public class Main {
         }
 
         TestSubject testSubject = new TestSubject("Player");
-        testSubject.addFixture(new Rectangle(1,1));
-//        testSubject.setMass(MassType.NORMAL);
+        testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
         startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);
 
         startFloor.addCreatureController(new TestSubjectPlayerController(testSubject, keyBank));
+
+        TestSubject npcTestSubject = new TestSubject("NPC");
+        npcTestSubject.addFixture(new Rectangle(0.5,0.5));
+        npcTestSubject.setMass(new Mass(new Vector2(),1,1));
+        startFloor.addEntityRandomLoc(npcTestSubject);
+
+        startFloor.addCreatureController(new TestSubjectAIController(npcTestSubject));
 
     }
 }
