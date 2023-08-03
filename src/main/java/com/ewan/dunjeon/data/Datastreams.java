@@ -29,29 +29,29 @@ public class Datastreams {
 
                 List<DataWrappers.EntityDataWrapper> entityDataWrappers = new ArrayList<>();
 
-                Set<Entity> entitiesOnSameFloor = sensor.creature.getFloor().getEntities();
-                for (Entity entity : entitiesOnSameFloor) {
-
-                    Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getTransform().getRotationAngle(), entity.getAngularVelocity());
-                    Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
-                    Long entityId = entity.getUUID();
-
-                    List<Datas.EntityData> entityDataAmalgamated = List.of(kineticData, positionalData);
-                    DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(entityDataAmalgamated, entityId, sensor, d.getTimeElapsed());
-                    entityDataWrappers.add(entityDataWrapper);
-
-                }
+//                Set<Entity> entitiesOnSameFloor = sensor.creature.getFloor().getEntities();
+//                for (Entity entity : entitiesOnSameFloor) {
+//
+//                    Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getTransform().getRotationAngle(), entity.getAngularVelocity());
+//                    Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
+//                    Long entityId = entity.getUUID();
+//
+//                    List<Datas.EntityData> entityDataAmalgamated = List.of(kineticData, positionalData);
+//                    DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(entityDataAmalgamated, entityId, sensor, d.getTimeElapsed());
+//                    entityDataWrappers.add(entityDataWrapper);
+//
+//                }
 
 
                 //************* Cell Data *********************//
 
-
                 List<DataWrappers.CellDataWrapper> cellDataAmalgamated = new ArrayList<>();
-                for (BasicCell basicCell : sensor.creature.getFloor().getCellsAsList()) {
-                        Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
-                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell.getWorldCenter(), sensor.creature.getFloor().getUUID()), sensor, d.getTimeElapsed());
-                        cellDataAmalgamated.add(cellDataWrapper);
-                }
+
+//                for (BasicCell basicCell : sensor.creature.getFloor().getCellsAsList()) {
+//                        Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
+//                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell.getWorldCenter(), sensor.creature.getFloor().getUUID()), sensor, d.getTimeElapsed());
+//                        cellDataAmalgamated.add(cellDataWrapper);
+//                }
 
 
                 //************* PUSH *********************//
