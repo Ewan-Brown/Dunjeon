@@ -98,11 +98,11 @@ public class Main {
         Floor startFloor = null;
 
         for (int i = 0; i < floorCount; i++) {
-            FloorGenerator generator = new FloorGenerator(20, 20);
+            FloorGenerator generator = new FloorGenerator(40, 40);
             int hallWidth = 2; //Width of hallways
             int roomPadding = 0; //Extra walls between the room walls and the hallways
 
-            generator.generateLeafs(15,-1, (hallWidth/2)+roomPadding);
+            generator.generateLeafs(35,-1, (hallWidth/2)+roomPadding);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
             generator.generateHalls(hallWidth);
