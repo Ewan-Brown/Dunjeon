@@ -50,9 +50,9 @@ public class TestSubjectPlayerController extends CreatureController<TestSubject>
         if(selfKnowledge != null) {
             var selfKineticKnowledge = selfKnowledge.get(Datas.EntityKineticData.class);
             if(selfKineticKnowledge != null) {
-                selfSpeed = selfKineticKnowledge.getSpeed();
-                selfAngle = selfKineticKnowledge.getRotation();
-                selfAngularVelocity = selfKineticKnowledge.getRotationalSpeed();
+                selfSpeed = selfKineticKnowledge.getInfo().getSpeed();
+                selfAngle = selfKineticKnowledge.getInfo().getRotation();
+                selfAngularVelocity = selfKineticKnowledge.getInfo().getRotationalSpeed();
             }
         }
 

@@ -28,6 +28,7 @@ import com.ewan.dunjeon.data.Datas;
 import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
+import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
 import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.jogamp.opengl.*;
@@ -187,11 +188,14 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 				for (CellKnowledge cellKnowledge : cellKnowledgeMap.values()) {
 					gl.glPushMatrix();
-					Datas.CellEnterableData enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
-					if (enterableData != null && enterableData.getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
-						gl.glColor3d(1, 0, 1);
+					KnowledgeFragment<Datas.CellEnterableData> enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
+
+					double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableData.getTimestamp()) < 5 ? 1 : 0.5;
+
+					if (enterableData != null && enterableData.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
+						gl.glColor3d(colVal, 0, colVal);
 					} else {
-						gl.glColor3d(0, 0, 1);
+						gl.glColor3d(0, 0, colVal);
 					}
 
 					Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getPosition());
@@ -217,11 +221,11 @@ public class UsingJogl extends JFrame implements GLEventListener {
 					var kinData = value.get(Datas.EntityKineticData.class);
 
 					if (posData != null) {
-						Vector2 centerPos = posData.getPosition();
+						Vector2 centerPos = posData.getInfo().getPosition();
 
 						gl.glTranslated(centerPos.x, centerPos.y, 0);
 						if(kinData != null){
-							gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
+							gl.glRotated(kinData.getInfo().getRotation() * 180/Math.PI,0,0,1);
 						}
 
 						gl.glBegin(GL2.GL_POLYGON);

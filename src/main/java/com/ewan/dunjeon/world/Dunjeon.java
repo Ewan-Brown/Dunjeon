@@ -35,6 +35,7 @@ public class Dunjeon{
     Updates the game, returns true if the game is over.
      */
     public void update(double t){
+//        System.out.println("Dunjeon.update");
         this.timeElapsed += t;
         this.ticksElapsed += 1;
 //        System.out.println("Floor updated, t = "+ timeElapsed);

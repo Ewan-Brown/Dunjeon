@@ -11,13 +11,14 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class BasicMemoryBank extends AbstractMemoryBank{
 
-    private final HashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new HashMap<>();
-    private final HashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new HashMap<>();
-    private final HashMap<WorldUtils.CellPosition, CellKnowledge> cellKnowledgeHashMap = new HashMap<>();
+    private final ConcurrentHashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<WorldUtils.CellPosition, CellKnowledge> cellKnowledgeHashMap = new ConcurrentHashMap<>();
     private final List<Event<?>> eventList = new ArrayList<>();
 
     //TODO Add structure so that we can have a list of indexed knowledges with identifiers, and 'non-indexed' ones that only decay and are never updated again. i.e decoy 'entities' that will never later get updated, and can cut down on some performance hits?

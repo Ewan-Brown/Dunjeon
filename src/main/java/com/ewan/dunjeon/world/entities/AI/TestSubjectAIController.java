@@ -37,8 +37,8 @@ public class TestSubjectAIController extends CreatureController<TestSubject>{
         }
 
         var targetMemory = memoryBank.getCreatureKnowledgeHashMap().get(target);
-        var targetPos = targetMemory.get(Datas.EntityPositionalData.class).getPosition();
-        var selfPos = memoryBank.getCreatureKnowledgeHashMap().get(creatureInterface.getUUID()).get(Datas.EntityPositionalData.class).getPosition();
+        var targetPos = targetMemory.get(Datas.EntityPositionalData.class).getInfo().getPosition();
+        var selfPos = memoryBank.getCreatureKnowledgeHashMap().get(creatureInterface.getUUID()).get(Datas.EntityPositionalData.class).getInfo().getPosition();
 
         var posDiff = selfPos.to(targetPos);
         var posDiffMagnitude = posDiff.getMagnitude();

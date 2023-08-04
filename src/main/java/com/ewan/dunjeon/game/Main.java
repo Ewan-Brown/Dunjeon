@@ -29,7 +29,7 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                updateCurrentWorld();
+                updateCurrentWorld(100);
             }
         }).start();
 
@@ -102,7 +102,7 @@ public class Main {
             int hallWidth = 2; //Width of hallways
             int roomPadding = 0; //Extra walls between the room walls and the hallways
 
-            generator.generateLeafs(5,-1, (hallWidth/2)+roomPadding);
+            generator.generateLeafs(15,-1, (hallWidth/2)+roomPadding);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
             generator.generateHalls(hallWidth);
@@ -123,12 +123,12 @@ public class Main {
 
         startFloor.addCreatureController(new TestSubjectPlayerController(testSubject, keyBank));
 
-        TestSubject npcTestSubject = new TestSubject("NPC");
-        npcTestSubject.addFixture(new Rectangle(0.5,0.5));
-        npcTestSubject.setMass(new Mass(new Vector2(),1,1));
-        startFloor.addEntityRandomLoc(npcTestSubject);
-
-        startFloor.addCreatureController(new TestSubjectAIController(npcTestSubject));
+//        TestSubject npcTestSubject = new TestSubject("NPC");
+//        npcTestSubject.addFixture(new Rectangle(0.5,0.5));
+//        npcTestSubject.setMass(new Mass(new Vector2(),1,1));
+//        startFloor.addEntityRandomLoc(npcTestSubject);
+//
+//        startFloor.addCreatureController(new TestSubjectAIController(npcTestSubject));
 
     }
 }

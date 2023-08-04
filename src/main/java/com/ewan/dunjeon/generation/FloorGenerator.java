@@ -18,6 +18,7 @@ public class FloorGenerator {
     public FloorGenerator(int width, int height) {
         this.width = width;
         this.height = height;
+        floor = new Floor(width, height);
     }
 
     int width;
@@ -28,7 +29,7 @@ public class FloorGenerator {
     List<SplitLine> splitLineList;
     List<Junction> junctions;
     List<Hall> halls;
-    Floor floor = new Floor(10, 10);
+    Floor floor;
 
     double[][] weightMap;
     BasicCell[][] cells;

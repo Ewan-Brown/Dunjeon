@@ -23,8 +23,9 @@ public abstract class KnowledgePackage<I, D extends Data> {
 
     }
 
-    public <T extends D> T get(Class<T> clazz){
-        return clazz.cast(dataMap.get(clazz).info);
+    @SuppressWarnings("unchecked")
+    public <T extends D> KnowledgeFragment<T> get(Class<T> clazz){
+        return (KnowledgeFragment<T>) dataMap.get(clazz);
     }
 
 }
