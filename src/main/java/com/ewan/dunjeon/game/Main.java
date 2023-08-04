@@ -29,7 +29,7 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                updateCurrentWorld(100);
+                updateCurrentWorld();
             }
         }).start();
 
@@ -116,7 +116,7 @@ public class Main {
         }
 
         TestSubject testSubject = new TestSubject("Player");
-        testSubject.addFixture(new Rectangle(0.5,0.5));
+        testSubject.addFixture(new Rectangle(1,1));
         testSubject.setMass(new Mass(new Vector2(),1,1));
         startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);

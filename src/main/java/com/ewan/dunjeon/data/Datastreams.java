@@ -44,7 +44,7 @@ public class Datastreams {
 
                 //Iterate across rays. Written to ensure that the first and last angles are casted, to avoid any funny business
 //                Vector2 sensorPos = sensor.getParameters().getSightSourceLocation();
-                System.out.println(sensorPos);
+                Vector2 sensorPos = sensor.creature.getWorldCenter();
                 double currentAngle = startingAngle;
                 boolean finalLap = false;
                 do{
@@ -57,9 +57,7 @@ public class Datastreams {
                     Vector2 rayEnd = sensorPos.copy().add(Vector2.create(range, currentAngle));
                     var results = WorldUtils.getIntersectedTilesWithWall(sensorPos, rayEnd);
 
-//                    System.out.println("=========RESULTS===========");
                     for (Pair<Vector2, WorldUtils.Side> result : results) {
-//                        System.out.println("\t" + result.getElement0());
                         if(!tilesMap.containsKey(result.getElement0())){
                             tilesMap.put(result.getElement0(), new HashSet<>());
                         }
