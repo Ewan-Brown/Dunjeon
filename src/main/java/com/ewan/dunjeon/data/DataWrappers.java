@@ -13,14 +13,14 @@ public class DataWrappers {
 
     public static class EntityDataWrapper extends DataWrapper<Datas.EntityData, Long> {
         public EntityDataWrapper(List<Datas.EntityData> data, Long identifier, Sensor<? extends DataStreamParameters> sourceSensor, double timestamp) {
-            super(data, identifier, sourceSensor, timestamp);
+            super(data, Datas.EntityData.class, identifier, sourceSensor, timestamp);
         }
     }
 
     public static class CellDataWrapper extends DataWrapper<Datas.CellData, WorldUtils.CellPosition> {
 
         public CellDataWrapper(List<Datas.CellData> data, WorldUtils.CellPosition identifier, Sensor<? extends DataStreamParameters> sourceSensor, double timestamp) {
-            super(data, identifier, sourceSensor, timestamp);
+            super(data, Datas.CellData.class, identifier, sourceSensor, timestamp);
         }
     }
 

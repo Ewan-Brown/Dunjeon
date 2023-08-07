@@ -7,11 +7,11 @@ import lombok.Getter;
 public class KnowledgeFragment<D extends Data> {
     final D info;
     final Source source;
-    private final double timestamp;
+    private final Double timestamp;
 
     public interface Source { }
 
-    public KnowledgeFragment(D info, Source source, double timestamp) {
+    public KnowledgeFragment(D info, Source source, Double timestamp) {
         this.info = info;
         this.source = source;
         this.timestamp = timestamp;

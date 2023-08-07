@@ -26,10 +26,10 @@ package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.data.Datas;
 import com.ewan.dunjeon.world.Dunjeon;
+import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
-import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
@@ -177,7 +177,8 @@ public class UsingJogl extends JFrame implements GLEventListener {
 			final Vector2 lastCameraPos = new Vector2();
 			@Override
 			public void render(TestSubject creature, GL2 gl) {
-				var cellKnowledgeMap = creature.getMemoryBank().getCellKnowledgeHashMap();
+				List<WorldUtils.CellPosition> validCellPositions = creature.getMemoryBank().getIdentifiersForAllValid(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
+
 				final double SIZE = 1;
 				final double HALF_SIZE = SIZE / 2;
 
@@ -186,9 +187,9 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 				gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 
-				for (CellKnowledge cellKnowledge : cellKnowledgeMap.values()) {
+				for (WorldUtils.CellPosition cellPos : validCellPositions) {
 					gl.glPushMatrix();
-					KnowledgeFragment<Datas.CellEnterableData> enterableData = cellKnowledge.get(Datas.CellEnterableData.class);
+//					KnowledgeFragment<Datas.CellEnterableData> enterableData = creature.getMemoryBank().get
 
 					double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableData.getTimestamp()) < 5 ? 1 : 0.5;
 

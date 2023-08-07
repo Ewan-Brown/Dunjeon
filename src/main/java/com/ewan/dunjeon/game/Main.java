@@ -29,7 +29,7 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                updateCurrentWorld();
+                updateCurrentWorld(100);
             }
         }).start();
 

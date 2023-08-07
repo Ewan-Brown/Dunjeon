@@ -15,14 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public abstract class DataWrapper<D extends Data, I> {
     List<D> data;
+    Class<D> baseClass;
     I identifier;
     Sensor<? extends DataStreamParameters> sourceSensor;
     double timestamp;
-
-    public DataWrapper(double timestamp, List<D> data, I identifier, Sensor<? extends DataStreamParameters> s) {
-        this.data = data;
-        this.identifier = identifier;
-        sourceSensor = s;
-        this.timestamp = timestamp;
-    }
 }

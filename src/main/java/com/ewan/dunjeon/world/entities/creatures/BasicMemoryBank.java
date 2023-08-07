@@ -4,16 +4,16 @@ import com.ewan.dunjeon.data.*;
 import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.memory.FloorKnowledge;
 import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
+import com.ewan.dunjeon.world.entities.memory.KnowledgePackage;
 import com.ewan.dunjeon.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
-import lombok.Getter;
+import com.ewan.dunjeon.data.Datas.QueryResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
-@Getter
 public class BasicMemoryBank extends AbstractMemoryBank{
 
     private final ConcurrentHashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new ConcurrentHashMap<>();
@@ -21,57 +21,124 @@ public class BasicMemoryBank extends AbstractMemoryBank{
     private final ConcurrentHashMap<WorldUtils.CellPosition, CellKnowledge> cellKnowledgeHashMap = new ConcurrentHashMap<>();
     private final List<Event<?>> eventList = new ArrayList<>();
 
-    //TODO Add structure so that we can have a list of indexed knowledges with identifiers, and 'non-indexed' ones that only decay and are never updated again. i.e decoy 'entities' that will never later get updated, and can cut down on some performance hits?
+    private record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
+            (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass, Function<I,K> knowledgeProducer){}
+
+    final List<Pairing<?, ?, ?>> knowledgeDataPairings = new ArrayList<>();
+
+    {
+        knowledgeDataPairings.add(new Pairing<>(creatureKnowledgeHashMap, Datas.EntityData.class, CreatureKnowledge::new));
+        knowledgeDataPairings.add(new Pairing<>(floorKnowledgeHashMap, Datas.FloorData.class, FloorKnowledge::new));
+        knowledgeDataPairings.add(new Pairing<>(cellKnowledgeHashMap, Datas.CellData.class, CellKnowledge::new));
+
+
+    }
 
     //Unwrap data to figure out its context, and place it in the appropriate knowledge object
-    //TODO Should turn this series of ifs into a list of strategies....
     @SuppressWarnings("unchecked")
-    public void processWrappedData(DataWrapper<? extends Data, ?> wrappedData){
-        if(wrappedData instanceof DataWrappers.EntityDataWrapper){
-            List<Datas.EntityData> entityData = (List<Datas.EntityData>) wrappedData.getData();
+    public <T extends Data, I, P extends KnowledgePackage<I,T>> void processWrappedData(DataWrapper<T, I> wrappedData){
 
-            Long UUID = ((DataWrappers.EntityDataWrapper) wrappedData).getIdentifier();
-            CreatureKnowledge creatureKnowledge;
+        for (Pairing<?, ?, ?> knowledgeDataPairing : knowledgeDataPairings) {
+            if(wrappedData.getBaseClass() == knowledgeDataPairing.relatedBaseDataClass){
+                ConcurrentHashMap<I, P> hashMap = (ConcurrentHashMap<I, P>) knowledgeDataPairing.knowledgeMap;
+                P relevantPackage = hashMap.get(wrappedData.getIdentifier());
 
-            //Create knowledge object for this creature if it doesn't already exist
-            if(creatureKnowledgeHashMap.containsKey(UUID)){
-                creatureKnowledge = creatureKnowledgeHashMap.get(UUID);
-            }else{
-                creatureKnowledge = new CreatureKnowledge(UUID);
-                creatureKnowledgeHashMap.put(UUID, creatureKnowledge);
-            }
+                if(relevantPackage == null){
+                    Function<I, P> knowledgePackageProducer = (Function<I, P>) knowledgeDataPairing.knowledgeProducer;
+                    relevantPackage = knowledgePackageProducer.apply(wrappedData.getIdentifier());
+                    hashMap.put(wrappedData.getIdentifier(), relevantPackage);
+                }
+                for (T datum : wrappedData.getData()) {
+                    KnowledgeFragment<T> fragment = new KnowledgeFragment<>(datum, wrappedData.getSourceSensor(), wrappedData.getTimestamp());
+                    relevantPackage.register(fragment);
+                }
 
-            //Register the data for this creature.
-            for (Datas.EntityData entityDatum : entityData) {
-                KnowledgeFragment kFragment = new KnowledgeFragment<>(entityDatum, wrappedData.getSourceSensor(), wrappedData.getTimestamp());
-                creatureKnowledge.register(kFragment);
+                break;
             }
         }
+    }
 
-
-        //TODO Complete this
-        if(wrappedData instanceof DataWrappers.CellDataWrapper){
-            DataWrappers.CellDataWrapper wrappedCellData = (DataWrappers.CellDataWrapper) wrappedData;
-            WorldUtils.CellPosition cellIdentifier = wrappedCellData.getIdentifier();
-
-            CellKnowledge cellKnowledge;
-
-            if(cellKnowledgeHashMap.containsKey(cellIdentifier)){
-                cellKnowledge = cellKnowledgeHashMap.get(cellIdentifier);
-            }else{
-                cellKnowledge = new CellKnowledge(cellIdentifier);
-                cellKnowledgeHashMap.put(cellIdentifier, cellKnowledge);
+    public <D extends Data, T extends D, I> List<I> getIdentifiersForAllValid(Class<D> baseClass, List<Class<? extends D>> requiredNonNull){
+        ConcurrentHashMap<I, KnowledgePackage<I, D>> dataPackageMap = getDataPackageMap(baseClass);
+        List<I> identifiers = new ArrayList<>();
+        dataPackageMap.values().stream().filter(itKnowledgePackage -> checkIfValid(itKnowledgePackage, requiredNonNull)).
+                forEach(itKnowledgePackage -> identifiers.add(itKnowledgePackage.getIdentifier()));
+        return identifiers;
+    }
+    
+    public <D extends Data, I> boolean checkIfValid(Class<D> baseClass, I identifier, List<Class<? extends D>> requiredNonNull){
+        if(knowledgeDataPairings.stream().noneMatch(pairing -> pairing.relatedBaseDataClass == baseClass)){
+            return false;
+        }else{
+            for (Class<? extends D> clazz : requiredNonNull) {
+                var frag = getDataFragment(clazz, identifier);
+                if(frag == null){
+                    return false;
+                }
             }
+        }
+        return true;
+    }
 
-            for (Datas.CellData cellDatum : wrappedCellData.getData()) {
-                KnowledgeFragment kFragment = new KnowledgeFragment<>(cellDatum, wrappedData.getSourceSensor(), wrappedData.getTimestamp());
-                cellKnowledge.register(kFragment);
+    public <D extends Data, I, T extends D> boolean checkIfValid(KnowledgePackage<I, T> knowledgePackage, List<Class<? extends D>> requiredNonNull){
+        for (Class<? extends D> clazz : requiredNonNull) {
+            var frag = getDataFragment(clazz, knowledgePackage.getIdentifier());
+            if(frag == null){
+                return false;
             }
+        }
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <D extends Data, I> ConcurrentHashMap<I, KnowledgePackage<I, D>> getDataPackageMap(Class<D> baseClass){
+        var result =  knowledgeDataPairings.stream().filter(pairing -> pairing.relatedBaseDataClass == baseClass).toList();
+        if(result.isEmpty()){
+            throw new RuntimeException("No knowledgeDataPairings found for base class: " + baseClass);
+        }else{
+            return (ConcurrentHashMap<I, KnowledgePackage<I,D>>) result.get(0).knowledgeMap();
+        }
+    }
+
+//    @SuppressWarnings("unchecked")
+//    public <D extends Data, T extends D, I> KnowledgePackage<I, D> getDataPackage(Class<D> baseClass, I identifier){
+//        return (KnowledgePackage<I, D>) getDataPackageMap(baseClass).get(identifier);
+//    }
+
+    @SuppressWarnings("unchecked")
+    private <D extends Data, T extends D, I> QueryResult<KnowledgeFragment<T>> getDataFragment(Class<T> fragmentType, I identifier){
+
+        Class<D> baseClass = (Class<D>) fragmentType.getSuperclass();
+        ConcurrentHashMap<I, KnowledgePackage<I,D>> knowledgeMap = getDataPackageMap(baseClass);
+        KnowledgePackage<I,D> knowledgePackage = knowledgeMap.get(identifier);
+        if(knowledgePackage == null){
+            return new QueryResult<>(null, QueryResult.QueryStatus.MISSING);
+        }else{
+            return new QueryResult<>(knowledgePackage.get(fragmentType), QueryResult.QueryStatus.SUCCESS);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <D extends Data, T extends D, I> QueryResult<KnowledgeFragment<T>> getDataFragmentWithDefault(Class<T> fragmentType, I identifier){
+
+        Class<D> baseClass = (Class<D>) fragmentType.getSuperclass();
+        ConcurrentHashMap<I, KnowledgePackage<I,D>> knowledgeMap = getDataPackageMap(baseClass);
+        KnowledgePackage<I,D> knowledgePackage = knowledgeMap.get(identifier);
+        if(knowledgePackage == null){
+            var defaultValue = DataDefaults.getDefault(fragmentType);
+            if(defaultValue.status() == QueryResult.QueryStatus.SUCCESS){
+                return new QueryResult<>(new KnowledgeFragment<>(defaultValue.result(), null, null), QueryResult.QueryStatus.SUCCESS);
+            }
+            return new QueryResult<>(null, QueryResult.QueryStatus.MISSING);
+        }else{
+            return new QueryResult<>(knowledgePackage.get(fragmentType), QueryResult.QueryStatus.SUCCESS);
         }
     }
 
     public void processEventData(Event e){
         eventList.add(e);
     }
+
+
 
 }

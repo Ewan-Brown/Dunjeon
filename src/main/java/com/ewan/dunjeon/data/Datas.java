@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.dyn4j.geometry.Vector2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,6 +14,10 @@ import java.util.List;
  * Cell color, cell physical state are all must all directly extend CellData
  */
 public class Datas {
+
+    public static abstract class FloorData extends Data {
+
+    }
 
     public static abstract class CellData extends Data {
 
@@ -79,6 +84,13 @@ public class Datas {
         private final double rotation;
         private final double rotationalSpeed;
 
+    }
+
+    public record QueryResult<A>(A result, QueryStatus status){
+
+        public enum QueryStatus{
+            SUCCESS, MISSING;
+        }
     }
 
 }

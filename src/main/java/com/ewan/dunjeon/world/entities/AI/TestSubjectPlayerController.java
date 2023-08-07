@@ -43,18 +43,9 @@ public class TestSubjectPlayerController extends CreatureController<TestSubject>
             }
         }
 
-        var selfKnowledge = basicMemoryBank.getCreatureKnowledgeHashMap().get(creatureInterface.getUUID());
-        Vector2 selfSpeed = new Vector2();
+        Vector2 selfSpeed = basicMemoryBank.getDataFragment(Datas.EntityKineticData.class, creatureInterface.getUUID()).result().getInfo().getSpeed();
         double selfAngle = 0;
         double selfAngularVelocity = 0;
-        if(selfKnowledge != null) {
-            var selfKineticKnowledge = selfKnowledge.get(Datas.EntityKineticData.class);
-            if(selfKineticKnowledge != null) {
-                selfSpeed = selfKineticKnowledge.getInfo().getSpeed();
-                selfAngle = selfKineticKnowledge.getInfo().getRotation();
-                selfAngularVelocity = selfKineticKnowledge.getInfo().getRotationalSpeed();
-            }
-        }
 
         if(nominalDirection.getMagnitude() == 0){
             moveDirection = selfSpeed.copy().multiply(-5);
