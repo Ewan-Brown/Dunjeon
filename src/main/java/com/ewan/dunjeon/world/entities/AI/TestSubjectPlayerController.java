@@ -5,10 +5,12 @@ import com.ewan.dunjeon.input.KeyBank;
 import com.ewan.dunjeon.world.cells.BasicCell;
 import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
+import com.ewan.dunjeon.world.entities.memory.KnowledgePackage;
 import org.dyn4j.geometry.Vector2;
 
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TestSubjectPlayerController extends CreatureController<TestSubject> {
@@ -43,9 +45,14 @@ public class TestSubjectPlayerController extends CreatureController<TestSubject>
             }
         }
 
-        Vector2 selfSpeed = basicMemoryBank.getDataFragment(Datas.EntityKineticData.class, creatureInterface.getUUID()).result().getInfo().getSpeed();
-        double selfAngle = 0;
-        double selfAngularVelocity = 0;
+        BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> selfQuery = basicMemoryBank.querySinglePackage(creatureInterface.getUUID(), Datas.EntityData.class, List.of(Datas.EntityKineticData.class, Datas.EntityPositionalData.class));
+        if(selfQuery.status() == false){
+            return;
+        }
+        BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> selfDataAccessor = selfQuery.result();
+        Vector2 selfSpeed = selfDataAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo().getSpeed();
+        double selfAngle = selfDataAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo().getRotation();
+        double selfAngularVelocity = selfDataAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo().getRotationalSpeed();
 
         if(nominalDirection.getMagnitude() == 0){
             moveDirection = selfSpeed.copy().multiply(-5);

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.dyn4j.geometry.Vector2;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -84,13 +83,6 @@ public class Datas {
         private final double rotation;
         private final double rotationalSpeed;
 
-    }
-
-    public record QueryResult<A>(A result, QueryStatus status){
-
-        public enum QueryStatus{
-            SUCCESS, MISSING;
-        }
     }
 
 }

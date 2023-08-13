@@ -25,12 +25,17 @@
 package com.ewan.dunjeon.graphics;
 
 import com.ewan.dunjeon.data.Datas;
+import com.ewan.dunjeon.data.Datas.CellData;
+import com.ewan.dunjeon.data.Datas.EntityData;
 import com.ewan.dunjeon.world.Dunjeon;
-import com.ewan.dunjeon.world.WorldUtils;
+import com.ewan.dunjeon.world.WorldUtils.CellPosition;
+import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
+import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank.MultiQueryAccessor;
+import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank.SingleQueryAccessor;
 import com.ewan.dunjeon.world.entities.creatures.Creature;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
-import com.ewan.dunjeon.world.entities.memory.creaturedata.CreatureKnowledge;
+import com.ewan.dunjeon.world.entities.memory.KnowledgePackage;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
@@ -41,10 +46,8 @@ import org.dyn4j.geometry.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class UsingJogl extends JFrame implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
@@ -177,8 +180,6 @@ public class UsingJogl extends JFrame implements GLEventListener {
 			final Vector2 lastCameraPos = new Vector2();
 			@Override
 			public void render(TestSubject creature, GL2 gl) {
-				List<WorldUtils.CellPosition> validCellPositions = creature.getMemoryBank().getIdentifiersForAllValid(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
-
 				final double SIZE = 1;
 				final double HALF_SIZE = SIZE / 2;
 
@@ -187,19 +188,22 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 				gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 
-				for (WorldUtils.CellPosition cellPos : validCellPositions) {
+				MultiQueryAccessor<CellPosition, CellData> cellQueryResults = creature.getMemoryBank().queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
+
+				for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
+					var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
+					CellPosition position = singleQueryAccessor.getIdentifier();
 					gl.glPushMatrix();
-//					KnowledgeFragment<Datas.CellEnterableData> enterableData = creature.getMemoryBank().get
 
-					double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableData.getTimestamp()) < 5 ? 1 : 0.5;
+					double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableFragment.getTimestamp()) < 5 ? 1 : 0.5;
 
-					if (enterableData != null && enterableData.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
+					if (enterableFragment.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
 						gl.glColor3d(colVal, 0, colVal);
 					} else {
 						gl.glColor3d(0, 0, colVal);
 					}
 
-					Vector2 centerPos = new Vector2(cellKnowledge.getIdentifier().getPosition());
+					Vector2 centerPos = new Vector2(position.getPosition());
 					gl.glTranslated(centerPos.x, centerPos.y, 0);
 
 					gl.glBegin(GL2.GL_POLYGON);
@@ -211,22 +215,22 @@ public class UsingJogl extends JFrame implements GLEventListener {
 					gl.glPopMatrix();
 				}
 
-				var creatureKnowledgeMap = creature.getMemoryBank().getCreatureKnowledgeHashMap();
 
-				for (CreatureKnowledge value : creatureKnowledgeMap.values()) {
+				MultiQueryAccessor<Long, EntityData> entityQueryResults = creature.getMemoryBank().queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
+
+				for (SingleQueryAccessor<Long, EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
 					gl.glPushMatrix();
 					gl.glColor3d(0, 1, 0);
 
-
-					var posData = value.get(Datas.EntityPositionalData.class);
-					var kinData = value.get(Datas.EntityKineticData.class);
+					Datas.EntityPositionalData posData = singleQueryAccessor.getKnowledge(Datas.EntityPositionalData.class).getInfo();
+					Datas.EntityKineticData kinData = singleQueryAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo();
 
 					if (posData != null) {
-						Vector2 centerPos = posData.getInfo().getPosition();
+						Vector2 centerPos = posData.getPosition();
 
 						gl.glTranslated(centerPos.x, centerPos.y, 0);
 						if(kinData != null){
-							gl.glRotated(kinData.getInfo().getRotation() * 180/Math.PI,0,0,1);
+							gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
 						}
 
 						gl.glBegin(GL2.GL_POLYGON);
