@@ -13,7 +13,7 @@ public abstract class KnowledgePackage<I, D extends Data> {
         this.identifier = identifier;
     }
 
-    HashMap<Class<? extends D>, KnowledgeFragment<D>> dataMap = new HashMap<>();
+    HashMap<Class<? extends D>, KnowledgeFragment<? extends D>> dataMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     public <T extends KnowledgeFragment<D>> void register(T object){
@@ -23,8 +23,9 @@ public abstract class KnowledgePackage<I, D extends Data> {
 
     }
 
-    public <T extends D> T get(Class<T> clazz){
-        return clazz.cast(dataMap.get(clazz).info);
+    @SuppressWarnings("unchecked")
+    public <T extends D> KnowledgeFragment<T> get(Class<T> clazz){
+        return (KnowledgeFragment<T>) dataMap.get(clazz);
     }
 
 }

@@ -8,6 +8,7 @@ import org.dyn4j.geometry.Vector2;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.IntConsumer;
@@ -22,23 +23,19 @@ public class WorldUtils {
     private static final double INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD = 0.0001f;
 
     //TODO Reduce these after by making a 'HasPosition' interface?
-    public static double getRawDistance(Entity e1, Entity e2){
-        return getRawDistance(e1.getWorldCenter().x, e2.getWorldCenter().x, e1.getWorldCenter().y, e2.getWorldCenter().y);
-    }
-    public static double getRawDistance(BasicCell c1, BasicCell c2){
-        return getRawDistance(c1.getIntegerX(), c2.getIntegerX(), c1.getIntegerY(), c2.getIntegerY());
-    }
-
-    public static double getRawDistance(BasicCell c, Entity e){
-        return getRawDistance(c.getIntegerX(), e.getWorldCenter().x, c.getIntegerY(), e.getWorldCenter().y);
-    }
+//    public static double getRawDistance(Entity e1, Entity e2){
+//        return getRawDistance(e1.getWorldCenter().x, e2.getWorldCenter().x, e1.getWorldCenter().y, e2.getWorldCenter().y);
+//    }
+//    public static double getRawDistance(BasicCell c1, BasicCell c2){
+//        return getRawDistance(c1.getIntegerX(), c2.getIntegerX(), c1.getIntegerY(), c2.getIntegerY());
+//    }
+//
+//    public static double getRawDistance(BasicCell c, Entity e){
+//        return getRawDistance(c.getIntegerX(), e.getWorldCenter().x, c.getIntegerY(), e.getWorldCenter().y);
+//    }
 //    public static double getRawDistance(Interactable f, Entity e){
 //        return getRawDistance(f.getWorldCenter().x, e.getWorldCenter().x, f.getWorldCenter().y, e.getWorldCenter().y);
 //    }
-
-    public static double getRawDistance(double x1, double x2, double y1, double y2){
-        return (double)Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    }
 
 
     public static boolean isAdjacent(BasicCell b1, BasicCell b2){
@@ -93,7 +90,11 @@ public class WorldUtils {
         DIAGONAL
     }
 
-    public static List<Pair<Point, Side>> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {
+    public static List<Pair<Vector2, Side>> getIntersectedTilesWithWall(Vector2 pos1, Vector2 pos2){
+        return getIntersectedTilesWithWall(pos1.x, pos1.y, pos2.x, pos2.y);
+    }
+
+    public static List<Pair<Vector2, Side>> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {
 
         double dx = x2 - x1;
         double dy = y2 - y1;
@@ -106,43 +107,47 @@ public class WorldUtils {
         double currentX = x1;
         double currentY = y1;
 
-        List<Pair<Point, Side>> intersectedTiles = new ArrayList<>();
-        Point currentPoint = new Point((int) Math.floor(x1), (int) Math.floor(y1));
+        List<Pair<Vector2, Side>> intersectedTiles = new ArrayList<>();
+        Vector2 currentPoint = new Vector2((int) Math.floor(x1), (int) Math.floor(y1));
 
         if(dx == 0){
-//            System.out.println("Here we vertically go");
             int tileX = (int)Math.floor(x1);
-//            System.out.println("tileX = " + tileX);
             Side intersectSide = dy > 0 ? Side.NORTH : Side.SOUTH;
-//            System.out.println("intersectSide = " + intersectSide);
             int y1Floored = (int)Math.floor(y1);
             int y2Ceil = (int)Math.floor(y2)+1;
-//            System.out.printf("y1(floor) : %f(%d), y2(ceil) : %f(%d)\n", y1, y1Floored, y2, y2Ceil);
-            IntStream.range(y1Floored, y2Ceil).forEach(new IntConsumer() {
-                @Override
-                public void accept(int value) {
-                    intersectedTiles.add(new Pair<>(new Point(tileX, value), intersectSide));
-                }
-            });
-//            System.out.println(intersectedTiles.size());
+
+            boolean reverse = false;
+            int minY = y1Floored;
+            int maxY = y2Ceil;
+            if(y2Ceil < y1Floored){
+                maxY = y1Floored;
+                minY = y2Ceil;
+                reverse = true;
+            }
+            IntStream.range(minY, maxY).forEach(value -> intersectedTiles.add(new Pair<>(new Vector2(tileX, value), intersectSide)));
+            if(reverse){
+                Collections.reverse(intersectedTiles);
+            }
             return intersectedTiles;
         }else if(dy == 0){
-//            System.out.println();
-//            System.out.println("Here we horizontally go");
             int tileY = (int)Math.floor(y1);
-//            System.out.println("tileY = " + tileY);
             Side intersectSide = dx > 0 ? Side.WEST : Side.EAST;
-//            System.out.println("intersectSide = " + intersectSide);
             int x1Floored = (int)Math.floor(x1);
             int x2Ceil = (int)Math.floor(x2)+1;
-//            System.out.printf("x1(floor) : %f(%d), x2(ceil) : %f(%d)\n", x1, x1Floored, x2, x2Ceil);
-            IntStream.range(x1Floored, x2Ceil).forEach(new IntConsumer() {
-                @Override
-                public void accept(int value) {
-                    intersectedTiles.add(new Pair<>(new Point(value, tileY), intersectSide));
-                }
-            });
-//            System.out.println(intersectedTiles.size());
+
+            boolean reverse = false;
+            int minX = x1Floored;
+            int maxX = x2Ceil;
+            if(x2Ceil < x1Floored){
+                maxX = x1Floored;
+                minX = x2Ceil;
+                reverse = true;
+            }
+
+            IntStream.range(minX, maxX).forEach(value -> intersectedTiles.add(new Pair<>(new Vector2(value, tileY), intersectSide)));
+            if(reverse){
+                Collections.reverse(intersectedTiles);
+            }
             return intersectedTiles;
         }
 
@@ -224,7 +229,7 @@ public class WorldUtils {
                     }
                     nextTileX = (int) Math.floor(nextInterceptX);
                 }
-                Pair<Point, Side> pair = new Pair<>(new Point(nextTileX, nextTileY), side);
+                Pair<Vector2, Side> pair = new Pair<>(new Vector2(nextTileX, nextTileY), side);
                 intersectedTiles.add(pair);
                 currentX = nextInterceptX;
                 currentY = nextInterceptY;

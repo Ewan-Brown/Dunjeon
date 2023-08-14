@@ -1,18 +1,12 @@
 package com.ewan.dunjeon.world.entities.AI;
 
-import com.ewan.dunjeon.data.Data;
 import com.ewan.dunjeon.data.Datas;
-import com.ewan.dunjeon.input.KeyBank;
-import com.ewan.dunjeon.world.WorldUtils;
 import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
-import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
 import com.ewan.dunjeon.world.entities.memory.KnowledgePackage;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class TestSubjectAIController extends CreatureController<TestSubject>{
     public TestSubjectAIController(TestSubject connectedCreature) {
@@ -20,25 +14,35 @@ public class TestSubjectAIController extends CreatureController<TestSubject>{
     }
 
     private Long target = null;
+    private static final List<Class<? extends Datas.EntityData>> CLASSES = List.of(Datas.EntityPositionalData.class);
     @Override
     public void update() {
         TestSubject.TestSubjectInterface creatureInterface = getConnectedCreature().getInterface();
         BasicMemoryBank memoryBank = getConnectedCreature().getMemoryBank();
 
-        if(target == null){
-            List<Long> potentialTargets = memoryBank.getCreatureKnowledgeHashMap().keySet().stream().filter(l -> l != creatureInterface.getUUID()).toList();
-            if(potentialTargets.size() == 0){
-                //No targets in memory! Do nothing
-                return;
-            }
+        BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> selfQuery = memoryBank.querySinglePackage(creatureInterface.getUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
+        if(!selfQuery.status()){
+            return;
+        }
+        BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> selfAccessor = selfQuery.result();
 
-            //Choose target quasi-randomly
-            target = potentialTargets.get(0);
+        BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> accessor = null;
+        if(target != null){
+            BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> querySinglePackage = memoryBank.querySinglePackage(target, Datas.EntityData.class, CLASSES);
+            if(!querySinglePackage.status()){
+                target = null;
+            }else{
+                accessor = querySinglePackage.result();
+            }
+        }
+        if(target == null) {
+            BasicMemoryBank.MultiQueryAccessor<Long, Datas.EntityData> a = memoryBank.queryMultiPackage(Datas.EntityData.class, CLASSES);
+            accessor = a.getIndividualAccessors().values().stream().findAny().get();
+            target = accessor.getIdentifier();
         }
 
-        var targetMemory = memoryBank.getCreatureKnowledgeHashMap().get(target);
-        var targetPos = targetMemory.get(Datas.EntityPositionalData.class).getPosition();
-        var selfPos = memoryBank.getCreatureKnowledgeHashMap().get(creatureInterface.getUUID()).get(Datas.EntityPositionalData.class).getPosition();
+        var targetPos = accessor.getKnowledge(Datas.EntityPositionalData.class).getInfo().getPosition();
+        var selfPos = selfAccessor.getKnowledge(Datas.EntityPositionalData.class).getInfo().getPosition();
 
         var posDiff = selfPos.to(targetPos);
         var posDiffMagnitude = posDiff.getMagnitude();
@@ -57,5 +61,4 @@ public class TestSubjectAIController extends CreatureController<TestSubject>{
         creatureInterface.moveInDirection(thrust);
     }
 
-//    public static class MemoryQuery
 }

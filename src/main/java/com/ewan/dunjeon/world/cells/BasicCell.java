@@ -30,7 +30,7 @@ public class BasicCell extends Body {
         this.setFilled(true);
         this.addFixture();
         this.setMass(MassType.INFINITE);
-        this.translate(x, y);
+        this.translate(x+0.5, y+0.5);
     }
 
     public void setFilled(boolean f){
