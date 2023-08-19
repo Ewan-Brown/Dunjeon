@@ -63,7 +63,7 @@ public class Datastreams {
                         }
                         tilesMap.get(result.getElement0()).add(result.getElement1());
                         BasicCell basicCell = sensor.creature.getFloor().getCellAt(result.getElement0());
-                        if(!basicCell.canBeSeenThrough(sensor.creature))
+                        if(basicCell == null || !basicCell.canBeSeenThrough(sensor.creature))
                             break;
                     }
 
