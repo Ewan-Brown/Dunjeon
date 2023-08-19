@@ -314,7 +314,7 @@ public class FloorGenerator {
             for (int j = 0; j < height; j++) {
 //                map[j][i] = BLOCK;
                 cells[j][i] = new BasicCell(i, j, floor, Color.BLACK);
-                cells[j][i].setFilled(true);
+//                cells[j][i].setFilled(true);
                 cells[j][i].color = new Color (30,30,30);
 
             }

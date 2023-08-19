@@ -27,8 +27,8 @@ public class BasicCell extends Body {
         this.y = y;
         this.floor = f;
         this.color = c;
-        this.setFilled(true);
-        this.addFixture();
+//        this.setFilled(fill);
+//        this.addFixture();
         this.setMass(MassType.INFINITE);
         this.translate(x+0.5, y+0.5);
     }
