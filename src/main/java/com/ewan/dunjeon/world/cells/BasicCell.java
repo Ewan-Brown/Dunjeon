@@ -27,18 +27,17 @@ public class BasicCell extends Body {
         this.y = y;
         this.floor = f;
         this.color = c;
-//        this.setFilled(fill);
-//        this.addFixture();
+        this.addFixture();
         this.setMass(MassType.INFINITE);
         this.translate(x+0.5, y+0.5);
     }
 
     public void setFilled(boolean f){
         filled = f;
-        if(!f) {
-            this.removeAllFixtures();
+        if(!filled){
+            setEnabled(false);
         }else{
-            addFixture();
+            setEnabled(true);
         }
     }
 
