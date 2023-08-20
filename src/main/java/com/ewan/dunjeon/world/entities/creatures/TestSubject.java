@@ -17,7 +17,7 @@ public class TestSubject extends Creature {
     public TestSubject(String name) {
         super(name);
         senses.add(Dunjeon.getInstance().getSightDataStream().constructSensorForDatastream(this, c ->
-                new Datastreams.SightDataStream.SightStreamParameters(10, Math.PI/4,getTransform().getRotationAngle() , getWorldCenter())));
+                new Datastreams.SightDataStream.SightStreamParameters(10, Math.PI/4,getRotationAngle() , getWorldCenter())));
 
     }
 
