@@ -22,7 +22,7 @@ public class Main {
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
     private static KeyBank keyBank = new KeyBank();
-    private static final int entityCount = 0;
+    private static final int entityCount = 100;
 
     public static void main(String[] args) {
 
