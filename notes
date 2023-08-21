@@ -28,4 +28,8 @@ Fix the unending sight/raytracing algorithm issue.
     X X X X
     
 ====WIP====
-Trying out SynJ to see what it can do 
+WOrking out performance issues
+ - WIth just player spinning, ((on battery saving)) gets like 50-70ms frametime (not graphics included)
+ - 99% of time spent on org.dyn4j.world.AbstractPhysicsWorld.solveTOI
+ - There should be NO collisions at this point... so this is interesting...
+ - Wonder about diff between battery life and

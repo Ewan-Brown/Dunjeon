@@ -63,7 +63,7 @@ public class Datastreams {
                         }
                         tilesMap.get(result.getElement0()).add(result.getElement1());
                         BasicCell basicCell = sensor.creature.getFloor().getCellAt(result.getElement0());
-                        if(!basicCell.canBeSeenThrough(sensor.creature))
+                        if(basicCell == null || !basicCell.canBeSeenThrough(sensor.creature))
                             break;
                     }
 
@@ -78,7 +78,7 @@ public class Datastreams {
                 Set<Entity> entitiesOnSameFloor = sensor.creature.getFloor().getEntities();
                 for (Entity entity : entitiesOnSameFloor) {
 
-                    Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getTransform().getRotationAngle(), entity.getAngularVelocity());
+                    Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getRotationAngle(), entity.getAngularVelocity());
                     Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
                     Long entityId = entity.getUUID();
 

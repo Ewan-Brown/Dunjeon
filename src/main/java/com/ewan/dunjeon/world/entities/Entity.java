@@ -1,4 +1,5 @@
 package com.ewan.dunjeon.world.entities;
+import com.ewan.dunjeon.world.Dunjeon;
 import com.ewan.dunjeon.world.floor.Floor;
 import org.dyn4j.dynamics.Body;
 
@@ -18,6 +19,17 @@ public abstract class Entity extends Body {
         UUID = UUIDcounter;
         this.name = name;
         UUIDcounter++;
+    }
+
+    private double cachedRotationAngle = 0;
+    private int cachedRotationAngleTicks = 0;
+
+    public double getRotationAngle(){
+        if(cachedRotationAngleTicks != Dunjeon.getInstance().getTicksElapsed()){
+            cachedRotationAngle = getTransform().getRotationAngle();
+            cachedRotationAngleTicks = Dunjeon.getInstance().getTicksElapsed();
+        }
+        return cachedRotationAngle;
     }
 
     /**
