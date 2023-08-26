@@ -184,7 +184,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 				final double HALF_SIZE = SIZE / 2;
 
 				Vector2 cameraDiff =  lastCameraPos.difference(creature.getWorldCenter());
-				lastCameraPos.subtract(cameraDiff.multiply(0.001));
+				lastCameraPos.subtract(cameraDiff.multiply(0.003));
 
 				gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 

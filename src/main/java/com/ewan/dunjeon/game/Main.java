@@ -22,7 +22,7 @@ public class Main {
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
     private static KeyBank keyBank = new KeyBank();
-    private static final int entityCount = 100;
+    private static final int entityCount = 1;
 
     public static void main(String[] args) {
 
@@ -31,7 +31,7 @@ public class Main {
 
         new Thread(() -> {
             while (true) {
-                updateCurrentWorld(10);
+                updateCurrentWorld();
                 if(all_durations.size() == 1000){
 
                     try {
@@ -114,11 +114,12 @@ public class Main {
         }
     }
 
-
     private static void generateWorld(){
         long seed = rand.nextInt();
+        seed = 1789450329;
+        rand.setSeed(seed);
+
         System.out.println("SEED USED : " + seed);
-        rand.setSeed(1082347570);
 
         Dunjeon d = Dunjeon.getInstance();
         int floorCount = 1;
@@ -130,7 +131,7 @@ public class Main {
             int hallWidth = 2; //Width of hallways
             int roomPadding = 0; //Extra walls between the room walls and the hallways
 
-            generator.generateLeafs(35,-1, (hallWidth/2)+roomPadding);
+            generator.generateLeafs(7,-1, (hallWidth/2)+roomPadding);
             generator.generateDoors(1, 1, 2);
             generator.generateWeightMap();
             generator.generateHalls(hallWidth);
@@ -143,7 +144,7 @@ public class Main {
 
         }
 
-        TestSubject testSubject = new TestSubject("Player");
+        TestSubject testSubject = new TestSubject("Player", true);
         testSubject.addFixture(new Rectangle(1,1));
         testSubject.setMass(new Mass(new Vector2(),1,1));
         startFloor.addEntityRandomLoc(testSubject);
@@ -156,11 +157,7 @@ public class Main {
             npcTestSubject.addFixture(new Rectangle(0.5,0.5));
             npcTestSubject.setMass(new Mass(new Vector2(),1,1));
             startFloor.addEntityRandomLoc(npcTestSubject);
-
             startFloor.addCreatureController(new TestSubjectAIController(npcTestSubject));
         }
-
-
-
     }
 }

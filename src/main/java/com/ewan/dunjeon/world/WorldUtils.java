@@ -238,7 +238,6 @@ public class WorldUtils {
         return intersectedTiles;
     }
 
-    @AllArgsConstructor
     @Getter
     public static class CellPosition{
         private final Vector2 position;
@@ -252,6 +251,16 @@ public class WorldUtils {
         @Override
         public int hashCode() {
             return Objects.hash(position, floorID);
+        }
+
+        public CellPosition(Vector2 position, long floorID) {
+            this.position = position;
+            this.floorID = floorID;
+        }
+
+        public CellPosition(BasicCell cell) {
+            this.position = cell.getWorldCenter();
+            this.floorID = cell.getFloor().getUUID();
         }
     }
 }

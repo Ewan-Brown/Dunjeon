@@ -15,9 +15,14 @@ public class TestSubject extends Creature {
     private final TestSubjectInterface subjectInterface = new TestSubjectInterface();
 
     public TestSubject(String name) {
+        this(name, false);
+
+    }
+
+    public TestSubject(String name, Boolean trueSight) {
         super(name);
         senses.add(Dunjeon.getInstance().getSightDataStream().constructSensorForDatastream(this, c ->
-                new Datastreams.SightDataStream.SightStreamParameters(10, Math.PI/4,getRotationAngle() , getWorldCenter())));
+                new Datastreams.SightDataStream.SightStreamParameters(10, Math.PI/4,getRotationAngle() , getWorldCenter(), trueSight)));
 
     }
 
