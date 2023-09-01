@@ -58,7 +58,7 @@ public class Floor {
             @SuppressWarnings("unchecked")
             @Override
             public boolean collision(ManifoldCollisionData collision) {
-                System.out.println("Floor.collision - Manifolfd");
+                System.out.println("Floor.collision - Manifold");
                 collisionDataAccumulator.add(collision);
                 return true;
 
@@ -66,7 +66,7 @@ public class Floor {
         };
 
         world.setGravity(0,0);
-        world.addCollisionListener(collisionListener);
+//        world.addCollisionListener(collisionListener);
 
     }
 
@@ -143,7 +143,7 @@ public class Floor {
         if(validCells.size() == 0) throw new Error("No valid spots for entity found");
         else {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
-            e.translate(randomValidCell.getIntegerX(), randomValidCell.getIntegerY());
+            e.translate(randomValidCell.getIntegerX() + 0.5, randomValidCell.getIntegerY() + 0.5);
             e.setFloor(this);
             addEntity(e);
             getWorld().addBody(e);

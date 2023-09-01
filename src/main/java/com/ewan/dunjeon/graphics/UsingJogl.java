@@ -205,7 +205,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 					Vector2 centerPos = new Vector2(position.getPosition());
 					gl.glTranslated(centerPos.x, centerPos.y, 0);
-
+					gl.glScaled(0.9,0.9,0.9);
 					gl.glBegin(GL2.GL_POLYGON);
 					gl.glVertex2d(-HALF_SIZE, -HALF_SIZE);
 					gl.glVertex2d(HALF_SIZE, -HALF_SIZE);
@@ -234,10 +234,10 @@ public class UsingJogl extends JFrame implements GLEventListener {
 						}
 
 						gl.glBegin(GL2.GL_POLYGON);
-						gl.glVertex2d(-HALF_SIZE, -HALF_SIZE);
-						gl.glVertex2d(HALF_SIZE, -HALF_SIZE);
-						gl.glVertex2d(HALF_SIZE, HALF_SIZE);
-						gl.glVertex2d(-HALF_SIZE, HALF_SIZE);
+						gl.glVertex2d(-HALF_SIZE/2, -HALF_SIZE/2);
+						gl.glVertex2d(HALF_SIZE/2, -HALF_SIZE/2);
+						gl.glVertex2d(HALF_SIZE/2, HALF_SIZE/2);
+						gl.glVertex2d(-HALF_SIZE/2, HALF_SIZE/2);
 						gl.glEnd();
 					}
 					gl.glPopMatrix();

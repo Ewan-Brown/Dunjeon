@@ -17,6 +17,7 @@ public class TestSubjectAIController extends CreatureController<TestSubject>{
     private static final List<Class<? extends Datas.EntityData>> CLASSES = List.of(Datas.EntityPositionalData.class);
     @Override
     public void update() {
+        System.out.println(getConnectedCreature().getWorldCenter());
         TestSubject.TestSubjectInterface creatureInterface = getConnectedCreature().getInterface();
         BasicMemoryBank memoryBank = getConnectedCreature().getMemoryBank();
 

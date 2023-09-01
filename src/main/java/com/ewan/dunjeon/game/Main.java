@@ -22,7 +22,7 @@ public class Main {
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
     private static KeyBank keyBank = new KeyBank();
-    private static final int entityCount = 1;
+    private static final int entityCount = 0;
 
     public static void main(String[] args) {
 
@@ -116,7 +116,7 @@ public class Main {
 
     private static void generateWorld(){
         long seed = rand.nextInt();
-        seed = 1789450329;
+        seed = -709714631;
         rand.setSeed(seed);
 
         System.out.println("SEED USED : " + seed);
@@ -145,7 +145,7 @@ public class Main {
         }
 
         TestSubject testSubject = new TestSubject("Player", true);
-        testSubject.addFixture(new Rectangle(1,1));
+        testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
         startFloor.addEntityRandomLoc(testSubject);
         d.setPlayer(testSubject);
@@ -157,7 +157,7 @@ public class Main {
             npcTestSubject.addFixture(new Rectangle(0.5,0.5));
             npcTestSubject.setMass(new Mass(new Vector2(),1,1));
             startFloor.addEntityRandomLoc(npcTestSubject);
-            startFloor.addCreatureController(new TestSubjectAIController(npcTestSubject));
+//            startFloor.addCreatureController(new TestSubjectAIController(npcTestSubject));
         }
     }
 }

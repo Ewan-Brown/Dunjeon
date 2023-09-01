@@ -314,7 +314,7 @@ public class FloorGenerator {
             for (int j = 0; j < height; j++) {
 //                map[j][i] = BLOCK;
                 cells[j][i] = new BasicCell(i, j, floor, Color.BLACK);
-//                cells[j][i].setFilled(true);
+                cells[j][i].setFilled(true);
                 cells[j][i].color = new Color (30,30,30);
 
             }
@@ -350,19 +350,6 @@ public class FloorGenerator {
             }
         }
 
-
-        if (halls != null){
-            System.out.println(halls.size());
-            for (Hall hall : halls) {
-//                for (int i = x1; i <= x2; i++) {
-//                    for (int j = y1; j <= y2; j++) {
-//                        cells[j][i] = new BasicCell(i, j, floor, Color.GRAY.darker());
-//                        cells[j][i].setFilled(false);
-//                    }
-//                }
-            }
-        }
-
         if(junctions != null){
             for (Junction junction : junctions) {
                 for (int i = junction.x1; i <= junction.x2; i++) {
@@ -387,15 +374,6 @@ public class FloorGenerator {
 
         generateDoorways();
 
-        //Draw paths to map
-//        if(totalHalls != null) {
-//            for (Hall hall : totalHalls) {
-//                for (Point point : hall.points) {
-//                    cells[point.y][point.x] = new BasicCell(point.x, point.y, floor, Color.GRAY);
-//                    cells[point.y][point.x].setFilled(false);
-//                }
-//            }
-//        }
         floor.setCells(cells);
         for (BasicCell[] c : cells) {
             for (BasicCell cell : c) {
