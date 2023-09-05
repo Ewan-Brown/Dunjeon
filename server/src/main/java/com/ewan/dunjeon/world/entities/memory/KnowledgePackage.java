@@ -1,7 +1,6 @@
 package com.ewan.dunjeon.world.entities.memory;
 
 import com.ewan.dunjeon.data.Data;
-import com.ewan.dunjeon.data.Datas;
 import lombok.Getter;
 
 import java.util.HashMap;
