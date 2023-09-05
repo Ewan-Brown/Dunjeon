@@ -154,7 +154,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 	public static <T extends Creature> void renderPerspective(GL2 gl, T c){
 		RenderStrategy<T> r = (RenderStrategy<T>) strategyMap.get(c.getClass()); //Trust me :)
 		if(r == null){
-			throw new RuntimeException("Attempted to retrieve non-existant render strategy for creature of type:" + c.getClass());
+			throw new RuntimeException("Attempted to retrieve non-existent render strategy for creature of type:" + c.getClass());
 		}else{
 			r.render(c, gl);
 		}

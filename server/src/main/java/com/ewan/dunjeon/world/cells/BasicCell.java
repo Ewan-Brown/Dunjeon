@@ -34,11 +34,7 @@ public class BasicCell extends Body {
 
     public void setFilled(boolean f){
         filled = f;
-        if(!filled){
-            setEnabled(false);
-        }else{
-            setEnabled(true);
-        }
+        setEnabled(filled);
     }
 
     public void addFixture(){

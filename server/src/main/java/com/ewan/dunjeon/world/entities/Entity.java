@@ -8,7 +8,7 @@ public abstract class Entity extends Body {
     private static long UUIDcounter = 0;
     private final String name;
 
-    private long UUID;
+    private final long UUID;
 
     private Floor floor;
 

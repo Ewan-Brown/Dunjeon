@@ -22,22 +22,6 @@ public class WorldUtils {
     public static final double ENTITY_WITHIN_TILE_THRESHOLD = 0.5f;
     private static final double INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD = 0.0001f;
 
-    //TODO Reduce these after by making a 'HasPosition' interface?
-//    public static double getRawDistance(Entity e1, Entity e2){
-//        return getRawDistance(e1.getWorldCenter().x, e2.getWorldCenter().x, e1.getWorldCenter().y, e2.getWorldCenter().y);
-//    }
-//    public static double getRawDistance(BasicCell c1, BasicCell c2){
-//        return getRawDistance(c1.getIntegerX(), c2.getIntegerX(), c1.getIntegerY(), c2.getIntegerY());
-//    }
-//
-//    public static double getRawDistance(BasicCell c, Entity e){
-//        return getRawDistance(c.getIntegerX(), e.getWorldCenter().x, c.getIntegerY(), e.getWorldCenter().y);
-//    }
-//    public static double getRawDistance(Interactable f, Entity e){
-//        return getRawDistance(f.getWorldCenter().x, e.getWorldCenter().x, f.getWorldCenter().y, e.getWorldCenter().y);
-//    }
-
-
     public static boolean isAdjacent(BasicCell b1, BasicCell b2){
         if(b1 == b2){
             throw new IllegalArgumentException();
@@ -193,7 +177,7 @@ public class WorldUtils {
 
                 if(distToNextVerticalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
                     double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dy);
-                    nextInterceptY = Math.round(nextInterceptY) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubleing point errors come into play in the result of y = mx+b
+                    nextInterceptY = Math.round(nextInterceptY) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
                 }
                 intersectAlignment = AxisAlignment.VERTICAL;
                 side = (dx > 0) ? Side.WEST : Side.EAST;
@@ -204,7 +188,7 @@ public class WorldUtils {
 
                 if(distToNextHorizontalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
                     double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dx);
-                    nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubleing point errors come into play in the result of y = mx+b
+                    nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
                 }
                 intersectAlignment = AxisAlignment.HORIZONTAL;
                 side = (dy > 0) ? Side.NORTH :Side.SOUTH;

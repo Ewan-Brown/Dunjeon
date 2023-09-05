@@ -3,8 +3,7 @@ package com.ewan.dunjeon.game;
 import com.ewan.dunjeon.generation.FloorGenerator;
 import com.ewan.dunjeon.graphics.UsingJogl;
 import com.ewan.dunjeon.input.KeyBank;
-import com.ewan.dunjeon.world.entities.AI.TestSubjectAIController;
-import com.ewan.dunjeon.world.entities.AI.TestSubjectPlayerController;
+import com.ewan.dunjeon.world.entities.ai.TestSubjectPlayerController;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.world.floor.Floor;
 import com.ewan.dunjeon.world.Dunjeon;
@@ -21,7 +20,7 @@ public class Main {
 
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
-    private static KeyBank keyBank = new KeyBank();
+    private static final KeyBank keyBank = new KeyBank();
     private static final int entityCount = 0;
 
     public static void main(String[] args) {
@@ -63,8 +62,9 @@ public class Main {
         }
     }
 
-    private static List<Long> durations = new ArrayList<>();
-    private static List<Long> all_durations = new ArrayList<>();
+    //For debugging
+    private static final List<Long> durations = new ArrayList<>();
+    private static final List<Long> all_durations = new ArrayList<>();
 
     private static void updateCurrentWorld(int dataSamples){
         Dunjeon w = Dunjeon.getInstance();
@@ -91,24 +91,13 @@ public class Main {
         }
     }
 
-    private static long DESIRED_FRAMETIME_NS = 16000000;
+    private static final long DESIRED_FRAMETIME_NS = 16000000;
 
     private static void updateCurrentWorld(){
         Dunjeon w = Dunjeon.getInstance();
         try {
             Thread.sleep(DESIRED_FRAMETIME_NS/1000000L);
-//            long l0 = System.nanoTime();
             w.update(1.0D);
-//            long l1 = System.nanoTime();
-//            long diff = l1-l0;
-//            if(diff > DESIRED_FRAMETIME_NS){
-//                System.out.println("=".repeat(20));
-//                System.out.println(diff);
-//                System.out.println(DESIRED_FRAMETIME_NS);
-//                System.err.printf("Game frame took %.2f%% too long!\n", (diff - DESIRED_FRAMETIME_NS)/ DESIRED_FRAMETIME_NS *100D);
-//            }else{
-//
-//            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

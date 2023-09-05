@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.world.entities.AI;
+package com.ewan.dunjeon.world.entities.ai;
 
 
 import com.ewan.dunjeon.world.entities.creatures.Creature;

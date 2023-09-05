@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Dunjeon{
 
-    private static Dunjeon dunjeon = new Dunjeon();
+    private static final Dunjeon dunjeon = new Dunjeon();
 
     /**
      * How much in-world time has passed
@@ -66,7 +66,7 @@ public class Dunjeon{
     public void setPlayer(Creature p){ testSubject = p;}
 
     //****** Data streams ******//
-    private Datastreams.SightDataStream sightDataStream = new Datastreams.SightDataStream();
+    private final Datastreams.SightDataStream sightDataStream = new Datastreams.SightDataStream();
     public Datastreams.SightDataStream getSightDataStream() {
         return sightDataStream;
     }

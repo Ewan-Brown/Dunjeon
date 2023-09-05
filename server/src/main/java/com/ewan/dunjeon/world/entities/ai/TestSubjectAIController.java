@@ -1,9 +1,8 @@
-package com.ewan.dunjeon.world.entities.AI;
+package com.ewan.dunjeon.world.entities.ai;
 
 import com.ewan.dunjeon.data.Datas;
 import com.ewan.dunjeon.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.world.entities.creatures.TestSubject;
-import com.ewan.dunjeon.world.entities.memory.KnowledgePackage;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.List;

@@ -15,7 +15,7 @@ public class Display {
     }
 
     private static Point nextPoint = new Point(0,0);
-    private static HashMap<Integer, Color> colorScheme = new HashMap<>();
+    private static final HashMap<Integer, Color> colorScheme = new HashMap<>();
     static {
         colorScheme.put(GeneratorsMisc.BLOCK, Color.BLACK);
         colorScheme.put(GeneratorsMisc.WALL, Color.GRAY);

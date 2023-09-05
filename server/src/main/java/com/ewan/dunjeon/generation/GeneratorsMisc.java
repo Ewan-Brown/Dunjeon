@@ -143,7 +143,7 @@ public class GeneratorsMisc {
 
         @Override
         public String toString() {
-            return String.format("%f, %f -> %f, %f", x1, y1, x2, y2);
+            return String.format("%d, %d -> %d, %d", x1, y1, x2, y2);
         }
 
         public Line2D.Double getLine2D(){

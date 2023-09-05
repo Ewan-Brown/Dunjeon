@@ -104,7 +104,6 @@ public class BasicMemoryBank extends DataSink {
         return new MultiQueryAccessor<>(requiredClasses, individualAccessors);
     }
 
-    @SuppressWarnings("unchecked")
     public final class SingleQueryAccessor<I, D extends Data>{
 
         private final List<Class<? extends D>> requestedClasses;
@@ -129,7 +128,6 @@ public class BasicMemoryBank extends DataSink {
 
     }
 
-    @SuppressWarnings("unchecked")
     public final class MultiQueryAccessor<I, D extends Data> {
         private final List<Class<? extends D>> requestedClasses;
         @Getter

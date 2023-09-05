@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.world.floor;
 
 import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.AI.CreatureController;
+import com.ewan.dunjeon.world.entities.ai.CreatureController;
 import com.ewan.dunjeon.world.entities.Entity;
 import lombok.Getter;
 import org.dyn4j.collision.CollisionBody;
@@ -62,7 +62,7 @@ public class Floor {
                 collisionDataAccumulator.add(collision);
                 return true;
 
-            };
+            }
         };
 
         world.setGravity(0,0);

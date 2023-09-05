@@ -8,6 +8,7 @@ import com.ewan.dunjeon.world.floor.Floor;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.ewan.dunjeon.game.Main.rand;
@@ -102,7 +103,7 @@ public class FloorGenerator {
                 Point doorLocation = edgePieces.get(possibleDoorIndex).getElement0();
                 List<Point> doorEntryPoints = edgePieces.get(possibleDoorIndex).getElement1();
                 currentSection.doors.add(new Door(doorLocation, currentSection, doorEntryPoints));
-                edgePieces.removeAll(neighbors);
+                edgePieces.removeIf(pointListPair -> neighbors.contains(pointListPair.getElement0()));
             }
             totalDoors.addAll(currentSection.doors);
         }
@@ -157,7 +158,7 @@ public class FloorGenerator {
 
     enum Direction{
         NORTH(0, 1), EAST(1, 0), SOUTH(0, -1), WEST(-1, 0);
-        int x, y;
+        final int x, y;
 
         Direction(int x, int y){
             this.x = x;
@@ -324,17 +325,14 @@ public class FloorGenerator {
         if(sections != null){
             for (Section section : sections) {
                 for (int i = section.x1; i <= section.x2; i++) {
-                    for (int j = section.y1; j <= section.y2; j++) {;
+                    for (int j = section.y1; j <= section.y2; j++) {
                         if(i == section.x1 || i == section.x2 || j == section.y1 || j == section.y2) {
-//                            map[j][i] = WALL;
                             cells[j][i] = new BasicCell(i, j, floor, Color.DARK_GRAY);
                             cells[j][i].setFilled(true);
-//                            cells[j][i].setColor(Color.DARK_GRAY);
 
                         }else {
                             cells[j][i] = new BasicCell(i, j, floor, Color.GRAY);
                             cells[j][i].setFilled(false);
-//                            cells[j][i].setColor(Color.GRAY);
                         }
                     }
                 }
@@ -346,7 +344,6 @@ public class FloorGenerator {
             for (Door door : doors) {
                 cells[door.y][door.x] = new BasicCell(door.x, door.y, floor, Color.GRAY);
                 cells[door.y][door.x].setFilled(false);
-//                cells[door.y][door.x].setColor(new Color(165,42,42, 255));
             }
         }
 
@@ -381,7 +378,6 @@ public class FloorGenerator {
             }
         }
         System.out.println("# of cells: " + cells.length);
-//        Arrays.stream(cells).forEach(basicCells -> Arrays.stream(basicCells).forEach(basicCell -> floor.getWorld().addBody(basicCell)));
     }
 
     public Floor getFloor(){

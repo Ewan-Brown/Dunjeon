@@ -14,16 +14,16 @@ public class KeyBank implements KeyListener {
     /**
      * List of keys that have been recorded as being pressed down but not released
      */
-    private BitSet keySet = new BitSet(256);
+    private final BitSet keySet = new BitSet(256);
 
     /**
      * Ephemeral list of keys that have been recorded as pressed down in the most recent check but have not been processed yet
      */
-    private Set<Integer> keysDown = new HashSet<>();
+    private final Set<Integer> keysDown = new HashSet<>();
     /**
      * Ephemeral list of keys that have been recorded as being released (now in UP state) in the most recent check but have not been processed yet
      */
-    private Set<Integer> keysUp = new HashSet<>();
+    private final Set<Integer> keysUp = new HashSet<>();
 
 
     @Override
@@ -51,6 +51,6 @@ public class KeyBank implements KeyListener {
 
     public void clearSets(){
         keysDown.clear();
-        keysUp.clear();;
+        keysUp.clear();
     }
 }

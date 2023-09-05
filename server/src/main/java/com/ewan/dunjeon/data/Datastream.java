@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Datastream<S extends DataStreamParameters> {
-    private List<Sensor<S>> subscribers = new ArrayList<>();
+    private final List<Sensor<S>> subscribers = new ArrayList<>();
     public abstract void update(Dunjeon d);
 
     public void addSubscriber(Sensor<S> sensor){
