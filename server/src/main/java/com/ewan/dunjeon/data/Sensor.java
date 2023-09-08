@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.data;
 
-import com.ewan.dunjeon.world.entities.creatures.Creature;
-import com.ewan.dunjeon.world.entities.memory.KnowledgeFragment;
+import com.ewan.dunjeon.server.world.entities.creatures.Creature;
+import com.ewan.dunjeon.server.world.entities.memory.KnowledgeFragment;
 
 import java.util.List;
 

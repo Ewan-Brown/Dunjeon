@@ -1,17 +1,16 @@
 package com.ewan.dunjeon.data;
 
-import com.ewan.dunjeon.world.Dunjeon;
-import com.ewan.dunjeon.world.Pair;
-import com.ewan.dunjeon.world.WorldUtils;
-import com.ewan.dunjeon.world.cells.BasicCell;
-import com.ewan.dunjeon.world.entities.Entity;
-import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.server.world.Dunjeon;
+import com.ewan.dunjeon.server.world.Pair;
+import com.ewan.dunjeon.server.world.WorldUtils;
+import com.ewan.dunjeon.server.world.cells.BasicCell;
+import com.ewan.dunjeon.server.world.entities.Entity;
+import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class Datastreams {
 

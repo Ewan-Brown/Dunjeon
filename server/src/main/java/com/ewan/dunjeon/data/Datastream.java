@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.data;
 
-import com.ewan.dunjeon.world.Dunjeon;
-import com.ewan.dunjeon.world.entities.creatures.Creature;
+import com.ewan.dunjeon.server.world.Dunjeon;
+import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 
 import java.util.ArrayList;
 import java.util.List;

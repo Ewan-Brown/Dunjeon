@@ -1,7 +1,6 @@
 package com.ewan.dunjeon.data;
 
-import com.ewan.dunjeon.world.WorldUtils;
-import lombok.AllArgsConstructor;
+import com.ewan.dunjeon.server.world.WorldUtils;
 
 import java.util.List;
 
