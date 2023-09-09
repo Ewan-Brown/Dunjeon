@@ -2,6 +2,7 @@ package com.ewan.dunjeon.server.world.entities.ai;
 
 import com.ewan.dunjeon.data.Datas;
 import com.ewan.dunjeon.input.KeyBank;
+import com.ewan.dunjeon.server.ServerManager;
 import com.ewan.dunjeon.server.world.entities.creatures.BasicMemoryBank;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import org.dyn4j.geometry.Vector2;
@@ -44,7 +45,7 @@ public class TestSubjectPlayerController extends CreatureController<TestSubject>
         }
 
         BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> selfQuery = basicMemoryBank.querySinglePackage(creatureInterface.getUUID(), Datas.EntityData.class, List.of(Datas.EntityKineticData.class, Datas.EntityPositionalData.class));
-        if(selfQuery.status() == false){
+        if(!selfQuery.status()){
             return;
         }
         BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> selfDataAccessor = selfQuery.result();
@@ -74,6 +75,10 @@ public class TestSubjectPlayerController extends CreatureController<TestSubject>
             turnDirection = -selfAngularVelocity;
         }else{
             turnDirection = nominalTurn*10;
+        }
+
+        if(keys.getKeySet().get(KeyEvent.VK_SPACE)){
+            ServerManager.SerializePlayerData();
         }
 
         creatureInterface.moveInDirection(moveDirection);

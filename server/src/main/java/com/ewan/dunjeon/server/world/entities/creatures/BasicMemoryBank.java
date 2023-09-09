@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.server.world.entities.creatures;
 
+import com.esotericsoftware.kryo.kryo5.serializers.FieldSerializer;
 import com.ewan.dunjeon.data.*;
 import com.ewan.dunjeon.server.world.WorldUtils;
 import com.ewan.dunjeon.server.world.entities.memory.FloorKnowledge;
@@ -25,14 +26,13 @@ public class BasicMemoryBank extends DataSink {
     private record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
             (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass, Function<I,K> knowledgeProducer){}
 
+    @FieldSerializer.Optional("")
     final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings = new ArrayList<>();
 
     {
         knowledgeDataPairings.add(new Pairing<>(creatureKnowledgeHashMap, Datas.EntityData.class, CreatureKnowledge::new));
         knowledgeDataPairings.add(new Pairing<>(floorKnowledgeHashMap, Datas.FloorData.class, FloorKnowledge::new));
         knowledgeDataPairings.add(new Pairing<>(cellKnowledgeHashMap, Datas.CellData.class, CellKnowledge::new));
-
-
     }
 
     //Unwrap data to figure out its context, and place it in the appropriate knowledge object

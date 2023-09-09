@@ -12,6 +12,10 @@ public abstract class KnowledgePackage<I, D extends Data> {
         this.identifier = identifier;
     }
 
+    public KnowledgePackage() {
+        identifier = null;
+    }
+
     HashMap<Class<? extends D>, KnowledgeFragment<? extends D>> dataMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")

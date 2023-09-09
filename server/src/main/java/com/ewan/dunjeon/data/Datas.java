@@ -1,8 +1,10 @@
 package com.ewan.dunjeon.data;
 
 import com.ewan.dunjeon.graphics.RenderableElement;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class Datas {
 
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CellEnterableData extends CellData {
 
         EnterableStatus enterableStatus;
@@ -60,28 +63,31 @@ public class Datas {
 
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EntityVisualData extends EntityData {
 
-        private final List<RenderableElement> renderableElementList;
+        private List<RenderableElement> renderableElementList;
 
     }
 
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EntityPositionalData extends EntityData {
 
-        private final Vector2 position;
-        private final long floorUUID;
+        private Vector2 position;
+        private long floorUUID;
 
     }
 
     @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
     public static class EntityKineticData extends EntityData {
 
-        private final Vector2 speed;
-        private final double rotation;
-        private final double rotationalSpeed;
+        private Vector2 speed;
+        private double rotation;
+        private double rotationalSpeed;
 
     }
 

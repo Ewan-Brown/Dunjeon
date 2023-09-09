@@ -23,6 +23,6 @@ public abstract class Creature extends Entity {
         getSensors().forEach(Sensor::destroy);
     }
 
-    public abstract DataSink getMemoryBank();
+    public abstract BasicMemoryBank getMemoryBank();
 
 }
