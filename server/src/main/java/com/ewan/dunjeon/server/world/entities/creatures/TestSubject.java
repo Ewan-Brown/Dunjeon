@@ -4,6 +4,7 @@ import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.data.Sensor;
+import com.ewan.dunjeoncommon.memory.BasicMemoryBank;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.ArrayList;

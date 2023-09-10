@@ -1,11 +1,14 @@
 package com.ewan.dunjeon.data;
 
+import com.ewan.dunjeon.server.world.CellPosition;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.Pair;
 import com.ewan.dunjeon.server.world.WorldUtils;
 import com.ewan.dunjeon.server.world.cells.BasicCell;
 import com.ewan.dunjeon.server.world.entities.Entity;
 import com.ewan.dunjeon.server.world.entities.creatures.Creature;
+import com.ewan.dunjeoncommon.data.DataWrappers;
+import com.ewan.dunjeoncommon.data.Datas;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.dyn4j.geometry.Vector2;
@@ -39,7 +42,7 @@ public class Datastreams {
 
                     for (BasicCell basicCell : sensor.creature.getFloor().getCellsAsList()) {
                         Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
-                        DataWrappers.CellDataWrapper wrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell), sensor, d.getTimeElapsed());
+                        DataWrappers.CellDataWrapper wrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimeElapsed());
                         cellDataAmalgamated.add(wrapper);
                     }
 
@@ -49,7 +52,7 @@ public class Datastreams {
                         Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
                         Long entityId = entity.getUUID();
 
-                        DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(List.of(kineticData, positionalData), entityId, sensor, d.getTimeElapsed());
+                        DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(List.of(kineticData, positionalData), entityId, d.getTimeElapsed());
                         entityDataAmalgamated.add(entityDataWrapper);
                     }
 
@@ -94,7 +97,7 @@ public class Datastreams {
                         BasicCell basicCell = sensor.creature.getFloor().getCellAt(tile.getKey());
                         if (basicCell == null) continue;
                         Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
-                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new WorldUtils.CellPosition(basicCell.getWorldCenter(), sensor.creature.getFloor().getUUID()), sensor, d.getTimeElapsed());
+                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), sensor.creature.getFloor().getUUID()), d.getTimeElapsed());
                         cellDataAmalgamated.add(cellDataWrapper);
 
                     }
@@ -115,7 +118,7 @@ public class Datastreams {
                         Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
                         Long entityId = entity.getUUID();
 
-                        DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(List.of(kineticData, positionalData), entityId, sensor, d.getTimeElapsed());
+                        DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(List.of(kineticData, positionalData), entityId, d.getTimeElapsed());
                         entityDataAmalgamated.add(entityDataWrapper);
                     }
 

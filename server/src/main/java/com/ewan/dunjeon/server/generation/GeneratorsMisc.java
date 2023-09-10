@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.ewan.dunjeon.server.game.Main.rand;
+import static com.ewan.dunjeon.server.game.StartServer.rand;
 
 public class GeneratorsMisc {
 

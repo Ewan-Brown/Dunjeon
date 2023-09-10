@@ -1,7 +1,6 @@
 package com.ewan.dunjeon.server.game;
 
 import com.ewan.dunjeon.server.generation.FloorGenerator;
-import com.ewan.dunjeon.graphics.UsingJogl;
 import com.ewan.dunjeon.input.KeyBank;
 import com.ewan.dunjeon.server.world.entities.ai.TestSubjectPlayerController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
@@ -16,7 +15,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 
-public class Main {
+public class StartServer {
 
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
@@ -25,7 +24,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("Begin");
+        System.out.println("Starting server");
         generateWorld();
 
         new Thread(() -> {
@@ -45,21 +44,6 @@ public class Main {
             }
         }).start();
 
-        UsingJogl jogl = new UsingJogl();
-        jogl.getCanvas().addKeyListener(keyBank);
-        jogl.setVisible(true);
-        jogl.setFocusable(true);
-        jogl.requestFocusInWindow();
-        jogl.start();
-
-    }
-
-    private static void generate_X_world_test(int worlds){
-        for (int i = 0; i < worlds; i++) {
-            System.out.println(i + " / " + worlds);
-            generateWorld();
-            updateCurrentWorld();
-        }
     }
 
     //For debugging

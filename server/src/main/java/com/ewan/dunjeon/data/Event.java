@@ -1,5 +1,7 @@
 package com.ewan.dunjeon.data;
 
+import com.ewan.dunjeoncommon.data.Data;
+import com.ewan.dunjeoncommon.data.DataWrapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

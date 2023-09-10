@@ -5,14 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ewan</groupId>
-        <artifactId>Dunjeon</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>org.ewan</groupId>
+        <artifactId>dunjeon</artifactId>
+        <version>1.0</version>
     </parent>
 
-    <groupId>org.example</groupId>
-    <artifactId>server</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>dunjeonserver</artifactId>
+    <version>1.0</version>
 
     <build>
         <plugins>
@@ -30,7 +29,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.ewan.dunjeon.server.game.Main</mainClass>
+                    <mainClass>com.ewan.dunjeon.server.game.StartServer</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -98,6 +97,14 @@
             <artifactId>kryo-serializers</artifactId>
             <version>0.45</version>
         </dependency>
+        <dependency>
+            <groupId>org.ewan</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
+
 
 </project>

@@ -1,13 +1,13 @@
-package com.ewan.dunjeon.server.world.entities.creatures;
+package com.ewan.dunjeoncommon.memory;
 
 import com.esotericsoftware.kryo.kryo5.serializers.FieldSerializer;
-import com.ewan.dunjeon.data.*;
-import com.ewan.dunjeon.server.world.WorldUtils;
-import com.ewan.dunjeon.server.world.entities.memory.FloorKnowledge;
-import com.ewan.dunjeon.server.world.entities.memory.KnowledgeFragment;
-import com.ewan.dunjeon.server.world.entities.memory.KnowledgePackage;
-import com.ewan.dunjeon.server.world.entities.memory.celldata.CellKnowledge;
-import com.ewan.dunjeon.server.world.entities.memory.creaturedata.CreatureKnowledge;
+import com.ewan.dunjeon.server.world.CellPosition;
+//import com.ewan.dunjeon.server.world.entities.memory.celldata.CellKnowledge;
+import com.ewan.dunjeoncommon.data.Data;
+import com.ewan.dunjeoncommon.data.DataWrapper;
+import com.ewan.dunjeoncommon.data.Datas;
+import com.ewan.dunjeoncommon.memory.creaturedata.CreatureKnowledge;
+import com.ewan.dunjeoncommon.data.CellKnowledge;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -20,8 +20,7 @@ public class BasicMemoryBank extends DataSink {
 
     private final ConcurrentHashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<WorldUtils.CellPosition, CellKnowledge> cellKnowledgeHashMap = new ConcurrentHashMap<>();
-    private final List<Event<?>> eventList = new ArrayList<>();
+    private final ConcurrentHashMap<CellPosition, CellKnowledge> cellKnowledgeHashMap = new ConcurrentHashMap<>();
 
     private record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
             (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass, Function<I,K> knowledgeProducer){}
@@ -50,7 +49,7 @@ public class BasicMemoryBank extends DataSink {
                     hashMap.put(wrappedData.getIdentifier(), relevantPackage);
                 }
                 for (T datum : wrappedData.getData()) {
-                    KnowledgeFragment<T> fragment = new KnowledgeFragment<>(datum, wrappedData.getSourceSensor(), wrappedData.getTimestamp());
+                    KnowledgeFragment<T> fragment = new KnowledgeFragment<>(datum, null, wrappedData.getTimestamp());
                     relevantPackage.register(fragment);
                 }
 
@@ -137,11 +136,11 @@ public class BasicMemoryBank extends DataSink {
 
     }
 
-    public void processEventData(Event e){
-        eventList.add(e);
-    }
-
     public record QueryResult<A, S>(A result, S status){
 
+    }
+
+    public void PRINT_CELL_MAP_SIZE(){
+        System.out.println(cellKnowledgeHashMap.size());
     }
 }

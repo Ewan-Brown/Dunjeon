@@ -22,34 +22,26 @@
  * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT 
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.ewan.dunjeon.graphics;
+package com.ewan.dunjeonclient;
 
-import com.ewan.dunjeon.data.Datas;
-import com.ewan.dunjeon.data.Datas.CellData;
-import com.ewan.dunjeon.data.Datas.EntityData;
-import com.ewan.dunjeon.server.world.Dunjeon;
-import com.ewan.dunjeon.server.world.WorldUtils.CellPosition;
-import com.ewan.dunjeon.server.world.entities.creatures.BasicMemoryBank.MultiQueryAccessor;
-import com.ewan.dunjeon.server.world.entities.creatures.BasicMemoryBank.SingleQueryAccessor;
-import com.ewan.dunjeon.server.world.entities.creatures.Creature;
-import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
 import lombok.Getter;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.geometry.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UsingJogl extends JFrame implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
 
-	private static final Map<Class<? extends Creature>, RenderStrategy<? extends Creature>> strategyMap = new HashMap<>();
+//	private static final Map<Class<? extends Creature>, RenderStrategy<? extends Creature>> strategyMap = new HashMap<>();
 
 
 
@@ -142,27 +134,27 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 		gl.glScaled(0.06, 0.06, 1.0);
 
-		renderPerspective(gl, Dunjeon.getInstance().getPlayer());
-//		renderAll(gl);
+		renderAll(gl);
 		gl.glPopMatrix();
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Creature> void renderPerspective(GL2 gl, T c){
-		RenderStrategy<T> r = (RenderStrategy<T>) strategyMap.get(c.getClass()); //Trust me :)
-		if(r == null){
-			throw new RuntimeException("Attempted to retrieve non-existent render strategy for creature of type:" + c.getClass());
-		}else{
-			r.render(c, gl);
-		}
+//	public static <T extends Creature> void renderPerspective(GL2 gl, T c){
+//		RenderStrategy<T> r = (RenderStrategy<T>) strategyMap.get(c.getClass()); //Trust me :)
+//		if(r == null){
+//			throw new RuntimeException("Attempted to retrieve non-existent render strategy for creature of type:" + c.getClass());
+//		}else{
+//			r.render(c, gl);
+//		}
+//
+//	}
 
-	}
-
-	public interface RenderStrategy<T extends Creature> {
-		void render(T creature, GL2 gl);
-	}
+//	public interface RenderStrategy<T extends Creature> {
+//		void render(T creature, GL2 gl);
+//	}
 
 	public static void renderAll(GL2 gl){
+		System.out.println("renderAll Unimplemented you fool");
 		List<Body> bodyList = new ArrayList<>();
 		for (Body body : bodyList) {
 			for (BodyFixture fixture : body.getFixtures()) {
@@ -172,74 +164,74 @@ public class UsingJogl extends JFrame implements GLEventListener {
 		}
 	}
 
-	static {{
-		strategyMap.put(TestSubject.class, new RenderStrategy<TestSubject>() {
-			final Vector2 lastCameraPos = new Vector2();
-			@Override
-			public void render(TestSubject creature, GL2 gl) {
-				final double SIZE = 1;
-				final double HALF_SIZE = SIZE / 2;
-
-				Vector2 cameraDiff =  lastCameraPos.difference(creature.getWorldCenter());
-				lastCameraPos.subtract(cameraDiff.multiply(0.003));
-
-				gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
-
-				MultiQueryAccessor<CellPosition, CellData> cellQueryResults = creature.getMemoryBank().queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
-
-				for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
-					var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
-					CellPosition position = singleQueryAccessor.getIdentifier();
-					gl.glPushMatrix();
-
-					double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableFragment.getTimestamp()) < 5 ? 1 : 0.5;
-
-					if (enterableFragment.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
-						gl.glColor3d(colVal, 0, colVal);
-					} else {
-						gl.glColor3d(0, 0, colVal);
-					}
-
-					Vector2 centerPos = new Vector2(position.getPosition());
-					gl.glTranslated(centerPos.x, centerPos.y, 0);
-					gl.glBegin(GL2.GL_POLYGON);
-					gl.glVertex2d(-HALF_SIZE, -HALF_SIZE);
-					gl.glVertex2d(HALF_SIZE, -HALF_SIZE);
-					gl.glVertex2d(HALF_SIZE, HALF_SIZE);
-					gl.glVertex2d(-HALF_SIZE, HALF_SIZE);
-					gl.glEnd();
-					gl.glPopMatrix();
-				}
-
-
-				MultiQueryAccessor<Long, EntityData> entityQueryResults = creature.getMemoryBank().queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
-
-				for (SingleQueryAccessor<Long, EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
-					gl.glPushMatrix();
-					gl.glColor3d(0, 1, 0);
-
-					Datas.EntityPositionalData posData = singleQueryAccessor.getKnowledge(Datas.EntityPositionalData.class).getInfo();
-					Datas.EntityKineticData kinData = singleQueryAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo();
-
-					if (posData != null) {
-						Vector2 centerPos = posData.getPosition();
-
-						gl.glTranslated(centerPos.x, centerPos.y, 0);
-						if(kinData != null){
-							gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
-						}
-
-						gl.glBegin(GL2.GL_POLYGON);
-						gl.glVertex2d(-HALF_SIZE/2, -HALF_SIZE/2);
-						gl.glVertex2d(HALF_SIZE/2, -HALF_SIZE/2);
-						gl.glVertex2d(HALF_SIZE/2, HALF_SIZE/2);
-						gl.glVertex2d(-HALF_SIZE/2, HALF_SIZE/2);
-						gl.glEnd();
-					}
-					gl.glPopMatrix();
-
-				}
-			}
-		});
-	}}
+//	static {{
+//		strategyMap.put(TestSubject.class, new RenderStrategy<TestSubject>() {
+//			final Vector2 lastCameraPos = new Vector2();
+//			@Override
+//			public void render(TestSubject creature, GL2 gl) {
+//				final double SIZE = 1;
+//				final double HALF_SIZE = SIZE / 2;
+//
+//				Vector2 cameraDiff =  lastCameraPos.difference(creature.getWorldCenter());
+//				lastCameraPos.subtract(cameraDiff.multiply(0.003));
+//
+//				gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
+//
+//				MultiQueryAccessor<CellPosition, CellData> cellQueryResults = creature.getMemoryBank().queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
+//
+//				for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
+//					var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
+//					CellPosition position = singleQueryAccessor.getIdentifier();
+//					gl.glPushMatrix();
+//
+//					double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableFragment.getTimestamp()) < 5 ? 1 : 0.5;
+//
+//					if (enterableFragment.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
+//						gl.glColor3d(colVal, 0, colVal);
+//					} else {
+//						gl.glColor3d(0, 0, colVal);
+//					}
+//
+//					Vector2 centerPos = new Vector2(position.getPosition());
+//					gl.glTranslated(centerPos.x, centerPos.y, 0);
+//					gl.glBegin(GL2.GL_POLYGON);
+//					gl.glVertex2d(-HALF_SIZE, -HALF_SIZE);
+//					gl.glVertex2d(HALF_SIZE, -HALF_SIZE);
+//					gl.glVertex2d(HALF_SIZE, HALF_SIZE);
+//					gl.glVertex2d(-HALF_SIZE, HALF_SIZE);
+//					gl.glEnd();
+//					gl.glPopMatrix();
+//				}
+//
+//
+//				MultiQueryAccessor<Long, EntityData> entityQueryResults = creature.getMemoryBank().queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
+//
+//				for (SingleQueryAccessor<Long, EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
+//					gl.glPushMatrix();
+//					gl.glColor3d(0, 1, 0);
+//
+//					Datas.EntityPositionalData posData = singleQueryAccessor.getKnowledge(Datas.EntityPositionalData.class).getInfo();
+//					Datas.EntityKineticData kinData = singleQueryAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo();
+//
+//					if (posData != null) {
+//						Vector2 centerPos = posData.getPosition();
+//
+//						gl.glTranslated(centerPos.x, centerPos.y, 0);
+//						if(kinData != null){
+//							gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
+//						}
+//
+//						gl.glBegin(GL2.GL_POLYGON);
+//						gl.glVertex2d(-HALF_SIZE/2, -HALF_SIZE/2);
+//						gl.glVertex2d(HALF_SIZE/2, -HALF_SIZE/2);
+//						gl.glVertex2d(HALF_SIZE/2, HALF_SIZE/2);
+//						gl.glVertex2d(-HALF_SIZE/2, HALF_SIZE/2);
+//						gl.glEnd();
+//					}
+//					gl.glPopMatrix();
+//
+//				}
+//			}
+//		});
+//	}}
 }

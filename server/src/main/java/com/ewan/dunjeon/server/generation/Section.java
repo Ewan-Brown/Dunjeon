@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.ewan.dunjeon.server.game.Main.rand;
+import static com.ewan.dunjeon.server.game.StartServer.rand;
 
 public class Section implements Serializable {
     List<Point> availableCells;

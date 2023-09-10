@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.data;
+package com.ewan.dunjeoncommon.data;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,9 +1,9 @@
-package com.ewan.dunjeon.server.world.entities.memory;
+package com.ewan.dunjeoncommon.memory;
 
 import com.esotericsoftware.kryo.kryo5.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.kryo5.serializers.TaggedFieldSerializer;
 import com.esotericsoftware.kryo.kryo5.util.Null;
-import com.ewan.dunjeon.data.Data;
+import com.ewan.dunjeoncommon.data.Data;
 import lombok.Getter;
 
 import java.beans.Transient;

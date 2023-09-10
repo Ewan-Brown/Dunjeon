@@ -1,5 +1,6 @@
-package com.ewan.dunjeon.data;
+package com.ewan.dunjeoncommon.data;
 
+import com.ewan.dunjeoncommon.data.Data;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,6 +18,6 @@ public abstract class DataWrapper<D extends Data, I> {
     List<D> data;
     Class<D> baseClass;
     I identifier;
-    Sensor<? extends DataStreamParameters> sourceSensor;
+//    Sensor<? extends DataStreamParameters> sourceSensor;
     double timestamp;
 }

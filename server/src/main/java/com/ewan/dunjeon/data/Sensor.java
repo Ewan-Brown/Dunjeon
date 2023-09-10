@@ -1,7 +1,9 @@
 package com.ewan.dunjeon.data;
 
 import com.ewan.dunjeon.server.world.entities.creatures.Creature;
-import com.ewan.dunjeon.server.world.entities.memory.KnowledgeFragment;
+import com.ewan.dunjeoncommon.data.Data;
+import com.ewan.dunjeoncommon.data.DataWrapper;
+import com.ewan.dunjeoncommon.memory.KnowledgeFragment;
 
 import java.util.List;
 
@@ -22,12 +24,6 @@ public class Sensor<P extends DataStreamParameters> implements KnowledgeFragment
     public final void passOnData(List<? extends DataWrapper<? extends Data, ?>> data){
         for (DataWrapper<? extends Data, ?> datum : data) {
             creature.getMemoryBank().processWrappedData(datum);
-        }
-    }
-
-    public final void passOnEvents(List<Event<DataWrapper<? extends Data, ?>>> events){
-        for (Event<DataWrapper<? extends Data, ?>> event : events) {
-            creature.getMemoryBank().processEventData(event);
         }
     }
 

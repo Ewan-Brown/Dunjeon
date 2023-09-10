@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Maven " type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="Run Server" type="MavenRunConfiguration" factoryName="Maven">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />
@@ -10,12 +10,13 @@
           </option>
           <option name="goals">
             <list>
+              <option value="-q" />
               <option value="clean" />
               <option value="compile" />
               <option value="exec:java" />
               <option value="-pl" />
               <option value="server" />
-              <option value="-Dexec.mainClass=com.ewan.dunjeon.game.Main" />
+              <option value="-Dexec.mainClass=com.ewan.dunjeonserver.StartServer" />
             </list>
           </option>
           <option name="pomFileName" />

@@ -1,6 +1,6 @@
-package com.ewan.dunjeon.data;
+package com.ewan.dunjeoncommon.data;
 
-import com.ewan.dunjeon.server.world.entities.creatures.BasicMemoryBank.QueryResult;
+import com.ewan.dunjeoncommon.memory.BasicMemoryBank.QueryResult;
 
 import java.util.HashMap;
 import java.util.function.Supplier;

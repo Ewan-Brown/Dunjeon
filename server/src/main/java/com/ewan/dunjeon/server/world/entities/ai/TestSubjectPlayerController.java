@@ -1,9 +1,8 @@
 package com.ewan.dunjeon.server.world.entities.ai;
 
-import com.ewan.dunjeon.data.Datas;
+import com.ewan.dunjeoncommon.data.Datas;
 import com.ewan.dunjeon.input.KeyBank;
-import com.ewan.dunjeon.server.ServerManager;
-import com.ewan.dunjeon.server.world.entities.creatures.BasicMemoryBank;
+import com.ewan.dunjeoncommon.memory.BasicMemoryBank;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import org.dyn4j.geometry.Vector2;
 
@@ -78,7 +77,8 @@ public class TestSubjectPlayerController extends CreatureController<TestSubject>
         }
 
         if(keys.getKeySet().get(KeyEvent.VK_SPACE)){
-            ServerManager.SerializePlayerData();
+            getConnectedCreature().getMemoryBank().PRINT_CELL_MAP_SIZE();
+//            ServerManager.SerializePlayerData();
         }
 
         creatureInterface.moveInDirection(moveDirection);

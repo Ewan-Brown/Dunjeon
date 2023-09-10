@@ -1,8 +1,8 @@
-package com.ewan.dunjeon.server.world.entities.memory.creaturedata;
+package com.ewan.dunjeoncommon.memory.creaturedata;
 
 
-import com.ewan.dunjeon.data.Datas;
-import com.ewan.dunjeon.server.world.entities.memory.KnowledgePackage;
+import com.ewan.dunjeoncommon.data.Datas;
+import com.ewan.dunjeoncommon.memory.KnowledgePackage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

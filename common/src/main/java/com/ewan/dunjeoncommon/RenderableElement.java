@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.graphics;
+package com.ewan.dunjeoncommon;
 
 import org.dyn4j.geometry.Vector2;
 
