@@ -9,7 +9,6 @@ import com.ewan.dunjeoncommon.memory.BasicMemoryBank;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import org.dyn4j.geometry.Vector2;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
@@ -18,7 +17,12 @@ import java.io.FileOutputStream;
  */
 public class ServerManager {
 
-    public static void SerializePlayerData(){
+    public static void sendSomeDataToClient(){
+
+    }
+
+    //Serializes the player's associated Memory
+    public static void serializePlayerData(){
         Kryo kryo = new Kryo();
         Dunjeon dunjeon = Dunjeon.getInstance();
         kryo.setRegistrationRequired(false); //TODO This is easier but performance hit at runtime!
@@ -56,9 +60,11 @@ public class ServerManager {
             kryo.writeObject(output, memoryBank);
             output.close();
 
-            Input input = new Input(new FileInputStream("file.bin"));
-            BasicMemoryBank memoryBank2 = kryo.readObject(input, BasicMemoryBank.class);
-            input.close();
+
+
+//            Input input = new Input(new FileInputStream("file.bin"));
+//            BasicMemoryBank memoryBank2 = kryo.readObject(input, BasicMemoryBank.class);
+//            input.close();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

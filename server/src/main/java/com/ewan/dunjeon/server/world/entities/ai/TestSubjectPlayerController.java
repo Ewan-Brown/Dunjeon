@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.server.world.entities.ai;
 
+import com.ewan.dunjeon.server.ServerManager;
 import com.ewan.dunjeoncommon.data.Datas;
 import com.ewan.dunjeon.input.KeyBank;
 import com.ewan.dunjeoncommon.memory.BasicMemoryBank;
@@ -74,11 +75,6 @@ public class TestSubjectPlayerController extends CreatureController<TestSubject>
             turnDirection = -selfAngularVelocity;
         }else{
             turnDirection = nominalTurn*10;
-        }
-
-        if(keys.getKeySet().get(KeyEvent.VK_SPACE)){
-            getConnectedCreature().getMemoryBank().PRINT_CELL_MAP_SIZE();
-//            ServerManager.SerializePlayerData();
         }
 
         creatureInterface.moveInDirection(moveDirection);
