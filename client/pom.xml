@@ -71,6 +71,11 @@
             <version>0.45</version>
         </dependency>
         <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.97.Final</version>
+        </dependency>
+        <dependency>
             <groupId>org.ewan</groupId>
             <artifactId>common</artifactId>
             <version>1.0</version>

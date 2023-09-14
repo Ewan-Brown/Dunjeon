@@ -139,8 +139,4 @@ public class BasicMemoryBank extends DataSink {
     public record QueryResult<A, S>(A result, S status){
 
     }
-
-    public void PRINT_CELL_MAP_SIZE(){
-        System.out.println(cellKnowledgeHashMap.size());
-    }
 }

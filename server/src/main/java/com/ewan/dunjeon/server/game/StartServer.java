@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.server.game;
 
+import com.ewan.dunjeon.server.ServerManager;
 import com.ewan.dunjeon.server.generation.FloorGenerator;
 import com.ewan.dunjeon.input.KeyBank;
 import com.ewan.dunjeon.server.world.entities.ai.TestSubjectPlayerController;
@@ -85,6 +86,7 @@ public class StartServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        ServerManager.sendSomeDataToClient();
     }
 
     private static void generateWorld(){
