@@ -1,4 +1,4 @@
-package com.ewan.networking;
+package com.ewan.dunjeonclient.networking;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;

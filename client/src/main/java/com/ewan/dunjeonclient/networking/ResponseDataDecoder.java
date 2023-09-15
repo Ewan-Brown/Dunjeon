@@ -1,4 +1,4 @@
-package com.ewan.networking;
+package com.ewan.dunjeonclient.networking;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

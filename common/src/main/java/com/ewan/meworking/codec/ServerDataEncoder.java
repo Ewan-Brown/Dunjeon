@@ -1,15 +1,16 @@
-package com.ewan.networking;
+package com.ewan.meworking.codec;
 
+import com.ewan.meworking.data.ServerData;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-public class ResponseDataEncoder
-        extends MessageToByteEncoder<ResponseData> {
+public class ServerDataEncoder
+        extends MessageToByteEncoder<ServerData> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx,
-                          ResponseData msg, ByteBuf out) throws Exception {
+                          ServerData msg, ByteBuf out) throws Exception {
         out.writeInt(msg.getIntValue());
     }
 }

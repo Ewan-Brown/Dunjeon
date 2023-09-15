@@ -1,4 +1,4 @@
-package com.ewan.networking;
+package com.ewan.dunjeonclient.networking;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;

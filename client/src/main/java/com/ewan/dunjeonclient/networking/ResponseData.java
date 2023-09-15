@@ -1,4 +1,4 @@
-package com.ewan.networking;
+package com.ewan.dunjeonclient.networking;
 
 import lombok.Getter;
 import lombok.Setter;

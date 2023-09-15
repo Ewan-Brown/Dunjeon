@@ -1,13 +1,11 @@
-package com.ewan.networking;
+package com.ewan.meworking.data;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RequestData {
+public class ServerData {
     private int intValue;
-    private String stringValue;
-
 
 }
