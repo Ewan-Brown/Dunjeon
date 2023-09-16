@@ -36,6 +36,8 @@ public class GameClient {
             ChannelFuture f = b.connect(host, port).sync();
 
             f.channel().closeFuture().sync();
+            System.out.println("f.isCancelled() = " + f.isCancelled());
+            System.out.println("f.isDone() = " + f.isDone());
         } finally {
             workerGroup.shutdownGracefully();
         }

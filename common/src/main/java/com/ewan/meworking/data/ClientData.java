@@ -8,6 +8,4 @@ import lombok.Setter;
 public class ClientData {
     private int intValue;
     private String stringValue;
-
-
 }
