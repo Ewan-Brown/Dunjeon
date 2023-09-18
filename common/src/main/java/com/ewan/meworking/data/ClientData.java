@@ -1,11 +1,11 @@
 package com.ewan.meworking.data;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.ewan.meworking.data.client.ClientAction;
+import lombok.Data;
 
-@Getter
-@Setter
-public class ClientData {
-    private int intValue;
-    private String stringValue;
-}
+import java.util.List;
+
+@Data
+public class ClientData{
+    final List<ClientAction> someKindOfInformation;
+};

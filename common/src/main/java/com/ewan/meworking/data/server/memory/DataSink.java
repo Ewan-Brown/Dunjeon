@@ -1,7 +1,7 @@
-package com.ewan.dunjeoncommon.memory;
+package com.ewan.meworking.data.server.memory;
 
-import com.ewan.dunjeoncommon.data.Data;
-import com.ewan.dunjeoncommon.data.DataWrapper;
+import com.ewan.meworking.data.server.data.Data;
+import com.ewan.meworking.data.server.data.DataWrapper;
 
 public abstract class DataSink {
 

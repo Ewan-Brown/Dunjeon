@@ -1,7 +1,6 @@
 package com.ewan.meworking.handlers;
 
 import com.ewan.meworking.data.ClientData;
-import com.ewan.meworking.data.ServerData;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,11 +16,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         System.out.println("Client activated, saving channel as server");
         serverChannel = ctx.channel();
 
-        ClientData msg = new ClientData();
-        msg.setIntValue(123);
-        msg.setStringValue(
-                "all work and no play makes jack a dull boy");
-        ChannelFuture future = ctx.write(msg);
+//        ClientData msg = new ClientData();
+//        msg.setIntValue(123);
+//        msg.setStringValue(
+//                "all work and no play makes jack a dull boy");
+//        ChannelFuture future = ctx.write(msg);
         ctx.flush();
     }
 

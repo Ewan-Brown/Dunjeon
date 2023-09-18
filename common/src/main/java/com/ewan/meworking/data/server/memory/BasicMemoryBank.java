@@ -1,13 +1,13 @@
-package com.ewan.dunjeoncommon.memory;
+package com.ewan.meworking.data.server.memory;
 
 import com.esotericsoftware.kryo.kryo5.serializers.FieldSerializer;
 import com.ewan.dunjeon.server.world.CellPosition;
 //import com.ewan.dunjeon.server.world.entities.memory.celldata.CellKnowledge;
-import com.ewan.dunjeoncommon.data.Data;
-import com.ewan.dunjeoncommon.data.DataWrapper;
-import com.ewan.dunjeoncommon.data.Datas;
-import com.ewan.dunjeoncommon.memory.creaturedata.CreatureKnowledge;
-import com.ewan.dunjeoncommon.data.CellKnowledge;
+import com.ewan.meworking.data.server.data.Data;
+import com.ewan.meworking.data.server.data.DataWrapper;
+import com.ewan.meworking.data.server.data.Datas;
+import com.ewan.meworking.data.server.memory.creaturedata.CreatureKnowledge;
+import com.ewan.meworking.data.server.data.CellKnowledge;
 import lombok.Getter;
 
 import java.util.ArrayList;

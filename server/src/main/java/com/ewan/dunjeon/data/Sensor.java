@@ -1,9 +1,9 @@
 package com.ewan.dunjeon.data;
 
 import com.ewan.dunjeon.server.world.entities.creatures.Creature;
-import com.ewan.dunjeoncommon.data.Data;
-import com.ewan.dunjeoncommon.data.DataWrapper;
-import com.ewan.dunjeoncommon.memory.KnowledgeFragment;
+import com.ewan.meworking.data.server.data.Data;
+import com.ewan.meworking.data.server.data.DataWrapper;
+import com.ewan.meworking.data.server.memory.KnowledgeFragment;
 
 import java.util.List;
 

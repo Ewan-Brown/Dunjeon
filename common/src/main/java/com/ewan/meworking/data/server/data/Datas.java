@@ -1,6 +1,6 @@
-package com.ewan.dunjeoncommon.data;
+package com.ewan.meworking.data.server.data;
 
-import com.ewan.dunjeoncommon.RenderableElement;
+import com.ewan.meworking.data.server.RenderableElement;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

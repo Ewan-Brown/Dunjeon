@@ -1,4 +1,4 @@
-package com.ewan.dunjeoncommon.data;
+package com.ewan.meworking.data.server.data;
 
 import com.ewan.dunjeon.server.world.CellPosition;
 

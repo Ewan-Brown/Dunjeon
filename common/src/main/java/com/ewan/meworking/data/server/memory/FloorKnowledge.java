@@ -1,6 +1,6 @@
-package com.ewan.dunjeoncommon.memory;
+package com.ewan.meworking.data.server.memory;
 
-import com.ewan.dunjeoncommon.data.Datas;
+import com.ewan.meworking.data.server.data.Datas;
 
 public class FloorKnowledge extends KnowledgePackage<Long, Datas.FloorData> {
 

@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.server.world.entities.ai;
 
-import com.ewan.dunjeoncommon.data.Datas;
-import com.ewan.dunjeoncommon.memory.BasicMemoryBank;
+import com.ewan.meworking.data.server.data.Datas;
+import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import org.dyn4j.geometry.Vector2;
 
