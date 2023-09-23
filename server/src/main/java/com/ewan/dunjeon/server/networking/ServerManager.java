@@ -1,24 +1,50 @@
-package com.ewan.dunjeon.server;
+package com.ewan.dunjeon.server.networking;
 
 import com.esotericsoftware.kryo.kryo5.Serializer;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.ewan.dunjeon.server.world.CellPosition;
 import com.ewan.dunjeon.server.world.Dunjeon;
+import com.ewan.dunjeon.server.world.entities.ai.CreatureController;
+import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import com.esotericsoftware.kryo.kryo5.Kryo;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.dyn4j.geometry.Vector2;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.List;
 
 /**
  * Interface between packets and server. Send and receive.
  */
 public class ServerManager {
 
-    public static void sendSomeDataToClient(){
-        System.out.println("Sending Data to client!");
+    private static List<ClientHandler> clientHandlers;
+
+    public static class ServerInboundChannelHandler extends ChannelInboundHandlerAdapter{
+        @Override
+        public void channelActive(final ChannelHandlerContext ctx) {
+            System.out.println("Client joined - " + ctx + ", adding to list of client channels");
+            CreatureController<?> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
+            ClientHandler clientHandler = new ClientHandler(controller, ctx.channel());
+            clientHandlers.add(clientHandler);
+        }
+
+
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object msg)
+                throws Exception {
+
+        }
+    }
+
+    public static void sendDataToClients(){
+
     }
 
 
@@ -56,20 +82,21 @@ public class ServerManager {
             }
 
         });
-        BasicMemoryBank memoryBank = dunjeon.getPlayer().getMemoryBank();
-        try {
-            Output output = new Output(new FileOutputStream("file.bin"));
-            kryo.writeObject(output, memoryBank);
-            output.close();
+
+//        BasicMemoryBank memoryBank = dunjeon.getPlayer().getMemoryBank();
+//        try {
+//            Output output = new Output(new FileOutputStream("file.bin"));
+//            kryo.writeObject(output, memoryBank);
+//            output.close();
 
 
 
 //            Input input = new Input(new FileInputStream("file.bin"));
 //            BasicMemoryBank memoryBank2 = kryo.readObject(input, BasicMemoryBank.class);
 //            input.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 }

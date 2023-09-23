@@ -18,9 +18,9 @@ public class TestSubjectPlayerController extends CreatureController<TestSubject>
     private final HashMap<Integer, Vector2> directionalKeys = new HashMap<>();
     private final HashMap<Integer, Double> angleKeys = new HashMap<Integer, Double>();
 
-    public TestSubjectPlayerController(TestSubject connectedCreature, KeyBank keys) {
+    public TestSubjectPlayerController(TestSubject connectedCreature) {
         super(connectedCreature);
-        this.keys = keys;
+        this.keys = new KeyBank();
         directionalKeys.put(KeyEvent.VK_W, new Vector2(0, 1));
         directionalKeys.put(KeyEvent.VK_A, new Vector2(-1, 0));
         directionalKeys.put(KeyEvent.VK_S, new Vector2(0, -1));

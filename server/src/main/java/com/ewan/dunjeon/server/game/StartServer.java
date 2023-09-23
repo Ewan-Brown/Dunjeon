@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.server.game;
 
-import com.ewan.dunjeon.server.ServerManager;
+import com.ewan.dunjeon.server.networking.ServerManager;
 import com.ewan.dunjeon.server.generation.FloorGenerator;
 import com.ewan.dunjeon.input.KeyBank;
 import com.ewan.dunjeon.server.world.entities.ai.TestSubjectPlayerController;
@@ -20,7 +20,6 @@ public class StartServer {
 
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
-    private static final KeyBank keyBank = new KeyBank();
     private static final int entityCount = 0;
 
     public static void main(String[] args) {
@@ -86,7 +85,7 @@ public class StartServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        ServerManager.sendSomeDataToClient();
+        ServerManager.sendDataToClients();
     }
 
     private static void generateWorld(){
@@ -123,9 +122,8 @@ public class StartServer {
         testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
         startFloor.addEntityRandomLoc(testSubject);
-        d.setPlayer(testSubject);
 
-        startFloor.addCreatureController(new TestSubjectPlayerController(testSubject, keyBank));
+        startFloor.addCreatureController(new TestSubjectPlayerController(testSubject));
 
         for (int i = 0; i < entityCount; i++) {
             TestSubject npcTestSubject = new TestSubject("NPC");

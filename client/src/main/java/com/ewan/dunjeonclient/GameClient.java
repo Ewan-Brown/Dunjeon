@@ -3,7 +3,7 @@ package com.ewan.dunjeonclient;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.ewan.meworking.codec.ClientDataEncoder;
 import com.ewan.meworking.codec.ServerDataDecoder;
-import com.ewan.meworking.handlers.ClientHandler;
+import com.ewan.meworking.handlers.ClientChannelHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -30,7 +30,7 @@ public class GameClient {
                 @Override
                 public void initChannel(SocketChannel ch) {
                     ch.pipeline().addLast(new ClientDataEncoder(new Kryo()),
-                            new ServerDataDecoder(new Kryo()), new ClientHandler());
+                            new ServerDataDecoder(new Kryo()), new ClientChannelHandler());
                 }
             });
 
