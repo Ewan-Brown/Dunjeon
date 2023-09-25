@@ -11,7 +11,6 @@ import java.util.List;
 public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private Channel serverChannel;
-    private final List<ClientAction> recentClientActions = new ArrayList<>();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -24,7 +23,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println("Client received something");
-        List<ClientAction> clientActions = (List<ClientAction>) msg; // Or so we hope...
-        recentClientActions.addAll(clientActions);
+
     }
 }

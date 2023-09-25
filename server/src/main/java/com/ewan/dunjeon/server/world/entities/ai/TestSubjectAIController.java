@@ -7,7 +7,7 @@ import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
 
-public class TestSubjectAIController extends CreatureController<TestSubject>{
+public class TestSubjectAIController extends CreatureController<TestSubject, TestSubject.TestSubjectControls>{
     public TestSubjectAIController(TestSubject connectedCreature) {
         super(connectedCreature);
     }
@@ -16,11 +16,8 @@ public class TestSubjectAIController extends CreatureController<TestSubject>{
     private static final List<Class<? extends Datas.EntityData>> CLASSES = List.of(Datas.EntityPositionalData.class);
     @Override
     public void update() {
-        System.out.println(getConnectedCreature().getWorldCenter());
-        TestSubject.TestSubjectInterface creatureInterface = getConnectedCreature().getInterface();
-        BasicMemoryBank memoryBank = getConnectedCreature().getMemoryBank();
 
-        BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> selfQuery = memoryBank.querySinglePackage(creatureInterface.getUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
+        BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> selfQuery = memoryBank.querySinglePackage(controls.getUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
         if(!selfQuery.status()){
             return;
         }
@@ -58,7 +55,7 @@ public class TestSubjectAIController extends CreatureController<TestSubject>{
             thrust = new Vector2(posDiff);
         }
 
-        creatureInterface.moveInDirection(thrust);
+        controls.moveInDirection(thrust);
     }
 
 }

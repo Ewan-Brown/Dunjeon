@@ -26,4 +26,6 @@ public abstract class Creature extends Entity {
 
     public abstract BasicMemoryBank getMemoryBank();
 
+    public abstract CreatureControls<? extends Creature> getControls();
+
 }

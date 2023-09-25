@@ -15,31 +15,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class GameServer {
 
-    EventLoopGroup bossGroup = new NioEventLoopGroup();
-    EventLoopGroup workerGroup = new NioEventLoopGroup();
+
 
     public static void main(String[] args) throws Exception {
-//
-//        try {
-//            ServerBootstrap b = new ServerBootstrap();
-//            b.group(bossGroup, workerGroup)
-//                    .channel(NioServerSocketChannel.class)
-//                    .childHandler(new ChannelInitializer<SocketChannel>() {
-//                        @Override
-//                        public void initChannel(SocketChannel ch) {
-//                            ch.pipeline().addLast(new ClientDataDecoder(new Kryo()),
-//                                    new ServerDataEncoder(new Kryo()),
-//                                    new ServerManager.ServerInboundChannelHandler());
-//                        }
-//                    }).option(ChannelOption.SO_BACKLOG, 128)
-//                    .childOption(ChannelOption.SO_KEEPALIVE, true);
-//
-//            ChannelFuture f = b.bind(1459).sync();
-//            f.channel().closeFuture().sync();
-//        } finally {
-//            workerGroup.shutdownGracefully();
-//            bossGroup.shutdownGracefully();
-//        }
+
     }
 
 }

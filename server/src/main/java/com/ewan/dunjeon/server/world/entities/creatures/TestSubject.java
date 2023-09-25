@@ -13,7 +13,7 @@ import java.util.List;
 public class TestSubject extends Creature {
     List<Sensor<? extends DataStreamParameters>> senses = new ArrayList<>();
     BasicMemoryBank b = new BasicMemoryBank();
-    private final TestSubjectInterface subjectInterface = new TestSubjectInterface();
+    private final TestSubjectControls subjectInterface = new TestSubjectControls();
 
     public TestSubject(String name) {
         this(name, false);
@@ -40,12 +40,11 @@ public class TestSubject extends Creature {
         return senses;
     }
 
-    public TestSubjectInterface getInterface() {
+    public TestSubjectControls getControls() {
         return subjectInterface;
     }
 
-
-    public class TestSubjectInterface extends CreatureControls {
+    public class TestSubjectControls extends CreatureControls<TestSubject> {
 
         public long getUUID(){return TestSubject.super.getUUID();}
 

@@ -25,7 +25,7 @@ public class Floor {
     final Long UUID;
     BasicCell[][] cells;
     Set<Entity> entities = new HashSet<>();
-    Set<CreatureController<?>> creatureControllers = new HashSet<>();
+    Set<CreatureController<?, ?>> creatureControllers = new HashSet<>();
     World<Body> world = new World<>();
     Set<ManifoldCollisionData<CollisionBody<Fixture>, Fixture>> collisionDataAccumulator = new HashSet<>();
 
@@ -120,7 +120,7 @@ public class Floor {
     }
 
     public void updateCreatureControllers(double stepSize){
-        for (CreatureController<?> creatureController : creatureControllers) {
+        for (CreatureController<?, ?> creatureController : creatureControllers) {
             creatureController.update();
         }
     }
@@ -134,7 +134,7 @@ public class Floor {
         }
     }
 
-    public void addCreatureController(CreatureController<?> c){
+    public void addCreatureController(CreatureController<?, ?> c){
         creatureControllers.add(c);
     }
 

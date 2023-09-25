@@ -2,8 +2,8 @@ package com.ewan.dunjeon.server.game;
 
 import com.ewan.dunjeon.server.networking.ServerManager;
 import com.ewan.dunjeon.server.generation.FloorGenerator;
-import com.ewan.dunjeon.input.KeyBank;
-import com.ewan.dunjeon.server.world.entities.ai.TestSubjectPlayerController;
+import com.ewan.dunjeon.server.world.entities.ClientBasedController;
+import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.dunjeon.server.world.Dunjeon;
@@ -44,6 +44,7 @@ public class StartServer {
             }
         }).start();
 
+        ServerManager.runServer();
     }
 
     //For debugging
@@ -123,7 +124,7 @@ public class StartServer {
         testSubject.setMass(new Mass(new Vector2(),1,1));
         startFloor.addEntityRandomLoc(testSubject);
 
-        startFloor.addCreatureController(new TestSubjectPlayerController(testSubject));
+        startFloor.addCreatureController(new ClientBasedTestSubjectController(testSubject));
 
         for (int i = 0; i < entityCount; i++) {
             TestSubject npcTestSubject = new TestSubject("NPC");

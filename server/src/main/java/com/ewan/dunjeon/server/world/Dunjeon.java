@@ -1,11 +1,10 @@
 package com.ewan.dunjeon.server.world;
 
 import com.ewan.dunjeon.data.Datastreams;
-import com.ewan.dunjeon.server.world.entities.ai.CreatureController;
-import com.ewan.dunjeon.server.world.entities.ai.TestSubjectPlayerController;
+import com.ewan.dunjeon.server.world.entities.ClientBasedController;
+import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
-import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 import lombok.Getter;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.Rectangle;
@@ -54,12 +53,12 @@ public class Dunjeon{
         sightDataStream.update(this);
     }
 
-    public CreatureController<?> createClientTestCreatureAndGetController(){
+    public ClientBasedController<TestSubject, TestSubject.TestSubjectControls> createClientTestCreatureAndGetController(){
         TestSubject testSubject = new TestSubject("Player", true);
         testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
 
-        CreatureController<?> controller = new TestSubjectPlayerController(testSubject);
+        ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = new ClientBasedTestSubjectController(testSubject);
 
         this.floors.get(0).addEntityRandomLoc(testSubject);
         this.floors.get(0).addCreatureController(controller);
