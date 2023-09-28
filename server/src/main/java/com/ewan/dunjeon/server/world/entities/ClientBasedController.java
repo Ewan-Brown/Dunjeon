@@ -24,6 +24,10 @@ public abstract class ClientBasedController<C extends Creature, D extends Creatu
         return memoryBank;
     }
 
+    /**
+     * TODO this has to gete cleared or emptied after actions are processed. BUT I have to probably introduce some sort of cache as new actions recevied from client go directly to this list.
+     * IF the list is partway through processing and a new action is entered the outcome is undefined. this should ___NOT___ be up to individual implementations of update()
+     * */
     @Getter
     private final List<ClientAction> unprocessedClientActions = new ArrayList<>();
 

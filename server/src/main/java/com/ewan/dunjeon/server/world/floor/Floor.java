@@ -18,6 +18,7 @@ import java.util.List;
 import static com.ewan.dunjeon.server.game.StartServer.rand;
 
 
+//TODO Need to take a look at what is really FLOOR dependent and what is more global...
 public class Floor {
 
     private static long UUIDCounter = 0;

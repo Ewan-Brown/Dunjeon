@@ -44,12 +44,13 @@ public class ServerDataEncoder
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {
             public void write(Kryo kryo, Output output, CellPosition cellPos) {
                 output.writeLong(cellPos.getFloorID());
-                kryo.writeObject(output, cellPos.getPosition());
+                kryo.writeClassAndObject(output, cellPos.getPosition());
+                output.flush();
             }
 
             public CellPosition read(Kryo kryo, Input input, Class<? extends CellPosition> type) {
                 long floorID = input.readLong();
-                Vector2 vector = kryo.readObject(input, Vector2.class);
+                Vector2 vector = (Vector2) kryo.readClassAndObject(input);
                 return new CellPosition(vector, floorID);
             }
 
@@ -63,11 +64,11 @@ public class ServerDataEncoder
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         Output output = new Output(outStream, 4096);
 
-        kryo.writeObject(output, msg);
-        output.flush();
+        kryo.writeClassAndObject(output, msg);
 
         byte[] outArray = outStream.toByteArray();
         out.writeShort(outArray.length);
         out.writeBytes(outArray);
+        output.flush();
     }
 }

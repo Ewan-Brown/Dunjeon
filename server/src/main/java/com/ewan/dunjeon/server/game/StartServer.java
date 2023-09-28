@@ -24,8 +24,9 @@ public class StartServer {
 
     public static void main(String[] args) {
 
-        System.out.println("Starting server");
+        System.out.println("Starting server code");
         generateWorld();
+        new Thread(() -> ServerManager.runServer()).start();
 
         new Thread(() -> {
             while (true) {
@@ -44,7 +45,6 @@ public class StartServer {
             }
         }).start();
 
-        ServerManager.runServer();
     }
 
     //For debugging
@@ -79,6 +79,7 @@ public class StartServer {
     private static final long DESIRED_FRAMETIME_NS = 16000000;
 
     private static void updateCurrentWorld(){
+//        System.out.println("StartServer.updateCurrentWorld");
         Dunjeon w = Dunjeon.getInstance();
         try {
             Thread.sleep(DESIRED_FRAMETIME_NS/1000000L);
@@ -90,6 +91,7 @@ public class StartServer {
     }
 
     private static void generateWorld(){
+        System.out.println("StartServer.generateWorld");
         long seed = rand.nextInt();
         seed = -709714631;
         rand.setSeed(seed);

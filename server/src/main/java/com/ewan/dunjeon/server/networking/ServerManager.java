@@ -30,6 +30,7 @@ public class ServerManager {
     private static HashMap<Channel, ClientHandler> clientHandlerHashMap = new HashMap<>();
 
     public static void runServer(){
+        System.out.println("ServerManager.runServer");
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -46,6 +47,7 @@ public class ServerManager {
                     }).option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
+            System.out.println("ServerManager.runServer 2");
             ChannelFuture f = b.bind(1459).sync();
             f.channel().closeFuture().sync();
         }catch(InterruptedException e){
@@ -75,13 +77,8 @@ public class ServerManager {
         }
     }
 
-    public static void clearClientActionBuffers(){
-        for (ClientHandler clientHandler : clientHandlerHashMap.values()) {
-            clientHandler.clearControllerActions();
-        }
-    }
-    
     public static void sendDataToClients(){
+//        System.out.println("ServerManager.sendDataToClients");
         for (ClientHandler handler : clientHandlerHashMap.values()) {
             handler.sendDataToClient();
         }
@@ -111,31 +108,17 @@ public class ServerManager {
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {
             public void write(Kryo kryo, Output output, CellPosition cellPos) {
                 output.writeLong(cellPos.getFloorID());
-                kryo.writeObject(output, cellPos.getPosition());
+                kryo.writeClassAndObject(output, cellPos.getPosition());
+                output.flush();
             }
 
             public CellPosition read(Kryo kryo, Input input, Class<? extends CellPosition> type) {
                 long floorID = input.readLong();
-                Vector2 vector = kryo.readObject(input, Vector2.class);
+                Vector2 vector = (Vector2) kryo.readClassAndObject(input);
                 return new CellPosition(vector, floorID);
             }
 
         });
-
-//        BasicMemoryBank memoryBank = dunjeon.getPlayer().getMemoryBank();
-//        try {
-//            Output output = new Output(new FileOutputStream("file.bin"));
-//            kryo.writeObject(output, memoryBank);
-//            output.close();
-
-
-
-//            Input input = new Input(new FileInputStream("file.bin"));
-//            BasicMemoryBank memoryBank2 = kryo.readObject(input, BasicMemoryBank.class);
-//            input.close();
-//        } catch (FileNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
 
     }
 }

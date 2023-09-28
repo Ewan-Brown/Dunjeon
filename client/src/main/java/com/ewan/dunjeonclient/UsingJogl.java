@@ -24,12 +24,19 @@
  */
 package com.ewan.dunjeonclient;
 
+import com.ewan.dunjeon.server.world.CellPosition;
+import com.ewan.meworking.data.server.data.Datas;
+import com.ewan.meworking.data.server.memory.BasicMemoryBank;
+import com.ewan.meworking.data.server.memory.BasicMemoryBank.MultiQueryAccessor;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.Getter;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
+import org.dyn4j.geometry.Vector2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,20 +45,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UsingJogl extends JFrame implements GLEventListener {
+public class UsingJogl implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
-
-//	private static final Map<Class<? extends Creature>, RenderStrategy<? extends Creature>> strategyMap = new HashMap<>();
-
-
 
 	@Getter
 	protected GLCanvas canvas;
+	private JFrame frame;
+	private final ClientChannelHandler clientChannelHandler;
 
-	public UsingJogl() {
-		super("JOGL Dunjeon");
 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public UsingJogl(ClientChannelHandler clientChannelHandler) {
+		System.out.println("Creating UI");
+		frame = new JFrame("Dungeon Client");
+
+		this.clientChannelHandler = clientChannelHandler;
+
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		Dimension size = new Dimension(800, 800);
 
@@ -66,12 +75,13 @@ public class UsingJogl extends JFrame implements GLEventListener {
 		this.canvas.setIgnoreRepaint(true);
 		this.canvas.addGLEventListener(this);
 
-		this.setLayout(new BorderLayout());
+		frame.setLayout(new BorderLayout());
 
-		this.add(this.canvas);
-		this.setResizable(false);
+		frame.add(this.canvas);
+		frame.setResizable(false);
+		frame.setVisible(true);
 
-		this.pack();
+		frame.pack();
 	}
 
 	public void start() {
@@ -87,7 +97,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glOrtho(-1, 1, -1, 1, 0, 1);
-		gl.glViewport(0, 0, this.getWidth(), this.getHeight());
+		gl.glViewport(0, 0, frame.getWidth(), frame.getHeight());
 
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
@@ -127,6 +137,7 @@ public class UsingJogl extends JFrame implements GLEventListener {
 	 */
 	protected void render(GL2 gl) {
 
+//		System.out.println("Triggered a render!");
 		gl.glPushMatrix();
 		gl.glColor3d(1,0,0);
 
@@ -134,33 +145,85 @@ public class UsingJogl extends JFrame implements GLEventListener {
 
 		gl.glScaled(0.06, 0.06, 1.0);
 
-		renderAll(gl);
+//		System.out.println("grabbing memory object");
+		BasicMemoryBank basicMemoryBank = clientChannelHandler.getMostRecentBasicMemoryBank();
+//		System.out.println("basicMemoryBank = " + basicMemoryBank);
+		if(basicMemoryBank != null){
+			synchronized (basicMemoryBank) {
+				renderAll(gl, basicMemoryBank);
+			}
+		}
+
 		gl.glPopMatrix();
 	}
 
-	@SuppressWarnings("unchecked")
-//	public static <T extends Creature> void renderPerspective(GL2 gl, T c){
-//		RenderStrategy<T> r = (RenderStrategy<T>) strategyMap.get(c.getClass()); //Trust me :)
-//		if(r == null){
-//			throw new RuntimeException("Attempted to retrieve non-existent render strategy for creature of type:" + c.getClass());
-//		}else{
-//			r.render(c, gl);
-//		}
-//
-//	}
+	final static Vector2 lastCameraPos = new Vector2();
 
-//	public interface RenderStrategy<T extends Creature> {
-//		void render(T creature, GL2 gl);
-//	}
+	public void renderAll(GL2 gl, BasicMemoryBank basicMemoryBank){
+		System.out.println("rendering!");
+		final double SIZE = 1;
+		final double HALF_SIZE = SIZE / 2;
 
-	public static void renderAll(GL2 gl){
-		System.out.println("renderAll Unimplemented you fool");
-		List<Body> bodyList = new ArrayList<>();
-		for (Body body : bodyList) {
-			for (BodyFixture fixture : body.getFixtures()) {
-//				fixture.getShape().getFoci()
-//				fixture.getShape();
+//		Vector2 cameraDiff =  lastCameraPos.difference(this.clientChannelHandler.getMostRecentBasicMemoryBank().get);
+//		lastCameraPos.subtract(cameraDiff.multiply(0.003));
+
+		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
+		System.out.println(1);
+		System.out.println(2);
+		MultiQueryAccessor<CellPosition, Datas.CellData> cellQueryResults = basicMemoryBank.queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
+
+		System.out.println(3);
+		for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
+			var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
+			CellPosition position = singleQueryAccessor.getIdentifier();
+			gl.glPushMatrix();
+
+//			double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableFragment.getTimestamp()) < 5 ? 1 : 0.5;
+
+			if (enterableFragment.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
+				gl.glColor3d(0.5, 0, 0.5);
+			} else {
+				gl.glColor3d(0, 0, 0.5);
 			}
+
+			Vector2 centerPos = new Vector2(position.getPosition());
+			gl.glTranslated(centerPos.x, centerPos.y, 0);
+			gl.glBegin(GL2.GL_POLYGON);
+			gl.glVertex2d(-HALF_SIZE, -HALF_SIZE);
+			gl.glVertex2d(HALF_SIZE, -HALF_SIZE);
+			gl.glVertex2d(HALF_SIZE, HALF_SIZE);
+			gl.glVertex2d(-HALF_SIZE, HALF_SIZE);
+			gl.glEnd();
+			gl.glPopMatrix();
+		}
+
+
+		MultiQueryAccessor<Long, Datas.EntityData> entityQueryResults = basicMemoryBank.queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
+
+		for (BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
+			gl.glPushMatrix();
+			gl.glColor3d(0, 1, 0);
+
+			Datas.EntityPositionalData posData = singleQueryAccessor.getKnowledge(Datas.EntityPositionalData.class).getInfo();
+			Datas.EntityKineticData kinData = singleQueryAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo();
+
+			if (posData != null) {
+				Vector2 centerPos = posData.getPosition();
+
+				gl.glTranslated(centerPos.x, centerPos.y, 0);
+				if(kinData != null){
+					gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
+				}
+
+				gl.glBegin(GL2.GL_POLYGON);
+				gl.glVertex2d(-HALF_SIZE/2, -HALF_SIZE/2);
+				gl.glVertex2d(HALF_SIZE/2, -HALF_SIZE/2);
+				gl.glVertex2d(HALF_SIZE/2, HALF_SIZE/2);
+				gl.glVertex2d(-HALF_SIZE/2, HALF_SIZE/2);
+				gl.glEnd();
+			}
+			gl.glPopMatrix();
+
 		}
 	}
 

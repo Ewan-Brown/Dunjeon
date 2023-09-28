@@ -14,7 +14,7 @@ public abstract class KnowledgePackage<I, D extends Data> {
 
     public KnowledgePackage() {
         identifier = null;
-    }
+    } //For networking
 
     HashMap<Class<? extends D>, KnowledgeFragment<? extends D>> dataMap = new HashMap<>();
 

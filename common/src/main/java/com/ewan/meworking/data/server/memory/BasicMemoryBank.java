@@ -21,6 +21,18 @@ public class BasicMemoryBank extends DataSink {
     private final ConcurrentHashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<CellPosition, CellKnowledge> cellKnowledgeHashMap = new ConcurrentHashMap<>();
+    @Getter
+    private long ownerUUID;
+
+    //For networking
+    public BasicMemoryBank(){}
+    public void setOwnerUUID(Long uuid){
+        this.ownerUUID = uuid;
+    }
+
+    public BasicMemoryBank(long uuid){
+        this.ownerUUID = uuid;
+    }
 
     private record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
             (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass, Function<I,K> knowledgeProducer){}
@@ -82,7 +94,10 @@ public class BasicMemoryBank extends DataSink {
 
     @SuppressWarnings("unchecked")
     public <I, D extends Data, K extends KnowledgePackage<I,D>> MultiQueryAccessor<I, D> queryMultiPackage(Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
+        System.out.println("ENTERED QUERYMULTIPACKAGE");
+        System.out.println(1);
         Pairing<I, D, K> pairing = (Pairing<I, D, K>) knowledgeDataPairings.stream().filter(p -> p.relatedBaseDataClass == baseClazz).findFirst().orElseThrow();
+        System.out.println(2);
         ConcurrentHashMap<I, K> hashMap = pairing.knowledgeMap();
         HashMap<I, SingleQueryAccessor<I, D>> individualAccessors = new HashMap<>();
         packages:

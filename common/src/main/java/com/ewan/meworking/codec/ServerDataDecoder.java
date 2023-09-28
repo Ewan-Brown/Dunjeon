@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.ewan.dunjeon.server.world.CellPosition;
 import com.ewan.meworking.data.ServerData;
+import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -26,6 +27,23 @@ public class ServerDataDecoder
     private void initializeKryo(){
         kryo.setRegistrationRequired(false); //TODO This is easier but performance hit at runtime!
         kryo.setReferences(true);
+//        kryo.register(BasicMemoryBank.class, new Serializer(){
+//
+//            @Override
+//            public void write(Kryo kryo, Output output, Object cellPos) {
+////                output.writeLong(cellPos.getFloorID());
+////                kryo.writeObject(output, cellPos.getPosition());
+//            }
+//
+//            public BasicMemoryBank read(Kryo kryo, Input input, Class type) {
+////                long floorID = input.readLong();
+////                Vector2 vector = kryo.readObject(input, Vector2.class);
+////                return null;
+////                return new CellPosition(vector, floorID);
+//                return null;
+//            }
+//
+//        });
 
         kryo.register(Vector2.class, new Serializer<Vector2>() {
             public void write(Kryo kryo, Output output, Vector2 cellPos) {
@@ -43,12 +61,13 @@ public class ServerDataDecoder
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {
             public void write(Kryo kryo, Output output, CellPosition cellPos) {
                 output.writeLong(cellPos.getFloorID());
-                kryo.writeObject(output, cellPos.getPosition());
+                kryo.writeClassAndObject(output, cellPos.getPosition());
+                output.flush();
             }
 
             public CellPosition read(Kryo kryo, Input input, Class<? extends CellPosition> type) {
                 long floorID = input.readLong();
-                Vector2 vector = kryo.readObject(input, Vector2.class);
+                Vector2 vector = (Vector2) kryo.readClassAndObject(input);
                 return new CellPosition(vector, floorID);
             }
 

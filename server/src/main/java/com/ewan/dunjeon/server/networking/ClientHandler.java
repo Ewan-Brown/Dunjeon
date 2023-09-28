@@ -25,7 +25,12 @@ public class ClientHandler {
     }
 
     public void sendDataToClient(){
-        getClientChannel().writeAndFlush(new ServerData(creatureController.getMemoryBank()));
+        System.out.println("ClientHandler.sendDataToClient");
+        if(creatureController.getMemoryBank() != null) {
+            getClientChannel().writeAndFlush(new ServerData(creatureController.getMemoryBank()));
+        }else{
+            System.err.println("Attempted to send data to client but the atached memory bank is null!");
+        }
     }
 
     public void clearControllerActions(){

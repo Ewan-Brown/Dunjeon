@@ -1,10 +1,17 @@
 package com.ewan.dunjeonclient;
 
+import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.esotericsoftware.minlog.Log;
+
 public class StartClient
 {
     public static void main(String[] args) {
         System.out.println("Starting Client");
-
-        System.out.println("Client not implemented yet!");
+        Log.TRACE();
+        ClientChannelHandler clientChannelHandler = new ClientChannelHandler();
+        new Thread(() -> new GameClient(clientChannelHandler)).start();
+        new Thread(() -> {
+            new UsingJogl(clientChannelHandler).start();
+        }).start();
     }
 }
