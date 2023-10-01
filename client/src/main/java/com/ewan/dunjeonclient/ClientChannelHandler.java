@@ -6,11 +6,12 @@ import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
+    public class ClientChannelHandler extends SimpleChannelInboundHandler<ServerData> {
 
     private BasicMemoryBank mostRecentBasicMemoryBank = null;
     private Channel serverChannel;
@@ -22,12 +23,26 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         ctx.flush();
     }
 
+//    @Override
+//    @SuppressWarnings("unchecked")
+//    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+//        System.out.println("Client received a message : " + msg.getClass());
+//        try {
+//            ServerData data = (ServerData) msg;
+//        }catch(Exception e){
+//            System.out.println("Something bad happened while casting incoming message: " + e.getMessage());
+//        }
+////        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
+//    }
+
     @Override
-    @SuppressWarnings("unchecked")
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("Client received something");
-        ServerData data = (ServerData) msg;
-        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
+    protected void channelRead0(ChannelHandlerContext ctx, ServerData msg) throws Exception {
+        if(msg == null){
+            System.out.println("Received a null message");
+        }else{
+            System.out.println("Received a " + msg.getClass());
+            System.out.println("With string value :" + String.valueOf(msg));
+        }
     }
 
     public synchronized BasicMemoryBank getMostRecentBasicMemoryBank() {

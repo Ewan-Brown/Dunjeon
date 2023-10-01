@@ -19,7 +19,7 @@ public class GameClient {
         String host = "localhost";
         int port = 1459;
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        Log.TRACE();
+//        Log.TRACE();
 
         try {
             Bootstrap b = new Bootstrap();

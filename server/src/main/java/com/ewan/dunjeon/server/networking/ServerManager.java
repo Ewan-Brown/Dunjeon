@@ -108,13 +108,13 @@ public class ServerManager {
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {
             public void write(Kryo kryo, Output output, CellPosition cellPos) {
                 output.writeLong(cellPos.getFloorID());
-                kryo.writeClassAndObject(output, cellPos.getPosition());
+                kryo.writeObject(output, cellPos.getPosition());
                 output.flush();
             }
 
             public CellPosition read(Kryo kryo, Input input, Class<? extends CellPosition> type) {
                 long floorID = input.readLong();
-                Vector2 vector = (Vector2) kryo.readClassAndObject(input);
+                Vector2 vector = kryo.readObject(input, Vector2.class);
                 return new CellPosition(vector, floorID);
             }
 

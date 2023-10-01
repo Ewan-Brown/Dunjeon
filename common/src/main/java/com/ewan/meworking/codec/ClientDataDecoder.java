@@ -39,7 +39,7 @@ public class ClientDataDecoder extends ReplayingDecoder<ClientData> {
         byte[] buf = new byte[len];
         in.readBytes(buf);
         Input input = new Input(buf);
-        Object object = kryo.readClassAndObject(input);
+        Object object = kryo.readObject(input, ClientData.class);
         out.add(object);
     }
 }

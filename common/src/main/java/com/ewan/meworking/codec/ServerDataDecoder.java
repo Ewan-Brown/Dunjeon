@@ -45,33 +45,33 @@ public class ServerDataDecoder
 //
 //        });
 
-        kryo.register(Vector2.class, new Serializer<Vector2>() {
-            public void write(Kryo kryo, Output output, Vector2 cellPos) {
-                output.writeDouble(cellPos.x);
-                output.writeDouble(cellPos.y);
-            }
-
-            public Vector2 read(Kryo kryo, Input input, Class<? extends Vector2> type) {
-                double x = input.readDouble();
-                double y = input.readDouble();
-                return new Vector2(x, y);
-            }
-
-        });
-        kryo.register(CellPosition.class, new Serializer<CellPosition>() {
-            public void write(Kryo kryo, Output output, CellPosition cellPos) {
-                output.writeLong(cellPos.getFloorID());
-                kryo.writeClassAndObject(output, cellPos.getPosition());
-                output.flush();
-            }
-
-            public CellPosition read(Kryo kryo, Input input, Class<? extends CellPosition> type) {
-                long floorID = input.readLong();
-                Vector2 vector = (Vector2) kryo.readClassAndObject(input);
-                return new CellPosition(vector, floorID);
-            }
-
-        });
+//        kryo.register(Vector2.class, new Serializer<Vector2>() {
+//            public void write(Kryo kryo, Output output, Vector2 cellPos) {
+//                output.writeDouble(cellPos.x);
+//                output.writeDouble(cellPos.y);
+//            }
+//
+//            public Vector2 read(Kryo kryo, Input input, Class<? extends Vector2> type) {
+//                double x = input.readDouble();
+//                double y = input.readDouble();
+//                return new Vector2(x, y);
+//            }
+//
+//        });
+//        kryo.register(CellPosition.class, new Serializer<CellPosition>() {
+//            public void write(Kryo kryo, Output output, CellPosition cellPos) {
+//                output.writeLong(cellPos.getFloorID());
+//                kryo.writeObject(output, cellPos.getPosition());
+//                output.flush();
+//            }
+//
+//            public CellPosition read(Kryo kryo, Input input, Class<? extends CellPosition> type) {
+//                long floorID = input.readLong();
+//                Vector2 vector = kryo.readObject(input, Vector2.class);
+//                return new CellPosition(vector, floorID);
+//            }
+//
+//        });
     }
 
     @Override
@@ -93,7 +93,7 @@ public class ServerDataDecoder
         byte[] buf = new byte[len];
         in.readBytes(buf);
         Input input = new Input(buf);
-        Object object = kryo.readClassAndObject(input);
+        Object object = kryo.readObject(input, ServerData.class);
         out.add(object);
     }
 }

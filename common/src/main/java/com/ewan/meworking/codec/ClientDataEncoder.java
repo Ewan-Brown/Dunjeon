@@ -29,7 +29,7 @@ public class ClientDataEncoder
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         Output output = new Output(outStream, 4096);
 
-        kryo.writeClassAndObject(output, msg);
+        kryo.writeObject(output, msg);
         output.flush();
 
         byte[] outArray = outStream.toByteArray();

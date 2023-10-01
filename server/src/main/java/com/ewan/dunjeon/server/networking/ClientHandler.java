@@ -26,10 +26,11 @@ public class ClientHandler {
 
     public void sendDataToClient(){
         System.out.println("ClientHandler.sendDataToClient");
+        System.out.println("creatureController.getMemoryBank = " + creatureController.getMemoryBank());
         if(creatureController.getMemoryBank() != null) {
             getClientChannel().writeAndFlush(new ServerData(creatureController.getMemoryBank()));
         }else{
-            System.err.println("Attempted to send data to client but the atached memory bank is null!");
+            System.err.println("Attempted to send data to client but the attached memory bank is null!");
         }
     }
 
