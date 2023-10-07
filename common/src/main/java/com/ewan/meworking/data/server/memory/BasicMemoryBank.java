@@ -1,13 +1,11 @@
 package com.ewan.meworking.data.server.memory;
 
 import com.esotericsoftware.kryo.kryo5.serializers.FieldSerializer;
-import com.ewan.dunjeon.server.world.CellPosition;
+import com.ewan.meworking.data.server.CellPosition;
 //import com.ewan.dunjeon.server.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.data.Datas;
-import com.ewan.meworking.data.server.memory.creaturedata.CreatureKnowledge;
-import com.ewan.meworking.data.server.data.CellKnowledge;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -16,22 +14,28 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+@Getter
 public class BasicMemoryBank extends DataSink {
 
-    private final ConcurrentHashMap<Long, CreatureKnowledge> creatureKnowledgeHashMap = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<Long, FloorKnowledge> floorKnowledgeHashMap = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<CellPosition, CellKnowledge> cellKnowledgeHashMap = new ConcurrentHashMap<>();
-    @Getter
-    private long ownerUUID;
+    private final ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.EntityData>> creatureKnowledgeHashMap;
+    private final ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.FloorData>> floorKnowledgeHashMap;
+    private final ConcurrentHashMap<CellPosition, KnowledgePackage<CellPosition, Datas.CellData>> cellKnowledgeHashMap;
+    private final long ownerUUID;
 
-    //For networking
-    public BasicMemoryBank(){}
-    public void setOwnerUUID(Long uuid){
-        this.ownerUUID = uuid;
+    public BasicMemoryBank(long ownerUUID, ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.EntityData>> creatureKnowledgeHashMap,
+                           ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.FloorData>> floorKnowledgeHashMap,
+                           ConcurrentHashMap<CellPosition, KnowledgePackage<CellPosition, Datas.CellData>> cellKnowledgeHashMap){
+        this.ownerUUID = ownerUUID;
+        this.creatureKnowledgeHashMap = creatureKnowledgeHashMap;
+        this.floorKnowledgeHashMap = floorKnowledgeHashMap;
+        this.cellKnowledgeHashMap = cellKnowledgeHashMap;
+        knowledgeDataPairings.add(new Pairing<>(creatureKnowledgeHashMap, Datas.EntityData.class, KnowledgePackage::new)); //TODO Duplicate code here...
+        knowledgeDataPairings.add(new Pairing<>(floorKnowledgeHashMap, Datas.FloorData.class, KnowledgePackage::new));
+        knowledgeDataPairings.add(new Pairing<>(cellKnowledgeHashMap, Datas.CellData.class, KnowledgePackage::new));
     }
 
     public BasicMemoryBank(long uuid){
-        this.ownerUUID = uuid;
+        this(uuid, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
     }
 
     private record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
@@ -39,12 +43,6 @@ public class BasicMemoryBank extends DataSink {
 
     @FieldSerializer.Optional("")
     final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings = new ArrayList<>();
-
-    {
-        knowledgeDataPairings.add(new Pairing<>(creatureKnowledgeHashMap, Datas.EntityData.class, CreatureKnowledge::new));
-        knowledgeDataPairings.add(new Pairing<>(floorKnowledgeHashMap, Datas.FloorData.class, FloorKnowledge::new));
-        knowledgeDataPairings.add(new Pairing<>(cellKnowledgeHashMap, Datas.CellData.class, CellKnowledge::new));
-    }
 
     //Unwrap data to figure out its context, and place it in the appropriate knowledge object
     @SuppressWarnings("unchecked")

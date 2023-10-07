@@ -26,7 +26,7 @@ public class StartServer {
 
         System.out.println("Starting server code");
         generateWorld();
-        new Thread(() -> ServerManager.runServer()).start();
+        new Thread(ServerManager::runServer).start();
 
         new Thread(() -> {
             while (true) {
@@ -35,8 +35,7 @@ public class StartServer {
 
                     try {
                         PrintWriter outFile = new PrintWriter(new FileWriter("data_" + entityCount+"entities" + ".csv"));
-                        PrintWriter finalOutFile = outFile;
-                        all_durations.forEach(i-> finalOutFile.print(i + ", "));
+                        all_durations.forEach(i-> outFile.print(i + ", "));
                         outFile.close();
                     } catch (IOException e) {
                         throw new RuntimeException(e);

@@ -3,6 +3,7 @@ package com.ewan.dunjeonclient;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.minlog.Log;
 import com.ewan.meworking.codec.ClientDataEncoder;
+import com.ewan.meworking.codec.KryoPreparator;
 import com.ewan.meworking.codec.ServerDataDecoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -19,9 +20,9 @@ public class GameClient {
         String host = "localhost";
         int port = 1459;
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-//        Log.TRACE();
 
         try {
+            Kryo kryo = KryoPreparator.getAKryo();
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);
             b.channel(NioSocketChannel.class);
@@ -29,8 +30,7 @@ public class GameClient {
 
                 @Override
                 public void initChannel(SocketChannel ch) {
-                    ch.pipeline().addLast(new ClientDataEncoder(new Kryo()),
-                            new ServerDataDecoder(new Kryo()), clientChannelHandler);
+                    ch.pipeline().addLast(new ServerDataDecoder(kryo), clientChannelHandler);
                 }
             });
             b.option(ChannelOption.SO_KEEPALIVE, true);

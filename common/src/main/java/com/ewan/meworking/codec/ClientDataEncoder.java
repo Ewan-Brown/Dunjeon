@@ -18,22 +18,20 @@ public class ClientDataEncoder
 
     public ClientDataEncoder(Kryo kryo) {
         this.kryo = kryo;
-        kryo.setRegistrationRequired(false); //TODO This is easier but performance hit at runtime!
-        kryo.setReferences(true);
     }
 
     @Override
     protected void encode(ChannelHandlerContext ctx,
                           ClientData msg, ByteBuf out) {
 
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        Output output = new Output(outStream, 4096);
-
-        kryo.writeObject(output, msg);
-        output.flush();
-
-        byte[] outArray = outStream.toByteArray();
-        out.writeShort(outArray.length);
-        out.writeBytes(outArray);
+//        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+//        Output output = new Output(outStream, 4096);
+//
+//        kryo.writeObject(output, msg);
+//        output.flush();
+//
+//        byte[] outArray = outStream.toByteArray();
+//        out.writeShort(outArray.length);
+//        out.writeBytes(outArray);
     }
 }

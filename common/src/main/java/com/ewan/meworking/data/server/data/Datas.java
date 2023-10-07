@@ -1,10 +1,8 @@
 package com.ewan.meworking.data.server.data;
 
 import com.ewan.meworking.data.server.RenderableElement;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
@@ -26,7 +24,6 @@ public class Datas {
 
     @Getter
     @AllArgsConstructor
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CellEnterableData extends CellData {
 
         EnterableStatus enterableStatus;
@@ -63,7 +60,6 @@ public class Datas {
 
     @Getter
     @AllArgsConstructor
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EntityVisualData extends EntityData {
 
         private List<RenderableElement> renderableElementList;
@@ -72,7 +68,6 @@ public class Datas {
 
     @Getter
     @AllArgsConstructor
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EntityPositionalData extends EntityData {
 
         private Vector2 position;
@@ -81,7 +76,6 @@ public class Datas {
     }
 
     @AllArgsConstructor
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
     public static class EntityKineticData extends EntityData {
 

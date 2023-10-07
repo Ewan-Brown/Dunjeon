@@ -11,7 +11,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-    public class ClientChannelHandler extends SimpleChannelInboundHandler<ServerData> {
+    public class ClientChannelHandler extends ChannelInboundHandlerAdapter{
 
     private BasicMemoryBank mostRecentBasicMemoryBank = null;
     private Channel serverChannel;
@@ -23,27 +23,27 @@ import java.util.List;
         ctx.flush();
     }
 
-//    @Override
-//    @SuppressWarnings("unchecked")
-//    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-//        System.out.println("Client received a message : " + msg.getClass());
-//        try {
-//            ServerData data = (ServerData) msg;
-//        }catch(Exception e){
-//            System.out.println("Something bad happened while casting incoming message: " + e.getMessage());
-//        }
-////        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
-//    }
-
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ServerData msg) throws Exception {
-        if(msg == null){
-            System.out.println("Received a null message");
-        }else{
-            System.out.println("Received a " + msg.getClass());
-            System.out.println("With string value :" + String.valueOf(msg));
+    @SuppressWarnings("unchecked")
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        System.out.println("Client received a message : " + msg.getClass());
+        try {
+//            ServerData data = (ServerData) msg;
+        }catch(Exception e){
+            System.out.println("Something bad happened while casting incoming message: " + e.getMessage());
         }
+//        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
     }
+
+//    @Override
+//    protected void channelRead0(ChannelHandlerContext ctx, ServerData msg) throws Exception {
+//        if(msg == null){
+//            System.out.println("Received a null message");
+//        }else{
+//            System.out.println("Received a " + msg.getClass());
+//            System.out.println("With string value :" + String.valueOf(msg));
+//        }
+//    }
 
     public synchronized BasicMemoryBank getMostRecentBasicMemoryBank() {
         return mostRecentBasicMemoryBank;
@@ -53,5 +53,16 @@ import java.util.List;
         if(this.mostRecentBasicMemoryBank == null) {
             this.mostRecentBasicMemoryBank = m;
         }
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) {
+        ctx.flush();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
     }
 }

@@ -24,26 +24,19 @@
  */
 package com.ewan.dunjeonclient;
 
-import com.ewan.dunjeon.server.world.CellPosition;
+import com.ewan.meworking.data.server.CellPosition;
 import com.ewan.meworking.data.server.data.Datas;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank.MultiQueryAccessor;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.Getter;
-import org.dyn4j.dynamics.Body;
-import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Vector2;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UsingJogl implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;

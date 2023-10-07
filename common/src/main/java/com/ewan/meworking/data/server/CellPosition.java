@@ -1,4 +1,4 @@
-package com.ewan.dunjeon.server.world;
+package com.ewan.meworking.data.server;
 
 import lombok.Getter;
 import org.dyn4j.geometry.Vector2;

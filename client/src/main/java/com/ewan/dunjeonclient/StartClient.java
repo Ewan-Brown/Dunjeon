@@ -1,7 +1,7 @@
 package com.ewan.dunjeonclient;
 
 import com.esotericsoftware.kryo.kryo5.Kryo;
-import com.esotericsoftware.minlog.Log;
+import com.esotericsoftware.kryo.kryo5.minlog.Log;
 
 public class StartClient
 {
