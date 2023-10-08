@@ -20,18 +20,17 @@ public class ServerDataEncoder
 
     @Override
     protected void encode(ChannelHandlerContext ctx,
-                          ServerData msg, ByteBuf out) {
+                          ServerData msg, ByteBuf out) throws Exception{
 
         System.out.println("Encoding a thing!");
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         Output output = new Output(outStream, 4096);
 
-//        kryo.writeObject(output, msg);
-//        output.writeInt(321);
-
-        byte[] outArray = outStream.toByteArray();
-        out.writeShort(outArray.length);
-        out.writeBytes(outArray);
+        kryo.writeObject(output, msg);
         output.flush();
+        byte[] outArray = outStream.toByteArray();
+        System.out.println("Encoded array len: " + outArray.length);
+        out.writeInt(outArray.length);
+        out.writeBytes(outArray);
     }
 }

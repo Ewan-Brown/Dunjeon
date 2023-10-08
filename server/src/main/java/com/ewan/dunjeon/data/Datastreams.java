@@ -27,7 +27,8 @@ public class Datastreams {
         //Worry about performance LATER we can think about caching or something
         @Override
         public void update(Dunjeon d) {
-            for (Sensor<SightStreamParameters> sensor : getSubscribers()) {
+            for (int i = 0; i < getSubscribers().size(); i++) {
+                Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
 
 
                 //Get necessary parameters from sensor

@@ -8,10 +8,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.Getter;
+import org.apache.maven.settings.Server;
 
 import java.util.ArrayList;
 import java.util.List;
-    public class ClientChannelHandler extends ChannelInboundHandlerAdapter{
+    public class ClientChannelHandler extends SimpleChannelInboundHandler<ServerData> {
 
     private BasicMemoryBank mostRecentBasicMemoryBank = null;
     private Channel serverChannel;
@@ -25,8 +26,9 @@ import java.util.List;
 
     @Override
     @SuppressWarnings("unchecked")
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("Client received a message : " + msg.getClass());
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("ClientChannelHandler.channelRead");
+        System.out.println("msg.getClass() = " + msg.getClass());
         try {
 //            ServerData data = (ServerData) msg;
         }catch(Exception e){
@@ -35,15 +37,17 @@ import java.util.List;
 //        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
     }
 
-//    @Override
-//    protected void channelRead0(ChannelHandlerContext ctx, ServerData msg) throws Exception {
-//        if(msg == null){
-//            System.out.println("Received a null message");
-//        }else{
-//            System.out.println("Received a " + msg.getClass());
-//            System.out.println("With string value :" + String.valueOf(msg));
-//        }
-//    }
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, ServerData msg) throws Exception {
+        System.out.println("ClientChannelHandler.channelRead0");
+        System.out.println("msg.getClass() = " + msg.getClass());
+        if(msg == null){
+            System.out.println("Received a null message");
+        }else{
+            System.out.println("Received a " + msg.getClass());
+            System.out.println("With string value :" + String.valueOf(msg));
+        }
+    }
 
     public synchronized BasicMemoryBank getMostRecentBasicMemoryBank() {
         return mostRecentBasicMemoryBank;

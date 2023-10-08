@@ -17,7 +17,7 @@ public class TestSubjectAIController extends CreatureController<TestSubject, Tes
     @Override
     public void update() {
 
-        BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> selfQuery = memoryBank.querySinglePackage(controls.getUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
+        BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> selfQuery = getBasicMemoryBank().querySinglePackage(controls.getUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
         if(!selfQuery.status()){
             return;
         }
@@ -25,7 +25,7 @@ public class TestSubjectAIController extends CreatureController<TestSubject, Tes
 
         BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> accessor = null;
         if(target != null){
-            BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> querySinglePackage = memoryBank.querySinglePackage(target, Datas.EntityData.class, CLASSES);
+            BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> querySinglePackage = getBasicMemoryBank().querySinglePackage(target, Datas.EntityData.class, CLASSES);
             if(!querySinglePackage.status()){
                 target = null;
             }else{
@@ -33,7 +33,7 @@ public class TestSubjectAIController extends CreatureController<TestSubject, Tes
             }
         }
         if(target == null) {
-            BasicMemoryBank.MultiQueryAccessor<Long, Datas.EntityData> a = memoryBank.queryMultiPackage(Datas.EntityData.class, CLASSES);
+            BasicMemoryBank.MultiQueryAccessor<Long, Datas.EntityData> a = getBasicMemoryBank().queryMultiPackage(Datas.EntityData.class, CLASSES);
             accessor = a.getIndividualAccessors().values().stream().findAny().get();
             target = accessor.getIdentifier();
         }

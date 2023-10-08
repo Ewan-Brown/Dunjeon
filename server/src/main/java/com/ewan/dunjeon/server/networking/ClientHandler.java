@@ -3,6 +3,7 @@ package com.ewan.dunjeon.server.networking;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.meworking.data.ServerData;
 import com.ewan.meworking.data.client.ClientAction;
+import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import io.netty.channel.Channel;
 import lombok.Getter;
 
@@ -24,14 +25,16 @@ public class ClientHandler {
         creatureController.getUnprocessedClientActions().addAll(actions);
     }
 
+    boolean sent = false;
     public void sendDataToClient(){
-        if(creatureController.getMemoryBank() != null) {
-            getClientChannel().writeAndFlush(new ServerData(creatureController.getMemoryBank()));
-//            System.out.println("Sending something forward through clientHandler");
-//            getClientChannel().writeAndFlush(new Object());
+        if(sent) return;
+        sent = true;
+        if(creatureController.getBasicMemoryBank() != null) {
+            getClientChannel().writeAndFlush(new ServerData(creatureController.getBasicMemoryBank()));
         }else{
             System.err.println("Attempted to send data to client but the attached memory bank is null!");
         }
+
     }
 
     public void clearControllerActions(){

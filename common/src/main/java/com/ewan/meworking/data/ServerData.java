@@ -11,9 +11,5 @@ public final class ServerData {
     public ServerData(BasicMemoryBank basicMemoryBank) {
         this.basicMemoryBank = basicMemoryBank;
     }
-    public ServerData(){
-        System.out.println("No Arg ServerData constructor called! DELETE ME!");
-        this.basicMemoryBank = new BasicMemoryBank(0);}
-
 
 }
