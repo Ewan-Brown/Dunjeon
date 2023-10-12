@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 public class KnowledgeFragment<D extends Data> {
 
-    @FieldSerializer.Optional("")
     final Source source;
     private final double timestamp;
     final D info;
@@ -21,9 +20,4 @@ public class KnowledgeFragment<D extends Data> {
         this.timestamp = timestamp;
     }
 
-    public KnowledgeFragment() {
-        source = null;
-        timestamp = 0;
-        info = null;
-    }
 }

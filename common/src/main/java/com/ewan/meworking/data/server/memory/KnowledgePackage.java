@@ -9,17 +9,19 @@ import java.util.HashMap;
 public class KnowledgePackage<I, D extends Data> {
     @Getter
     private final I identifier;
+
+    final HashMap<Class<? extends D>, KnowledgeFragment<? extends D>> dataMap;
+
     public KnowledgePackage(I identifier) {
         this(identifier, new HashMap<>());
     }
 
-    //Used for networking. Needs to be implented in each subclass as constructors are not inherited
+    //Used for networking. 
     public KnowledgePackage(I identifier, HashMap<Class<? extends D>, KnowledgeFragment<? extends D>> dataMap){
         this.identifier = identifier;
         this.dataMap = dataMap;
     }
 
-    final HashMap<Class<? extends D>, KnowledgeFragment<? extends D>> dataMap;
 
     @SuppressWarnings("unchecked")
     public <T extends KnowledgeFragment<D>> void register(T object){

@@ -10,14 +10,8 @@
           </option>
           <option name="goals">
             <list>
-              <option value="-q" />
               <option value="clean" />
               <option value="install" />
-              <option value="exec:java" />
-              <option value="-pl" />
-              <option value="server" />
-              <option value="-e" />
-              <option value="-Dexec.mainClass=com.ewan.dunjeonserver.StartServer" />
             </list>
           </option>
           <option name="pomFileName" />

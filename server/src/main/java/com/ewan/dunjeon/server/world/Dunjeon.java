@@ -42,7 +42,8 @@ public class Dunjeon{
         this.timeElapsed += t;
         this.ticksElapsed += 1;
 
-        for (Floor floor : floors) {
+        for (int i = 0; i < floors.size(); i++) {
+            Floor floor = floors.get(i);
             floor.updatePhysics(t);
             floor.updateCreatureControllers(t);
             floor.updateEntities(t);

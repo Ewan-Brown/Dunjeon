@@ -130,7 +130,6 @@ public class UsingJogl implements GLEventListener {
 	 */
 	protected void render(GL2 gl) {
 
-//		System.out.println("Triggered a render!");
 		gl.glPushMatrix();
 		gl.glColor3d(1,0,0);
 
@@ -160,12 +159,10 @@ public class UsingJogl implements GLEventListener {
 //		Vector2 cameraDiff =  lastCameraPos.difference(this.clientChannelHandler.getMostRecentBasicMemoryBank().get);
 //		lastCameraPos.subtract(cameraDiff.multiply(0.003));
 
-		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
-		System.out.println(1);
-		System.out.println(2);
+//		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 		MultiQueryAccessor<CellPosition, Datas.CellData> cellQueryResults = basicMemoryBank.queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
 
-		System.out.println(3);
+		System.out.println("Cell Query results size = " + cellQueryResults.getIndividualAccessors().size());
 		for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
 			var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
 			CellPosition position = singleQueryAccessor.getIdentifier();

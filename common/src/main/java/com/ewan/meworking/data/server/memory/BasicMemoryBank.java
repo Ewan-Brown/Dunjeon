@@ -41,7 +41,6 @@ public class BasicMemoryBank extends DataSink {
     private record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
             (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass, Function<I,K> knowledgeProducer){}
 
-    @FieldSerializer.Optional("")
     final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings = new ArrayList<>();
 
     //Unwrap data to figure out its context, and place it in the appropriate knowledge object
@@ -92,10 +91,7 @@ public class BasicMemoryBank extends DataSink {
 
     @SuppressWarnings("unchecked")
     public <I, D extends Data, K extends KnowledgePackage<I,D>> MultiQueryAccessor<I, D> queryMultiPackage(Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
-        System.out.println("ENTERED QUERYMULTIPACKAGE");
-        System.out.println(1);
         Pairing<I, D, K> pairing = (Pairing<I, D, K>) knowledgeDataPairings.stream().filter(p -> p.relatedBaseDataClass == baseClazz).findFirst().orElseThrow();
-        System.out.println(2);
         ConcurrentHashMap<I, K> hashMap = pairing.knowledgeMap();
         HashMap<I, SingleQueryAccessor<I, D>> individualAccessors = new HashMap<>();
         packages:

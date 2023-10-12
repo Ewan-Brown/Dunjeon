@@ -12,7 +12,7 @@ import org.apache.maven.settings.Server;
 
 import java.util.ArrayList;
 import java.util.List;
-    public class ClientChannelHandler extends SimpleChannelInboundHandler<ServerData> {
+    public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private BasicMemoryBank mostRecentBasicMemoryBank = null;
     private Channel serverChannel;
@@ -30,24 +30,14 @@ import java.util.List;
         System.out.println("ClientChannelHandler.channelRead");
         System.out.println("msg.getClass() = " + msg.getClass());
         try {
-//            ServerData data = (ServerData) msg;
+            ServerData data = (ServerData) msg;
+            setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
         }catch(Exception e){
             System.out.println("Something bad happened while casting incoming message: " + e.getMessage());
         }
 //        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
     }
 
-    @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ServerData msg) throws Exception {
-        System.out.println("ClientChannelHandler.channelRead0");
-        System.out.println("msg.getClass() = " + msg.getClass());
-        if(msg == null){
-            System.out.println("Received a null message");
-        }else{
-            System.out.println("Received a " + msg.getClass());
-            System.out.println("With string value :" + String.valueOf(msg));
-        }
-    }
 
     public synchronized BasicMemoryBank getMostRecentBasicMemoryBank() {
         return mostRecentBasicMemoryBank;
