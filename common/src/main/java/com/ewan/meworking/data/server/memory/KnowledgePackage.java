@@ -5,7 +5,6 @@ import lombok.Getter;
 
 import java.util.HashMap;
 
-//TODO look at removing concrete implementations of this class - it makes networking hard ;( and each implementation is pretty empty.
 public class KnowledgePackage<I, D extends Data> {
     @Getter
     private final I identifier;

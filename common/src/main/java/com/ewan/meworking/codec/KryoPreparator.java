@@ -1,27 +1,23 @@
 package com.ewan.meworking.codec;
 
 import com.esotericsoftware.kryo.kryo5.Kryo;
-import com.esotericsoftware.kryo.kryo5.Registration;
 import com.esotericsoftware.kryo.kryo5.Serializer;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
-import com.esotericsoftware.kryo.kryo5.minlog.Log;
-import com.esotericsoftware.kryo.kryo5.serializers.DefaultArraySerializers;
 import com.ewan.meworking.data.ServerData;
 import com.ewan.meworking.data.server.CellPosition;
 import com.ewan.meworking.data.server.data.Data;
-import com.ewan.meworking.data.server.data.Datas;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import com.ewan.meworking.data.server.memory.KnowledgeFragment;
 import com.ewan.meworking.data.server.memory.KnowledgePackage;
 import org.dyn4j.geometry.Vector2;
 
-import java.io.Serial;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class KryoPreparator {
@@ -37,13 +33,10 @@ public class KryoPreparator {
         @Override
         public void write(Kryo kryo, Output output, Data object) {
             kryo.writeObject(output, object.getClass());
-            System.out.println("Writing: " + object.getClass());
             Field[] fields = object.getClass().getDeclaredFields();
-            System.out.println("WRITING FIELDS!");
             for (Field field : fields) {
                 try {
                     field.setAccessible(true);
-                    System.out.println(field.get(object));
                     kryo.writeClassAndObject(output, field.get(object));
                 }catch(IllegalAccessException e){
                     e.printStackTrace();
@@ -95,7 +88,6 @@ public class KryoPreparator {
 
         @Override
         public void write(Kryo kryo, Output output, KnowledgePackage<?, ?> object) {
-            System.out.println("Writing: " + object.getClass());
             kryo.writeClassAndObject(output, object.getIdentifier());
 
             output.writeInt(object.getDataMap().size());
@@ -106,7 +98,6 @@ public class KryoPreparator {
 
         @Override
         public KnowledgePackage<?, ?> read(Kryo kryo, Input input, Class<? extends KnowledgePackage<?, ?>> type) {
-//            Class<?> identiferClass = kryo.readObject(input, Class.class);
             Object identifier = kryo.readClassAndObject(input);
 
             int mapSize = input.readInt();
@@ -127,7 +118,6 @@ public class KryoPreparator {
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {
             @Override
             public void write(Kryo kryo, Output output, CellPosition object) {
-                System.out.println("Writing: " + object.getClass());
                 output.writeLong(object.getFloorID());
                 kryo.writeObject(output, object.getPosition());
             }
@@ -142,7 +132,6 @@ public class KryoPreparator {
         });
         kryo.register(Vector2.class, new Serializer<Vector2>() {
             public void write(Kryo kryo, Output output, Vector2 object) {
-                System.out.println("Writing: " + object.getClass());
                 output.writeDouble(object.x);
                 output.writeDouble(object.y);
             }
@@ -153,65 +142,54 @@ public class KryoPreparator {
                 return new Vector2(x, y);
             }
         });
-//        kryo.addDefaultSerializer(KnowledgePackage.class, knowledgeFragmentSerializer);
         kryo.register(BasicMemoryBank.class, new Serializer<BasicMemoryBank>() {
             @Override
             public void write(Kryo kryo, Output output, BasicMemoryBank object) {
-                System.out.println("Writing: " + object.getClass());
                 output.writeLong(object.getOwnerUUID());
 
-                output.writeInt(object.getFloorKnowledgeHashMap().size());
-                output.writeInt(object.getCreatureKnowledgeHashMap().size());
-                output.writeInt(object.getCellKnowledgeHashMap().size());
+                output.writeInt(object.getKnowledgeDataPairings().size());
 
-                for (KnowledgePackage<Long, Datas.FloorData> value : object.getFloorKnowledgeHashMap().values()) {
-                    kryo.writeObject(output, value, knowledgePackageSerializer);
-
+                for (BasicMemoryBank.Pairing<?,? extends Data,? extends KnowledgePackage<?,?>> knowledgeDataPairing : object.getKnowledgeDataPairings()) {
+                    output.writeInt(knowledgeDataPairing.knowledgeMap().size());
+                    kryo.writeObject(output, knowledgeDataPairing.relatedBaseDataClass());
+                    for (KnowledgePackage<?, ? extends Data> value : knowledgeDataPairing.knowledgeMap().values()) {
+                        kryo.writeObject(output, value, knowledgePackageSerializer);
+                    }
                 }
-                for (KnowledgePackage<Long, Datas.EntityData> value : object.getCreatureKnowledgeHashMap().values()) {
-                    kryo.writeObject(output, value, knowledgePackageSerializer);
-                }
-                for (KnowledgePackage<CellPosition, Datas.CellData> value : object.getCellKnowledgeHashMap().values()) {
-                    kryo.writeObject(output, value, knowledgePackageSerializer);
-                }
-
             }
+
+            public <I, D extends Data> void readPairingIntoMap(Kryo kryo, Input input, List<BasicMemoryBank.Pairing<?, ?, ?>> pairings){
+                ConcurrentHashMap<I, KnowledgePackage<I, D>> currentKnowledgePackageMap = new ConcurrentHashMap<>();
+                int knowledgePackages = input.readInt();
+                Class<D> baseDataClazz = kryo.readObject(input, Class.class);
+
+                for (int j = 0; j < knowledgePackages; j++) {
+                    KnowledgePackage<I, D> kPackage = kryo.readObject(input, KnowledgePackage.class, knowledgePackageSerializer);
+                    currentKnowledgePackageMap.put(kPackage.getIdentifier(), kPackage);
+                }
+                BasicMemoryBank.Pairing<I, D, KnowledgePackage<I, D>> p = new BasicMemoryBank.Pairing<>(currentKnowledgePackageMap, baseDataClazz);
+                pairings.add(p);
+            }
+
             @Override
             @SuppressWarnings("unchecked")
             public BasicMemoryBank read(Kryo kryo, Input input, Class type) {
                 long uuid = input.readLong();
+                int knowledgeDataPairings = input.readInt();
+
+                List<BasicMemoryBank.Pairing<?, ?, ?>> pairings = new ArrayList<>();
 
 
-                int floorMapSize = input.readInt();
-                int creatureMapSize = input.readInt();
-                int cellMapSize = input.readInt();
-
-                ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.FloorData>> floorKnowledgeHashMap = new ConcurrentHashMap<>(floorMapSize);
-                ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.EntityData>> creatureKnowledgeHashMap = new ConcurrentHashMap<>(creatureMapSize);
-                ConcurrentHashMap<CellPosition, KnowledgePackage<CellPosition, Datas.CellData>> cellKnowledgeHashMap = new ConcurrentHashMap<>(cellMapSize);
-
-                for (int i = 0; i < floorMapSize; i++) {
-                    KnowledgePackage<Long, Datas.FloorData> kPackage = kryo.readObject(input, KnowledgePackage.class, knowledgePackageSerializer);
-                    floorKnowledgeHashMap.put(kPackage.getIdentifier(), kPackage);
+                for (int i = 0; i < knowledgeDataPairings; i++) {
+                    readPairingIntoMap(kryo, input, pairings);
                 }
 
-                for (int i = 0; i < creatureMapSize; i++) {
-                    KnowledgePackage<Long, Datas.EntityData> kPackage = kryo.readObject(input, KnowledgePackage.class, knowledgePackageSerializer);
-                    creatureKnowledgeHashMap.put(kPackage.getIdentifier(), kPackage);
-                }
-
-                for (int i = 0; i < cellMapSize; i++) {
-                    KnowledgePackage<CellPosition, Datas.CellData> kPackage = kryo.readObject(input, KnowledgePackage.class, knowledgePackageSerializer);
-                    cellKnowledgeHashMap.put(kPackage.getIdentifier(), kPackage);
-                }
-
-                return new BasicMemoryBank(uuid, creatureKnowledgeHashMap, floorKnowledgeHashMap, cellKnowledgeHashMap);
+                return new BasicMemoryBank(uuid, pairings);
             }
         });
         kryo.register(ServerData.class, new Serializer<ServerData>() {
             @Override
             public void write(Kryo kryo, Output output, ServerData object) {
-                System.out.println("Writing: " + object.getClass());
                 kryo.writeObject(output, object.getBasicMemoryBank());
             }
 

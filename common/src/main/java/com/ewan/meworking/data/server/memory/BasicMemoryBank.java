@@ -9,62 +9,58 @@ import com.ewan.meworking.data.server.data.Datas;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Getter
 public class BasicMemoryBank extends DataSink {
 
-    private final ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.EntityData>> creatureKnowledgeHashMap;
-    private final ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.FloorData>> floorKnowledgeHashMap;
-    private final ConcurrentHashMap<CellPosition, KnowledgePackage<CellPosition, Datas.CellData>> cellKnowledgeHashMap;
     private final long ownerUUID;
 
-    public BasicMemoryBank(long ownerUUID, ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.EntityData>> creatureKnowledgeHashMap,
-                           ConcurrentHashMap<Long, KnowledgePackage<Long, Datas.FloorData>> floorKnowledgeHashMap,
-                           ConcurrentHashMap<CellPosition, KnowledgePackage<CellPosition, Datas.CellData>> cellKnowledgeHashMap){
-        this.ownerUUID = ownerUUID;
-        this.creatureKnowledgeHashMap = creatureKnowledgeHashMap;
-        this.floorKnowledgeHashMap = floorKnowledgeHashMap;
-        this.cellKnowledgeHashMap = cellKnowledgeHashMap;
-        knowledgeDataPairings.add(new Pairing<>(creatureKnowledgeHashMap, Datas.EntityData.class, KnowledgePackage::new)); //TODO Duplicate code here...
-        knowledgeDataPairings.add(new Pairing<>(floorKnowledgeHashMap, Datas.FloorData.class, KnowledgePackage::new));
-        knowledgeDataPairings.add(new Pairing<>(cellKnowledgeHashMap, Datas.CellData.class, KnowledgePackage::new));
-    }
-
     public BasicMemoryBank(long uuid){
-        this(uuid, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
+        this(uuid, new ArrayList<>());
     }
 
-    private record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
-            (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass, Function<I,K> knowledgeProducer){}
+    public BasicMemoryBank(long uuid, List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> pairings){
+        this.ownerUUID = uuid;
+        this.knowledgeDataPairings = pairings;
+    }
 
-    final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings = new ArrayList<>();
+    public record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
+            (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass){}
+
+    //Each pairing in this list is a for specific 'category' of knowledge - defined by the base Data class. For example EntityData/FloorData/CellData are 3 existing categories.
+    final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings;
 
     //Unwrap data to figure out its context, and place it in the appropriate knowledge object
     @SuppressWarnings("unchecked")
     public <T extends Data, I, P extends KnowledgePackage<I,T>> void processWrappedData(DataWrapper<T, I> wrappedData){
 
-        for (Pairing<?, ?, ?> knowledgeDataPairing : knowledgeDataPairings) {
-            if(wrappedData.getBaseClass() == knowledgeDataPairing.relatedBaseDataClass){
-                ConcurrentHashMap<I, P> hashMap = (ConcurrentHashMap<I, P>) knowledgeDataPairing.knowledgeMap;
-                P relevantPackage = hashMap.get(wrappedData.getIdentifier());
+        Pairing<?, ?, ?> matchingPairing = knowledgeDataPairings.stream()
+                .filter(pairing -> pairing.relatedBaseDataClass() == wrappedData.getBaseClass())
+                .findFirst().orElse(null);
 
-                if(relevantPackage == null){
-                    Function<I, P> knowledgePackageProducer = (Function<I, P>) knowledgeDataPairing.knowledgeProducer;
-                    relevantPackage = knowledgePackageProducer.apply(wrappedData.getIdentifier());
-                    hashMap.put(wrappedData.getIdentifier(), relevantPackage);
-                }
-                for (T datum : wrappedData.getData()) {
-                    KnowledgeFragment<T> fragment = new KnowledgeFragment<>(datum, null, wrappedData.getTimestamp());
-                    relevantPackage.register(fragment);
-                }
-
-                break;
-            }
+        if(matchingPairing == null){
+            matchingPairing = new Pairing<>(new ConcurrentHashMap<>(), wrappedData.getBaseClass());
+            knowledgeDataPairings.add(matchingPairing);
         }
+
+        ConcurrentHashMap<I, P> hashMap = (ConcurrentHashMap<I, P>) matchingPairing.knowledgeMap;
+        P relevantPackage = hashMap.get(wrappedData.getIdentifier());
+
+        if(relevantPackage == null){
+            relevantPackage = (P) new KnowledgePackage<I, T>(wrappedData.getIdentifier());
+            hashMap.put(wrappedData.getIdentifier(), relevantPackage);
+        }
+        for (T datum : wrappedData.getData()) {
+            KnowledgeFragment<T> fragment = new KnowledgeFragment<>(datum, null, wrappedData.getTimestamp());
+            relevantPackage.register(fragment);
+        }
+
     }
 
     //in order to keep access to this tree of data clean and safe accessors are the only way to read data.
