@@ -5,12 +5,13 @@ import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.ewan.meworking.data.ClientData;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.ReplayingDecoder;
 
 import java.nio.charset.Charset;
 import java.util.List;
 
-public class ClientDataDecoder extends ReplayingDecoder<ClientData> {
+public class ClientDataDecoder extends ByteToMessageDecoder {
 
     private final Kryo kryo;
 
@@ -20,7 +21,8 @@ public class ClientDataDecoder extends ReplayingDecoder<ClientData> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx,
-                          ByteBuf in, List<Object> out) throws Exception {
+                          ByteBuf in, List<Object> out){
+        System.out.println("Decoding a client message!");
 
 //        if (in.readableBytes() < 2)
 //            return;

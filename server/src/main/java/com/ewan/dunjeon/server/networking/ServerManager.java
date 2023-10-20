@@ -22,10 +22,9 @@ import java.util.List;
  */
 public class ServerManager {
 
-    private static HashMap<Channel, ClientHandler> clientHandlerHashMap = new HashMap<>();
+    private static final HashMap<Channel, ClientHandler> clientHandlerHashMap = new HashMap<>();
 
     public static void runServer(){
-        System.out.println("ServerManager.runServer");
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -37,13 +36,13 @@ public class ServerManager {
                         @Override
                         public void initChannel(SocketChannel ch) {
                             ch.pipeline().addLast(
+                                    new ClientDataDecoder(kryo),
                                     new ServerDataEncoder(kryo),
                                     new ServerManager.ServerInboundChannelHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            System.out.println("ServerManager.runServer 2");
             ChannelFuture f = b.bind(1459).sync();
             f.channel().closeFuture().sync();
         }catch(InterruptedException e){
@@ -68,8 +67,8 @@ public class ServerManager {
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
             System.out.println("Received some stuff from a client");
-            List<ClientAction> clientActions = (List<ClientAction>) msg; // Or so we hope...
-            clientHandlerHashMap.get(ctx.channel()).passActionsToController(clientActions);
+//            List<ClientAction> clientActions = (List<ClientAction>) msg; // Or so we hope...
+//            clientHandlerHashMap.get(ctx.channel()).passActionsToController(clientActions);
         }
     }
 

@@ -25,14 +25,7 @@ public class ClientHandler {
         creatureController.getUnprocessedClientActions().addAll(actions);
     }
 
-    boolean flaggy = false;
     public void sendDataToClient(){
-        if(flaggy){
-            return;
-        }else{
-            flaggy = true;
-        }
-//        System.out.println("ClientHandler.sendDataToClient");
         if(creatureController.getBasicMemoryBank() != null) {
             getClientChannel().writeAndFlush(new ServerData(creatureController.getBasicMemoryBank()));
         }else{

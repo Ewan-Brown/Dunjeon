@@ -152,7 +152,6 @@ public class UsingJogl implements GLEventListener {
 	final static Vector2 lastCameraPos = new Vector2();
 
 	public void renderAll(GL2 gl, BasicMemoryBank basicMemoryBank){
-		System.out.println("rendering!");
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
 
@@ -162,7 +161,6 @@ public class UsingJogl implements GLEventListener {
 //		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 		MultiQueryAccessor<CellPosition, Datas.CellData> cellQueryResults = basicMemoryBank.queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
 
-		System.out.println("Cell Query results size = " + cellQueryResults.getIndividualAccessors().size());
 		for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
 			var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
 			CellPosition position = singleQueryAccessor.getIdentifier();
