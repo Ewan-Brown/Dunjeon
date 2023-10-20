@@ -3,6 +3,7 @@ package com.ewan.meworking.codec;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.ewan.meworking.data.ClientData;
+import com.ewan.meworking.data.ServerData;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -24,22 +25,19 @@ public class ClientDataDecoder extends ByteToMessageDecoder {
                           ByteBuf in, List<Object> out){
         System.out.println("Decoding a client message!");
 
-//        if (in.readableBytes() < 2)
-//            return;
-//
-//        in.markReaderIndex();
-//
-//        int len = in.readUnsignedShort();
-//
-//        if (in.readableBytes() < len) {
-//            in.resetReaderIndex();
-//            return;
-//        }
-//
-//        byte[] buf = new byte[len];
-//        in.readBytes(buf);
-//        Input input = new Input(buf);
-//        Object object = kryo.readObject(input, ClientData.class);
-//        out.add(object);
+        if (in.readableBytes() < 4)
+            return;
+
+        in.markReaderIndex();
+
+        int completeMessageLength = in.readInt();
+
+        if(in.readableBytes() < completeMessageLength){
+            in.resetReaderIndex();
+        }else{
+            byte[] buf = new byte[completeMessageLength];
+            in.readBytes(buf);
+            out.add(kryo.readObject(new Input(buf), ServerData.class));
+        }
     }
 }

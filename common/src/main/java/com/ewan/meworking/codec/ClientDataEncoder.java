@@ -25,15 +25,14 @@ public class ClientDataEncoder
                           ClientData msg, ByteBuf out) {
         System.out.println("Encoding a client message!");
 
-//        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-//        Output output = new Output(outStream, 4096);
-//
-//        kryo.writeObject(output, msg);
-//        output.flush();
-//
-//        byte[] outArray = outStream.toByteArray();
-//        out.writeShort(outArray.length);
-//        out.writeBytes(outArray);
-        out.writeInt(5);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        Output output = new Output(outStream, 4096);
+
+        kryo.writeObject(output, msg);
+        output.flush();
+
+        byte[] outArray = outStream.toByteArray();
+        out.writeShort(outArray.length);
+        out.writeBytes(outArray);
     }
 }
