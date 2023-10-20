@@ -6,9 +6,8 @@ import com.esotericsoftware.kryo.kryo5.minlog.Log;
 public class StartClient
 {
     public static void main(String[] args) {
-        System.out.println("Starting Client");
         ClientChannelHandler clientChannelHandler = new ClientChannelHandler();
-        new Thread(() -> new GameClient(clientChannelHandler)).start();
+        new Thread(() -> new GameClient(clientChannelHandler, args[0])).start();
         new Thread(() -> {
             new UsingJogl(clientChannelHandler).start();
         }).start();

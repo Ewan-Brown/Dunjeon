@@ -22,8 +22,7 @@ import java.util.List;
 
 public class GameClient {
 
-    public GameClient(ClientChannelHandler clientChannelHandler) {
-        String host = "localhost";
+    public GameClient(ClientChannelHandler clientChannelHandler, String host) {
         int port = 1459;
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
