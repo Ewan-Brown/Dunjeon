@@ -15,7 +15,7 @@ public class TestSubjectAIController extends CreatureController<TestSubject, Tes
     private Long target = null;
     private static final List<Class<? extends Datas.EntityData>> CLASSES = List.of(Datas.EntityPositionalData.class);
     @Override
-    public void update() {
+    public void update(double stepSize) {
 
         BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> selfQuery = getBasicMemoryBank().querySinglePackage(controls.getUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
         if(!selfQuery.status()){

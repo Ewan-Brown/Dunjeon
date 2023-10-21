@@ -66,7 +66,9 @@ public class ServerManager {
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
-            System.out.println("Received some stuff from a client");
+            System.out.println("ServerInboundChannelHandler.channelRead");
+            ClientAction action = (ClientAction) msg;
+            clientHandlerHashMap.get(ctx.channel()).passActionsToController(List.of(action));
 //            List<ClientAction> clientActions = (List<ClientAction>) msg; // Or so we hope...
 //            clientHandlerHashMap.get(ctx.channel()).passActionsToController(clientActions);
         }

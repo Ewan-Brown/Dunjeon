@@ -4,6 +4,7 @@ package com.ewan.dunjeon.server.world.entities.ai;
 import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 import com.ewan.dunjeon.server.world.entities.creatures.CreatureControls;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
+import lombok.Getter;
 
 public abstract class CreatureController<C extends Creature, D extends CreatureControls<C>> {
 
@@ -19,7 +20,8 @@ public abstract class CreatureController<C extends Creature, D extends CreatureC
 
     private C connectedCreature;
 
-    public abstract void update();
+    public abstract void update(double stepSize);
+    @Getter
     protected final D controls;
 
 }

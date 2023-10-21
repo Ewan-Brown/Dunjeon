@@ -4,7 +4,6 @@ import com.ewan.dunjeon.server.world.entities.ai.CreatureController;
 import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 import com.ewan.dunjeon.server.world.entities.creatures.CreatureControls;
 import com.ewan.meworking.data.client.ClientAction;
-import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -21,14 +20,19 @@ public abstract class ClientBasedController<C extends Creature, D extends Creatu
     }
 
     /**
-     * TODO this has to gete cleared or emptied after actions are processed. BUT I have to probably introduce some sort of cache as new actions recevied from client go directly to this list.
-     * IF the list is partway through processing and a new action is entered the outcome is undefined. this should ___NOT___ be up to individual implementations of update()
-     * */
+     * Acts as a buffer for actions that have been received very recently and are to be processed in the next update, and this list erased.
+     */
     @Getter
-    private final List<ClientAction> unprocessedClientActions = new ArrayList<>();
+    private List<ClientAction> actionBuffer = new ArrayList<>();
 
     @Override
-    public void update() {
+    public final void update(double stepSize) {
+        System.out.println("ClientBasedController.update");
+        List<ClientAction> actionsReadyForProcessing = getActionBuffer();
+        actionBuffer = new ArrayList<>();
 
+        updateWithClientActions(actionsReadyForProcessing);
     }
+
+    abstract void updateWithClientActions(List<ClientAction> actions);
 }

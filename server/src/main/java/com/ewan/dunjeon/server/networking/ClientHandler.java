@@ -3,7 +3,6 @@ package com.ewan.dunjeon.server.networking;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.meworking.data.ServerData;
 import com.ewan.meworking.data.client.ClientAction;
-import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import io.netty.channel.Channel;
 import lombok.Getter;
 
@@ -22,7 +21,10 @@ public class ClientHandler {
     private Channel clientChannel;
 
     public void passActionsToController(List<ClientAction> actions){
-        creatureController.getUnprocessedClientActions().addAll(actions);
+        System.out.println("ClientHandler.passActionsToController");
+        synchronized (creatureController.getActionBuffer()) {
+            creatureController.getActionBuffer().addAll(actions);
+        }
     }
 
     public void sendDataToClient(){
@@ -34,7 +36,4 @@ public class ClientHandler {
 
     }
 
-    public void clearControllerActions(){
-        creatureController.getUnprocessedClientActions().clear();
-    }
 }

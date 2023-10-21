@@ -48,8 +48,6 @@ public class GameClient {
             System.out.println("Client Connection to server successful");
             clientChannelHandler.setServerChannel(f.channel());
 
-            System.out.println("Sending a message to server!");
-            f.channel().writeAndFlush(new ClientData(List.of(new MoveEntity(new Vector2(0,0)))));
             f.channel().closeFuture().sync();
             System.out.println("f.isCancelled() = " + f.isCancelled());
             System.out.println("f.isDone() = " + f.isDone());

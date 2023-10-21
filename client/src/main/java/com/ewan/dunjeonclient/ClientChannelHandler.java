@@ -36,8 +36,7 @@ import java.util.List;
         try {
             ServerData data = (ServerData) msg;
             setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
-            System.out.println("Sending a data to server!");
-            ctx.channel().writeAndFlush(new ClientData(List.of(new MoveEntity(new Vector2(0,0)))));
+            ctx.channel().writeAndFlush(new ClientData(List.of(new MoveEntity(new Vector2(1,0)))));
         }catch(Exception e){
             System.out.println("Something bad happened while casting incoming message: " + e.getMessage());
         }
