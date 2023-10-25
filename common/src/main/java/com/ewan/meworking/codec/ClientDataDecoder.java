@@ -3,7 +3,6 @@ package com.ewan.meworking.codec;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.ewan.meworking.data.ClientData;
-import com.ewan.meworking.data.ServerData;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -31,13 +30,14 @@ public class ClientDataDecoder extends ByteToMessageDecoder {
         in.markReaderIndex();
 
         int completeMessageLength = in.readInt();
-
+        System.out.println("completeMessageLength = " + completeMessageLength);
+        System.out.println("in.readableBytes() = " + in.readableBytes());
         if(in.readableBytes() < completeMessageLength){
             in.resetReaderIndex();
         }else{
             byte[] buf = new byte[completeMessageLength];
             in.readBytes(buf);
-            out.add(kryo.readObject(new Input(buf), ServerData.class));
+            out.add(kryo.readObject(new Input(buf), ClientData.class));
         }
     }
 }

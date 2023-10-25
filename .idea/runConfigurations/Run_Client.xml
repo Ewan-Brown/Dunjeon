@@ -5,7 +5,6 @@
       <option name="myRunnerSettings" />
       <option name="myRunnerParameters">
         <MavenRunnerParameters>
-          <option name="cmdOptions" />
           <option name="profiles">
             <set />
           </option>
@@ -18,15 +17,12 @@
               <option value="-pl" />
               <option value="client" />
               <option value="-Dexec.mainClass=com.ewan.dunjeonclient.StartClient" />
-              <option value="-Dexec.args=10.0.0.233" />
+              <option value="-Dexec.args=10.0.0.155" />
             </list>
           </option>
           <option name="pomFileName" />
           <option name="profilesMap">
             <map />
-          </option>
-          <option name="projectsCmdOptionValues">
-            <list />
           </option>
           <option name="resolveToWorkspace" value="false" />
           <option name="workingDirPath" value="$PROJECT_DIR$" />

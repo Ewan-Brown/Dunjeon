@@ -24,7 +24,7 @@ public abstract class Entity extends Body {
     private double cachedRotationAngle = 0;
     private int cachedRotationAngleTicks = 0;
 
-    public double getRotationAngle(){
+    public final double getRotationAngle(){
         if(cachedRotationAngleTicks != Dunjeon.getInstance().getTicksElapsed()){
             cachedRotationAngle = getTransform().getRotationAngle();
             cachedRotationAngleTicks = Dunjeon.getInstance().getTicksElapsed();
@@ -36,8 +36,7 @@ public abstract class Entity extends Body {
      * Update anything realted to the physical aspect of this entity (NOT AI)
      * @param stepSize
      */
-    public void update(double stepSize) {
-    }
+    public abstract void update(double stepSize) ;
 
     public Floor getFloor() {
         return floor;
