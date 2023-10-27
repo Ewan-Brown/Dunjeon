@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class ClientData{
-    final List<ClientAction> someKindOfInformation;
+    final List<ClientAction> actions;
 };

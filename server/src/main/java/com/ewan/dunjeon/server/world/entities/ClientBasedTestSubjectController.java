@@ -15,7 +15,7 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
     void updateWithClientActions(List<ClientAction> actions) {
         System.out.println("ClientBasedTestSubjectController.updateWithClientActions");
         for (ClientAction action : actions) {
-            System.out.println("    Iterating over an action!");
+            System.out.println("Action: " + action.toString());
             if(action instanceof MoveEntity moveEntityAction){
                 getControls().moveInDirection(moveEntityAction.getMoveDir());
             }

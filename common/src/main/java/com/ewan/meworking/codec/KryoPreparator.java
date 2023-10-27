@@ -4,7 +4,9 @@ import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.Serializer;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
+import com.ewan.meworking.data.ClientData;
 import com.ewan.meworking.data.ServerData;
+import com.ewan.meworking.data.client.ClientAction;
 import com.ewan.meworking.data.server.CellPosition;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
@@ -179,7 +181,6 @@ public class KryoPreparator {
 
                 List<BasicMemoryBank.Pairing<?, ?, ?>> pairings = new ArrayList<>();
 
-
                 for (int i = 0; i < knowledgeDataPairings; i++) {
                     readPairingIntoMap(kryo, input, pairings);
                 }
@@ -196,6 +197,19 @@ public class KryoPreparator {
             @Override
             public ServerData read(Kryo kryo, Input input, Class type) {
                 return new ServerData(kryo.readObject(input, BasicMemoryBank.class));
+            }
+        });
+        kryo.register(ClientData.class, new Serializer<ClientData>() {
+            @Override
+            public void write(Kryo kryo, Output output, ClientData object) {
+                for (ClientAction action : object.getActions()) {
+                    kryo.writeObject(output, action);
+                }
+            }
+
+            @Override
+            public ClientData read(Kryo kryo, Input input, Class type) {
+                return null;
             }
         });
         return kryo;
