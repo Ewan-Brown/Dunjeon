@@ -32,7 +32,7 @@ public class ClientDataEncoder
         output.flush();
 
         byte[] outArray = outStream.toByteArray();
-        out.writeShort(outArray.length);
+        out.writeInt(outArray.length);
         out.writeBytes(outArray);
     }
 }
