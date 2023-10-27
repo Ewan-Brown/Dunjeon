@@ -175,9 +175,7 @@ public class UsingJogl implements GLEventListener {
 				Vector2 centerPos = posData.getPosition();
 
 				gl.glTranslated(centerPos.x, centerPos.y, 0);
-				System.out.println("kinData = " + kinData);
 				if(kinData != null){
-					System.out.println("kinData.getRotation() = " + kinData.getRotation());
 					gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
 				}
 

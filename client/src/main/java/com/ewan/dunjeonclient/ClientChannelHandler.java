@@ -33,13 +33,8 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        try {
-            ServerData data = (ServerData) msg;
-            setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
-            ctx.channel().writeAndFlush(new ClientData(List.of(new MoveEntity(new Vector2(1,0)))));
-        }catch(Exception e){
-            System.out.println("Something bad happened while casting incoming message: " + e.getMessage());
-        }
+        ServerData data = (ServerData) msg;
+        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
     }
 
 
