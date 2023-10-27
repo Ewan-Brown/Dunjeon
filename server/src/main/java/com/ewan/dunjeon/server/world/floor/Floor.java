@@ -121,7 +121,6 @@ public class Floor {
     }
 
     public void updateCreatureControllers(double stepSize){
-        System.out.println("Floor.updateCreatureControllers");
         for (CreatureController<?, ?> creatureController : creatureControllers) {
             creatureController.update(stepSize);
         }

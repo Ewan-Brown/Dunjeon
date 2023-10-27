@@ -23,8 +23,7 @@ public class ClientDataDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx,
                           ByteBuf in, List<Object> out){
-        System.out.println("Decoding a client message!");
-
+        System.out.println("ClientDataDecoder.decode");
         if (in.readableBytes() < 4)
             return;
 
@@ -32,12 +31,15 @@ public class ClientDataDecoder extends ByteToMessageDecoder {
 
         int completeMessageLength = in.readInt();
 
+        System.out.println("completeMessageLength = " + completeMessageLength);
+        System.out.println("in.readableBytes() = " + in.readableBytes());
+
         if(in.readableBytes() < completeMessageLength){
             in.resetReaderIndex();
         }else{
             byte[] buf = new byte[completeMessageLength];
             in.readBytes(buf);
-            out.add(kryo.readObject(new Input(buf), ServerData.class));
+            out.add(kryo.readObject(new Input(buf), ClientData.class));
         }
     }
 }

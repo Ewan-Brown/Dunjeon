@@ -27,7 +27,6 @@ public abstract class ClientBasedController<C extends Creature, D extends Creatu
 
     @Override
     public final void update(double stepSize) {
-        System.out.println("ClientBasedController.update");
         List<ClientAction> actionsReadyForProcessing = getActionBuffer();
         actionBuffer = new ArrayList<>();
 
