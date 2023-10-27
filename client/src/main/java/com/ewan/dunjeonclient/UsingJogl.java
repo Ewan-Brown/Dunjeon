@@ -1,27 +1,3 @@
-/*
- * Copyright (c) 2010-2016 William Bittle  http://www.dyn4j.org/
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification, are permitted 
- * provided that the following conditions are met:
- * 
- *   * Redistributions of source code must retain the above copyright notice, this list of conditions 
- *     and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above copyright notice, this list of conditions 
- *     and the following disclaimer in the documentation and/or other materials provided with the 
- *     distribution.
- *   * Neither the name of dyn4j nor the names of its contributors may be used to endorse or 
- *     promote products derived from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND 
- * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR 
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER 
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT 
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 package com.ewan.dunjeonclient;
 
 import com.ewan.meworking.data.server.CellPosition;
@@ -117,12 +93,10 @@ public class UsingJogl implements GLEventListener {
 	}
 
 	@Override
-	public void dispose(GLAutoDrawable glDrawable) {
-	}
+	public void dispose(GLAutoDrawable glDrawable) {}
 
 	@Override
-	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width, int height) {
-	}
+	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width, int height) {}
 
 	/**
 	 * Renders the example.
@@ -133,13 +107,9 @@ public class UsingJogl implements GLEventListener {
 		gl.glPushMatrix();
 		gl.glColor3d(1,0,0);
 
-		// Draw things with true sight
-
 		gl.glScaled(0.06, 0.06, 1.0);
 
-//		System.out.println("grabbing memory object");
 		BasicMemoryBank basicMemoryBank = clientChannelHandler.getMostRecentBasicMemoryBank();
-//		System.out.println("basicMemoryBank = " + basicMemoryBank);
 		if(basicMemoryBank != null){
 			synchronized (basicMemoryBank) {
 				renderAll(gl, basicMemoryBank);
@@ -155,10 +125,17 @@ public class UsingJogl implements GLEventListener {
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
 
-//		Vector2 cameraDiff =  lastCameraPos.difference(this.clientChannelHandler.getMostRecentBasicMemoryBank().get);
-//		lastCameraPos.subtract(cameraDiff.multiply(0.003));
+		BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> hostPos = basicMemoryBank.querySinglePackage(basicMemoryBank.getOwnerUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
 
-//		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
+		if(hostPos.status()){
+			Vector2 hostEntityPosition = hostPos.result().getKnowledge(Datas.EntityPositionalData.class).getInfo().getPosition();
+			Vector2 cameraDiff =  lastCameraPos.difference(hostEntityPosition);
+			lastCameraPos.subtract(cameraDiff.multiply(0.003));
+		}else{
+			System.err.println("The client's entity is unaware of its own position! Aaaaaa");
+		}
+
+		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 		MultiQueryAccessor<CellPosition, Datas.CellData> cellQueryResults = basicMemoryBank.queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
 
 		for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
@@ -185,7 +162,6 @@ public class UsingJogl implements GLEventListener {
 			gl.glPopMatrix();
 		}
 
-
 		MultiQueryAccessor<Long, Datas.EntityData> entityQueryResults = basicMemoryBank.queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
 
 		for (BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
@@ -199,7 +175,9 @@ public class UsingJogl implements GLEventListener {
 				Vector2 centerPos = posData.getPosition();
 
 				gl.glTranslated(centerPos.x, centerPos.y, 0);
+				System.out.println("kinData = " + kinData);
 				if(kinData != null){
+					System.out.println("kinData.getRotation() = " + kinData.getRotation());
 					gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
 				}
 
@@ -214,75 +192,4 @@ public class UsingJogl implements GLEventListener {
 
 		}
 	}
-
-//	static {{
-//		strategyMap.put(TestSubject.class, new RenderStrategy<TestSubject>() {
-//			final Vector2 lastCameraPos = new Vector2();
-//			@Override
-//			public void render(TestSubject creature, GL2 gl) {
-//				final double SIZE = 1;
-//				final double HALF_SIZE = SIZE / 2;
-//
-//				Vector2 cameraDiff =  lastCameraPos.difference(creature.getWorldCenter());
-//				lastCameraPos.subtract(cameraDiff.multiply(0.003));
-//
-//				gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
-//
-//				MultiQueryAccessor<CellPosition, CellData> cellQueryResults = creature.getMemoryBank().queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
-//
-//				for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
-//					var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
-//					CellPosition position = singleQueryAccessor.getIdentifier();
-//					gl.glPushMatrix();
-//
-//					double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableFragment.getTimestamp()) < 5 ? 1 : 0.5;
-//
-//					if (enterableFragment.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
-//						gl.glColor3d(colVal, 0, colVal);
-//					} else {
-//						gl.glColor3d(0, 0, colVal);
-//					}
-//
-//					Vector2 centerPos = new Vector2(position.getPosition());
-//					gl.glTranslated(centerPos.x, centerPos.y, 0);
-//					gl.glBegin(GL2.GL_POLYGON);
-//					gl.glVertex2d(-HALF_SIZE, -HALF_SIZE);
-//					gl.glVertex2d(HALF_SIZE, -HALF_SIZE);
-//					gl.glVertex2d(HALF_SIZE, HALF_SIZE);
-//					gl.glVertex2d(-HALF_SIZE, HALF_SIZE);
-//					gl.glEnd();
-//					gl.glPopMatrix();
-//				}
-//
-//
-//				MultiQueryAccessor<Long, EntityData> entityQueryResults = creature.getMemoryBank().queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
-//
-//				for (SingleQueryAccessor<Long, EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
-//					gl.glPushMatrix();
-//					gl.glColor3d(0, 1, 0);
-//
-//					Datas.EntityPositionalData posData = singleQueryAccessor.getKnowledge(Datas.EntityPositionalData.class).getInfo();
-//					Datas.EntityKineticData kinData = singleQueryAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo();
-//
-//					if (posData != null) {
-//						Vector2 centerPos = posData.getPosition();
-//
-//						gl.glTranslated(centerPos.x, centerPos.y, 0);
-//						if(kinData != null){
-//							gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
-//						}
-//
-//						gl.glBegin(GL2.GL_POLYGON);
-//						gl.glVertex2d(-HALF_SIZE/2, -HALF_SIZE/2);
-//						gl.glVertex2d(HALF_SIZE/2, -HALF_SIZE/2);
-//						gl.glVertex2d(HALF_SIZE/2, HALF_SIZE/2);
-//						gl.glVertex2d(-HALF_SIZE/2, HALF_SIZE/2);
-//						gl.glEnd();
-//					}
-//					gl.glPopMatrix();
-//
-//				}
-//			}
-//		});
-//	}}
 }

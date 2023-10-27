@@ -23,16 +23,12 @@ public class ClientDataDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx,
                           ByteBuf in, List<Object> out){
-        System.out.println("ClientDataDecoder.decode");
         if (in.readableBytes() < 4)
             return;
 
         in.markReaderIndex();
 
         int completeMessageLength = in.readInt();
-
-        System.out.println("completeMessageLength = " + completeMessageLength);
-        System.out.println("in.readableBytes() = " + in.readableBytes());
 
         if(in.readableBytes() < completeMessageLength){
             in.resetReaderIndex();

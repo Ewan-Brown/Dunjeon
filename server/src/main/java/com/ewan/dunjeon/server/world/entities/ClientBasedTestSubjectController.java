@@ -9,6 +9,7 @@ import java.util.List;
 public class ClientBasedTestSubjectController extends ClientBasedController<TestSubject, TestSubject.TestSubjectControls> {
     public ClientBasedTestSubjectController(TestSubject connectedCreature) {
         super(connectedCreature);
+        System.out.println("ClientBasedTestSubjectController.ClientBasedTestSubjectController");
     }
 
     @Override
@@ -17,7 +18,8 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
         for (ClientAction action : actions) {
             System.out.println("Action: " + action.toString());
             if(action instanceof MoveEntity moveEntityAction){
-                getControls().moveInDirection(moveEntityAction.getMoveDir());
+//                getControls().moveInDirection(moveEntityAction.getMoveDir()); TODO CHANGEME
+                getControls().turn(1);
             }
         }
     }

@@ -120,12 +120,12 @@ public class StartServer {
 
         }
 
-        TestSubject testSubject = new TestSubject("Player", true);
-        testSubject.addFixture(new Rectangle(0.5,0.5));
-        testSubject.setMass(new Mass(new Vector2(),1,1));
-        startFloor.addEntityRandomLoc(testSubject);
-
-        startFloor.addCreatureController(new ClientBasedTestSubjectController(testSubject));
+//        TestSubject testSubject = new TestSubject("Player", true);
+//        testSubject.addFixture(new Rectangle(0.5,0.5));
+//        testSubject.setMass(new Mass(new Vector2(),1,1));
+//        startFloor.addEntityRandomLoc(testSubject);
+//
+//        startFloor.addCreatureController(new ClientBasedTestSubjectController(testSubject));
 
         for (int i = 0; i < entityCount; i++) {
             TestSubject npcTestSubject = new TestSubject("NPC");

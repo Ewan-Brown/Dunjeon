@@ -16,7 +16,7 @@ import org.dyn4j.geometry.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
-    public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
+public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private BasicMemoryBank mostRecentBasicMemoryBank = null;
     @Setter
@@ -43,14 +43,12 @@ import java.util.List;
     }
 
 
-    public synchronized BasicMemoryBank getMostRecentBasicMemoryBank() {
+    public BasicMemoryBank getMostRecentBasicMemoryBank() {
         return mostRecentBasicMemoryBank;
     }
 
-    private synchronized void setMostRecentBasicMemoryBank(BasicMemoryBank m){
-        if(this.mostRecentBasicMemoryBank == null) {
-            this.mostRecentBasicMemoryBank = m;
-        }
+    private void setMostRecentBasicMemoryBank(BasicMemoryBank m){
+        this.mostRecentBasicMemoryBank = m;
     }
 
     @Override

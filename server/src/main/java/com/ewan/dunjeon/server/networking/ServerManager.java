@@ -7,6 +7,7 @@ import com.ewan.meworking.codec.ClientDataDecoder;
 import com.ewan.meworking.codec.KryoPreparator;
 import com.ewan.meworking.codec.ServerDataEncoder;
 import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.ewan.meworking.data.ClientData;
 import com.ewan.meworking.data.client.ClientAction;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -67,55 +68,15 @@ public class ServerManager {
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
             System.out.println("ServerInboundChannelHandler.channelRead");
-            ClientAction action = (ClientAction) msg;
-            clientHandlerHashMap.get(ctx.channel()).passActionsToController(List.of(action));
-//            List<ClientAction> clientActions = (List<ClientAction>) msg; // Or so we hope...
-//            clientHandlerHashMap.get(ctx.channel()).passActionsToController(clientActions);
+            ClientData clientData = (ClientData) msg;
+            clientHandlerHashMap.get(ctx.channel()).passActionsToController(clientData.getActions());
         }
     }
 
     public static void sendDataToClients(){
-//        System.out.println("ServerManager.sendDataToClients");
         for (ClientHandler handler : clientHandlerHashMap.values()) {
             handler.sendDataToClient();
         }
 
     }
-
-    //Serializes the player's associated Memory
-//    public static void serializePlayerData(){
-//        Kryo kryo = new Kryo();
-//        Dunjeon dunjeon = Dunjeon.getInstance();
-//        kryo.setRegistrationRequired(false); //TODO This is easier but performance hit at runtime!
-//        kryo.setReferences(true);
-//
-//        kryo.register(Vector2.class, new Serializer<Vector2>() {
-//            public void write(Kryo kryo, Output output, Vector2 cellPos) {
-//                output.writeDouble(cellPos.x);
-//                output.writeDouble(cellPos.y);
-//            }
-//
-//            public Vector2 read(Kryo kryo, Input input, Class<? extends Vector2> type) {
-//                double x = input.readDouble();
-//                double y = input.readDouble();
-//                return new Vector2(x, y);
-//            }
-//
-//        });
-//        kryo.register(CellPosition.class, new Serializer<CellPosition>() {
-//            public void write(Kryo kryo, Output output, CellPosition cellPos) {
-//                output.writeLong(cellPos.getFloorID());
-//                kryo.writeObject(output, cellPos.getPosition());
-//                output.flush();
-//            }
-//
-//            public CellPosition read(Kryo kryo, Input input, Class<? extends CellPosition> type) {
-//                long floorID = input.readLong();
-//                Vector2 vector = kryo.readObject(input, Vector2.class);
-//                return new CellPosition(vector, floorID);
-//            }
-//
-//        });
-//
-//    }
 }

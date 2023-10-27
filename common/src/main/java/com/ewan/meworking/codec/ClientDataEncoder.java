@@ -23,7 +23,6 @@ public class ClientDataEncoder
     @Override
     protected void encode(ChannelHandlerContext ctx,
                           ClientData msg, ByteBuf out) {
-        System.out.println("Encoding a client message!");
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         Output output = new Output(outStream, 4096);

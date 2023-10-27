@@ -14,6 +14,7 @@ import com.ewan.meworking.data.server.memory.KnowledgeFragment;
 import com.ewan.meworking.data.server.memory.KnowledgePackage;
 import org.dyn4j.geometry.Vector2;
 
+import java.io.Serial;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -27,7 +28,7 @@ public class KryoPreparator {
     static DataSerializer dataSerializer = new DataSerializer();
     static KnowledgePackageSerializer knowledgePackageSerializer = new KnowledgePackageSerializer();
     static KnowledgeFragmentSerializer knowledgeFragmentSerializer = new KnowledgeFragmentSerializer();
-
+    static ClientActionSerializer clientActionSerializer = new ClientActionSerializer();
     //TODO Can probably just use .write/readClassAndObject here for these non-concrete class serializers
     // https://stackoverflow.com/questions/52337925/kryo-difference-between-readclassandobject-readobject-and-writeclassandobject-w
     public static class DataSerializer extends Serializer<Data>{
@@ -86,6 +87,46 @@ public class KryoPreparator {
             return new KnowledgeFragment<>(info, null, timestamp);
         }
     }
+
+    public static class ClientActionSerializer extends Serializer<ClientAction>{
+        @Override
+        public void write(Kryo kryo, Output output, ClientAction object) {
+            kryo.writeObject(output, object.getClass());
+            Field[] fields = object.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                try {
+                    field.setAccessible(true);
+                    kryo.writeClassAndObject(output, field.get(object));
+                }catch(IllegalAccessException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        ;
+        @Override
+        public ClientAction read(Kryo kryo, Input input, Class<? extends ClientAction> type) {
+            Class<?> clazz = kryo.readObject(input, Class.class);
+            Field[] fields = clazz.getDeclaredFields();
+            Object[] obj = new Object[fields.length];
+            for (int i = 0; i < fields.length; i++) {
+                obj[i] = kryo.readClassAndObject(input);
+            }
+
+            Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+            if(constructors.length != 1){
+                throw new IllegalArgumentException("This data class should have EXACTLY 1 all-arg constructor! : " + clazz.toString());
+            }else{
+                Constructor<?> constructor = constructors[0];
+                try {
+                    return (ClientAction) constructor.newInstance(obj);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+    }
+
     public static class KnowledgePackageSerializer extends Serializer<KnowledgePackage<?, ?>> {
 
         @Override
@@ -202,14 +243,21 @@ public class KryoPreparator {
         kryo.register(ClientData.class, new Serializer<ClientData>() {
             @Override
             public void write(Kryo kryo, Output output, ClientData object) {
+                output.writeInt(object.getActions().size());
                 for (ClientAction action : object.getActions()) {
-                    kryo.writeObject(output, action);
+                    kryo.writeObject(output, action, clientActionSerializer);
                 }
+
             }
 
             @Override
             public ClientData read(Kryo kryo, Input input, Class type) {
-                return null;
+                List<ClientAction> actions = new ArrayList<>();
+                int actionCount = input.readInt();
+                for (int i = 0; i < actionCount; i++) {
+                    actions.add(kryo.readObject(input, ClientAction.class ,clientActionSerializer));
+                }
+                return new ClientData(actions);
             }
         });
         return kryo;

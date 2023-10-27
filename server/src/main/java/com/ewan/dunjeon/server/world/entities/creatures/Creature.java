@@ -14,7 +14,7 @@ public abstract class Creature extends Entity {
 
     @Override
     public void update(double stepSize) {
-        super.update(stepSize);
+
     }
 
 

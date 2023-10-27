@@ -50,7 +50,7 @@ public class Dunjeon{
         }
 
         //Update Datastreams!
-        //TODO COULD DATASTREAMS POTENTIALLY BE PER-FLOOR??????
+        //TODO SHOULD DATASTREAMS POTENTIALLY BE PER-FLOOR??????
         sightDataStream.update(this);
     }
 

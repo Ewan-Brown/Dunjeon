@@ -21,7 +21,6 @@ public class ClientHandler {
     private Channel clientChannel;
 
     public void passActionsToController(List<ClientAction> actions){
-        System.out.println("ClientHandler.passActionsToController");
         synchronized (creatureController.getActionBuffer()) {
             creatureController.getActionBuffer().addAll(actions);
         }

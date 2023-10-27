@@ -52,7 +52,7 @@ public class Datastreams {
                         Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getRotationAngle(), entity.getAngularVelocity());
                         Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
                         Long entityId = entity.getUUID();
-
+                        System.out.println("kineticData.rotation = " + kineticData.getRotation());
                         DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(List.of(kineticData, positionalData), entityId, d.getTimeElapsed());
                         entityDataAmalgamated.add(entityDataWrapper);
                     }
