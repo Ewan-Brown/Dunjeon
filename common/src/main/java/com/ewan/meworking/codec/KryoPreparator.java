@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.ewan.meworking.data.ClientData;
 import com.ewan.meworking.data.ServerData;
-import com.ewan.meworking.data.client.ClientAction;
+import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.server.CellPosition;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
@@ -14,7 +14,6 @@ import com.ewan.meworking.data.server.memory.KnowledgeFragment;
 import com.ewan.meworking.data.server.memory.KnowledgePackage;
 import org.dyn4j.geometry.Vector2;
 
-import java.io.Serial;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +27,7 @@ public class KryoPreparator {
     static DataSerializer dataSerializer = new DataSerializer();
     static KnowledgePackageSerializer knowledgePackageSerializer = new KnowledgePackageSerializer();
     static KnowledgeFragmentSerializer knowledgeFragmentSerializer = new KnowledgeFragmentSerializer();
-    static ClientActionSerializer clientActionSerializer = new ClientActionSerializer();
+    static ClientInputSerializer clientInputSerializer = new ClientInputSerializer();
     //TODO Can probably just use .write/readClassAndObject here for these non-concrete class serializers
     // https://stackoverflow.com/questions/52337925/kryo-difference-between-readclassandobject-readobject-and-writeclassandobject-w
     public static class DataSerializer extends Serializer<Data>{
@@ -88,9 +87,9 @@ public class KryoPreparator {
         }
     }
 
-    public static class ClientActionSerializer extends Serializer<ClientAction>{
+    public static class ClientInputSerializer extends Serializer<UserInput>{
         @Override
-        public void write(Kryo kryo, Output output, ClientAction object) {
+        public void write(Kryo kryo, Output output, UserInput object) {
             kryo.writeObject(output, object.getClass());
             Field[] fields = object.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -104,7 +103,7 @@ public class KryoPreparator {
         }
         ;
         @Override
-        public ClientAction read(Kryo kryo, Input input, Class<? extends ClientAction> type) {
+        public UserInput read(Kryo kryo, Input input, Class<? extends UserInput> type) {
             Class<?> clazz = kryo.readObject(input, Class.class);
             Field[] fields = clazz.getDeclaredFields();
             Object[] obj = new Object[fields.length];
@@ -118,7 +117,7 @@ public class KryoPreparator {
             }else{
                 Constructor<?> constructor = constructors[0];
                 try {
-                    return (ClientAction) constructor.newInstance(obj);
+                    return (UserInput) constructor.newInstance(obj);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     throw new RuntimeException(e);
                 }
@@ -243,19 +242,17 @@ public class KryoPreparator {
         kryo.register(ClientData.class, new Serializer<ClientData>() {
             @Override
             public void write(Kryo kryo, Output output, ClientData object) {
-                output.writeInt(object.getActions().size());
-                for (ClientAction action : object.getActions()) {
-                    kryo.writeObject(output, action, clientActionSerializer);
+                output.writeInt(object.getInputs().size());
+                for (UserInput input : object.getInputs()) {
+                    kryo.writeObject(output, input, clientInputSerializer);
                 }
-
             }
-
             @Override
             public ClientData read(Kryo kryo, Input input, Class type) {
-                List<ClientAction> actions = new ArrayList<>();
+                List<UserInput> actions = new ArrayList<>();
                 int actionCount = input.readInt();
                 for (int i = 0; i < actionCount; i++) {
-                    actions.add(kryo.readObject(input, ClientAction.class ,clientActionSerializer));
+                    actions.add(kryo.readObject(input, UserInput.class ,clientInputSerializer));
                 }
                 return new ClientData(actions);
             }

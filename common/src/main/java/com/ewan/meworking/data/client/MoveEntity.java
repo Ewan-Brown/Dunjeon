@@ -6,6 +6,6 @@ import org.dyn4j.geometry.Vector2;
 
 @AllArgsConstructor
 @Getter
-public class MoveEntity extends ClientAction{
+public class MoveEntity extends UserInput {
     private final Vector2 moveDir;
 }

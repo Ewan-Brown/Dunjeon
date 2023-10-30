@@ -8,7 +8,6 @@ import com.ewan.meworking.codec.KryoPreparator;
 import com.ewan.meworking.codec.ServerDataEncoder;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.ewan.meworking.data.ClientData;
-import com.ewan.meworking.data.client.ClientAction;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,7 +15,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Interface between packets and server. Send and receive.
@@ -68,7 +66,7 @@ public class ServerManager {
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
             ClientData clientData = (ClientData) msg;
-            clientHandlerHashMap.get(ctx.channel()).passActionsToController(clientData.getActions());
+            clientHandlerHashMap.get(ctx.channel()).passInputsToController(clientData.getInputs());
         }
     }
 

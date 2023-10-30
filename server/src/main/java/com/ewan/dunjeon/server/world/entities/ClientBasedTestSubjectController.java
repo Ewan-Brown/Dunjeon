@@ -1,7 +1,7 @@
 package com.ewan.dunjeon.server.world.entities;
 
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
-import com.ewan.meworking.data.client.ClientAction;
+import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.client.MoveEntity;
 
 import java.util.List;
@@ -13,10 +13,9 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
     }
 
     @Override
-    void updateWithClientActions(List<ClientAction> actions) {
-        for (ClientAction action : actions) {
-            if(action instanceof MoveEntity moveEntityAction){
-//                getControls().moveInDirection(moveEntityAction.getMoveDir()); TODO CHANGEME
+    void updateWithUserInputs(List<UserInput> inputs) {
+        for (UserInput input : inputs) {
+            if(input instanceof MoveEntity moveEntityInput){
                 getControls().turn(1);
             }
         }

@@ -3,7 +3,7 @@ package com.ewan.dunjeon.server.world.entities;
 import com.ewan.dunjeon.server.world.entities.ai.CreatureController;
 import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 import com.ewan.dunjeon.server.world.entities.creatures.CreatureControls;
-import com.ewan.meworking.data.client.ClientAction;
+import com.ewan.meworking.data.client.UserInput;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -20,18 +20,18 @@ public abstract class ClientBasedController<C extends Creature, D extends Creatu
     }
 
     /**
-     * Acts as a buffer for actions that have been received very recently and are to be processed in the next update, and this list erased.
+     * Acts as a buffer for inputs that have been received very recently and are to be processed in the next update, and this list erased.
      */
     @Getter
-    private List<ClientAction> actionBuffer = new ArrayList<>();
+    private List<UserInput> userInputBuffer = new ArrayList<>();
 
     @Override
     public final void update(double stepSize) {
-        List<ClientAction> actionsReadyForProcessing = getActionBuffer();
-        actionBuffer = new ArrayList<>();
+        List<UserInput> inputsReadyForProcessing = getUserInputBuffer();
+        userInputBuffer = new ArrayList<>();
 
-        updateWithClientActions(actionsReadyForProcessing);
+        updateWithUserInputs(inputsReadyForProcessing);
     }
 
-    abstract void updateWithClientActions(List<ClientAction> actions);
+    abstract void updateWithUserInputs(List<UserInput> inputs);
 }
