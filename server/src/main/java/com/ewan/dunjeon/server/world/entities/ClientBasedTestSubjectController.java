@@ -1,24 +1,34 @@
 package com.ewan.dunjeon.server.world.entities;
 
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
+import com.ewan.meworking.data.client.TurnEntity;
 import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.client.MoveEntity;
+import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
 
 public class ClientBasedTestSubjectController extends ClientBasedController<TestSubject, TestSubject.TestSubjectControls> {
     public ClientBasedTestSubjectController(TestSubject connectedCreature) {
         super(connectedCreature);
-        System.out.println("ClientBasedTestSubjectController.ClientBasedTestSubjectController");
     }
+
+    private Vector2 currentMoveVector = new Vector2(0,0);
+    private double currentTurn = 0;
 
     @Override
     void updateWithUserInputs(List<UserInput> inputs) {
         for (UserInput input : inputs) {
             if(input instanceof MoveEntity moveEntityInput){
-                getControls().turn(1);
+                currentMoveVector = moveEntityInput.getMoveDir();
+            }
+            if(input instanceof TurnEntity turnEntity){
+                currentTurn = turnEntity.getTurn();
             }
         }
+        getControls().moveInDirection(currentMoveVector);
+        getControls().turn(currentTurn);
+
     }
 
 

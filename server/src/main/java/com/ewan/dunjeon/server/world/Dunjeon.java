@@ -55,7 +55,7 @@ public class Dunjeon{
     }
 
     public ClientBasedController<TestSubject, TestSubject.TestSubjectControls> createClientTestCreatureAndGetController(){
-        TestSubject testSubject = new TestSubject("Player", true);
+        TestSubject testSubject = new TestSubject("Player");
         testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
 

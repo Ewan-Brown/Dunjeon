@@ -1,12 +1,16 @@
 package com.ewan.dunjeonclient;
 
+import com.ewan.meworking.data.ClientData;
 import com.ewan.meworking.data.ServerData;
+import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
@@ -27,6 +31,11 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ServerData data = (ServerData) msg;
         setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
+    }
+
+    public void sendSingleInputToServer(UserInput input){
+        ClientData cData = new ClientData(List.of(input));
+        serverChannel.writeAndFlush(cData);
     }
 
     public BasicMemoryBank getMostRecentBasicMemoryBank() {

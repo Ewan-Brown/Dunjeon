@@ -50,6 +50,8 @@ public class UsingJogl implements GLEventListener {
 		frame.setResizable(false);
 		frame.setVisible(true);
 
+		SimpleControls controls = new SimpleControls(clientChannelHandler);
+		canvas.addKeyListener(controls);
 		frame.pack();
 	}
 
@@ -111,9 +113,7 @@ public class UsingJogl implements GLEventListener {
 
 		BasicMemoryBank basicMemoryBank = clientChannelHandler.getMostRecentBasicMemoryBank();
 		if(basicMemoryBank != null){
-			synchronized (basicMemoryBank) {
-				renderAll(gl, basicMemoryBank);
-			}
+			renderAll(gl, basicMemoryBank);
 		}
 
 		gl.glPopMatrix();
@@ -132,7 +132,7 @@ public class UsingJogl implements GLEventListener {
 			Vector2 cameraDiff =  lastCameraPos.difference(hostEntityPosition);
 			lastCameraPos.subtract(cameraDiff.multiply(0.003));
 		}else{
-			System.err.println("The client's entity is unaware of its own position! Aaaaaa");
+			throw new IllegalStateException("The client's entity is unaware of its own position! Aaaaaa");
 		}
 
 		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);

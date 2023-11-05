@@ -11,9 +11,6 @@ import java.util.List;
 
 public abstract class ClientBasedController<C extends Creature, D extends CreatureControls<C>> extends CreatureController<C, D> {
 
-    //TODO generify creature interfaces, and then this controller for player usage.
-    //  AI controllers will have to be specific, per-controller for some cases i'm sure.
-
     //Player controller should have a default then overrides if necessary
     public ClientBasedController(C connectedCreature) {
         super(connectedCreature);
@@ -34,4 +31,5 @@ public abstract class ClientBasedController<C extends Creature, D extends Creatu
     }
 
     abstract void updateWithUserInputs(List<UserInput> inputs);
+
 }
