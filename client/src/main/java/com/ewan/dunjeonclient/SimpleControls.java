@@ -59,10 +59,10 @@ public class SimpleControls implements KeyListener {
         if(keySet.get(KeyEvent.VK_S)){
             y--;
         }
-        if(keySet.get(KeyEvent.VK_A)){
+        if(keySet.get(KeyEvent.VK_D)){
             x++;
         }
-        if(keySet.get(KeyEvent.VK_D)){
+        if(keySet.get(KeyEvent.VK_A)){
             x--;
         }
 
@@ -73,10 +73,10 @@ public class SimpleControls implements KeyListener {
 
         float turn = 0;
 
-        if(keySet.get(KeyEvent.VK_Q)){
+        if(keySet.get(KeyEvent.VK_E)){
             turn -= 1;
         }
-        if(keySet.get(KeyEvent.VK_E)){
+        if(keySet.get(KeyEvent.VK_Q)){
             turn += 1;
         }
 

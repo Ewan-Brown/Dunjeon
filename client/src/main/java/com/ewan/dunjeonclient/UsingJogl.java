@@ -1,9 +1,11 @@
 package com.ewan.dunjeonclient;
 
 import com.ewan.meworking.data.server.CellPosition;
+import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.Datas;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank.MultiQueryAccessor;
+import com.ewan.meworking.data.server.memory.KnowledgeFragment;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
@@ -21,6 +23,7 @@ public class UsingJogl implements GLEventListener {
 	protected GLCanvas canvas;
 	private JFrame frame;
 	private final ClientChannelHandler clientChannelHandler;
+	final static Vector2 lastCameraPos = new Vector2();
 
 
 	public UsingJogl(ClientChannelHandler clientChannelHandler) {
@@ -100,6 +103,12 @@ public class UsingJogl implements GLEventListener {
 	@Override
 	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width, int height) {}
 
+	private boolean isMemoryDataPresent(KnowledgeFragment<?> d){
+		System.out.println(d.getTimestamp() + " " + clientChannelHandler.getMostRecentWorldTimestamp());
+		boolean b = d.getTimestamp() == clientChannelHandler.getMostRecentWorldTimestamp();
+		System.out.println(b);
+		return b;
+	}
 	/**
 	 * Renders the example.
 	 * @param gl the OpenGL context
@@ -119,7 +128,6 @@ public class UsingJogl implements GLEventListener {
 		gl.glPopMatrix();
 	}
 
-	final static Vector2 lastCameraPos = new Vector2();
 
 	public void renderMemoryBank(GL2 gl, BasicMemoryBank basicMemoryBank){
 		final double SIZE = 1;
@@ -143,12 +151,14 @@ public class UsingJogl implements GLEventListener {
 			CellPosition position = singleQueryAccessor.getIdentifier();
 			gl.glPushMatrix();
 
+			double alpha = isMemoryDataPresent(enterableFragment) ? 1 : 0.5;
 
 			if (enterableFragment.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
-				gl.glColor3d(0.5, 0, 0.5);
+				gl.glColor3d(0, 0, alpha);
 			} else {
-				gl.glColor3d(0, 0, 0.5);
+				gl.glColor3d(alpha, 0, 0);
 			}
+
 
 
 			Vector2 centerPos = new Vector2(position.getPosition());
@@ -166,15 +176,17 @@ public class UsingJogl implements GLEventListener {
 
 		for (BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
 			gl.glPushMatrix();
-			gl.glColor3d(0, 1, 0);
 
-			Datas.EntityPositionalData posData = singleQueryAccessor.getKnowledge(Datas.EntityPositionalData.class).getInfo();
-			Datas.EntityKineticData kinData = singleQueryAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo();
+			var posFrag = singleQueryAccessor.getKnowledge(Datas.EntityPositionalData.class);
+			var posData = posFrag.getInfo();
+			var kinData = singleQueryAccessor.getKnowledge(Datas.EntityKineticData.class).getInfo();
+			double alpha = isMemoryDataPresent(posFrag) ? 1 : 0.5;
 
 			if (posData != null) {
 				Vector2 centerPos = posData.getPosition();
-
+				gl.glColor3d(0, alpha, 0);
 				gl.glTranslated(centerPos.x, centerPos.y, 0);
+
 				if(kinData != null){
 					gl.glRotated(kinData.getRotation() * 180/Math.PI,0,0,1);
 				}
