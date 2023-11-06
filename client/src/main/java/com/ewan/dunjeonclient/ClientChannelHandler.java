@@ -12,11 +12,12 @@ import lombok.Setter;
 
 import java.util.List;
 
+@Setter
+@Getter
 public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private BasicMemoryBank mostRecentBasicMemoryBank = null;
-    @Setter
-    @Getter
+    private double mostRecentWorldTimestamp = 0;
     private Channel serverChannel;
 
     @Override
@@ -31,6 +32,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ServerData data = (ServerData) msg;
         setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
+        setMostRecentWorldTimestamp(data.getWorldTime());
     }
 
     public void sendSingleInputToServer(UserInput input){
@@ -40,10 +42,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     public BasicMemoryBank getMostRecentBasicMemoryBank() {
         return mostRecentBasicMemoryBank;
-    }
-
-    private void setMostRecentBasicMemoryBank(BasicMemoryBank m){
-        this.mostRecentBasicMemoryBank = m;
     }
 
     @Override

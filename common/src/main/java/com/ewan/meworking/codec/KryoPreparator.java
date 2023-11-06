@@ -232,11 +232,14 @@ public class KryoPreparator {
             @Override
             public void write(Kryo kryo, Output output, ServerData object) {
                 kryo.writeObject(output, object.getBasicMemoryBank());
+                output.writeDouble(object.getWorldTime());
             }
 
             @Override
             public ServerData read(Kryo kryo, Input input, Class type) {
-                return new ServerData(kryo.readObject(input, BasicMemoryBank.class));
+                BasicMemoryBank memoryBank = kryo.readObject(input, BasicMemoryBank.class);
+                double timestamp = input.readDouble();
+                return new ServerData(memoryBank, timestamp);
             }
         });
         kryo.register(ClientData.class, new Serializer<ClientData>() {

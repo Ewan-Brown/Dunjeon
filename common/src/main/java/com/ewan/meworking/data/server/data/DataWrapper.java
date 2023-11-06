@@ -17,6 +17,5 @@ public abstract class DataWrapper<D extends Data, I> {
     List<D> data;
     Class<D> baseClass;
     I identifier;
-//    Sensor<? extends DataStreamParameters> sourceSensor;
     double timestamp;
 }

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Datas {
 
-    public static abstract class FloorData extends Data {
+    public static abstract class WorldData extends Data {
 
     }
 

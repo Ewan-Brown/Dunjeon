@@ -47,6 +47,8 @@ public class SimpleControls implements KeyListener {
      */
     public void processKeys(KeyEvent triggeringKeyEvent){
 
+        //Note that the controls here are ONLY responsible for sending stuff each key event - it's left up to the server-side controller to decide what to do with these
+
         // Process movement keys
         float x = 0;
         float y = 0;
@@ -66,6 +68,8 @@ public class SimpleControls implements KeyListener {
 
         UserInput mEntity = new MoveEntity(new Vector2(x, y));
         clientChannelHandler.sendSingleInputToServer(mEntity);
+
+        //Process turning keys
 
         float turn = 0;
 

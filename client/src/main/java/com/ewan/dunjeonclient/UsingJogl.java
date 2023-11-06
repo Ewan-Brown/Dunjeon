@@ -113,7 +113,7 @@ public class UsingJogl implements GLEventListener {
 
 		BasicMemoryBank basicMemoryBank = clientChannelHandler.getMostRecentBasicMemoryBank();
 		if(basicMemoryBank != null){
-			renderAll(gl, basicMemoryBank);
+			renderMemoryBank(gl, basicMemoryBank);
 		}
 
 		gl.glPopMatrix();
@@ -121,7 +121,7 @@ public class UsingJogl implements GLEventListener {
 
 	final static Vector2 lastCameraPos = new Vector2();
 
-	public void renderAll(GL2 gl, BasicMemoryBank basicMemoryBank){
+	public void renderMemoryBank(GL2 gl, BasicMemoryBank basicMemoryBank){
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
 
@@ -143,13 +143,13 @@ public class UsingJogl implements GLEventListener {
 			CellPosition position = singleQueryAccessor.getIdentifier();
 			gl.glPushMatrix();
 
-//			double colVal = (Dunjeon.getInstance().getTimeElapsed() - enterableFragment.getTimestamp()) < 5 ? 1 : 0.5;
 
 			if (enterableFragment.getInfo().getEnterableStatus() == Datas.CellEnterableData.EnterableStatus.ENTERABLE) {
 				gl.glColor3d(0.5, 0, 0.5);
 			} else {
 				gl.glColor3d(0, 0, 0.5);
 			}
+
 
 			Vector2 centerPos = new Vector2(position.getPosition());
 			gl.glTranslated(centerPos.x, centerPos.y, 0);
