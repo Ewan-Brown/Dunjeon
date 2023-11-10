@@ -20,7 +20,7 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
     void updateWithUserInputs(List<UserInput> inputs) {
         for (UserInput input : inputs) {
             if(input instanceof MoveEntity moveEntityInput){
-                currentMoveVector = moveEntityInput.getMoveDir();
+                currentMoveVector = moveEntityInput.getMoveDir().multiply(10);
             }
             if(input instanceof TurnEntity turnEntity){
                 currentTurn = turnEntity.getTurn();

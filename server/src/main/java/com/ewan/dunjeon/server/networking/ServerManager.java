@@ -62,6 +62,15 @@ public class ServerManager {
             ClientHandler clientHandler = new ClientHandler(controller, ctx.channel());
             clientHandlerHashMap.put(ctx.channel(), clientHandler);
         }
+
+        @Override
+        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+            super.channelInactive(ctx);
+            System.out.println("Client left - " + ctx + ", removing from list of client channels");
+            clientHandlerHashMap.get(ctx.channel()).setConnectionActive(false);
+            clientHandlerHashMap.remove(ctx.channel()); //TODO for now...
+        }
+
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
