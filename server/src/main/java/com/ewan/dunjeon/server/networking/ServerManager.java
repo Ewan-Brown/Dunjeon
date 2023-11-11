@@ -13,6 +13,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 import java.util.HashMap;
 
@@ -40,6 +42,7 @@ public class ServerManager {
                                     new ServerManager.ServerInboundChannelHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG, 128)
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture f = b.bind(1459).sync();

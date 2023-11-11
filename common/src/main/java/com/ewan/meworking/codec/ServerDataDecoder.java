@@ -22,6 +22,7 @@ public class ServerDataDecoder extends ByteToMessageDecoder{
     protected void decode(ChannelHandlerContext ctx,
                           ByteBuf in, List<Object> out) {
 
+        System.out.println("ServerDataDecoder.decode");
         if (in.readableBytes() < 4)
             return;
 
@@ -34,7 +35,11 @@ public class ServerDataDecoder extends ByteToMessageDecoder{
         }else{
             byte[] buf = new byte[completeMessageLength];
             in.readBytes(buf);
-            out.add(kryo.readObject(new Input(buf), ServerData.class));
+            try {
+                out.add(kryo.readObject(new Input(buf), ServerData.class));
+            } catch(Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }
