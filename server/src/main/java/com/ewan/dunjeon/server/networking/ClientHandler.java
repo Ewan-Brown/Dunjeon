@@ -34,6 +34,7 @@ public class ClientHandler {
 
     public void sendDataToClient(){
         if(isConnectionActive) {
+            isConnectionActive = false;
             if (creatureController.getBasicMemoryBank() != null) {
                 getClientChannel().writeAndFlush(new ServerData(creatureController.getBasicMemoryBank(), Dunjeon.getInstance().getTimeElapsed()));
             } else {
