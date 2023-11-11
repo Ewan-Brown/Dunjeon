@@ -27,9 +27,12 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         ctx.flush();
     }
 
+    int successCount = 0;
     @Override
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        successCount++;
+        System.out.println("ClientChannelHandler.channelRead - Succesfully received a message from server, " + successCount +" messages decoded so far");
         ServerData data = (ServerData) msg;
         setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
         setMostRecentWorldTimestamp(data.getWorldTime());
