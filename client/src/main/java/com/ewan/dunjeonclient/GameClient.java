@@ -46,7 +46,6 @@ public class GameClient {
             System.out.println("Client attempting to connect to server");
             ChannelFuture f = b.connect(host, port).sync();
             System.out.println("Client Connection to server successful");
-            clientChannelHandler.setServerChannel(f.channel());
 
             f.channel().closeFuture().sync();
             System.out.println("f.isCancelled() = " + f.isCancelled());

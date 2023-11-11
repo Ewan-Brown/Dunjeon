@@ -18,12 +18,12 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private BasicMemoryBank mostRecentBasicMemoryBank = null;
     private double mostRecentWorldTimestamp = 0;
-    private Channel serverChannel;
+    private ChannelHandlerContext serverChannelContext;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("Client activated, saving channel as server");
-        serverChannel = ctx.channel();
+        serverChannelContext = ctx;
         ctx.flush();
     }
 
@@ -40,7 +40,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     public void sendSingleInputToServer(UserInput input){
         ClientData cData = new ClientData(List.of(input));
-        serverChannel.writeAndFlush(cData);
+        serverChannelContext.writeAndFlush(cData);
     }
 
     public BasicMemoryBank getMostRecentBasicMemoryBank() {
