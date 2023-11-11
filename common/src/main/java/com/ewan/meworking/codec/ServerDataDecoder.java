@@ -35,11 +35,7 @@ public class ServerDataDecoder extends ByteToMessageDecoder{
         }else{
             byte[] buf = new byte[completeMessageLength];
             in.readBytes(buf);
-            try {
-                out.add(kryo.readObject(new Input(buf), ServerData.class));
-            } catch(Exception e){
-                e.printStackTrace();
-            }
+            out.add(kryo.readObject(new Input(buf), ServerData.class));
         }
     }
 }
