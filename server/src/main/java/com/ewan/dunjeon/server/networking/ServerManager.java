@@ -8,10 +8,13 @@ import com.ewan.meworking.codec.KryoPreparator;
 import com.ewan.meworking.codec.ServerDataEncoder;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.ewan.meworking.data.ClientData;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -26,24 +29,25 @@ public class ServerManager {
     private static final HashMap<Channel, ClientHandler> clientHandlerHashMap = new HashMap<>();
 
     public static void runServer(){
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
+//        EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            ServerBootstrap b = new ServerBootstrap();
+            Bootstrap b = new Bootstrap();
             Kryo kryo = KryoPreparator.getAKryo();
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
+            b.group(workerGroup)
+                    .channel(NioDatagramChannel.class)
+                    .handler(new ChannelInitializer<DatagramChannel>() {
                         @Override
-                        public void initChannel(SocketChannel ch) {
+                        public void initChannel(DatagramChannel ch) {
                             ch.pipeline().addLast(
                                     new ClientDataDecoder(kryo),
                                     new ServerDataEncoder(kryo),
                                     new ServerManager.ServerInboundChannelHandler());
                         }
-                    }).option(ChannelOption.SO_BACKLOG, 128)
-                    .handler(new LoggingHandler(LogLevel.DEBUG))
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+//                    }).option(ChannelOption.SO_BACKLOG, 128)
+                    })
+                    .handler(new LoggingHandler(LogLevel.DEBUG));
+//                    .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture f = b.bind(1459).sync();
             f.channel().closeFuture().sync();
@@ -51,7 +55,7 @@ public class ServerManager {
             e.printStackTrace();
         } finally {
             workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
+//            bossGroup.shutdownGracefully();
         }
     }
 
