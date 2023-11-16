@@ -77,6 +77,7 @@ public class ServerManager {
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            System.out.println("ServerInboundChannelHandler.channelRead");
             ClientData clientData = (ClientData) msg;
             clientHandlerHashMap.get(ctx.channel()).passInputsToController(clientData.getInputs());
         }

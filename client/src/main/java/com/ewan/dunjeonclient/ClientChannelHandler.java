@@ -34,7 +34,11 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         successCount++;
         System.out.println("ClientChannelHandler.channelRead - Succesfully received a message from server, " + successCount +" messages decoded so far");
         ServerData data = (ServerData) msg;
-        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
+        if(data.getBasicMemoryBank() != null) {
+            setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
+        }else{
+            System.out.println("memory null, worldtime=" + data.getWorldTime());
+        }
         setMostRecentWorldTimestamp(data.getWorldTime());
     }
 
