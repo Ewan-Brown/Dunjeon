@@ -20,7 +20,7 @@ public class ServerDataDecoder extends ByteToMessageDecoder{
 
     @Override
     protected void decode(ChannelHandlerContext ctx,
-                          ByteBuf in, List<Object> out) {
+                          ByteBuf in, List<Object> out) throws Exception{
 
         System.out.println("ServerDataDecoder.decode");
         if (in.readableBytes() < 4)

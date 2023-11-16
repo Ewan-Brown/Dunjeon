@@ -39,6 +39,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void sendSingleInputToServer(UserInput input){
+        System.out.println("sending data to server with ctx:" + serverChannelContext.toString());
         ClientData cData = new ClientData(List.of(input));
         serverChannelContext.writeAndFlush(cData);
     }
