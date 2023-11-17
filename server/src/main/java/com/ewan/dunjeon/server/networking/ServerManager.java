@@ -44,10 +44,7 @@ public class ServerManager {
                                     new ServerDataEncoder(kryo),
                                     new ServerManager.ServerInboundChannelHandler());
                         }
-//                    }).option(ChannelOption.SO_BACKLOG, 128)
-                    })
-                    .handler(new LoggingHandler(LogLevel.DEBUG));
-//                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+                    });
 
             ChannelFuture f = b.bind(1459).sync();
             f.channel().closeFuture().sync();

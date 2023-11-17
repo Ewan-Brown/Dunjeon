@@ -16,6 +16,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.dyn4j.geometry.Vector2;
 
@@ -31,9 +32,8 @@ public class GameClient {
             Kryo kryo = KryoPreparator.getAKryo();
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);
-            b.channel(NioSocketChannel.class);
+            b.channel(NioDatagramChannel.class);
             b.handler(new ChannelInitializer<DatagramChannel>() {
-
                 @Override
                 public void initChannel(DatagramChannel ch) {
                     ch.pipeline().addLast(
