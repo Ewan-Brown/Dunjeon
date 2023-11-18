@@ -4,34 +4,26 @@ import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.ewan.meworking.data.ClientData;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.codec.MessageToMessageEncoder;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.net.DatagramPacket;
+import java.util.List;
 
-public class ClientDataEncoder
-        extends MessageToByteEncoder<ClientData> {
+public class ClientDataEncoder extends MessageToMessageEncoder<ClientData> {
 
-    private final Kryo kryo;
-
-    public ClientDataEncoder(Kryo kryo) {
-        this.kryo = kryo;
-    }
+    Kryo kryo = KryoPreparator.getAKryo();
 
     @Override
-    protected void encode(ChannelHandlerContext ctx,
-                          ClientData msg, ByteBuf out) {
-
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        Output output = new Output(outStream, 4096);
-
-        kryo.writeObject(output, msg);
-        output.flush();
-
-        byte[] outArray = outStream.toByteArray();
-        out.writeInt(outArray.length);
-        out.writeBytes(outArray);
+    protected void encode(ChannelHandlerContext ctx, ClientData msg, List<Object> out) throws Exception {
+        System.out.println("ClientDataEncoder.encode");
+//        ByteBuf buffer = Unpooled.buffer();
+//        Output output = new Output((int)buffer.maxWritableBytes());
+//        kryo.writeObject(output, msg);
+//        output.flush();
+//        out.add(buffer);
+        out.add(Unpooled.wrappedBuffer("Hello".getBytes()));
     }
 }

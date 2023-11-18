@@ -20,13 +20,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     private double mostRecentWorldTimestamp = 0;
     private ChannelHandlerContext serverChannelContext;
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("Client activated, saving channel as server");
-        serverChannelContext = ctx;
-        ctx.flush();
-    }
-
     int successCount = 0;
     @Override
     @SuppressWarnings("unchecked")

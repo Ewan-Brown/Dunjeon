@@ -24,25 +24,28 @@ public class StartServer {
 
     public static void main(String[] args) {
 
-        System.out.println("Starting server code");
-        generateWorld();
-        new Thread(ServerManager::runServer).start();
+        System.out.println("Starting server code - TEMPORARILY ONLY NETWORKING");
 
-        new Thread(() -> {
-            while (true) {
-                updateCurrentWorld();
-                if(all_durations.size() == 1000){
+        ServerManager.runServer();
+//        new Thread(ServerManager::runServer).start();
 
-                    try {
-                        PrintWriter outFile = new PrintWriter(new FileWriter("data_" + entityCount+"entities" + ".csv"));
-                        all_durations.forEach(i-> outFile.print(i + ", "));
-                        outFile.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }).start();
+//        generateWorld();
+
+//        new Thread(() -> {
+//            while (true) {
+//                updateCurrentWorld();
+//                if(all_durations.size() == 1000){
+//
+//                    try {
+//                        PrintWriter outFile = new PrintWriter(new FileWriter("data_" + entityCount+"entities" + ".csv"));
+//                        all_durations.forEach(i-> outFile.print(i + ", "));
+//                        outFile.close();
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//            }
+//        }).start();
 
     }
 

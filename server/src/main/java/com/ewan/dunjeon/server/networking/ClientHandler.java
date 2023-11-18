@@ -16,11 +16,6 @@ public class ClientHandler {
     private Channel clientChannel;
     private ClientBasedController<?, ?> creatureController;
 
-    @Getter
-    @Setter
-    private boolean isConnectionActive = true;
-
-
     public ClientHandler(ClientBasedController<?, ?> creatureController, Channel clientChannel) {
         this.creatureController = creatureController;
         this.clientChannel = clientChannel;
@@ -33,14 +28,12 @@ public class ClientHandler {
     }
 
     public void sendDataToClient(){
-        if(isConnectionActive) {
-            System.out.println("Sending data to client, ctx:" + getClientChannel().toString());
-            if (creatureController.getBasicMemoryBank() != null) {
+        System.out.println("Sending data to client, ctx:" + getClientChannel().toString());
+        if (creatureController.getBasicMemoryBank() != null) {
 //                getClientChannel().writeAndFlush(new ServerData(creatureController.getBasicMemoryBank(), Dunjeon.getInstance().getTimeElapsed()));
-                getClientChannel().writeAndFlush(new ServerData(null, 1.0));
-            } else {
-                System.err.println("Attempted to send data to client but the attached memory bank is null!");
-            }
+            getClientChannel().writeAndFlush(new ServerData(null, 1.0));
+        } else {
+            System.err.println("Attempted to send data to client but the attached memory bank is null!");
         }
 
     }

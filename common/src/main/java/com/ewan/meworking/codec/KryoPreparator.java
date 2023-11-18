@@ -137,7 +137,7 @@ public class KryoPreparator {
                 kryo.writeObject(output, value, knowledgeFragmentSerializer);
             }
         }
-
+        @SuppressWarnings("unchecked")
         @Override
         public KnowledgePackage<?, ?> read(Kryo kryo, Input input, Class<? extends KnowledgePackage<?, ?>> type) {
             Object identifier = kryo.readClassAndObject(input);
@@ -200,6 +200,7 @@ public class KryoPreparator {
                 }
             }
 
+            @SuppressWarnings("unchecked")
             public <I, D extends Data> void readPairingIntoMap(Kryo kryo, Input input, List<BasicMemoryBank.Pairing<?, ?, ?>> pairings){
                 ConcurrentHashMap<I, KnowledgePackage<I, D>> currentKnowledgePackageMap = new ConcurrentHashMap<>();
                 int knowledgePackages = input.readInt();

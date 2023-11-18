@@ -13,11 +13,7 @@ import java.util.List;
 
 public class ServerDataDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
-    private final Kryo kryo;
-
-    public ServerDataDecoder(Kryo kryo) {
-        this.kryo = kryo;
-    }
+    Kryo kryo = KryoPreparator.getAKryo();
 
     @Override
     protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {

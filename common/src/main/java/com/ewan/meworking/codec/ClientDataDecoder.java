@@ -13,7 +13,7 @@ import io.netty.handler.codec.ReplayingDecoder;
 import java.nio.charset.Charset;
 import java.util.List;
 
-public class ClientDataDecoder extends MessageToMessageDecoder<DatagramPacket> {
+public class ClientDataDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     private final Kryo kryo;
 
@@ -21,11 +21,10 @@ public class ClientDataDecoder extends MessageToMessageDecoder<DatagramPacket> {
         this.kryo = kryo;
     }
 
-
-
     @Override
     protected void decode(ChannelHandlerContext ctx,
-                          DatagramPacket msg, List<Object> out){
+                          ByteBuf msg, List<Object> out){
+        System.out.println("ClientDataDecoder.decode");
 //        in.content()
 //        if (in.readableBytes() < 4)
 //            return;
