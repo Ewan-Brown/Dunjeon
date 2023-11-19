@@ -8,12 +8,13 @@ import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 
 public class ClientHandler {
 
     @Getter
-    private Channel clientChannel;
+    private InetSocketAddress clientAddress;
     private ClientBasedController<?, ?> creatureController;
 
     @Getter
@@ -21,9 +22,9 @@ public class ClientHandler {
     private boolean isConnectionActive = true;
 
 
-    public ClientHandler(ClientBasedController<?, ?> creatureController, Channel clientChannel) {
+    public ClientHandler(ClientBasedController<?, ?> creatureController, InetSocketAddress clientAddress) {
         this.creatureController = creatureController;
-        this.clientChannel = clientChannel;
+        this.clientAddress = clientAddress;
     }
 
     public void passInputsToController(List<UserInput> actions){
@@ -35,7 +36,7 @@ public class ClientHandler {
     public void sendDataToClient(){
         if(isConnectionActive) {
             if (creatureController.getBasicMemoryBank() != null) {
-                getClientChannel().writeAndFlush(new ServerData(creatureController.getBasicMemoryBank(), Dunjeon.getInstance().getTimeElapsed()));
+//                getClientChannel().writeAndFlush(new ServerData(creatureController.getBasicMemoryBank(), Dunjeon.getInstance().getTimeElapsed()));
             } else {
                 System.err.println("Attempted to send data to client but the attached memory bank is null!");
             }

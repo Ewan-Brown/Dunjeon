@@ -4,7 +4,7 @@ import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.Serializer;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
-import com.ewan.meworking.data.ClientData;
+import com.ewan.meworking.data.ClientInputData;
 import com.ewan.meworking.data.ServerData;
 import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.server.CellPosition;
@@ -242,22 +242,22 @@ public class KryoPreparator {
                 return new ServerData(memoryBank, timestamp);
             }
         });
-        kryo.register(ClientData.class, new Serializer<ClientData>() {
+        kryo.register(ClientInputData.class, new Serializer<ClientInputData>() {
             @Override
-            public void write(Kryo kryo, Output output, ClientData object) {
-                output.writeInt(object.getInputs().size());
-                for (UserInput input : object.getInputs()) {
+            public void write(Kryo kryo, Output output, ClientInputData object) {
+                output.writeInt(object.inputs().size());
+                for (UserInput input : object.inputs()) {
                     kryo.writeObject(output, input, clientInputSerializer);
                 }
             }
             @Override
-            public ClientData read(Kryo kryo, Input input, Class type) {
+            public ClientInputData read(Kryo kryo, Input input, Class type) {
                 List<UserInput> actions = new ArrayList<>();
                 int actionCount = input.readInt();
                 for (int i = 0; i < actionCount; i++) {
                     actions.add(kryo.readObject(input, UserInput.class ,clientInputSerializer));
                 }
-                return new ClientData(actions);
+                return new ClientInputData(actions);
             }
         });
         return kryo;

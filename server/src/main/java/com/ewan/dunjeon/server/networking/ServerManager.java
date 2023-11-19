@@ -1,23 +1,19 @@
 package com.ewan.dunjeon.server.networking;
 
-import com.ewan.dunjeon.server.world.Dunjeon;
-import com.ewan.dunjeon.server.world.entities.ClientBasedController;
-import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.meworking.codec.ClientDataDecoder;
+import com.ewan.meworking.codec.ClientInputDataWrapper;
 import com.ewan.meworking.codec.KryoPreparator;
 import com.ewan.meworking.codec.ServerDataEncoder;
 import com.esotericsoftware.kryo.kryo5.Kryo;
-import com.ewan.meworking.data.ClientData;
+import com.ewan.meworking.data.ClientInputData;
+import com.ewan.meworking.data.ServerData;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
-import io.netty.channel.socket.DatagramPacket;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 
 /**
@@ -25,7 +21,7 @@ import java.util.HashMap;
  */
 public class ServerManager {
 
-    private static final HashMap<Channel, ClientHandler> clientHandlerHashMap = new HashMap<>();
+    private static final HashMap<InetSocketAddress, ClientHandler> clientHandlerHashMap = new HashMap<>();
 
     public static void runServer(){
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -37,8 +33,8 @@ public class ServerManager {
                     .handler(new ChannelInitializer<DatagramChannel>() {
                         public void initChannel(DatagramChannel ch) {
                             ch.pipeline().addLast(
-//                                    new ClientDataDecoder(kryo),
-//                                    new ServerDataEncoder(kryo),
+                                    new ClientDataDecoder(kryo),
+                                    new ServerDataEncoder(kryo),
                                     new ServerInboundChannelHandler());
                         }
                     }).option(ChannelOption.AUTO_CLOSE, true)
@@ -57,29 +53,24 @@ public class ServerManager {
 
         @Override
         @SuppressWarnings("unchecked")
-        public void channelActive(final ChannelHandlerContext ctx) {
-            System.out.println("ServerInboundChannelHandler.channelActive");
-//            System.out.println("Client joined - " + ctx + ", adding to list of client channels");
-//            ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
-//            ClientHandler clientHandler = new ClientHandler(controller, ctx.channel());
-//            clientHandlerHashMap.put(ctx.channel(), clientHandler);
-        }
-
-        @Override
-        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-            System.out.println("ServerInboundChannelHandler.channelInactive");
-//            super.channelInactive(ctx);
-//            System.out.println("Client left - " + ctx + ", removing from list of client channels");
-//            clientHandlerHashMap.get(ctx.channel()).setConnectionActive(false);
-//            clientHandlerHashMap.remove(ctx.channel()); //TODO for now...
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+            super.channelRead(ctx, msg);
             System.out.println("ServerInboundChannelHandler.channelRead");
-//            ClientData clientData = (ClientData) msg;
-//            clientHandlerHashMap.get(ctx.channel()).passInputsToController(clientData.getInputs());
+            ClientInputDataWrapper clientInput = (ClientInputDataWrapper) msg;
+            if(!clientHandlerHashMap.containsKey(clientInput.sender())){
+                System.out.println("Unknown client has messaged server, sending back a simple acknowledge");
+                ctx.channel().writeAndFlush(new ServerData(null, 0));
+                //Connect the client to a creature, send all data they are missing if any is necessary
+            }{
+                //Process input as necessary
+            }
+
+        }
+
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+            cause.printStackTrace();
+            ctx.close();
         }
     }
 

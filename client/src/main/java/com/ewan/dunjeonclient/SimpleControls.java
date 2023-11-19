@@ -67,7 +67,7 @@ public class SimpleControls implements KeyListener {
         }
 
         UserInput mEntity = new MoveEntity(new Vector2(x, y));
-        clientChannelHandler.sendSingleInputToServer(mEntity);
+//        clientChannelHandler.sendSingleInputToServer(mEntity);
 
         //Process turning keys
 
@@ -81,6 +81,6 @@ public class SimpleControls implements KeyListener {
         }
 
         UserInput tEntity = new TurnEntity(turn);
-        clientChannelHandler.sendSingleInputToServer(tEntity);
+//        clientChannelHandler.sendSingleInputToServer(tEntity);
     }
 }

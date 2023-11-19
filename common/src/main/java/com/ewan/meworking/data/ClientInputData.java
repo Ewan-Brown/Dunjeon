@@ -5,7 +5,5 @@ import lombok.Data;
 
 import java.util.List;
 
-@Data
-public class ClientData{
-    final List<UserInput> inputs;
+public record ClientInputData(List<UserInput> inputs) {
 };
