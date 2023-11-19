@@ -7,12 +7,14 @@ import com.ewan.meworking.data.ServerData;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.ReplayingDecoder;
 
 import java.nio.charset.Charset;
 import java.util.List;
 
-public class ClientDataDecoder extends ByteToMessageDecoder {
+public class ClientDataDecoder extends MessageToMessageDecoder<ByteBuf> {
 
     private final Kryo kryo;
 
@@ -23,19 +25,25 @@ public class ClientDataDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx,
                           ByteBuf in, List<Object> out){
-        if (in.readableBytes() < 4)
-            return;
-
-        in.markReaderIndex();
-
-        int completeMessageLength = in.readInt();
-
-        if(in.readableBytes() < completeMessageLength){
-            in.resetReaderIndex();
-        }else{
-            byte[] buf = new byte[completeMessageLength];
-            in.readBytes(buf);
-            out.add(kryo.readObject(new Input(buf), ClientData.class));
-        }
+        System.out.println("ClientDataDecoder.decode");
+//        if (in.readableBytes() < 4)
+//            return;
+//
+//        in.markReaderIndex();
+//
+//        int completeMessageLength = in.readInt();
+//
+//        if(in.readableBytes() < completeMessageLength){
+//            in.resetReaderIndex();
+//        }else{
+//            byte[] buf = new byte[completeMessageLength];
+//            in.readBytes(buf);
+//            out.add(kryo.readObject(new Input(buf), ClientData.class));
+//        }
     }
+
+//    @Override
+//    protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
+//
+//    }
 }

@@ -8,10 +8,14 @@ import com.ewan.meworking.codec.KryoPreparator;
 import com.ewan.meworking.codec.ServerDataEncoder;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.ewan.meworking.data.ClientData;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
+import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.util.HashMap;
@@ -25,29 +29,26 @@ public class ServerManager {
 
     public static void runServer(){
         EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            ServerBootstrap b = new ServerBootstrap();
+            Bootstrap b = new Bootstrap();
             Kryo kryo = KryoPreparator.getAKryo();
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch) {
+            b.group(bossGroup)
+                    .channel(NioDatagramChannel.class)
+                    .handler(new ChannelInitializer<DatagramChannel>() {
+                        public void initChannel(DatagramChannel ch) {
                             ch.pipeline().addLast(
-                                    new ClientDataDecoder(kryo),
-                                    new ServerDataEncoder(kryo),
-                                    new ServerManager.ServerInboundChannelHandler());
+//                                    new ClientDataDecoder(kryo),
+//                                    new ServerDataEncoder(kryo),
+                                    new ServerInboundChannelHandler());
                         }
-                    }).option(ChannelOption.SO_BACKLOG, 128)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+                    }).option(ChannelOption.AUTO_CLOSE, true)
+                    .option(ChannelOption.SO_BROADCAST, true);
 
-            ChannelFuture f = b.bind(1459).sync();
+            ChannelFuture f = b.bind(1469).sync();
             f.channel().closeFuture().sync();
         }catch(InterruptedException e){
             e.printStackTrace();
         } finally {
-            workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
     }
@@ -57,25 +58,28 @@ public class ServerManager {
         @Override
         @SuppressWarnings("unchecked")
         public void channelActive(final ChannelHandlerContext ctx) {
-            System.out.println("Client joined - " + ctx + ", adding to list of client channels");
-            ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
-            ClientHandler clientHandler = new ClientHandler(controller, ctx.channel());
-            clientHandlerHashMap.put(ctx.channel(), clientHandler);
+            System.out.println("ServerInboundChannelHandler.channelActive");
+//            System.out.println("Client joined - " + ctx + ", adding to list of client channels");
+//            ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
+//            ClientHandler clientHandler = new ClientHandler(controller, ctx.channel());
+//            clientHandlerHashMap.put(ctx.channel(), clientHandler);
         }
 
         @Override
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-            super.channelInactive(ctx);
-            System.out.println("Client left - " + ctx + ", removing from list of client channels");
-            clientHandlerHashMap.get(ctx.channel()).setConnectionActive(false);
-            clientHandlerHashMap.remove(ctx.channel()); //TODO for now...
+            System.out.println("ServerInboundChannelHandler.channelInactive");
+//            super.channelInactive(ctx);
+//            System.out.println("Client left - " + ctx + ", removing from list of client channels");
+//            clientHandlerHashMap.get(ctx.channel()).setConnectionActive(false);
+//            clientHandlerHashMap.remove(ctx.channel()); //TODO for now...
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
-            ClientData clientData = (ClientData) msg;
-            clientHandlerHashMap.get(ctx.channel()).passInputsToController(clientData.getInputs());
+            System.out.println("ServerInboundChannelHandler.channelRead");
+//            ClientData clientData = (ClientData) msg;
+//            clientHandlerHashMap.get(ctx.channel()).passInputsToController(clientData.getInputs());
         }
     }
 

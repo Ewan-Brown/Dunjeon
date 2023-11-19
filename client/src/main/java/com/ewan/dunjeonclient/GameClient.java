@@ -9,12 +9,12 @@ import com.ewan.meworking.codec.ServerDataDecoder;
 import com.ewan.meworking.data.ClientData;
 import com.ewan.meworking.data.client.MoveEntity;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.dyn4j.geometry.Vector2;
 
@@ -23,31 +23,36 @@ import java.util.List;
 public class GameClient {
 
     public GameClient(ClientChannelHandler clientChannelHandler, String host) {
-        int port = 1459;
+        int port = 1469;
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
             Kryo kryo = KryoPreparator.getAKryo();
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);
-            b.channel(NioSocketChannel.class);
-            b.handler(new ChannelInitializer<SocketChannel>() {
-
+            b.channel(NioDatagramChannel.class);
+            b.handler(new ChannelInitializer<DatagramChannel>() {
                 @Override
-                public void initChannel(SocketChannel ch) {
+                public void initChannel(DatagramChannel ch) {
                     ch.pipeline().addLast(
-                            new ClientDataEncoder(kryo),
-                            new ServerDataDecoder(kryo),
+//                            new ClientDataEncoder(kryo),
+//                            new ServerDataDecoder(kryo),
                             clientChannelHandler);
                 }
             });
-            b.option(ChannelOption.SO_KEEPALIVE, true);
 
-            System.out.println("Client attempting to connect to server");
+            System.out.println("Client initialization complete");
             ChannelFuture f = b.connect(host, port).sync();
-            System.out.println("Client Connection to server successful");
-            clientChannelHandler.setServerChannel(f.channel());
-
+            System.out.println("Sending test data to server, just some bytes :)");
+            f.channel().writeAndFlush(Unpooled.wrappedBuffer("Hello".getBytes())).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    System.out.println(future.isSuccess()? "Message sent to server : Hello" : "Message sending failed");
+                }
+            });
+//            f.channel().writeAndFlush(new ClientData(List.of(new MoveEntity(new Vector2()))));
+            System.out.println("Client connect call complete, retrieving future sync");
+//            clientChannelHandler.setServerChannel(f.channel());
             f.channel().closeFuture().sync();
             System.out.println("f.isCancelled() = " + f.isCancelled());
             System.out.println("f.isDone() = " + f.isDone());

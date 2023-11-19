@@ -22,17 +22,18 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("Client activated, saving channel as server");
-        serverChannel = ctx.channel();
-        ctx.flush();
+        System.out.println("ClientChannelHandler.channelActive");
+//        serverChannel = ctx.channel();
+//        ctx.flush();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ServerData data = (ServerData) msg;
-        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
-        setMostRecentWorldTimestamp(data.getWorldTime());
+        System.out.println("ClientChannelHandler.channelRead");
+//        ServerData data = (ServerData) msg;
+//        setMostRecentBasicMemoryBank(data.getBasicMemoryBank());
+//        setMostRecentWorldTimestamp(data.getWorldTime());
     }
 
     public void sendSingleInputToServer(UserInput input){
@@ -46,6 +47,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
+        System.out.println("ClientChannelHandler.channelReadComplete");
         ctx.flush();
     }
 
