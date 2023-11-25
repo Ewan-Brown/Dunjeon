@@ -7,13 +7,17 @@ import com.ewan.meworking.codec.ServerDataEncoder;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.ewan.meworking.data.ClientInputData;
 import com.ewan.meworking.data.ServerData;
+import com.ewan.meworking.data.ServerDataWrapper;
+import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
+import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.HashMap;
 
 /**
@@ -57,10 +61,15 @@ public class ServerManager {
             super.channelRead(ctx, msg);
             System.out.println("ServerInboundChannelHandler.channelRead");
             ClientInputDataWrapper clientInput = (ClientInputDataWrapper) msg;
+            InetSocketAddress address = ((ClientInputDataWrapper) msg).sender();
             if(!clientHandlerHashMap.containsKey(clientInput.sender())){
-                System.out.println("Unknown client has messaged server, sending back a simple acknowledge");
-                ctx.channel().writeAndFlush(new ServerData(null, 0));
-                //Connect the client to a creature, send all data they are missing if any is necessary
+                System.out.println("Unknown client has messaged server, sending ba ck a simple acknowledge");
+
+                Channel ch = ctx.channel();
+
+                //Sending a test message just for fun
+                ctx.channel().writeAndFlush(new ServerDataWrapper(new ServerData(new BasicMemoryBank(-1), 0), address));
+//                clientHandlerHashMap.put(address, )
             }{
                 //Process input as necessary
             }

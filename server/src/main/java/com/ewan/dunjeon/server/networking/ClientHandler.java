@@ -5,6 +5,7 @@ import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.meworking.data.ServerData;
 import com.ewan.meworking.data.client.UserInput;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,7 +34,7 @@ public class ClientHandler {
         }
     }
 
-    public void sendDataToClient(){
+    public void sendDataToClient(ChannelHandlerContext ctx){
         if(isConnectionActive) {
             if (creatureController.getBasicMemoryBank() != null) {
 //                getClientChannel().writeAndFlush(new ServerData(creatureController.getBasicMemoryBank(), Dunjeon.getInstance().getTimeElapsed()));
