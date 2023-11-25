@@ -1,5 +1,8 @@
 package com.ewan.dunjeon.server.networking;
 
+import com.ewan.dunjeon.server.world.Dunjeon;
+import com.ewan.dunjeon.server.world.entities.ClientBasedController;
+import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.meworking.codec.ClientDataDecoder;
 import com.ewan.meworking.codec.ClientInputDataWrapper;
 import com.ewan.meworking.codec.KryoPreparator;
@@ -26,6 +29,7 @@ import java.util.HashMap;
 public class ServerManager {
 
     private static final HashMap<InetSocketAddress, ClientHandler> clientHandlerHashMap = new HashMap<>();
+    private static final Channel channel;
 
     public static void runServer(){
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -65,11 +69,10 @@ public class ServerManager {
             if(!clientHandlerHashMap.containsKey(clientInput.sender())){
                 System.out.println("Unknown client has messaged server, sending ba ck a simple acknowledge");
 
-                Channel ch = ctx.channel();
-
                 //Sending a test message just for fun
                 ctx.channel().writeAndFlush(new ServerDataWrapper(new ServerData(new BasicMemoryBank(-1), 0), address));
-//                clientHandlerHashMap.put(address, )
+                ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
+                clientHandlerHashMap.put(address, new ClientHandler(controller, address));
             }{
                 //Process input as necessary
             }
