@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class ServerManager {
 
     private static final HashMap<InetSocketAddress, ClientHandler> clientHandlerHashMap = new HashMap<>();
-    private static final Channel channel;
+    private static Channel channel;
 
     public static void runServer(){
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -63,6 +63,11 @@ public class ServerManager {
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             super.channelRead(ctx, msg);
+
+            if(channel == null){
+                channel = ctx.channel();
+            }
+
             System.out.println("ServerInboundChannelHandler.channelRead");
             ClientInputDataWrapper clientInput = (ClientInputDataWrapper) msg;
             InetSocketAddress address = ((ClientInputDataWrapper) msg).sender();
@@ -88,7 +93,7 @@ public class ServerManager {
 
     public static void sendDataToClients(){
         for (ClientHandler handler : clientHandlerHashMap.values()) {
-            handler.sendDataToClient();
+            handler.sendDataToClient(channel);
         }
 
     }

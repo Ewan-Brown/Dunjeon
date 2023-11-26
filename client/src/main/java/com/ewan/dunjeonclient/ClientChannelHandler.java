@@ -1,5 +1,7 @@
 package com.ewan.dunjeonclient;
 
+import com.ewan.meworking.codec.ClientInputDataWrapper;
+import com.ewan.meworking.data.ClientInputData;
 import com.ewan.meworking.data.ServerData;
 import com.ewan.meworking.data.ServerDataWrapper;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
@@ -33,4 +35,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
         ctx.close();
     }
+
+//    public void sendMessageToClient(ClientInputDataWrapper )
 }

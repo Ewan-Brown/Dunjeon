@@ -3,6 +3,7 @@ package com.ewan.dunjeon.server.networking;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.meworking.data.ServerData;
+import com.ewan.meworking.data.ServerDataWrapper;
 import com.ewan.meworking.data.client.UserInput;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,10 +35,10 @@ public class ClientHandler {
         }
     }
 
-    public void sendDataToClient(ChannelHandlerContext ctx){
+    public void sendDataToClient(Channel channel){
         if(isConnectionActive) {
             if (creatureController.getBasicMemoryBank() != null) {
-//                getClientChannel().writeAndFlush(new ServerData(creatureController.getBasicMemoryBank(), Dunjeon.getInstance().getTimeElapsed()));
+                channel.writeAndFlush(new ServerDataWrapper(new ServerData(creatureController.getBasicMemoryBank(), Dunjeon.getInstance().getTimeElapsed()), clientAddress));
             } else {
                 System.err.println("Attempted to send data to client but the attached memory bank is null!");
             }
