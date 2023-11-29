@@ -5,6 +5,7 @@ import com.ewan.meworking.data.ClientInputData;
 import com.ewan.meworking.data.ServerData;
 import com.ewan.meworking.data.ServerDataWrapper;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.Getter;
@@ -20,12 +21,14 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     private BasicMemoryBank mostRecentBasicMemoryBank = null;
     private double mostRecentWorldTimestamp = 0;
     private InetSocketAddress serverAddress;
+    private Channel server;
 
     @Override
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("ClientChannelHandler.channelRead");
         ServerData data = (ServerData) msg;
+        server = ctx.channel();
         mostRecentBasicMemoryBank = data.getBasicMemoryBank();
         mostRecentWorldTimestamp = data.getWorldTime();
     }
@@ -36,5 +39,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
 
-//    public void sendMessageToClient(ClientInputDataWrapper )
+    public void sendMessageToClient(ClientInputData data){
+        server.writeAndFlush(data);
+    }
 }
