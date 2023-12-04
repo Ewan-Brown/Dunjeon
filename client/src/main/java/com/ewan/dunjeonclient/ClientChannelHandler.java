@@ -1,6 +1,5 @@
 package com.ewan.dunjeonclient;
 
-import com.ewan.meworking.codec.ClientInputDataWrapper;
 import com.ewan.meworking.data.ClientInputData;
 import com.ewan.meworking.data.ServerData;
 import com.ewan.meworking.data.ServerDataWrapper;
@@ -26,7 +25,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("ClientChannelHandler.channelRead");
         ServerData data = (ServerData) msg;
         server = ctx.channel();
         mostRecentBasicMemoryBank = data.getBasicMemoryBank();

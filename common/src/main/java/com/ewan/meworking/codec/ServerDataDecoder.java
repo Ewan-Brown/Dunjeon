@@ -27,7 +27,6 @@ public class ServerDataDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, DatagramPacket msg, List<Object> out) throws Exception {
-        System.out.println("ServerDataDecoder.decode");
         ServerData data = kryo.readObject(new Input(new ByteBufferInputStream(msg.content().nioBuffer())), ServerData.class);
 //        ServerDataWrapper wrapper = new ServerDataWrapper(data);
         out.add(data);

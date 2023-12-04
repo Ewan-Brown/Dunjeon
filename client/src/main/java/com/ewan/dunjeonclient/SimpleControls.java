@@ -1,5 +1,6 @@
 package com.ewan.dunjeonclient;
 
+import com.ewan.meworking.data.ClientInputData;
 import com.ewan.meworking.data.client.MoveEntity;
 import com.ewan.meworking.data.client.TurnEntity;
 import com.ewan.meworking.data.client.UserInput;
@@ -8,6 +9,7 @@ import org.dyn4j.geometry.Vector2;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.BitSet;
+import java.util.List;
 
 public class SimpleControls implements KeyListener {
 
@@ -67,8 +69,6 @@ public class SimpleControls implements KeyListener {
         }
 
         UserInput mEntity = new MoveEntity(new Vector2(x, y));
-//        clientChannelHandler.send
-
         //Process turning keys
 
         float turn = 0;
@@ -81,6 +81,6 @@ public class SimpleControls implements KeyListener {
         }
 
         UserInput tEntity = new TurnEntity(turn);
-//        clientChannelHandler.sendSingleInputToServer(tEntity);
+        clientChannelHandler.sendMessageToClient(new ClientInputData(List.of(tEntity, mEntity)));
     }
 }

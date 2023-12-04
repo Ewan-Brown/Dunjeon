@@ -68,18 +68,21 @@ public class ServerManager {
                 channel = ctx.channel();
             }
 
-            System.out.println("ServerInboundChannelHandler.channelRead");
-            ClientInputDataWrapper clientInput = (ClientInputDataWrapper) msg;
+            ClientInputDataWrapper dataWrapper = (ClientInputDataWrapper) msg;
             InetSocketAddress address = ((ClientInputDataWrapper) msg).sender();
-            if(!clientHandlerHashMap.containsKey(clientInput.sender())){
+            if(!clientHandlerHashMap.containsKey(dataWrapper.sender())){
                 System.out.println("Unknown client has messaged server, sending ba ck a simple acknowledge");
 
                 //Sending a test message just for fun
                 ctx.channel().writeAndFlush(new ServerDataWrapper(new ServerData(new BasicMemoryBank(-1), 0), address));
                 ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
                 clientHandlerHashMap.put(address, new ClientHandler(controller, address));
-            }{
+            }
+            {
                 //Process input as necessary
+                ClientHandler clientController = clientHandlerHashMap.get(address);
+                clientController.passInputsToController(dataWrapper.clientInputData().inputs());
+
             }
 
         }

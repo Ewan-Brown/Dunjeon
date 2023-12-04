@@ -25,7 +25,6 @@ public class ServerDataEncoder
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ServerDataWrapper serverDataWrapper, List<Object> list) throws Exception {
-        System.out.println("ServerDataEncoder.encode");
         Output output = new Output(4096);
         kryo.writeObject(output, serverDataWrapper.data());
         list.add(new DatagramPacket(Unpooled.wrappedBuffer(output.getBuffer()), serverDataWrapper.address()));

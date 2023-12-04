@@ -20,7 +20,6 @@ public class ClientDataDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
-        System.out.println("ClientDataDecoder.decode");
         ClientInputData data = kryo.readObject(new Input(new ByteBufferInputStream(msg.content().nioBuffer())), ClientInputData.class);
         ClientInputDataWrapper wrapper = new ClientInputDataWrapper(data, msg.sender());
         out.add(wrapper);

@@ -21,12 +21,10 @@ public class ClientDataEncoder
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ClientInputData clientInputData, List<Object> list) throws Exception {
         try {
-            System.out.println("ClientDataEncoder.encode");
-            Output output = new Output(4096);
+            Output output = new Output(2048);
             kryo.writeObject(output, clientInputData);
             list.add(Unpooled.wrappedBuffer(output.getBuffer()));
         }catch (Exception e){
-            System.out.println("ClientDataEncoder.encode failed!");
             e.printStackTrace();
         }
     }

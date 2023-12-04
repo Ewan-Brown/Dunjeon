@@ -143,8 +143,10 @@ public class KryoPreparator {
             Object identifier = kryo.readClassAndObject(input);
 
             int mapSize = input.readInt();
+            System.out.println("mapSize = " + mapSize);
             HashMap<Class<?>, KnowledgeFragment<?>> dataMap = new HashMap<>();
             for (int i = 0; i < mapSize; i++) {
+                System.out.println("\ti = " + i);
                 KnowledgeFragment<?> fragment = (KnowledgeFragment<?>) kryo.readObject(input, KnowledgeFragment.class, knowledgeFragmentSerializer);
                 dataMap.put(fragment.getInfo().getClass(), fragment);
             }
@@ -160,6 +162,8 @@ public class KryoPreparator {
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {
             @Override
             public void write(Kryo kryo, Output output, CellPosition object) {
+                System.out.println("writing long : " + object.getFloorID());
+                System.out.println("writing position : " + object.getPosition());
                 output.writeLong(object.getFloorID());
                 kryo.writeObject(output, object.getPosition());
             }
@@ -167,8 +171,11 @@ public class KryoPreparator {
             @Override
             @SuppressWarnings("unchecked")
             public CellPosition read(Kryo kryo, Input input, Class aClass) {
+                System.out.println("kryo = " + kryo);
                 long floorID = input.readLong();
                 Vector2 v = kryo.readObject(input, Vector2.class);
+                System.out.println("floorID = " + floorID);
+                System.out.println("vector = " + v);
                 return new CellPosition(v, floorID);
             }
         });
