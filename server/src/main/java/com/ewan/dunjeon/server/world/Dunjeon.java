@@ -58,6 +58,7 @@ public class Dunjeon{
         TestSubject testSubject = new TestSubject("Player");
         testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
+        testSubject.rotate(Math.PI/2);
 
         ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = new ClientBasedTestSubjectController(testSubject);
 

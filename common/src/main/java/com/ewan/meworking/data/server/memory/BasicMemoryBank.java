@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 public class BasicMemoryBank extends DataSink {
 
     private final long ownerUUID;
+    private final List<MemoryBankListener> listeners = new ArrayList<>();
 
     public BasicMemoryBank(long uuid){
         this(uuid, new ArrayList<>());
@@ -28,6 +29,10 @@ public class BasicMemoryBank extends DataSink {
     public BasicMemoryBank(long uuid, List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> pairings){
         this.ownerUUID = uuid;
         this.knowledgeDataPairings = pairings;
+    }
+
+    public void addListener(MemoryBankListener lis){
+        listeners.add(lis);
     }
 
     public record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
@@ -40,6 +45,9 @@ public class BasicMemoryBank extends DataSink {
     @SuppressWarnings("unchecked")
     public <T extends Data, I, P extends KnowledgePackage<I,T>> void processWrappedData(DataWrapper<T, I> wrappedData){
 
+        for (MemoryBankListener listener : listeners) {
+            listener.processWrappedData(wrappedData);
+        }
         Pairing<?, ?, ?> matchingPairing = knowledgeDataPairings.stream()
                 .filter(pairing -> pairing.relatedBaseDataClass() == wrappedData.getBaseClass())
                 .findFirst().orElse(null);

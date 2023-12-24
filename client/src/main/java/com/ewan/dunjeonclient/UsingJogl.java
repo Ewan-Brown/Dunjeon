@@ -118,7 +118,7 @@ public class UsingJogl implements GLEventListener {
 
 		gl.glScaled(0.06, 0.06, 1.0);
 
-		BasicMemoryBank basicMemoryBank = clientChannelHandler.getMostRecentBasicMemoryBank();
+		BasicMemoryBank basicMemoryBank = clientChannelHandler.getClientMemoryBank();
 		if(basicMemoryBank != null){
 			renderMemoryBank(gl, basicMemoryBank);
 		}

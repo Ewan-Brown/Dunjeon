@@ -7,6 +7,8 @@ import com.ewan.dunjeon.server.world.WorldUtils;
 import com.ewan.dunjeon.server.world.cells.BasicCell;
 import com.ewan.dunjeon.server.world.entities.Entity;
 import com.ewan.dunjeon.server.world.entities.creatures.Creature;
+import com.ewan.meworking.data.server.data.Data;
+import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.data.DataWrappers;
 import com.ewan.meworking.data.server.data.Datas;
 import lombok.AllArgsConstructor;
@@ -36,15 +38,15 @@ public class Datastreams {
                 HashMap<Vector2, Set<WorldUtils.Side>> tilesMap = new HashMap<>();
                 Vector2 sensorPos = params.getSightSourceLocation();
 
-                List<DataWrappers.CellDataWrapper> cellDataAmalgamated = new ArrayList<>();
-                List<DataWrappers.EntityDataWrapper> entityDataAmalgamated = new ArrayList<>();
+                List<DataWrapper<? extends Data, ?>> dataAmalgamated = new ArrayList<>();
+//                List<DataWrappers.CellDataWrapper> cellDataAmalgamated = new ArrayList<>();
+//                List<DataWrappers.EntityDataWrapper> entityDataAmalgamated = new ArrayList<>();
 
                 if(params.getTrueSight()){
 
                     for (BasicCell basicCell : sensor.creature.getFloor().getCellsAsList()) {
                         Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
-                        DataWrappers.CellDataWrapper wrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimeElapsed());
-                        cellDataAmalgamated.add(wrapper);
+                        dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimeElapsed()));
                     }
 
                     for (Entity entity : sensor.creature.getFloor().getEntities()){
@@ -52,8 +54,7 @@ public class Datastreams {
                         Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getRotationAngle(), entity.getAngularVelocity());
                         Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
                         Long entityId = entity.getUUID();
-                        DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(List.of(kineticData, positionalData), entityId, d.getTimeElapsed());
-                        entityDataAmalgamated.add(entityDataWrapper);
+                        dataAmalgamated.add(DataWrappers.wrapEntityData(List.of(kineticData, positionalData), entityId, d.getTimeElapsed()));
                     }
 
                 }else {
@@ -97,9 +98,7 @@ public class Datastreams {
                         BasicCell basicCell = sensor.creature.getFloor().getCellAt(tile.getKey());
                         if (basicCell == null) continue;
                         Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
-                        DataWrappers.CellDataWrapper cellDataWrapper = new DataWrappers.CellDataWrapper(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), sensor.creature.getFloor().getUUID()), d.getTimeElapsed());
-                        cellDataAmalgamated.add(cellDataWrapper);
-
+                        dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimeElapsed()));
                     }
 
                     Set<Entity> entitiesOnSameFloor = sensor.creature.getFloor().getEntities();
@@ -117,16 +116,12 @@ public class Datastreams {
                         Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getRotationAngle(), entity.getAngularVelocity());
                         Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
                         Long entityId = entity.getUUID();
-
-                        DataWrappers.EntityDataWrapper entityDataWrapper = new DataWrappers.EntityDataWrapper(List.of(kineticData, positionalData), entityId, d.getTimeElapsed());
-                        entityDataAmalgamated.add(entityDataWrapper);
+                        dataAmalgamated.add(DataWrappers.wrapEntityData(List.of(kineticData, positionalData), entityId, d.getTimeElapsed()));
                     }
 
                 }
 
-
-                sensor.passOnData(entityDataAmalgamated);
-                sensor.passOnData(cellDataAmalgamated);
+                sensor.passOnData(dataAmalgamated);
 
             }
         }

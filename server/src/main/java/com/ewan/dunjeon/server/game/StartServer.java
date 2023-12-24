@@ -7,12 +7,12 @@ import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.dunjeon.server.world.Dunjeon;
+import lombok.SneakyThrows;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.dyn4j.geometry.*;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -22,8 +22,10 @@ public class StartServer {
     static final long UPDATE_DELAY = 16;
     private static final int entityCount = 0;
 
+    @SneakyThrows
     public static void main(String[] args) {
-
+        System.out.println("Starting server");
+        System.setOut(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
         System.out.println("Starting server code");
         generateWorld();
         new Thread(ServerManager::runServer).start();
