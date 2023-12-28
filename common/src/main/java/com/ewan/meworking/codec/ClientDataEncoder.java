@@ -13,6 +13,8 @@ public class ClientDataEncoder
         extends MessageToMessageEncoder<ClientInputData> {
 
     private final Kryo kryo;
+    public static final int BUFFER_SIZE = 1500;
+
 
     public ClientDataEncoder(Kryo kryo) {
         this.kryo = kryo;
@@ -21,7 +23,7 @@ public class ClientDataEncoder
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ClientInputData clientInputData, List<Object> list) throws Exception {
         try {
-            Output output = new Output(1450);
+            Output output = new Output(BUFFER_SIZE);
             kryo.writeObject(output, clientInputData);
             list.add(Unpooled.wrappedBuffer(output.getBuffer()));
         }catch (Exception e){

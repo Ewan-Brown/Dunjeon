@@ -41,7 +41,7 @@ public class BasicMemoryBank extends DataSink {
     //Each pairing in this list is a for specific 'category' of knowledge - defined by the base Data class. For example EntityData/FloorData/CellData are 3 existing categories.
     final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings;
 
-    //Unwrap data to figure out its context, and place it in the appropriate knowledge object
+    //Unwrap data to understand its context, and place it in the appropriate knowledge object
     @SuppressWarnings("unchecked")
     public <T extends Data, I, P extends KnowledgePackage<I,T>> void processWrappedData(DataWrapper<T, I> wrappedData){
 

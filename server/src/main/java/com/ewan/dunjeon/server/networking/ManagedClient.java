@@ -35,7 +35,6 @@ public class ManagedClient {
         creatureController.getBasicMemoryBank().addListener(new MemoryBankListener() {
             @Override
             public <T extends Data, I, P extends KnowledgePackage<I, T>> void processWrappedData(DataWrapper<T, I> dataWrapper) {
-                System.out.println("MemoryBankListener.processWrappedData()");
                 unProcessedDataWrappers.add(dataWrapper);
             }
         });
@@ -48,10 +47,10 @@ public class ManagedClient {
     }
 
     public void sendDataToClient(Channel channel){
-        System.out.println("ManagedClient.sendDataToClient");
         if(isConnectionActive) {
-            System.out.println("ManagedClient.sendDataToClient2");
-            channel.writeAndFlush(new ServerDataWrapper(new ServerData(unProcessedDataWrappers, Dunjeon.getInstance().getTimeElapsed()), clientAddress));
+            for (DataWrapper<?, ?> unProcessedDataWrapper : unProcessedDataWrappers) {
+                channel.writeAndFlush(new ServerDataWrapper(new ServerData(List.of(unProcessedDataWrapper), Dunjeon.getInstance().getTimeElapsed()), clientAddress));
+            }
             unProcessedDataWrappers = new ArrayList<>();
         }
     }

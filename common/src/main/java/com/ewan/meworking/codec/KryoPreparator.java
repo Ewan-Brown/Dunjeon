@@ -38,8 +38,11 @@ public class KryoPreparator {
 
         @Override
         public void write(Kryo kryo, Output output, Data object) {
-            System.out.println("DataSerializer.write");
-            kryo.writeObject(output, object.getClass());
+            try {
+                kryo.writeObject(output, object.getClass());
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             Field[] fields = object.getClass().getDeclaredFields();
             for (Field field : fields) {
                 try {
@@ -54,7 +57,6 @@ public class KryoPreparator {
 
         @Override
         public Data read(Kryo kryo, Input input, Class<? extends Data> type) {
-            System.out.println("DataSerializer.read");
             Class<?> clazz = kryo.readObject(input, Class.class);
             Field[] fields = clazz.getDeclaredFields();
             Object[] obj = new Object[fields.length];

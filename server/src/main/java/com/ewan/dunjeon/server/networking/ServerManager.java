@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class ServerManager {
 
-    private static final HashMap<InetSocketAddress, ManagedClient> clientHandlerHashMap = new HashMap<>();
+    private static final HashMap<InetSocketAddress, ManagedClient> clientHandlerHashMap = new HashMap<>(); //TODO add a thing that removes clients when they disconnect - IF PLAYER CLIENT CRASHES HOW CAN A UDP BASED SERVER KNOW?! MAYBE SEND KEEPALIVE MESSAGES?
     private static Channel channel;
 
     public static void runServer(){
@@ -46,7 +46,7 @@ public class ServerManager {
                     }).option(ChannelOption.AUTO_CLOSE, true)
                     .option(ChannelOption.SO_BROADCAST, true);
 
-            ChannelFuture f = b.bind(1469).sync();
+            ChannelFuture f = b.bind(1471).sync();
             f.channel().closeFuture().sync();
         }catch(InterruptedException e){
             e.printStackTrace();
@@ -69,7 +69,7 @@ public class ServerManager {
             ClientInputDataWrapper dataWrapper = (ClientInputDataWrapper) msg;
             InetSocketAddress address = ((ClientInputDataWrapper) msg).sender();
             if(!clientHandlerHashMap.containsKey(dataWrapper.sender())){
-                System.out.println("Unknown client has messaged server, sending ba ck a simple acknowledge");
+                System.out.println("Unknown client has messaged server, sending back a simple acknowledge");
 
                 //Sending a test message just for fun
                 ctx.channel().writeAndFlush(new ServerDataWrapper(new ServerData(new ArrayList<>(), 0), address));
@@ -93,7 +93,6 @@ public class ServerManager {
     }
 
     public static void sendDataToClients(){
-        System.out.println("ServerManager.sendDataToClients");
         for (ManagedClient handler : clientHandlerHashMap.values()) {
             handler.sendDataToClient(channel);
         }

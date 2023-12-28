@@ -27,9 +27,7 @@ public abstract class ClientBasedController<C extends Creature, D extends Creatu
         List<UserInput> inputsReadyForProcessing = getUserInputBuffer();
         userInputBuffer = new ArrayList<>();
 
-        if(!inputsReadyForProcessing.isEmpty()) {
-            updateWithUserInputs(inputsReadyForProcessing);
-        }
+        updateWithUserInputs(inputsReadyForProcessing);
     }
 
     abstract void updateWithUserInputs(List<UserInput> inputs);

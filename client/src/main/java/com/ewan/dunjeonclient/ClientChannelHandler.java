@@ -34,7 +34,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         ServerData data = (ServerData) msg;
         server = ctx.channel();
         mostRecentWorldTimestamp = data.getWorldTime();
-        System.out.println("# of data wrappers received: " + data.getDataWrappers().size());
         for (DataWrapper<? extends Data,?> dataWrapper : data.getDataWrappers()) {
             clientMemoryBank.processWrappedData(dataWrapper);
         }

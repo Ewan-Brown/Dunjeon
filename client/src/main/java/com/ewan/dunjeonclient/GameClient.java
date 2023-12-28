@@ -18,7 +18,7 @@ import java.util.List;
 public class GameClient {
 
     public GameClient(ClientChannelHandler clientChannelHandler, String host) {
-        int port = 1469;
+        int port = 1471;
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {

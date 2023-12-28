@@ -14,6 +14,8 @@ import io.netty.handler.codec.MessageToMessageEncoder;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+import static com.ewan.meworking.codec.ClientDataEncoder.BUFFER_SIZE;
+
 public class ServerDataEncoder
         extends MessageToMessageEncoder<ServerDataWrapper> {
 
@@ -25,8 +27,14 @@ public class ServerDataEncoder
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ServerDataWrapper serverDataWrapper, List<Object> list) throws Exception {
-        Output output = new Output(1450);
-        kryo.writeObject(output, serverDataWrapper.data());
-        list.add(new DatagramPacket(Unpooled.wrappedBuffer(output.getBuffer()), serverDataWrapper.address()));
+
+        try {
+            Output output = new Output(BUFFER_SIZE + 1);
+            kryo.writeObject(output, serverDataWrapper.data());
+            list.add(new DatagramPacket(Unpooled.wrappedBuffer(output.getBuffer()), serverDataWrapper.address()));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
+
 }
