@@ -1,6 +1,6 @@
 package com.ewan.dunjeon.data;
 
-import com.ewan.meworking.data.server.CellPosition;
+import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.Pair;
 import com.ewan.dunjeon.server.world.WorldUtils;

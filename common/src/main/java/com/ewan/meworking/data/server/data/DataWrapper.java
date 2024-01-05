@@ -18,4 +18,5 @@ public abstract class DataWrapper<D extends Data, I> {
     Class<D> baseClass;
     I identifier;
     double timestamp;
+    int tickstamp;
 }

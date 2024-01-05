@@ -4,38 +4,29 @@ import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.Serializer;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
-import com.ewan.meworking.data.ClientInputData;
-import com.ewan.meworking.data.ServerData;
+import com.ewan.meworking.data.client.ClientInputData;
+import com.ewan.meworking.data.server.DataPacket;
 import com.ewan.meworking.data.client.UserInput;
-import com.ewan.meworking.data.server.CellPosition;
+import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.data.DataWrappers;
-import com.ewan.meworking.data.server.memory.BasicMemoryBank;
-import com.ewan.meworking.data.server.memory.KnowledgeFragment;
-import com.ewan.meworking.data.server.memory.KnowledgePackage;
+import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
 import org.dyn4j.geometry.Vector2;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class KryoPreparator {
 
     static DataSerializer dataSerializer = new DataSerializer();
-//    static KnowledgePackageSerializer knowledgePackageSerializer = new KnowledgePackageSerializer();
-//    static KnowledgeFragmentSerializer knowledgeFragmentSerializer = new KnowledgeFragmentSerializer();
     static ClientInputSerializer clientInputSerializer = new ClientInputSerializer();
     static DataWrapperSerializer dataWrapperSerializer = new DataWrapperSerializer();
-    //TODO Can probably just use .write/readClassAndObject here for these non-concrete class serializers
-    // https://stackoverflow.com/questions/52337925/kryo-difference-between-readclassandobject-readobject-and-writeclassandobject-w
-    public static class DataSerializer extends Serializer<Data>{
 
+    public static class DataSerializer extends Serializer<Data>{
         @Override
         public void write(Kryo kryo, Output output, Data object) {
             try {
@@ -79,26 +70,6 @@ public class KryoPreparator {
         }
     }
 
-//    public static class KnowledgeFragmentSerializer extends Serializer<KnowledgeFragment<? extends Data>>{
-//
-//        @Override
-//        public void write(Kryo kryo, Output output, KnowledgeFragment<? extends Data> object) {
-//            System.out.println("KnowledgeFragmentSerializer.write");
-//            kryo.writeObject(output, object.getInfo(), dataSerializer);
-//            output.writeDouble(object.getTimestamp());
-//            output.flush();
-//            //TODO We DO NOT pass the source on for now... Could be useful to convert it into a less entangled format for a client though
-//        }
-//
-//        @Override
-//        public KnowledgeFragment<? extends Data> read(Kryo kryo, Input input, Class<? extends KnowledgeFragment<? extends Data>> type) {
-//            System.out.println("KnowledgeFragmentSerializer.read");
-//            Data info = kryo.readObject(input, Data.class, dataSerializer);
-//            double timestamp = input.readDouble();
-//            return new KnowledgeFragment<>(info, null, timestamp);
-//        }
-//    }
-
     public static class ClientInputSerializer extends Serializer<UserInput>{
         @Override
         public void write(Kryo kryo, Output output, UserInput object) {
@@ -139,6 +110,141 @@ public class KryoPreparator {
         }
     }
 
+
+    public static class DataWrapperSerializer extends Serializer<DataWrapper<?, ?>> {
+
+        @Override
+        public void write(Kryo kryo, Output output, DataWrapper<?, ?> object) {
+            output.writeInt(object.getData().size());
+            for (Data datum : object.getData()) {
+                kryo.writeObject(output, datum, dataSerializer);
+            }
+            kryo.writeObject(output, object.getBaseClass());
+            kryo.writeClassAndObject(output, object.getIdentifier());
+            output.writeDouble(object.getTimestamp());
+            output.writeInt(object.getTickstamp());
+            output.flush();
+        }
+
+        @Override
+        public DataWrapper<?, ?> read(Kryo kryo, Input input, Class<? extends DataWrapper<?, ?>> type) {
+            int dataCount = input.readInt();
+            List<Data> datas = new ArrayList<>();
+            for (int i = 0; i < dataCount; i++) {
+                datas.add(kryo.readObject(input, Data.class, dataSerializer));
+            }
+            Class<?> baseClass = kryo.readObject(input, Class.class);
+            Object o = kryo.readClassAndObject(input);
+            double t = input.readDouble();
+            int tick = input.readInt();
+            return DataWrappers.readFromGenericFields(datas, baseClass, o, t, tick);
+        }
+    }
+
+    public static Kryo getAKryo(){
+        Kryo kryo = new Kryo();
+        kryo.setRegistrationRequired(false);
+        kryo.setReferences(true);
+        kryo.register(FrameInfoPacket.class, new Serializer<FrameInfoPacket>() {
+            @Override
+            public void write(Kryo kryo, Output output, FrameInfoPacket object) {
+                output.writeDouble(object.worldTimeExact());
+                output.writeInt(object.worldTimeTicks());
+                output.writeInt(object.expectedDataCount());
+            }
+            @Override
+            public FrameInfoPacket read(Kryo kryo, Input input, Class<? extends FrameInfoPacket> type) {
+                return new FrameInfoPacket(input.readDouble(), input.readInt(), input.readInt());
+            }
+        });
+        kryo.register(CellPosition.class, new Serializer<CellPosition>() {
+            @Override
+            public void write(Kryo kryo, Output output, CellPosition object) {
+                output.writeLong(object.getFloorID());
+                kryo.writeObject(output, object.getPosition());
+                output.flush();
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public CellPosition read(Kryo kryo, Input input, Class aClass) {
+                long floorID = input.readLong();
+                Vector2 v = kryo.readObject(input, Vector2.class);
+                return new CellPosition(v, floorID);
+            }
+        });
+        kryo.register(Vector2.class, new Serializer<Vector2>() {
+            public void write(Kryo kryo, Output output, Vector2 object) {
+                output.writeDouble(object.x);
+                output.writeDouble(object.y);
+                output.flush();
+            }
+
+            public Vector2 read(Kryo kryo, Input input, Class<? extends Vector2> type) {
+                double x = input.readDouble();
+                double y = input.readDouble();
+                return new Vector2(x, y);
+            }
+        });
+        kryo.register(DataPacket.class, new Serializer<DataPacket>() {
+            @Override
+            public void write(Kryo kryo, Output output, DataPacket object) {
+                output.writeDouble(object.getWorldTime());
+                kryo.writeObject(output, object.getDataWrapper(), dataWrapperSerializer);
+                output.flush();
+            }
+
+            @Override
+            public DataPacket read(Kryo kryo, Input input, Class type) {
+                double timestamp = input.readDouble();
+                DataWrapper<?,?> dataWrapper = kryo.readObject(input, DataWrapper.class, dataWrapperSerializer);
+                return new DataPacket(dataWrapper, timestamp);
+            }
+        });
+        kryo.register(ClientInputData.class, new Serializer<ClientInputData>() {
+            @Override
+            public void write(Kryo kryo, Output output, ClientInputData object) {
+                output.writeInt(object.inputs().size());
+                for (UserInput input : object.inputs()) {
+                    kryo.writeObject(output, input, clientInputSerializer);
+                }
+                output.flush();
+            }
+            @Override
+            public ClientInputData read(Kryo kryo, Input input, Class type) {
+                List<UserInput> actions = new ArrayList<>();
+                int actionCount = input.readInt();
+                for (int i = 0; i < actionCount; i++) {
+                    actions.add(kryo.readObject(input, UserInput.class ,clientInputSerializer));
+                }
+                return new ClientInputData(actions);
+            }
+        });
+        return kryo;
+    }
+}
+
+
+//    public static class KnowledgeFragmentSerializer extends Serializer<KnowledgeFragment<? extends Data>>{
+//
+//        @Override
+//        public void write(Kryo kryo, Output output, KnowledgeFragment<? extends Data> object) {
+//            System.out.println("KnowledgeFragmentSerializer.write");
+//            kryo.writeObject(output, object.getInfo(), dataSerializer);
+//            output.writeDouble(object.getTimestamp());
+//            output.flush();
+//            //TODO We DO NOT pass the source on for now... Could be useful to convert it into a less entangled format for a client though
+//        }
+//
+//        @Override
+//        public KnowledgeFragment<? extends Data> read(Kryo kryo, Input input, Class<? extends KnowledgeFragment<? extends Data>> type) {
+//            System.out.println("KnowledgeFragmentSerializer.read");
+//            Data info = kryo.readObject(input, Data.class, dataSerializer);
+//            double timestamp = input.readDouble();
+//            return new KnowledgeFragment<>(info, null, timestamp);
+//        }
+//    }
+
 //    public static class KnowledgePackageSerializer extends Serializer<KnowledgePackage<?, ?>> {
 //
 //        @Override
@@ -169,67 +275,6 @@ public class KryoPreparator {
 //        }
 //    }
 
-    public static class DataWrapperSerializer extends Serializer<DataWrapper<?, ?>> {
-
-        @Override
-        public void write(Kryo kryo, Output output, DataWrapper<?, ?> object) {
-            output.writeInt(object.getData().size());
-            for (Data datum : object.getData()) {
-                kryo.writeObject(output, datum, dataSerializer);
-            }
-            kryo.writeObject(output, object.getBaseClass());
-            kryo.writeClassAndObject(output, object.getIdentifier());
-            output.writeDouble(object.getTimestamp());
-            output.flush();
-        }
-
-        @Override
-        public DataWrapper<?, ?> read(Kryo kryo, Input input, Class<? extends DataWrapper<?, ?>> type) {
-            int dataCount = input.readInt();
-            List<Data> datas = new ArrayList<>();
-            for (int i = 0; i < dataCount; i++) {
-                datas.add(kryo.readObject(input, Data.class, dataSerializer));
-            }
-            Class<?> baseClass = kryo.readObject(input, Class.class);
-            Object o = kryo.readClassAndObject(input);
-            double t = input.readDouble();
-            return DataWrappers.readFromGenericFields(datas, baseClass, o, t);
-        }
-    }
-
-    public static Kryo getAKryo(){
-        Kryo kryo = new Kryo();
-        kryo.setRegistrationRequired(false);
-        kryo.setReferences(true);
-        kryo.register(CellPosition.class, new Serializer<CellPosition>() {
-            @Override
-            public void write(Kryo kryo, Output output, CellPosition object) {
-                output.writeLong(object.getFloorID());
-                kryo.writeObject(output, object.getPosition());
-                output.flush();
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public CellPosition read(Kryo kryo, Input input, Class aClass) {
-                long floorID = input.readLong();
-                Vector2 v = kryo.readObject(input, Vector2.class);
-                return new CellPosition(v, floorID);
-            }
-        });
-        kryo.register(Vector2.class, new Serializer<Vector2>() {
-            public void write(Kryo kryo, Output output, Vector2 object) {
-                output.writeDouble(object.x);
-                output.writeDouble(object.y);
-                output.flush();
-            }
-
-            public Vector2 read(Kryo kryo, Input input, Class<? extends Vector2> type) {
-                double x = input.readDouble();
-                double y = input.readDouble();
-                return new Vector2(x, y);
-            }
-        });
 //        kryo.register(BasicMemoryBank.class, new Serializer<BasicMemoryBank>() {
 //            @Override
 //            public void write(Kryo kryo, Output output, BasicMemoryBank object) {
@@ -276,48 +321,3 @@ public class KryoPreparator {
 //                return new BasicMemoryBank(uuid, pairings);
 //            }
 //        });
-        kryo.register(ServerData.class, new Serializer<ServerData>() {
-            @Override
-            public void write(Kryo kryo, Output output, ServerData object) {
-                output.writeDouble(object.getWorldTime());
-                int dataCount = object.getDataWrappers().size();
-                output.writeInt(dataCount);
-                for (DataWrapper<? extends Data, ?> dataWrapper : object.getDataWrappers()) {
-                    kryo.writeObject(output, dataWrapper, dataWrapperSerializer);
-                }
-                output.flush();
-            }
-
-            @Override
-            public ServerData read(Kryo kryo, Input input, Class type) {
-                double timestamp = input.readDouble();
-                int dataWrapperCount = input.readInt();
-                List<DataWrapper<?,?>> dataWrappers = new ArrayList<>();
-                for (int i = 0; i < dataWrapperCount; i++) {
-                    dataWrappers.add(kryo.readObject(input, DataWrapper.class, dataWrapperSerializer));
-                }
-                return new ServerData(dataWrappers, timestamp);
-            }
-        });
-        kryo.register(ClientInputData.class, new Serializer<ClientInputData>() {
-            @Override
-            public void write(Kryo kryo, Output output, ClientInputData object) {
-                output.writeInt(object.inputs().size());
-                for (UserInput input : object.inputs()) {
-                    kryo.writeObject(output, input, clientInputSerializer);
-                }
-                output.flush();
-            }
-            @Override
-            public ClientInputData read(Kryo kryo, Input input, Class type) {
-                List<UserInput> actions = new ArrayList<>();
-                int actionCount = input.readInt();
-                for (int i = 0; i < actionCount; i++) {
-                    actions.add(kryo.readObject(input, UserInput.class ,clientInputSerializer));
-                }
-                return new ClientInputData(actions);
-            }
-        });
-        return kryo;
-    }
-}

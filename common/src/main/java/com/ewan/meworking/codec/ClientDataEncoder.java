@@ -2,7 +2,7 @@ package com.ewan.meworking.codec;
 
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Output;
-import com.ewan.meworking.data.ClientInputData;
+import com.ewan.meworking.data.client.ClientInputData;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;

@@ -2,13 +2,14 @@ package com.ewan.dunjeon.server.networking;
 
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
-import com.ewan.meworking.data.ServerData;
-import com.ewan.meworking.data.ServerDataWrapper;
+import com.ewan.meworking.data.server.DataPacket;
+import com.ewan.meworking.data.server.ServerPacketWrapper;
 import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.memory.KnowledgePackage;
 import com.ewan.meworking.data.server.memory.MemoryBankListener;
+import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,8 +49,10 @@ public class ManagedClient {
 
     public void sendDataToClient(Channel channel){
         if(isConnectionActive) {
+            //We need to ensure that the client knows how many datawrappers to expect before it can draw its next frame!
+            channel.writeAndFlush(new ServerPacketWrapper(new FrameInfoPacket(Dunjeon.getInstance().getTimeElapsed(), Dunjeon.getInstance().getTicksElapsed(), unProcessedDataWrappers.size()), clientAddress));
             for (DataWrapper<?, ?> unProcessedDataWrapper : unProcessedDataWrappers) {
-                channel.writeAndFlush(new ServerDataWrapper(new ServerData(List.of(unProcessedDataWrapper), Dunjeon.getInstance().getTimeElapsed()), clientAddress));
+                channel.writeAndFlush(new ServerPacketWrapper(new DataPacket(unProcessedDataWrapper, Dunjeon.getInstance().getTimeElapsed()), clientAddress));
             }
             unProcessedDataWrappers = new ArrayList<>();
         }

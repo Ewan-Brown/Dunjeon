@@ -1,6 +1,6 @@
 package com.ewan.dunjeonclient;
 
-import com.ewan.meworking.data.ClientInputData;
+import com.ewan.meworking.data.client.ClientInputData;
 import com.ewan.meworking.data.client.MoveEntity;
 import com.ewan.meworking.data.client.TurnEntity;
 import com.ewan.meworking.data.client.UserInput;

@@ -3,32 +3,26 @@ package com.ewan.meworking.codec;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.ByteBufferInputStream;
 import com.esotericsoftware.kryo.kryo5.io.Input;
-import com.ewan.meworking.data.ClientInputData;
-import com.ewan.meworking.data.ServerData;
-import com.ewan.meworking.data.ServerDataWrapper;
-import com.ewan.meworking.data.server.memory.BasicMemoryBank;
-import io.netty.buffer.ByteBuf;
+import com.ewan.meworking.data.server.DataPacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
-import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.codec.DatagramPacketDecoder;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import io.netty.handler.codec.MessageToMessageEncoder;
 
 import java.util.List;
 
-public class ServerDataDecoder extends MessageToMessageDecoder<DatagramPacket> {
+public class DataFragmentPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
     private final Kryo kryo;
 
-    public ServerDataDecoder(Kryo kryo) {
+    public DataFragmentPacketDecoder(Kryo kryo) {
         this.kryo = kryo;
     }
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, DatagramPacket msg, List<Object> out){
-        ServerData data = kryo.readObject(new Input(new ByteBufferInputStream(msg.content().nioBuffer())), ServerData.class);
-        out.add(data);
+        Input input = new Input(new ByteBufferInputStream(msg.content().nioBuffer()));
+        PacketTypes.PacketType pType = PacketTypes.PacketType.values()[input.readShort()];
+        out.add(kryo.readObject(input, pType.relatedClass));
     }
 
     @Override

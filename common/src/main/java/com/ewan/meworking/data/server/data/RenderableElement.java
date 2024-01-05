@@ -1,4 +1,4 @@
-package com.ewan.meworking.data.server;
+package com.ewan.meworking.data.server.data;
 
 import lombok.AllArgsConstructor;
 import org.dyn4j.geometry.Vector2;

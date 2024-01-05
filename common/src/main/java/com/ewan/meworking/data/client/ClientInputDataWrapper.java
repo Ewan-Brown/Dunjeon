@@ -1,6 +1,4 @@
-package com.ewan.meworking.codec;
-
-import com.ewan.meworking.data.ClientInputData;
+package com.ewan.meworking.data.client;
 
 import java.net.InetSocketAddress;
 

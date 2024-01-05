@@ -3,15 +3,13 @@ package com.ewan.dunjeonclient;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.ewan.meworking.codec.ClientDataEncoder;
 import com.ewan.meworking.codec.KryoPreparator;
-import com.ewan.meworking.codec.ServerDataDecoder;
-import com.ewan.meworking.data.ClientInputData;
-import com.ewan.meworking.data.client.MoveEntity;
+import com.ewan.meworking.codec.DataFragmentPacketDecoder;
+import com.ewan.meworking.data.client.ClientInputData;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
 
@@ -31,7 +29,7 @@ public class GameClient {
                 public void initChannel(DatagramChannel ch) {
                     ch.pipeline().addLast(
                             new ClientDataEncoder(kryo),
-                            new ServerDataDecoder(kryo),
+                            new DataFragmentPacketDecoder(kryo),
                             clientChannelHandler);
                 }
             });

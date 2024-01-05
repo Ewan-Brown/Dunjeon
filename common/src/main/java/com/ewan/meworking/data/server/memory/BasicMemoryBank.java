@@ -1,20 +1,14 @@
 package com.ewan.meworking.data.server.memory;
 
-import com.esotericsoftware.kryo.kryo5.serializers.FieldSerializer;
-import com.ewan.meworking.data.server.CellPosition;
 //import com.ewan.dunjeon.server.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
-import com.ewan.meworking.data.server.data.Datas;
-import lombok.Getter;
+        import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+        import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 @Getter
 public class BasicMemoryBank extends DataSink {

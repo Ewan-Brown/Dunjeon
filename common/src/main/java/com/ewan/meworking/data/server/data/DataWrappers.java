@@ -1,7 +1,5 @@
 package com.ewan.meworking.data.server.data;
 
-import com.ewan.meworking.data.server.CellPosition;
-
 import java.util.List;
 
 /**
@@ -11,42 +9,29 @@ import java.util.List;
 public class DataWrappers {
 
     static private class DataWrapperImpl<D extends Data, I> extends DataWrapper<D,I>{
-        private DataWrapperImpl(List<D> data, Class<D> baseClass, I identifier, double timestamp) {
-            super(data, baseClass, identifier, timestamp);
+        private DataWrapperImpl(List<D> data, Class<D> baseClass, I identifier, double timestamp, int tickstamp) {
+            super(data, baseClass, identifier, timestamp, tickstamp);
         }
     }
 
+    /**
+     * Used for networking purposes only
+     */
     static private class DataWrapperImplNonGeneric extends DataWrapper{
-        private DataWrapperImplNonGeneric(List<?> data, Class<?> baseClass, Object identifier, double timestamp) {
-            super(data, baseClass, identifier, timestamp);
+        private DataWrapperImplNonGeneric(List<?> data, Class<?> baseClass, Object identifier, double timestamp, int tickstamp) {
+            super(data, baseClass, identifier, timestamp, tickstamp);
         }
     }
 
-    public static <D extends Data, I> DataWrapper<?, ?> readFromGenericFields(List<Data> data, Class<?> baseClass, Object identifier, double timestamp){
-        return new DataWrapperImplNonGeneric(data, baseClass, identifier, timestamp);
+    public static <D extends Data, I> DataWrapper<?, ?> readFromGenericFields(List<Data> data, Class<?> baseClass, Object identifier, double timestamp, int tickstamp){
+        return new DataWrapperImplNonGeneric(data, baseClass, identifier, timestamp, tickstamp);
     }
 
-    public static DataWrapper<Datas.EntityData, Long> wrapEntityData(List<Datas.EntityData> data, Long identifier, double timestamp){
-        return new DataWrapperImpl<>(data, Datas.EntityData.class, identifier, timestamp);
+    public static DataWrapper<Datas.EntityData, Long> wrapEntityData(List<Datas.EntityData> data, Long identifier, double timestamp, int tickstamp){
+        return new DataWrapperImpl<>(data, Datas.EntityData.class, identifier, timestamp, tickstamp);
     }
 
-    public static DataWrapper<Datas.CellData, CellPosition> wrapCellData(List<Datas.CellData> data, CellPosition identifier, double timestamp){
-        return new DataWrapperImpl<>(data, Datas.CellData.class, identifier, timestamp);
+    public static DataWrapper<Datas.CellData, CellPosition> wrapCellData(List<Datas.CellData> data, CellPosition identifier, double timestamp, int tickstamp){
+        return new DataWrapperImpl<>(data, Datas.CellData.class, identifier, timestamp, tickstamp);
     }
-//
-//    public static class EntityDataWrapper extends DataWrapper<Datas.EntityData, Long> {
-//        public EntityDataWrapper(List<Datas.EntityData> data, Long identifier, double timestamp) {
-//            super(data, Datas.EntityData.class, identifier, timestamp);
-//        }
-//    }
-//
-//    public static class CellDataWrapper extends DataWrapper<Datas.CellData, CellPosition> {
-//
-//        public CellDataWrapper(List<Datas.CellData> data, CellPosition identifier, double timestamp) {
-//            super(data, Datas.CellData.class, identifier, timestamp);
-//        }
-//    }
-
-
-
 }

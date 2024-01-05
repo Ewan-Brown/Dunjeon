@@ -1,6 +1,5 @@
 package com.ewan.meworking.data.server.data;
 
-import com.ewan.meworking.data.server.RenderableElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.dyn4j.geometry.Vector2;

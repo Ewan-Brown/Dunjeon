@@ -1,7 +1,6 @@
 package com.ewan.dunjeonclient;
 
-import com.ewan.meworking.data.server.CellPosition;
-import com.ewan.meworking.data.server.data.Data;
+import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.meworking.data.server.data.Datas;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank.MultiQueryAccessor;
@@ -107,10 +106,7 @@ public class UsingJogl implements GLEventListener {
 		boolean b = d.getTimestamp() == clientChannelHandler.getMostRecentWorldTimestamp();
 		return b;
 	}
-	/**
-	 * Renders the example.
-	 * @param gl the OpenGL context
-	 */
+	
 	protected void render(GL2 gl) {
 
 		gl.glPushMatrix();
