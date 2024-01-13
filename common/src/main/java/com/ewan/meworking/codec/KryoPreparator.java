@@ -189,16 +189,14 @@ public class KryoPreparator {
         kryo.register(DataPacket.class, new Serializer<DataPacket>() {
             @Override
             public void write(Kryo kryo, Output output, DataPacket object) {
-                output.writeDouble(object.getWorldTime());
                 kryo.writeObject(output, object.getDataWrapper(), dataWrapperSerializer);
                 output.flush();
             }
 
             @Override
             public DataPacket read(Kryo kryo, Input input, Class type) {
-                double timestamp = input.readDouble();
                 DataWrapper<?,?> dataWrapper = kryo.readObject(input, DataWrapper.class, dataWrapperSerializer);
-                return new DataPacket(dataWrapper, timestamp);
+                return new DataPacket(dataWrapper);
             }
         });
         kryo.register(ClientInputData.class, new Serializer<ClientInputData>() {

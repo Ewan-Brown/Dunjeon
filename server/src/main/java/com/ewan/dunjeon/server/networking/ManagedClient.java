@@ -53,7 +53,7 @@ public class ManagedClient {
             //We need to ensure that the client knows how many datawrappers to expect before it can draw its next frame!
             channel.writeAndFlush(new ServerPacketWrapper(new FrameInfoPacket(Dunjeon.getInstance().getTimeElapsed(), Dunjeon.getInstance().getTicksElapsed(), unProcessedDataWrappers.size()), PacketTypes.PacketType.FRAME_PACKET, clientAddress));
             for (DataWrapper<?, ?> unProcessedDataWrapper : unProcessedDataWrappers) {
-                channel.writeAndFlush(new ServerPacketWrapper(new DataPacket(unProcessedDataWrapper, Dunjeon.getInstance().getTimeElapsed()), PacketTypes.PacketType.DATA_PACKET, clientAddress));
+                channel.writeAndFlush(new ServerPacketWrapper(new DataPacket(unProcessedDataWrapper), PacketTypes.PacketType.DATA_PACKET, clientAddress));
             }
             unProcessedDataWrappers = new ArrayList<>();
         }

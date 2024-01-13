@@ -23,31 +23,55 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     @Getter
     private BasicMemoryBank clientMemoryBank;
-    private double mostRecentWorldTimestamp = 0;
+    private double mostRecentTimestampReceived = 0;
     private InetSocketAddress serverAddress;
     private Channel server;
 
-//    private HashMap<Long, List<DataWrapper<?,?>>> unprocessedFrames = new HashMap<>();
+
+    private HashMap<Integer, GameFrame> gameFrames = new HashMap<>();
 
 
     private FrameInfoPacket mostRecentFrameInfoPacket;
 
     public ClientChannelHandler(BasicMemoryBank clientMemoryBank){
         this.clientMemoryBank = clientMemoryBank;
-        this.getMostRecentFrameInfoPacket();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg){
-        if(msg instanceof DataPacket data) {
-            server = ctx.channel();
-//            mostRecentWorldTimestamp = data.getWorldTime();
-//            clientMemoryBank.processWrappedData(data.getDataWrapper());
-        }
-        if(msg instanceof FrameInfoPacket frameInfo) {
-            server = ctx.channel();
+        server = ctx.channel(); //TODO is this necessary
 
+        //Check datatype and sort among gameFrames
+        System.out.println("ClientChannelHandler.channelRead");
+        int releventTick;
+        if(msg instanceof DataPacket data) {
+            System.out.println("DataPacket received = " + data);
+            releventTick = data.getDataWrapper().getTickstamp();
+            if(!gameFrames.containsKey(data.getDataWrapper().getTickstamp())){
+                gameFrames.put(releventTick, new GameFrame(null));
+            }
+            gameFrames.get(releventTick).getCollectedData().add(data.getDataWrapper());
+
+        }
+        else if(msg instanceof FrameInfoPacket frameInfo) {
+            System.out.println("FrameInfoPacket received = " + frameInfo);
+            releventTick = frameInfo.worldTimeTicks();
+            if(!gameFrames.containsKey(releventTick)){
+                gameFrames.put(releventTick, new GameFrame(frameInfo));
+            }else{
+                throw new RuntimeException("Duplicate FrameInfoPacket received");
+            }
+        }else{
+            throw new RuntimeException("Unexpected packet type received: " + msg.getClass());
+        }
+
+        if (gameFrames.get(releventTick).isComplete()){
+            mostRecentTimestampReceived = gameFrames.get(releventTick).getFramePacket().worldTimeExact();
+            System.out.println("Game frame complete for tick " + releventTick);
+            for (DataWrapper<?,?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
+                clientMemoryBank.processWrappedData(collectedDatum);
+            }
         }
     }
 

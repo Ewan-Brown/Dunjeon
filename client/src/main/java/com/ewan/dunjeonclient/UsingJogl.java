@@ -103,7 +103,7 @@ public class UsingJogl implements GLEventListener {
 	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width, int height) {}
 
 	private boolean isMemoryDataPresent(KnowledgeFragment<?> d){
-		boolean b = d.getTimestamp() == clientChannelHandler.getMostRecentWorldTimestamp();
+		boolean b = d.getTimestamp() == clientChannelHandler.getMostRecentTimestampReceived();
 		return b;
 	}
 	
