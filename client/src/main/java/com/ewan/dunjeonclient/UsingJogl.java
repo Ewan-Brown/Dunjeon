@@ -24,7 +24,6 @@ public class UsingJogl implements GLEventListener {
 	private final ClientChannelHandler clientChannelHandler;
 	final static Vector2 lastCameraPos = new Vector2();
 
-
 	public UsingJogl(ClientChannelHandler clientChannelHandler) {
 		System.out.println("Creating UI");
 		frame = new JFrame("Dungeon Client");
@@ -122,13 +121,13 @@ public class UsingJogl implements GLEventListener {
 		gl.glPopMatrix();
 	}
 
-
 	public void renderMemoryBank(GL2 gl, BasicMemoryBank basicMemoryBank){
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
 
 		BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> hostPos = basicMemoryBank.querySinglePackage(basicMemoryBank.getOwnerUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
 
+		//Check for query success
 		if(hostPos.status()){
 			Vector2 hostEntityPosition = hostPos.result().getKnowledge(Datas.EntityPositionalData.class).getInfo().getPosition();
 			Vector2 cameraDiff =  lastCameraPos.difference(hostEntityPosition);
@@ -193,7 +192,6 @@ public class UsingJogl implements GLEventListener {
 				gl.glEnd();
 			}
 			gl.glPopMatrix();
-
 		}
 	}
 }

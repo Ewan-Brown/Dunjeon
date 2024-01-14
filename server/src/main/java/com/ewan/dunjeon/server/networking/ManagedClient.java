@@ -30,7 +30,6 @@ public class ManagedClient {
     @Setter
     private boolean isConnectionActive = true;
 
-
     public ManagedClient(ClientBasedController<?, ?> creatureController, InetSocketAddress clientAddress) {
         this.creatureController = creatureController;
         this.clientAddress = clientAddress;

@@ -18,9 +18,6 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
 
     @Override
     void updateWithUserInputs(List<UserInput> inputs) {
-        System.out.println("ClientBasedTestSubjectController.updateWithUserInputs");
-        System.out.println("\tcurrentTurn = " + currentTurn);
-        System.out.println("\tcurrentMoveVector = " + currentMoveVector);
         for (UserInput input : inputs) {
             if(input instanceof MoveEntity moveEntityInput){
                 currentMoveVector = moveEntityInput.getMoveDir().multiply(10);

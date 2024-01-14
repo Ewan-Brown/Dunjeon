@@ -2,7 +2,6 @@ package com.ewan.dunjeonclient;
 
 import com.ewan.meworking.data.client.ClientInputData;
 import com.ewan.meworking.data.server.DataPacket;
-import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
@@ -13,9 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @Setter
 @Getter
@@ -27,9 +24,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     private InetSocketAddress serverAddress;
     private Channel server;
 
-
     private HashMap<Integer, GameFrame> gameFrames = new HashMap<>();
-
 
     private FrameInfoPacket mostRecentFrameInfoPacket;
 
@@ -83,16 +78,5 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     public void sendMessageToClient(ClientInputData data){
         server.writeAndFlush(data);
-    }
-
-    private class FrameBuilder{
-        private final int expectedDataWrappers;
-        private final double associatedTimestamp;
-        private final List<DataWrapper<?,?>> receivedDataWrappers = new ArrayList<>();
-
-        public FrameBuilder(int expectedDataWrappers, double associatedTimestamp) {
-            this.expectedDataWrappers = expectedDataWrappers;
-            this.associatedTimestamp = associatedTimestamp;
-        }
     }
 }
