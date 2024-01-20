@@ -25,7 +25,7 @@ public class StartServer {
     @SneakyThrows
     public static void main(String[] args) {
         System.setOut(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
-        System.setErr(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
+//        System.setErr(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
         System.out.println("Starting server code");
         generateWorld();
         new Thread(ServerManager::runServer).start();
