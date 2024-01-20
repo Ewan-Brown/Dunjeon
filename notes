@@ -11,25 +11,15 @@ Raytracing sight algorithm and skeleton for "memory" complete
 Simple pathing algorithms
 Simple Entity hierarchy
 Simple Entity AI - priority-ordered list of tasks
+Flesh out memory system
+Resolved Major dyn4j-related lag
+Added basic simultaneous multiplayer
 
 ----TODO----
-Dyn4J - hook in for collision detection
-Flesh out memory system
 Draft various AI flows
-Simple 
-Fix the unending sight/raytracing algorithm issue. 
-    The non-visible sides of cells who have atleast one visible side occasionally highlight, but only when the problematic side is adjacent to another cell, and only for an immediate instant!
-    Between the two highlighted cells, their colinear walls should NOT be visible, yet occasionally ONE of them is lighting up. Occurs consistently at certain angle+distance from the viewer.
-    Thought it was a rounding issue when the ray clips extremely close to the corner of one of these, but should look more into what exact angles it occurs, see if theres a pattern.
-    
-    X X X X 
- -> X   @
- -> X
-    X X X X
-    
-====WIP====
-WOrking out performance issues
- - WIth just player spinning, ((on battery saving)) gets like 50-70ms frametime (not graphics included)
- - 99% of time spent on org.dyn4j.world.AbstractPhysicsWorld.solveTOI
- - There should be NO collisions at this point... so this is interesting...
- - Wonder about diff between battery life and
+Fix the unending sight/raytracing algorithm issue.
+    Not sure about whats up with this
+Draft combat/collision and hook in Dyn4J collision detection
+Allow connecting clients to select existing characters
+Allow basic 'character creation' connecting clients
+Re-investigate environmental interaction + reinvent UI functionality (previous highlighting system was terrible)
