@@ -5,6 +5,9 @@ import com.ewan.meworking.data.server.memory.BasicMemoryBank.QueryResult;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+/**
+ * Unused for now, but will probably be useful
+ */
 public class DataDefaults {
 
     public record DefaultPairing<D extends Data>(Class<D> dataClass, Supplier<D> defaultSupplier){}
@@ -12,10 +15,6 @@ public class DataDefaults {
 
     private static <D extends Data> void registerPairing(DefaultPairing<D> pairing){
         pairingMap.put(pairing.dataClass, pairing.defaultSupplier);
-    }
-
-    {
-//        registerPairing(new DefaultPairing<Data>(Entity));
     }
 
     @SuppressWarnings("unchecked")

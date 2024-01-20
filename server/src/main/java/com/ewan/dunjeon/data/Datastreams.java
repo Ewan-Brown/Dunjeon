@@ -39,8 +39,6 @@ public class Datastreams {
                 Vector2 sensorPos = params.getSightSourceLocation();
 
                 List<DataWrapper<? extends Data, ?>> dataAmalgamated = new ArrayList<>();
-//                List<DataWrappers.CellDataWrapper> cellDataAmalgamated = new ArrayList<>();
-//                List<DataWrappers.EntityDataWrapper> entityDataAmalgamated = new ArrayList<>();
 
                 if(params.getTrueSight()){
 
@@ -134,23 +132,12 @@ public class Datastreams {
         @AllArgsConstructor
         @Getter
         public static class SightStreamParameters extends DataStreamParameters {
-            /**
-             * Radius of the circle of range of vision
-             */
-            private final double sightRange;
-            /**
-             * Arc length of the full width of view
-             */
-            private final double sightFieldOfView;
-            private final double currentSightAngle;
-            /**
-             * Where his eyeball at
-             */
-            private final Vector2 sightSourceLocation;
-            /**
-             * Magic sight that lets you see everything! (Debugging)
-             */
-            private final Boolean trueSight;
+            private final double sightRange; //Radius of the circle of range of vision
+            private final double sightFieldOfView; //Arc length of the full width of view
+            private final double currentSightAngle; //What is the absolute current angle of the viewer
+
+            private final Vector2 sightSourceLocation; /// Where the eyeball at
+            private final Boolean trueSight; //Magic sight that lets you see everything! (hopefully just for debugging)
         }
     }
 }

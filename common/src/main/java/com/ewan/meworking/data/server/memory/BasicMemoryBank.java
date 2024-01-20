@@ -1,6 +1,5 @@
 package com.ewan.meworking.data.server.memory;
 
-//import com.ewan.dunjeon.server.world.entities.memory.celldata.CellKnowledge;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
         import lombok.Getter;
@@ -71,8 +70,6 @@ public class BasicMemoryBank extends DataSink {
 
     //in order to keep access to this tree of data clean and safe accessors are the only way to read data.
     //************** ACCESSORS ***************//
-
-
     @SuppressWarnings("unchecked")
     public <I, D extends Data, K extends KnowledgePackage<I,D>> QueryResult<SingleQueryAccessor<I, D>, Boolean> querySinglePackage(I identifier, Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
         Pairing<I, D, K> pairing = (Pairing<I, D, K>) knowledgeDataPairings.stream().filter(p -> p.relatedBaseDataClass() == baseClazz).findAny().get();
@@ -147,9 +144,7 @@ public class BasicMemoryBank extends DataSink {
 
     }
 
-    public record QueryResult<A, S>(A result, S status){
-
-    }
+    public record QueryResult<A, S>(A result, S status){}
 
     public long getOwnerUUID(){
         if(ownerUUID == null){

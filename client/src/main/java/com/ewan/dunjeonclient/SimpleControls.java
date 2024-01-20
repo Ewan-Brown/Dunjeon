@@ -20,7 +20,6 @@ public class SimpleControls implements KeyListener {
     }
 
     private BitSet keySet = new BitSet(256);
-    private long[] keyLastChangedMillis = new long[256];
 
     @Override
     public void keyTyped(KeyEvent e) {}

@@ -7,6 +7,9 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * I'm afraid to delete this... a bit of an artifact
+ */
 public class PathFinding {
 
 

@@ -66,21 +66,6 @@ public class Section implements Serializable {
         availableCells.remove(p);
     }
 
-    //TODO Test me! I don't think this works...
-//    public List<Pair<Integer, Integer>> getAvailableLocations(){
-//        List<Pair<Integer, Integer>> locations = new ArrayList<>();
-//        for (int x = x1+1; x < x2; x++) {
-//            for (int y = y1+1; y < y2; y++) {
-//                locations.add(new Pair<>(x, y));
-//            }
-//        }
-//        for (Furniture furniture : assignedFurniture.keySet()) {
-//            Pair<Integer, Integer> loc = assignedFurniture.get(furniture);
-//            locations.remove(loc); //Specifically here seems sketchy...
-//        }
-//        return locations;
-//    }
-
     int getWidth() {
         return x2 - x1;
     }
@@ -240,7 +225,7 @@ public class Section implements Serializable {
                 retSections = new Section[]{section1, section2};
             }
         }
-        return new Pair<Section[], GeneratorsMisc.SplitLine>(retSections, retSplitLine);
+        return new Pair<>(retSections, retSplitLine);
     }
 
     @Override

@@ -28,22 +28,10 @@ public class Datas {
         EnterableStatus enterableStatus;
 
         public enum EnterableStatus{
-            /**
-             * This cell isn't enterable! Don't even try.
-             */
-            BLOCKED,
-            /**
-             * This entity is certainly enterable! Go ahead.
-             */
-            ENTERABLE,
-            /**
-             * This entity may be enterable if we interact with it...?
-             */
-            INTERACTABLE,
-            /**
-             * No clue.
-             */
-            UNKNOWN
+            BLOCKED, //This cell isn't enterable! Don't even try.
+            ENTERABLE, //This entity is certainly enterable! Go ahead.
+            INTERACTABLE, //This entity may be enterable if we interact with it...?
+            UNKNOWN //No clue.
         }
 
     }

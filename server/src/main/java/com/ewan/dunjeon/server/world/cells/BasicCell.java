@@ -56,17 +56,8 @@ public class BasicCell extends Body {
         return !filled;
     }
 
-    public void onEntry(Entity e) {}
-
-    public void onExit(Entity e){}
-
-    public void onDeath(Entity e){}
-
-    public void onEntityDeath(Entity e) {}
-
     public int getIntegerX(){return x;}
     public int getIntegerY(){return y;}
-    public Point2D getPoint2D(){return new Point2D.Double(getIntegerX(), getIntegerY());}
     public Floor getFloor(){
         return floor;
     }

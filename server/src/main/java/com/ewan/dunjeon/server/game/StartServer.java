@@ -33,48 +33,9 @@ public class StartServer {
         new Thread(() -> {
             while (true) {
                 updateCurrentWorld();
-                if(all_durations.size() == 1000){
-
-                    try {
-                        PrintWriter outFile = new PrintWriter(new FileWriter("data_" + entityCount+"entities" + ".csv"));
-                        all_durations.forEach(i-> outFile.print(i + ", "));
-                        outFile.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
             }
         }).start();
 
-    }
-
-    //For debugging
-    private static final List<Long> durations = new ArrayList<>();
-    private static final List<Long> all_durations = new ArrayList<>();
-
-    private static void updateCurrentWorld(int dataSamples){
-        Dunjeon w = Dunjeon.getInstance();
-        try {
-            Thread.sleep(UPDATE_DELAY);
-            long t0 = System.nanoTime();
-            w.update(1.0D);
-            long t1 = System.nanoTime();
-            durations.add(t1 - t0);
-
-            if(durations.size() == dataSamples){
-                DescriptiveStatistics stats = new DescriptiveStatistics();
-                durations.forEach(v -> stats.addValue((double)v/1000000D));
-                System.out.println("******* WORLD UPDATE DATA *******");
-                System.out.println("Data sample size : " + dataSamples);
-                System.out.println("Mean duration : " + stats.getMean());
-                System.out.println("Standard Deviation : " + stats.getStandardDeviation());
-                System.out.println("Skewness : " + stats.getSkewness());
-                all_durations.addAll(durations);
-                durations.clear();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     private static final long DESIRED_FRAMETIME_NS = 16000000;
@@ -120,19 +81,11 @@ public class StartServer {
 
         }
 
-//        TestSubject testSubject = new TestSubject("Player", true);
-//        testSubject.addFixture(new Rectangle(0.5,0.5));
-//        testSubject.setMass(new Mass(new Vector2(),1,1));
-//        startFloor.addEntityRandomLoc(testSubject);
-//
-//        startFloor.addCreatureController(new ClientBasedTestSubjectController(testSubject));
-
         for (int i = 0; i < entityCount; i++) {
             TestSubject npcTestSubject = new TestSubject("NPC");
             npcTestSubject.addFixture(new Rectangle(0.5,0.5));
             npcTestSubject.setMass(new Mass(new Vector2(),1,1));
             startFloor.addEntityRandomLoc(npcTestSubject);
-//            startFloor.addCreatureController(new TestSubjectAIController(npcTestSubject));
         }
     }
 }
