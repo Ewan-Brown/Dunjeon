@@ -21,6 +21,7 @@ Make use of a proper logging system
 Make use of Docker
 Investigate with VisualVM
 Draft various AI flows
+Fix the java.util.ConcurrentModificationException that appears. Might be appearing when many clients join sequentially
 Fix the unending sight/raytracing algorithm issue.
     Not sure about whats up with this
 Draft combat/collision and hook in Dyn4J collision detection
