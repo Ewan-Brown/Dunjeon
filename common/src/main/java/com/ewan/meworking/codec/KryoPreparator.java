@@ -148,13 +148,14 @@ public class KryoPreparator {
         kryo.register(FrameInfoPacket.class, new Serializer<FrameInfoPacket>() {
             @Override
             public void write(Kryo kryo, Output output, FrameInfoPacket object) {
+                output.writeLong(object.clientUUID());
                 output.writeDouble(object.worldTimeExact());
                 output.writeInt(object.worldTimeTicks());
                 output.writeInt(object.expectedDataCount());
             }
             @Override
             public FrameInfoPacket read(Kryo kryo, Input input, Class<? extends FrameInfoPacket> type) {
-                return new FrameInfoPacket(input.readDouble(), input.readInt(), input.readInt());
+                return new FrameInfoPacket(input.readLong(), input.readDouble(), input.readInt(), input.readInt());
             }
         });
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {

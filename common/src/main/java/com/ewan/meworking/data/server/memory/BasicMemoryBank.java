@@ -10,17 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Getter
 public class BasicMemoryBank extends DataSink {
 
-    private final long ownerUUID;
+    private final Long ownerUUID;
+    @Getter
     private final List<MemoryBankListener> listeners = new ArrayList<>();
 
-    public BasicMemoryBank(long uuid){
+    public BasicMemoryBank(Long uuid){
         this(uuid, new ArrayList<>());
     }
 
-    public BasicMemoryBank(long uuid, List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> pairings){
+    public BasicMemoryBank(){
+        this(null, new ArrayList<>());
+    }
+
+    public BasicMemoryBank(Long uuid, List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> pairings){
         this.ownerUUID = uuid;
         this.knowledgeDataPairings = pairings;
     }
@@ -145,5 +149,13 @@ public class BasicMemoryBank extends DataSink {
 
     public record QueryResult<A, S>(A result, S status){
 
+    }
+
+    public long getOwnerUUID(){
+        if(ownerUUID == null){
+            throw new RuntimeException("Client side Basic Memory Bank doesn't store owner UUID yet - use the FrameInfo packet instead");
+        }else{
+            return ownerUUID;
+        }
     }
 }

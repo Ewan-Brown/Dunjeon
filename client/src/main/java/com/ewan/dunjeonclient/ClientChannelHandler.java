@@ -20,7 +20,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     @Getter
     private BasicMemoryBank clientMemoryBank;
-    private double mostRecentTimestampReceived = 0;
+    private double mostRecentTimestampReceived = 0; //TODO Does this really need to be stored if i'm storing mostRecentFrameInfoPacket
     private InetSocketAddress serverAddress;
     private Channel server;
 
@@ -35,13 +35,11 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     @Override
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg){
-        server = ctx.channel(); //TODO is this necessary
+        server = ctx.channel(); //TODO is this necessary every time
 
         //Check datatype and sort among gameFrames
-        System.out.println("ClientChannelHandler.channelRead");
         int releventTick;
         if(msg instanceof DataPacket data) {
-            System.out.println("DataPacket received = " + data);
             releventTick = data.getDataWrapper().getTickstamp();
             if(!gameFrames.containsKey(data.getDataWrapper().getTickstamp())){
                 gameFrames.put(releventTick, new GameFrame(null));
@@ -63,7 +61,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
         if (gameFrames.get(releventTick).isComplete()){
             mostRecentTimestampReceived = gameFrames.get(releventTick).getFramePacket().worldTimeExact();
-            System.out.println("Game frame complete for tick " + releventTick);
+            mostRecentFrameInfoPacket = gameFrames.get(releventTick).getFramePacket();
             for (DataWrapper<?,?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
                 clientMemoryBank.processWrappedData(collectedDatum);
             }

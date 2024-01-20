@@ -124,8 +124,12 @@ public class UsingJogl implements GLEventListener {
 	public void renderMemoryBank(GL2 gl, BasicMemoryBank basicMemoryBank){
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
-
-		BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> hostPos = basicMemoryBank.querySinglePackage(basicMemoryBank.getOwnerUUID(), Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
+		if(clientChannelHandler.getMostRecentFrameInfoPacket() == null){
+			System.out.println("Most recent frame packet null");
+			return;
+		}
+		long ownerUUID = clientChannelHandler.getMostRecentFrameInfoPacket().clientUUID();
+		BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> hostPos = basicMemoryBank.querySinglePackage(ownerUUID, Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
 
 		//Check for query success
 		if(hostPos.status()){
