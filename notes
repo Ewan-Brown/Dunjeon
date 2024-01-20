@@ -17,6 +17,7 @@ Added basic simultaneous multiplayer
 ----TODO----
 Clean up... everything
 Add unit testing
+Make use of a proper logging system
 Make use of Docker
 Investigate with VisualVM
 Draft various AI flows
