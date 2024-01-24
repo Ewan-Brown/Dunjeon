@@ -10,10 +10,14 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class GameClient {
+
+    static Logger logger = LogManager.getLogger(GameClient.class);
 
     public GameClient(ClientChannelHandler clientChannelHandler, String host) {
         int port = 1471;
@@ -34,14 +38,17 @@ public class GameClient {
                 }
             });
 
-            System.out.println("Client initialization complete");
+
+            logger.info("Client binding to local port...");
             ChannelFuture f = b.connect(host, port).sync();
-            System.out.println("Sending connection message to server!");
+            logger.info("Client successfully bound to local port! : " + f.toString());
             f.channel().writeAndFlush(new ClientInputData(List.of()));
             f.channel().closeFuture().sync();
-            System.out.println("f.isCancelled() = " + f.isCancelled());
-            System.out.println("f.isDone() = " + f.isDone());
+            logger.info("Client disconnected");
+            logger.info("f.isCancelled() = " + f.isCancelled());
+            logger.info("f.isDone() = " + f.isDone());
         } catch(InterruptedException e) {
+            logger.catching();
             e.printStackTrace();
         }finally {
             workerGroup.shutdownGracefully();

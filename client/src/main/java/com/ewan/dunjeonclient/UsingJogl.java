@@ -125,7 +125,7 @@ public class UsingJogl implements GLEventListener {
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
 		if(clientChannelHandler.getMostRecentFrameInfoPacket() == null){
-			System.out.println("Most recent frame packet null");
+//			System.out.println("Most recent frame packet null");
 			return;
 		}
 		long ownerUUID = clientChannelHandler.getMostRecentFrameInfoPacket().clientUUID();

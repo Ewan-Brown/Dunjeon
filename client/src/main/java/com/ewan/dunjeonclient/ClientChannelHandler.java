@@ -45,10 +45,9 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
                 gameFrames.put(releventTick, new GameFrame(null));
             }
             gameFrames.get(releventTick).getCollectedData().add(data.getDataWrapper());
-
         }
         else if(msg instanceof FrameInfoPacket frameInfo) {
-            System.out.println("FrameInfoPacket received = " + frameInfo);
+//            System.out.println("FrameInfoPacket received = " + frameInfo);
             releventTick = frameInfo.worldTimeTicks();
             if(!gameFrames.containsKey(releventTick)){
                 gameFrames.put(releventTick, new GameFrame(frameInfo));
