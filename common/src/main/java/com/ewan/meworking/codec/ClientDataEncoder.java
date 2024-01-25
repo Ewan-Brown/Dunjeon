@@ -6,6 +6,8 @@ import com.ewan.meworking.data.client.ClientInputData;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ public class ClientDataEncoder
 
     private final Kryo kryo;
     public static final int BUFFER_SIZE = 1500;
+    static Logger logger = LogManager.getLogger();
 
 
     public ClientDataEncoder(Kryo kryo) {

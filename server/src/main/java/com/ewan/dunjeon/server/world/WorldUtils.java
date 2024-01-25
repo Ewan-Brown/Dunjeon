@@ -2,6 +2,8 @@ package com.ewan.dunjeon.server.world;
 
 import com.ewan.dunjeon.server.world.cells.BasicCell;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import java.awt.*;
@@ -18,6 +20,7 @@ public class WorldUtils {
 
     public static final double ENTITY_WITHIN_TILE_THRESHOLD = 0.5f;
     private static final double INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD = 0.0001f;
+    static Logger logger = LogManager.getLogger();
 
     public static boolean isAdjacent(BasicCell b1, BasicCell b2){
         if(b1 == b2){

@@ -5,6 +5,8 @@ import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.data.Sensor;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class TestSubject extends Creature {
     private List<Sensor<? extends DataStreamParameters>> senses = new ArrayList<>();
     private BasicMemoryBank b = new BasicMemoryBank(this.getUUID());
     private final TestSubjectControls subjectInterface = new TestSubjectControls();
+    static Logger logger = LogManager.getLogger();
 
     public TestSubject(String name) {
         this(name, false);

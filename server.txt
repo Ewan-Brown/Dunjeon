@@ -1,0 +1,6 @@
+Starting server code
+SEED USED : -709714631
+splitLineList = 5
+splitPathList = 5
+# of intersections = 4
+# of cells: 40

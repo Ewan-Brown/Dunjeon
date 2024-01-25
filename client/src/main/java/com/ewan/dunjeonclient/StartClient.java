@@ -14,10 +14,10 @@ import java.util.Arrays;
 
 public class StartClient
 {
-    static Logger logger = LogManager.getLogger(StartClient.class);
+    static Logger logger = LogManager.getLogger();
     @SneakyThrows
     public static void main(String[] args) {
-//        System.out.println("Starting client");
+//        logger.info("Starting client");
         logger.info("Logger.info called, and we're starting client");
 //        System.setOut(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\client.txt").toFile())));
 //        System.setErr(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\client.txt").toFile())));

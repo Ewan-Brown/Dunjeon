@@ -10,6 +10,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -17,6 +19,8 @@ import java.util.HashMap;
 @Setter
 @Getter
 public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
+
+    static Logger logger = LogManager.getLogger();
 
     @Getter
     private BasicMemoryBank clientMemoryBank;
@@ -47,7 +51,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
             gameFrames.get(releventTick).getCollectedData().add(data.getDataWrapper());
         }
         else if(msg instanceof FrameInfoPacket frameInfo) {
-//            System.out.println("FrameInfoPacket received = " + frameInfo);
+//            logger.info("FrameInfoPacket received = " + frameInfo);
             releventTick = frameInfo.worldTimeTicks();
             if(!gameFrames.containsKey(releventTick)){
                 gameFrames.put(releventTick, new GameFrame(frameInfo));

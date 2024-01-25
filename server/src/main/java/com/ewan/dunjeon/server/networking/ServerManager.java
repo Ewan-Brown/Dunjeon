@@ -13,6 +13,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ public class ServerManager {
 
     private static final HashMap<InetSocketAddress, ManagedClient> clientHandlerHashMap = new HashMap<>(); //TODO add a thing that removes clients when they disconnect - IF PLAYER CLIENT CRASHES HOW CAN A UDP BASED SERVER KNOW?! MAYBE SEND KEEPALIVE MESSAGES?
     private static Channel channel;
+    static Logger logger = LogManager.getLogger();
 
     public static void runServer(){
         EventLoopGroup bossGroup = new NioEventLoopGroup();

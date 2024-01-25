@@ -2,6 +2,8 @@ package com.ewan.dunjeon.server.generation;
 
 import com.ewan.dunjeon.server.world.Pair;
 import com.ewan.dunjeon.server.world.WorldUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -14,6 +16,7 @@ import static com.ewan.dunjeon.server.game.StartServer.rand;
 public class Section implements Serializable {
     List<Point> availableCells;
     List<WorldUtils.Side> wallBoundedSides;
+    static Logger logger = LogManager.getLogger();
 
     //Coords of leaf boundaries, including walls.
     int x1;

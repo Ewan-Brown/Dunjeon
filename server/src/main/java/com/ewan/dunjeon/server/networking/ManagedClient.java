@@ -14,6 +14,8 @@ import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class ManagedClient {
     private InetSocketAddress clientAddress;
     private ClientBasedController<?, ?> creatureController;
     private List<DataWrapper<?,?>> unProcessedDataWrappers = new ArrayList<>(); //This doesn't currently need to worry about thread safety, since data is always processed at a different step from sending it
+    static Logger logger = LogManager.getLogger();
 
     @Getter
     @Setter

@@ -12,6 +12,8 @@ import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.data.DataWrappers;
 import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import java.lang.reflect.Constructor;
@@ -22,9 +24,10 @@ import java.util.List;
 
 public class KryoPreparator {
 
-    static DataSerializer dataSerializer = new DataSerializer();
-    static ClientInputSerializer clientInputSerializer = new ClientInputSerializer();
-    static DataWrapperSerializer dataWrapperSerializer = new DataWrapperSerializer();
+    static private final DataSerializer dataSerializer = new DataSerializer();
+    static private final ClientInputSerializer clientInputSerializer = new ClientInputSerializer();
+    static private final DataWrapperSerializer dataWrapperSerializer = new DataWrapperSerializer();
+    static private Logger logger = LogManager.getLogger();
 
     public static class DataSerializer extends Serializer<Data>{
         @Override

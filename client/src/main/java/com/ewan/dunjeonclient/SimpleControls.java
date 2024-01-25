@@ -4,6 +4,8 @@ import com.ewan.meworking.data.client.ClientInputData;
 import com.ewan.meworking.data.client.MoveEntity;
 import com.ewan.meworking.data.client.TurnEntity;
 import com.ewan.meworking.data.client.UserInput;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import java.awt.event.KeyEvent;
@@ -14,6 +16,7 @@ import java.util.List;
 public class SimpleControls implements KeyListener {
 
     private final ClientChannelHandler clientChannelHandler;
+    static Logger logger = LogManager.getLogger();
 
     public SimpleControls(ClientChannelHandler clientChannelHandler) {
         this.clientChannelHandler = clientChannelHandler;

@@ -8,12 +8,15 @@ import com.ewan.meworking.data.client.ClientInputDataWrapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class ClientDataDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
     private final Kryo kryo;
+    static Logger logger = LogManager.getLogger();
 
     public ClientDataDecoder(Kryo kryo) {
         this.kryo = kryo;

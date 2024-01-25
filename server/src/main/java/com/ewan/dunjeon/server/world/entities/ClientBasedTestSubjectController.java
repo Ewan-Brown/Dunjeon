@@ -4,6 +4,8 @@ import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.meworking.data.client.TurnEntity;
 import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.client.MoveEntity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
@@ -13,6 +15,7 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
         super(connectedCreature);
     }
 
+    static Logger logger = LogManager.getLogger();
     private Vector2 currentMoveVector = new Vector2(0,0);
     private double currentTurn = 0;
 

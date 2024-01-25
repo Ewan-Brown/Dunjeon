@@ -1,5 +1,8 @@
 package com.ewan.dunjeon.server.generation;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.io.*;
@@ -18,6 +21,7 @@ public class GeneratorsMisc {
     public static final int DOOR = 2;
     public static final int WALL = 3;
     public static final int HALL = 4;
+    static Logger logger = LogManager.getLogger();
 
     public static Path crashDataLocation = Paths.get("C:\\Users\\Ewan\\Documents\\Programming\\Dunjeon\\crashFiles");
 

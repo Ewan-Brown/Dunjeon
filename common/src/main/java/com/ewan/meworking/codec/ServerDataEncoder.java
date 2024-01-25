@@ -7,6 +7,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageEncoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class ServerDataEncoder
         extends MessageToMessageEncoder<ServerPacketWrapper> {
 
     private final Kryo kryo;
+    static Logger logger = LogManager.getLogger();
 
     public ServerDataEncoder(Kryo kryo) {
         this.kryo = kryo;

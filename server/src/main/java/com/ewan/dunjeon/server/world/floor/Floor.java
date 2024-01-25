@@ -4,6 +4,8 @@ import com.ewan.dunjeon.server.world.entities.ai.CreatureController;
 import com.ewan.dunjeon.server.world.cells.BasicCell;
 import com.ewan.dunjeon.server.world.entities.Entity;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.collision.CollisionBody;
 import org.dyn4j.collision.Fixture;
 import org.dyn4j.dynamics.Body;
@@ -29,6 +31,7 @@ public class Floor {
     Set<CreatureController<?, ?>> creatureControllers = new HashSet<>();
     World<Body> world = new World<>();
     Set<ManifoldCollisionData<CollisionBody<Fixture>, Fixture>> collisionDataAccumulator = new HashSet<>();
+    static Logger logger = LogManager.getLogger();
 
     @Getter
     public final int width;
@@ -46,20 +49,20 @@ public class Floor {
 
             @Override
             public boolean collision(BroadphaseCollisionData collision) {
-                System.out.println("Floor.collision - Broadphase");
+                logger.info("Floor.collision - Broadphase");
                 return true;
             }
 
             @Override
             public boolean collision(NarrowphaseCollisionData collision) {
-                System.out.println("Floor.collision - Narrowphase");
+                logger.info("Floor.collision - Narrowphase");
                 return true;
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public boolean collision(ManifoldCollisionData collision) {
-                System.out.println("Floor.collision - Manifold");
+                logger.info("Floor.collision - Manifold");
                 collisionDataAccumulator.add(collision);
                 return true;
 

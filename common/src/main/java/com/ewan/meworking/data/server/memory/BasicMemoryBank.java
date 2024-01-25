@@ -3,6 +3,8 @@ package com.ewan.meworking.data.server.memory;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
         import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
         import java.util.HashMap;
@@ -12,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BasicMemoryBank extends DataSink {
 
     private final Long ownerUUID;
+    static Logger logger = LogManager.getLogger();
     @Getter
     private final List<MemoryBankListener> listeners = new ArrayList<>();
 

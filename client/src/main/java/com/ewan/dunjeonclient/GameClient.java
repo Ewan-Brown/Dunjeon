@@ -17,12 +17,11 @@ import java.util.List;
 
 public class GameClient {
 
-    static Logger logger = LogManager.getLogger(GameClient.class);
+    static Logger logger = LogManager.getLogger();
 
     public GameClient(ClientChannelHandler clientChannelHandler, String host) {
         int port = 1471;
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-
         try {
             Kryo kryo = KryoPreparator.getAKryo();
             Bootstrap b = new Bootstrap();
@@ -48,7 +47,7 @@ public class GameClient {
             logger.info("f.isCancelled() = " + f.isCancelled());
             logger.info("f.isDone() = " + f.isDone());
         } catch(InterruptedException e) {
-            logger.catching();
+            logger.error(e);
             e.printStackTrace();
         }finally {
             workerGroup.shutdownGracefully();

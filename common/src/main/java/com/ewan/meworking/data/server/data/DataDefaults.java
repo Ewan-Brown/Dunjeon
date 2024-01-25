@@ -1,6 +1,8 @@
 package com.ewan.meworking.data.server.data;
 
 import com.ewan.meworking.data.server.memory.BasicMemoryBank.QueryResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.function.Supplier;
@@ -10,6 +12,7 @@ import java.util.function.Supplier;
  */
 public class DataDefaults {
 
+    static Logger logger = LogManager.getLogger();
     public record DefaultPairing<D extends Data>(Class<D> dataClass, Supplier<D> defaultSupplier){}
     private static final HashMap<Class<? extends Data>, Supplier<? extends Data>> pairingMap = new HashMap<>();
 

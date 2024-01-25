@@ -1,5 +1,8 @@
 package com.ewan.meworking.data.server.data;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 /**
@@ -7,6 +10,8 @@ import java.util.List;
  * Stores time, source, identifier, and all relevant data in a list.
  */
 public class DataWrappers {
+
+    static Logger logger = LogManager.getLogger();
 
     static private class DataWrapperImpl<D extends Data, I> extends DataWrapper<D,I>{
         private DataWrapperImpl(List<D> data, Class<D> baseClass, I identifier, double timestamp, int tickstamp) {

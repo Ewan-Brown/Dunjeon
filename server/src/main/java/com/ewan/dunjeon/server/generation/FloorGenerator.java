@@ -4,6 +4,8 @@ import com.ewan.dunjeon.server.generation.GeneratorsMisc.*;
 import com.ewan.dunjeon.server.world.Pair;
 import com.ewan.dunjeon.server.world.cells.BasicCell;
 import com.ewan.dunjeon.server.world.floor.Floor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.util.*;
@@ -14,6 +16,8 @@ import static com.ewan.dunjeon.server.game.StartServer.rand;
 import static java.lang.Float.POSITIVE_INFINITY;
 
 public class FloorGenerator {
+
+    static Logger logger = LogManager.getLogger();
 
     public FloorGenerator(int width, int height) {
         this.width = width;
@@ -218,8 +222,8 @@ public class FloorGenerator {
         }
 
 
-        System.out.println("splitLineList = " + splitLineList.size());
-        System.out.println("splitPathList = " + splitPathList.size());
+        logger.info("splitLineList = " + splitLineList.size());
+        logger.info("splitPathList = " + splitPathList.size());
 
 
 
@@ -279,7 +283,7 @@ public class FloorGenerator {
         }
 
         //Count # of intersection points
-        System.out.println("# of intersections = " + intersectionPoints.values().stream().filter(paths -> paths.size() > 1).count());
+        logger.info("# of intersections = " + intersectionPoints.values().stream().filter(paths -> paths.size() > 1).count());
 
     }
 
@@ -376,7 +380,7 @@ public class FloorGenerator {
                 floor.getWorld().addBody(cell);
             }
         }
-        System.out.println("# of cells: " + cells.length);
+        logger.info("# of cells: " + cells.length);
     }
 
     public Floor getFloor(){

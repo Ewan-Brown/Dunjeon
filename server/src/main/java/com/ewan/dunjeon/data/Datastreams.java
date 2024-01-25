@@ -13,11 +13,15 @@ import com.ewan.meworking.data.server.data.DataWrappers;
 import com.ewan.meworking.data.server.data.Datas;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.*;
 
 public class Datastreams {
+
+    static Logger logger = LogManager.getLogger();
 
     public static class SightDataStream extends Datastream<SightDataStream.SightStreamParameters> {
 

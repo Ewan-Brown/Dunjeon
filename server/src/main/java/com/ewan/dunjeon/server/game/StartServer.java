@@ -9,6 +9,8 @@ import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import lombok.SneakyThrows;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.*;
 
 import java.io.*;
@@ -21,12 +23,13 @@ public class StartServer {
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
     private static final int entityCount = 0;
+    static Logger logger = LogManager.getLogger();
 
     @SneakyThrows
     public static void main(String[] args) {
         System.setOut(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
 //        System.setErr(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
-        System.out.println("Starting server code");
+        logger.info("Starting server code");
         generateWorld();
         new Thread(ServerManager::runServer).start();
 
@@ -56,7 +59,7 @@ public class StartServer {
         seed = -709714631;
         rand.setSeed(seed);
 
-        System.out.println("SEED USED : " + seed);
+        logger.info("SEED USED : " + seed);
 
         Dunjeon d = Dunjeon.getInstance();
         int floorCount = 1;

@@ -2,6 +2,8 @@ package com.ewan.dunjeon.server.world.cells;
 
 import com.ewan.dunjeon.server.world.entities.Entity;
 import com.ewan.dunjeon.server.world.floor.Floor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.MassType;
@@ -11,10 +13,12 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 public class BasicCell extends Body {
+
     int x;
     int y;
     Floor floor;
     public Color color;
+    static Logger logger = LogManager.getLogger();
 
     public boolean isFilled() {
         return filled;

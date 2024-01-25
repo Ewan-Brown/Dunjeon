@@ -1,10 +1,13 @@
 package com.ewan.dunjeon.server.world.entities;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.dunjeon.server.world.Dunjeon;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.dynamics.Body;
 
 public abstract class Entity extends Body {
 
+    static Logger logger = LogManager.getLogger();
     private static long UUIDcounter = 0;
     private final String name;
 

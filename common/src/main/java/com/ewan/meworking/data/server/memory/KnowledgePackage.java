@@ -2,12 +2,15 @@ package com.ewan.meworking.data.server.memory;
 
 import com.ewan.meworking.data.server.data.Data;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 
 public class KnowledgePackage<I, D extends Data> {
     @Getter
     private final I identifier;
+    static Logger logger = LogManager.getLogger();
 
     final HashMap<Class<? extends D>, KnowledgeFragment<? extends D>> dataMap;
 

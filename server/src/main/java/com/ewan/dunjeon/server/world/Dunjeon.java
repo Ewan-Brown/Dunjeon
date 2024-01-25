@@ -6,6 +6,8 @@ import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Dunjeon{
+
+    static Logger logger = LogManager.getLogger();
 
     private static final Dunjeon dunjeon = new Dunjeon();
 

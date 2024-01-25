@@ -5,8 +5,12 @@ import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 import com.ewan.dunjeon.server.world.entities.creatures.CreatureControls;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class CreatureController<C extends Creature, D extends CreatureControls<C>> {
+
+    static Logger logger = LogManager.getLogger();
 
     @SuppressWarnings("unchecked")
     public CreatureController(C connectedCreature) {

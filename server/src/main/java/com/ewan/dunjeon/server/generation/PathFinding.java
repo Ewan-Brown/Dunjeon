@@ -2,6 +2,8 @@ package com.ewan.dunjeon.server.generation;
 
 
 import com.ewan.dunjeon.server.world.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.List;
  */
 public class PathFinding {
 
+    static Logger logger = LogManager.getLogger();
 
     public static List<Point> getAStarPath(double[][] primitiveWeightMap, Point startNode, Point targetNode, boolean print, CornerInclusionRule cornerRule, double weightAgainstTurning, boolean includeStartNodeInPath){
 
@@ -21,7 +24,7 @@ public class PathFinding {
         int secondCount = 0;
 
 //        if(print) {
-//            System.out.println("Starting pathfinding...");
+//            logger.info("Starting pathfinding...");
 //            System.out.printf("Going from (%d, %d) to (%d, %d)\n", startNode.x, startNode.y, targetNode.x, targetNode.y);
 //        }
         int height = primitiveWeightMap.length;
@@ -58,7 +61,7 @@ public class PathFinding {
         setVal(prevDirMap, startNode, null);
         openNodes.add(startNode);
 
-        if(print) System.out.println("Starting node looping");
+        if(print) logger.info("Starting node looping");
         outerLoop:
         while (!openNodes.isEmpty()){
             outerCount++;
@@ -69,7 +72,7 @@ public class PathFinding {
             });
             Point currentNode = openNodes.get(0);
 
-//            if(print) System.out.println("[Node Loop] Current node : " + currentNode.toString() );
+//            if(print) logger.info("[Node Loop] Current node : " + currentNode.toString() );
             openNodes.remove(0);
             closedNodes.add(currentNode);
             List<Pair<Point, Boolean>>  neighbors = getAdjacent(currentNode, width, height, cornerRule, weightMap);
@@ -79,12 +82,12 @@ public class PathFinding {
 //                if(print) System.out.printf("Checking Neighbor (%d, %d)\n", successor.x, successor.y);
                 if (successor.equals(targetNode)) {
                     setVal(prevNodeMap, successor, currentNode);
-//                    if(print) System.out.println("FOUND THE END!");
+//                    if(print) logger.info("FOUND THE END!");
                     break outerLoop;
                 }
 
                 if (closedNodes.stream().anyMatch(successor::equals)) {
-//                    if (print) System.out.println("This neighbor is already on the closed list - skipping");
+//                    if (print) logger.info("This neighbor is already on the closed list - skipping");
                     continue; //Skip this node if it's on the closed list
                 }
 
@@ -105,7 +108,7 @@ public class PathFinding {
                 }
 
                 double successorF = successorG + successorH;
-//                if(print) System.out.println("successorG = " + successorG);
+//                if(print) logger.info("successorG = " + successorG);
                 if(successorG == Float.POSITIVE_INFINITY) continue; //Skip cells that are infinite weight
 
                 //If this successor point is NOT on the open list
@@ -116,7 +119,7 @@ public class PathFinding {
                     openNodes.add(successor);
                     setVal(prevNodeMap, successor, currentNode);
                     setVal(prevDirMap, successor, successorAngle);
-//                    if (print) System.out.println("Added to open list!");
+//                    if (print) logger.info("Added to open list!");
                     setVal(hMap, successor, successorH);
                     setVal(gMap, successor, successorG);
                     setVal(fMap, successor, successorF);
@@ -144,9 +147,9 @@ public class PathFinding {
             }
 
             if(print) {
-                System.out.println("\t\tinnerCount " + innerCount);
-                System.out.println("\t\touterCount " + outerCount);
-                System.out.println("\t\tsecondCount " + secondCount);
+                logger.info("\t\tinnerCount " + innerCount);
+                logger.info("\t\touterCount " + outerCount);
+                logger.info("\t\tsecondCount " + secondCount);
             }
 
             return foundPath;

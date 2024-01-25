@@ -13,7 +13,6 @@ import java.util.List;
 public class DataFragmentPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
     private final Kryo kryo;
-
     public DataFragmentPacketDecoder(Kryo kryo) {
         this.kryo = kryo;
     }

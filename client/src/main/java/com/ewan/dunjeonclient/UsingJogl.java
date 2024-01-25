@@ -9,6 +9,8 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import javax.swing.*;
@@ -17,6 +19,7 @@ import java.util.List;
 
 public class UsingJogl implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
+	static Logger logger = LogManager.getLogger();
 
 	@Getter
 	protected GLCanvas canvas;
@@ -25,7 +28,7 @@ public class UsingJogl implements GLEventListener {
 	final static Vector2 lastCameraPos = new Vector2();
 
 	public UsingJogl(ClientChannelHandler clientChannelHandler) {
-		System.out.println("Creating UI");
+		logger.info("Creating UI");
 		frame = new JFrame("Dungeon Client");
 
 		this.clientChannelHandler = clientChannelHandler;
@@ -125,7 +128,7 @@ public class UsingJogl implements GLEventListener {
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
 		if(clientChannelHandler.getMostRecentFrameInfoPacket() == null){
-//			System.out.println("Most recent frame packet null");
+//			logger.info("Most recent frame packet null");
 			return;
 		}
 		long ownerUUID = clientChannelHandler.getMostRecentFrameInfoPacket().clientUUID();

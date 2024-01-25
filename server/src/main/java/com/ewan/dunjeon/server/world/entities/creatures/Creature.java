@@ -4,6 +4,8 @@ import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.server.world.entities.Entity;
 import com.ewan.dunjeon.data.Sensor;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
