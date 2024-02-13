@@ -100,48 +100,38 @@ public class Datastreams {
 
                                 //1 and 2
                                 Pair<Vector2, Vector2> endPoints = result.getAdjacentSideEndPoints();
-                                logger.info("endpoints: ");
-                                logger.info("\t"+endPoints.getElement0());
-                                logger.info("\t"+endPoints.getElement1());
+                                if(endPoints != null) {
 
-                                double theta1 = Math.atan2(endPoints.getElement0().x, endPoints.getElement0().y);
-                                double theta2 = Math.atan2(endPoints.getElement1().x, endPoints.getElement1().y);
-                                double phi = currentAngle;
+                                    double theta1 = Math.atan2(endPoints.getElement0().x, endPoints.getElement0().y);
+                                    double theta2 = Math.atan2(endPoints.getElement1().x, endPoints.getElement1().y);
+                                    double phi = currentAngle;
 
-                                //2.5
-                                if(phi > Math.PI) phi -= Math.PI*2;
+                                    //2.5
+                                    if (phi > Math.PI) phi -= Math.PI * 2;
 
-                                //calculate difference for both angles from current ray
-                                double theta1diff = theta1 - phi;
-                                double theta2diff = theta2 - phi;
+                                    //calculate difference for both angles from current ray
+                                    double theta1diff = theta1 - phi;
+                                    double theta2diff = theta2 - phi;
 
-                                //Correct for case where |theta_diff| > PI to make further comparison easier
-                                if(Math.abs(theta1diff) > Math.PI){
-                                    theta1diff = theta1diff - Math.PI*2*Math.signum(theta1diff);
+                                    //Correct for case where |theta_diff| > PI to make further comparison easier
+                                    if (Math.abs(theta1diff) > Math.PI) {
+                                        theta1diff = theta1diff - Math.PI * 2 * Math.signum(theta1diff);
+                                    }
+
+                                    if (Math.abs(theta2diff) > Math.PI) {
+                                        theta2diff = theta2diff - Math.PI * 2 * Math.signum(theta2diff);
+                                    }
+
+                                    if (theta1diff > theta2diff) {
+
+                                    } else if (theta2diff > theta1diff) {
+
+                                    } else {
+                                        logger.error("theta1 and theta2 are equal. This should NEVER occur, and signifies that I might be bad at trig");
+                                        throw new RuntimeException("theta1 == theta2, should never occur");
+                                    }
+
                                 }
-
-                                if(Math.abs(theta2diff) > Math.PI){
-                                    theta2diff = theta2diff - Math.PI*2*Math.signum(theta2diff);
-                                }
-
-                                logger.info("theta1 = " + theta1);
-                                logger.info("theta1diff = " + theta1diff);
-
-                                logger.info("theta2 = " + theta2);
-                                logger.info("theta2diff = " + theta2diff);
-
-                                logger.info("====================");
-
-                                if(theta1diff > theta2diff){
-
-                                }else if(theta2diff > theta1diff){
-
-                                }else{
-                                    logger.error("theta1 and theta2 are equal. This should NEVER occur, and signifies that I might be bad at trig");
-                                    throw new RuntimeException("theta1 == theta2, should never occur");
-                                }
-
-
                                 break;
                             }
                         }

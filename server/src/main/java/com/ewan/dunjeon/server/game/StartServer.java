@@ -27,7 +27,8 @@ public class StartServer {
 
     @SneakyThrows
     public static void main(String[] args) {
-        System.setOut(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
+        System.setProperty("log4j2.debug", "true");
+//        System.setOut(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
 //        System.setErr(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
         logger.info("Starting server code");
         generateWorld();

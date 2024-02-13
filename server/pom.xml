@@ -30,7 +30,7 @@
                         <manifest>
                             <mainClass>com.ewan.dunjeon.server.game.StartServer</mainClass>
                         </manifest>
-                        <!--Added to enable Log4J2's Logging.getLogger() to work [note that no parameter supplied]-->
+                        <!--Added to enable Log4J2's Logging.getLogger() to work-->
                         <manifestEntries>
                             <Multi-Release>true</Multi-Release>
                         </manifestEntries>

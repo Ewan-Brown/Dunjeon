@@ -28,3 +28,22 @@ Draft combat/collision and hook in Dyn4J collision detection
 Allow connecting clients to select existing characters
 Allow basic 'character creation' connecting clients
 Re-investigate environmental interaction + reinvent UI functionality (previous highlighting system was terrible)
+
+
+
+
+
+
+
+
+
+Theme :
+    Location : Underground fortress - think DF adventure mode after retiring from a fort
+    Objective : Openly interactive town with procedural events and characters
+    Multiplayer might not per persistent - might be session based?
+
+    There was the fun idea that all worlds are available publically online, each generated with seed as the name.
+    Players will just function as characters passing by in the world
+
+    Underground saves us from alot of nonsense, and lets it match DF a little more closely.
+    Would be fun to do proper cave generation. Can easily work in a basic lore

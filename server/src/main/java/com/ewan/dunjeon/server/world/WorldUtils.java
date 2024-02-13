@@ -114,8 +114,8 @@ public class WorldUtils {
             if(side == Side.WITHIN) {
                 adjacentSideEndPoints = null;
             }else{
-                Vector2 p1 = sideMidPoint.copy().add(side.axis.unitVector.multiply(0.5));
-                Vector2 p2 = sideMidPoint.copy().add(side.axis.unitVector.multiply(-0.5));
+                Vector2 p1 = sideMidPoint.copy().add(side.axis.unitVector.copy().multiply(0.5));
+                Vector2 p2 = sideMidPoint.copy().add(side.axis.unitVector.copy().multiply(-0.5));
                 adjacentSideEndPoints = new Pair<>(p1,p2);
             }
         }
@@ -141,9 +141,9 @@ public class WorldUtils {
 //        List<Pair<Vector2, Side>> intersectedTiles = new ArrayList<>();
 
         Vector2 currentPoint = new Vector2((int) Math.floor(x1), (int) Math.floor(y1));
-        System.out.println("WorldUtils:98 should probably remove the rounding");
+//        System.out.println("WorldUtils:98 should probably remove the rounding");
 
-        System.out.println("Check if we need to bring intersection checking for where dx or dy == 0");
+//        System.out.println("Check if we need to bring intersection checking for where dx or dy == 0");
 //        if(dx == 0){
 //            int tileX = (int)Math.floor(x1);
 //            Side intersectSide = dy > 0 ? Side.NORTH : Side.SOUTH;
