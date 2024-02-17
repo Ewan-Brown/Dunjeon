@@ -65,7 +65,7 @@ public class BasicMemoryBank extends DataSink {
             hashMap.put(wrappedData.getIdentifier(), relevantPackage);
         }
         for (T datum : wrappedData.getData()) {
-            KnowledgeFragment<T> fragment = new KnowledgeFragment<>(datum, null, wrappedData.getTimestamp());
+            KnowledgeFragment<T> fragment = new KnowledgeFragment<>(datum, null, wrappedData.getTimestamp(), wrappedData.getTickstamp());
             relevantPackage.register(fragment);
         }
 

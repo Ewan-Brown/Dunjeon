@@ -11,6 +11,7 @@ import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.data.DataWrappers;
 import com.ewan.meworking.data.server.data.Datas;
+import com.ewan.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
@@ -28,14 +29,13 @@ public class Datastreams {
         /**
          * The desired arc length of the 'wedges' created between each of the rays
          */
-        static final double DESIRED_ARCLENGTH = 0.1;
-
+        static final double DESIRED_ARCLENGTH = 0.01;
         //Worry about performance LATER we can think about caching or something
         @Override
         public void update(Dunjeon d) {
+            logger.debug("Updating Datastream: Sight");
             for (int i = 0; i < getSubscribers().size(); i++) {
                 Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
-
 
                 //Get necessary parameters from sensor
                 SightStreamParameters params = sensor.getParameters();
@@ -45,6 +45,7 @@ public class Datastreams {
                 List<DataWrapper<? extends Data, ?>> dataAmalgamated = new ArrayList<>();
 
                 if(params.getTrueSight()){
+                    logger.trace("truesight is enabled");
 
                     for (BasicCell basicCell : sensor.creature.getFloor().getCellsAsList()) {
                         Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
@@ -60,7 +61,8 @@ public class Datastreams {
                     }
 
                 }else {
-
+                    logger.trace("Processing Raycasting");
+                    logger.trace("=====================");
                     //************* Do Raycasting *******************//
                     double range = params.getSightRange();
                     double fov = params.getSightFieldOfView();
@@ -68,26 +70,35 @@ public class Datastreams {
 
                     double startingAngle = currentEntityAngle - fov / 2;
                     double endingAngle = currentEntityAngle + fov / 2;
-                    double angleSpacing = DESIRED_ARCLENGTH / fov;
+                    double minAngle = 0.00001f;
+                    int rayCounter = 0;
+
+                    logger.trace("pos: " + params.sightSourceLocation + "fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle);
 
                     //Iterate across rays. Written to ensure that the first and last angles are casted, to avoid any funny business
                     double currentAngle = startingAngle;
                     boolean finalLap = false;
                     do {
+                        boolean didCollide = false;
                         if (currentAngle > endingAngle) {
+                            logger.trace("This is the last ray in this loop, trimming angle from : " + currentAngle + ", to: " + endingAngle);
                             finalLap = true;
                             currentAngle = endingAngle;
                         }
 
-                        Vector2 rayEnd = sensorPos.copy().add(Vector2.create(range, currentAngle));
-                        var results = WorldUtils.getIntersectedTilesWithWall(sensorPos, rayEnd);
+                        logger.trace("ray # : " + rayCounter + ", angle : " + currentAngle);
 
-                        for (WorldUtils.IntersectionData result : results) {
-                            if (!tilesMap.containsKey(result.getCellCoordinate())) {
-                                tilesMap.put(result.getCellCoordinate(), new HashSet<>());
+                        Vector2 rayEnd = sensorPos.copy().add(Vector2.create(range, currentAngle));
+                        var intersections = WorldUtils.getIntersectedTilesWithWall(sensorPos, rayEnd);
+
+                        logger.trace("ray end : " + StringUtils.formatVector(rayEnd) +", # of intersections = " + intersections.size());
+
+                        for (WorldUtils.IntersectionData intersectionData : intersections) {
+                            if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
+                                tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
                             }
-                            tilesMap.get(result.getCellCoordinate()).add(result.getSide());
-                            BasicCell basicCell = sensor.creature.getFloor().getCellAt(result.getCellCoordinate());
+                            tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
+                            BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
                             if (basicCell == null || !basicCell.canBeSeenThrough(sensor.creature)){
                                 // Figure out the _minimum_ angle increase required to push past this cell
 
@@ -97,37 +108,40 @@ public class Datastreams {
                                 // 3. Compare the current angle + rotation direction (should always be the same?) to figure out which of the two is next in the raytracer's path
                                 // 4. Take angle to point form #3 and add a tiny bit to it
 
-
-                                //1 and 2
-                                Pair<Vector2, Vector2> endPoints = result.getAdjacentSideEndPoints();
+                                Pair<Vector2, Vector2> endPoints = intersectionData.getAdjacentSideEndPoints();
                                 if(endPoints != null) {
 
-                                    double theta1 = Math.atan2(endPoints.getElement0().x, endPoints.getElement0().y);
-                                    double theta2 = Math.atan2(endPoints.getElement1().x, endPoints.getElement1().y);
-                                    double phi = currentAngle;
+                                    double theta1 = Math.atan2(endPoints.getElement0().y, endPoints.getElement0().x);
+                                    double theta2 = Math.atan2(endPoints.getElement1().y, endPoints.getElement1().x);
+                                    double phi = Math.atan2(intersectionData.getIntersectionPoint().y, intersectionData.getIntersectionPoint().x);
 
                                     //2.5
-                                    if (phi > Math.PI) phi -= Math.PI * 2;
 
                                     //calculate difference for both angles from current ray
                                     double theta1diff = theta1 - phi;
                                     double theta2diff = theta2 - phi;
 
                                     //Correct for case where |theta_diff| > PI to make further comparison easier
-                                    if (Math.abs(theta1diff) > Math.PI) {
-                                        theta1diff = theta1diff - Math.PI * 2 * Math.signum(theta1diff);
-                                    }
+//                                    if (Math.abs(theta1diff) > Math.PI) {
+//                                        theta1diff = theta1diff - Math.PI * 2 * Math.signum(theta1diff);
+//                                    }
+//
+//                                    if (Math.abs(theta2diff) > Math.PI) {
+//                                        theta2diff = theta2diff - Math.PI * 2 * Math.signum(theta2diff);
+//                                    }
 
-                                    if (Math.abs(theta2diff) > Math.PI) {
-                                        theta2diff = theta2diff - Math.PI * 2 * Math.signum(theta2diff);
-                                    }
+                                    double greaterTheta = Math.max(theta1diff, theta2diff);
+                                    didCollide = true;
+                                    currentAngle += greaterTheta+0.00001;
 
-                                    if (theta1diff > theta2diff) {
+                                    logger.trace("Ray hit something");
 
-                                    } else if (theta2diff > theta1diff) {
-
-                                    } else {
+                                    if (theta1diff == theta2diff) {
                                         logger.error("theta1 and theta2 are equal. This should NEVER occur, and signifies that I might be bad at trig");
+                                        logger.error("currentAngle: " + currentAngle);
+                                        logger.error("currentPos: " + StringUtils.formatVector(sensorPos));
+                                        logger.error("theta1: " + theta1);
+                                        logger.error("theta2: " + theta2);
                                         throw new RuntimeException("theta1 == theta2, should never occur");
                                     }
 
@@ -136,8 +150,10 @@ public class Datastreams {
                             }
                         }
 
-                        currentAngle += angleSpacing;
-
+                        if(!didCollide) {
+                            currentAngle += minAngle;
+                        }
+                        rayCounter++;
                     } while (!finalLap);
 
                     for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tilesMap.entrySet()) {

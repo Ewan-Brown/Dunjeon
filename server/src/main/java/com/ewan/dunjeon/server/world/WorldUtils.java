@@ -61,13 +61,13 @@ public class WorldUtils {
     }
 
     public enum Side {
-        NORTH(0.5, 0, AxisAlignment.HORIZONTAL),
-        EAST(1, -0.5, AxisAlignment.VERTICAL),
-        SOUTH(0.5, -1, AxisAlignment.HORIZONTAL),
-        WEST(0, -0.5, AxisAlignment.VERTICAL),
-        WITHIN(0, 0, null);
+        NORTH(0.5, 1, AxisAlignment.HORIZONTAL),
+        EAST(1, 0.5, AxisAlignment.VERTICAL),
+        SOUTH(0.5, 0, AxisAlignment.HORIZONTAL),
+        WEST(0, 0.5, AxisAlignment.VERTICAL),
+        WITHIN(0.5, 0.5, null);
 
-        //The components of the vector spanning from a cell's local origin (top left corner) to the midline of this Side
+        //The components of the vector spanning from a cell's local origin (bottom left corner) to the midline of this Side
         final Vector2 localCoord;
         final AxisAlignment axis;
 
@@ -98,13 +98,13 @@ public class WorldUtils {
         final Side side;
         final Pair<Vector2, Vector2> adjacentSideEndPoints;
         public IntersectionData(Vector2 intersectionPoint, Vector2 cellCoordinate, Side side) {
-            logger.info("creating Intersection data at:");
-            logger.info("\t"+intersectionPoint);
-            logger.info("\t"+cellCoordinate);
-            logger.info("\t"+side);
+//            logger.trace("creating Intersection data at:");
+//            logger.trace("\t"+intersectionPoint);
+//            logger.trace("\t"+cellCoordinate);
+//            logger.trace("\t"+side);
             if(side != null && side.axis != null) {
-                logger.info("\t - " + side.axis);
-                logger.info("\t - " + side.axis.unitVector);
+//                logger.trace("\t - " + side.axis);
+//                logger.trace("\t - " + side.axis.unitVector);
             }
             this.intersectionPoint = intersectionPoint;
             this.cellCoordinate = cellCoordinate;
@@ -127,6 +127,8 @@ public class WorldUtils {
 
     public static List<IntersectionData> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {
 
+//        logger.trace("Called getIntersectedTilesWithWalls() with : ");
+//        logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
         List<IntersectionData> intersectionDatas = new ArrayList<>();
 
         double dx = x2 - x1;
@@ -140,8 +142,7 @@ public class WorldUtils {
 
 //        List<Pair<Vector2, Side>> intersectedTiles = new ArrayList<>();
 
-        Vector2 currentPoint = new Vector2((int) Math.floor(x1), (int) Math.floor(y1));
-//        System.out.println("WorldUtils:98 should probably remove the rounding");
+        Vector2 currentPoint = new Vector2( Math.floor(x1), Math.floor(y1));
 
 //        System.out.println("Check if we need to bring intersection checking for where dx or dy == 0");
 //        if(dx == 0){
@@ -185,7 +186,7 @@ public class WorldUtils {
 //            return intersectedTiles;
 //        }
 
-        intersectionDatas.add(new IntersectionData(null, currentPoint, Side.WITHIN));
+        intersectionDatas.add(new IntersectionData(new Vector2(x1, y1), currentPoint, Side.WITHIN));
 //        intersectedTiles.add(new Pair<>(currentPoint, Side.WITHIN));
 
 
@@ -242,7 +243,7 @@ public class WorldUtils {
                     nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
                 }
                 intersectAlignment = AxisAlignment.HORIZONTAL;
-                side = (dy > 0) ? Side.NORTH :Side.SOUTH;
+                side = (dy < 0) ? Side.NORTH :Side.SOUTH;
             }
             if (Math.abs(nextInterceptX - x1) > Math.abs(dx) || Math.abs(nextInterceptY - y1) > Math.abs(dy) ) {
                 break;

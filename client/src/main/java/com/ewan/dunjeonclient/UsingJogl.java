@@ -105,8 +105,7 @@ public class UsingJogl implements GLEventListener {
 	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width, int height) {}
 
 	private boolean isMemoryDataPresent(KnowledgeFragment<?> d){
-		boolean b = d.getTimestamp() == clientChannelHandler.getMostRecentTimestampReceived();
-		return b;
+        return (clientChannelHandler.getMostRecentTimestampReceived() - d.getTickStamp()) < 2;
 	}
 	
 	protected void render(GL2 gl) {
@@ -124,12 +123,20 @@ public class UsingJogl implements GLEventListener {
 		gl.glPopMatrix();
 	}
 
+	boolean debug_hasReceivedAnyValidPackets = false;
+
 	public void renderMemoryBank(GL2 gl, BasicMemoryBank basicMemoryBank){
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
 		if(clientChannelHandler.getMostRecentFrameInfoPacket() == null){
-//			logger.info("Most recent frame packet null");
+			if(!debug_hasReceivedAnyValidPackets){
+				logger.info("Most recent frame packet null");
+			}else{
+				logger.warn("Most recent frame packet null - but we've previously received valid frame packets!");
+			}
 			return;
+		}else{
+			debug_hasReceivedAnyValidPackets=true;
 		}
 		long ownerUUID = clientChannelHandler.getMostRecentFrameInfoPacket().clientUUID();
 		BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> hostPos = basicMemoryBank.querySinglePackage(ownerUUID, Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
