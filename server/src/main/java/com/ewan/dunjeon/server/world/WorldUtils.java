@@ -98,14 +98,6 @@ public class WorldUtils {
         final Side side;
         final Pair<Vector2, Vector2> adjacentSideEndPoints;
         public IntersectionData(Vector2 intersectionPoint, Vector2 cellCoordinate, Side side) {
-//            logger.trace("creating Intersection data at:");
-//            logger.trace("\t"+intersectionPoint);
-//            logger.trace("\t"+cellCoordinate);
-//            logger.trace("\t"+side);
-            if(side != null && side.axis != null) {
-//                logger.trace("\t - " + side.axis);
-//                logger.trace("\t - " + side.axis.unitVector);
-            }
             this.intersectionPoint = intersectionPoint;
             this.cellCoordinate = cellCoordinate;
             this.side = side;
