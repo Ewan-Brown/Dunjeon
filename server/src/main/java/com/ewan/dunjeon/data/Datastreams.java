@@ -120,8 +120,8 @@ public class Datastreams {
                                     logger.trace(String.format("angles to endpoints : %.2f, %.2f", theta1, theta2));
 
                                     if (theta1 == theta2) {
-                                        logger.error("theta1 and theta2 are equal. This should NEVER occur, and signifies that I might be bad at trig");
                                         logger.error(String.format("theta1: %f, theta2: %f, rayStart: %s, rayEnd: %s, currentAngle: %f, endPoints: %s", theta1, theta2, sensorPos, rayEnd, currentAngle, endPoints));
+                                        logger.error("theta1 and theta2 are equal. This should NEVER occur, see error logs below");
                                         throw new RuntimeException("theta1 == theta2, should never occur");
                                     }
 
