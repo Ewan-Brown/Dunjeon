@@ -99,7 +99,7 @@ public class Datastreams {
                             }
                             tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
                             BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
-                            if (basicCell == null || !basicCell.canBeSeenThrough(sensor.creature)){
+                            if (basicCell == null || !basicCell.canBeSeenThrough(sensor.creature)) {
                                 logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVector(intersectionData.getIntersectionPoint()));
                                 // Figure out the _minimum_ angle increase required to push past this cell
 
@@ -110,18 +110,18 @@ public class Datastreams {
                                 // 4. Take angle to point form #3 and add a tiny bit to it
 
                                 Pair<Vector2, Vector2> endPoints = intersectionData.getAdjacentSideEndPoints();
-                                if(endPoints != null) {
+                                if (endPoints != null) {
 
                                     //Collect relevant angles
                                     double theta1 = Math.atan2(endPoints.getElement0().y - sensorPos.y, endPoints.getElement0().x - sensorPos.x);
                                     double theta2 = Math.atan2(endPoints.getElement1().y - sensorPos.y, endPoints.getElement1().x - sensorPos.x);
-//                                    double phi = Math.atan2(intersectionData.getIntersectionPoint().y, intersectionData.getIntersectionPoint().x);
 
                                     logger.trace(String.format("Endpoints: %s, %s on side %s", StringUtils.formatVector(endPoints.getElement0()), StringUtils.formatVector(endPoints.getElement1()), intersectionData.getSide().name()));
                                     logger.trace(String.format("angles to endpoints : %.2f, %.2f", theta1, theta2));
 
                                     if (theta1 == theta2) {
                                         logger.error("theta1 and theta2 are equal. This should NEVER occur, and signifies that I might be bad at trig");
+                                        logger.error(String.format("theta1: %f, theta2: %f, rayStart: %s, rayEnd: %s, currentAngle: %f, endPoints: %s", theta1, theta2, sensorPos, rayEnd, currentAngle, endPoints));
                                         throw new RuntimeException("theta1 == theta2, should never occur");
                                     }
 
@@ -130,26 +130,24 @@ public class Datastreams {
                                     double theta1Diff = theta1 - currentAngle;
                                     double theta2Diff = theta2 - currentAngle;
 
-                                    if(Math.abs(theta1Diff) > Math.PI){
+                                    if (Math.abs(theta1Diff) > Math.PI) {
                                         double overshoot = Math.abs(theta1Diff) - Math.PI;
-                                        double adjustedTheta1Diff = Math.PI * -1 * Math.signum(theta1Diff) - overshoot * -1 * Math.signum(theta1Diff);
-                                        theta1Diff = adjustedTheta1Diff;
+                                        theta1Diff = Math.PI * -1 * Math.signum(theta1Diff) - overshoot * -1 * Math.signum(theta1Diff);
                                     }
-                                    if(Math.abs(theta2Diff) > Math.PI){
+                                    if (Math.abs(theta2Diff) > Math.PI) {
                                         double overshoot = Math.abs(theta2Diff) - Math.PI;
-                                        double adjustedTheta2Diff = Math.PI * -1 * Math.signum(theta2Diff) - overshoot * -1 * Math.signum(theta2Diff);
-                                        theta2Diff = adjustedTheta2Diff;
+                                        theta2Diff = Math.PI * -1 * Math.signum(theta2Diff) - overshoot * -1 * Math.signum(theta2Diff);
                                     }
 
                                     logger.trace(String.format("adjusted theta1, theta2 : %.2f, %.2f", theta1Diff, theta2Diff));
-                                    if(Math.signum(theta1Diff) == Math.signum(theta2Diff)){
+                                    if (Math.signum(theta1Diff) == Math.signum(theta2Diff)) {
                                         logger.error("theta1 and theta2 are equal. This should NEVER occur, and signifies that I might be bad at trig");
                                         throw new RuntimeException("theta1 == theta2, should never occur");
                                     }
-                                    if(theta1Diff > theta2Diff){
+                                    if (theta1Diff > theta2Diff) {
                                         logger.trace("theta1diff is positive, choosing theta1+delta as next angle");
                                         currentAngle += theta1Diff + 0.00001;
-                                    }else if(theta1Diff < theta2Diff) {
+                                    } else if (theta1Diff < theta2Diff) {
                                         logger.trace("theta2diff is positive, choosing theta2+delta as next angle");
                                         currentAngle += theta2Diff + 0.00001;
                                     }
