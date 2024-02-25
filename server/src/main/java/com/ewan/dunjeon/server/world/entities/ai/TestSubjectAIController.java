@@ -3,8 +3,6 @@ package com.ewan.dunjeon.server.world.entities.ai;
 import com.ewan.meworking.data.server.data.Datas;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import java.util.List;
@@ -57,7 +55,7 @@ public class TestSubjectAIController extends CreatureController<TestSubject, Tes
             thrust = new Vector2(posDiff);
         }
 
-        controls.moveInDirection(thrust);
+        controls.setDesiredVelocity(thrust);
     }
 
 }

@@ -141,15 +141,15 @@ public class Datastreams {
 
                                     logger.trace(String.format("adjusted theta1, theta2 : %.2f, %.2f", theta1Diff, theta2Diff));
                                     if (Math.signum(theta1Diff) == Math.signum(theta2Diff)) {
-                                        logger.error("theta1 and theta2 are equal. This should NEVER occur, and signifies that I might be bad at trig");
-                                        throw new RuntimeException("theta1 == theta2, should never occur");
+                                        logger.error("theta1diff and theta2diff's signums are equal. This should NEVER occur, and signifies that I might be bad at trig");
+                                        throw new RuntimeException("Math.signum(theta1Diff) == Math.signum(theta2Diff), should never occur");
                                     }
                                     if (theta1Diff > theta2Diff) {
                                         logger.trace("theta1diff is positive, choosing theta1+delta as next angle");
-                                        currentAngle += theta1Diff + 0.00001;
+                                        currentAngle += theta1Diff + minAngle;
                                     } else if (theta1Diff < theta2Diff) {
                                         logger.trace("theta2diff is positive, choosing theta2+delta as next angle");
-                                        currentAngle += theta2Diff + 0.00001;
+                                        currentAngle += theta2Diff + minAngle;
                                     }
                                     didCollide = true;
                                 }

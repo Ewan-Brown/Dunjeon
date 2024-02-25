@@ -70,7 +70,7 @@ public class SimpleControls implements KeyListener {
             x--;
         }
 
-        UserInput mEntity = new MoveEntity(new Vector2(x, y));
+        UserInput mEntity = new MoveEntity(new Vector2(x, y).getNormalized());
         //Process turning keys
 
         float turn = 0;
