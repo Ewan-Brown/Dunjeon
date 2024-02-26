@@ -28,6 +28,8 @@ Draft combat/collision and hook in Dyn4J collision detection
 Allow connecting clients to select existing characters
 Allow basic 'character creation' connecting clients
 Re-investigate environmental interaction + reinvent UI functionality (previous highlighting system was terrible)
+Item ideas
+    - Flashlight/lantern - extends player sight - Ev
 
 
 
