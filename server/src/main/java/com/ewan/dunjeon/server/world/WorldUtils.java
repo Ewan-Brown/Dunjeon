@@ -98,14 +98,6 @@ public class WorldUtils {
         final Side side;
         final Pair<Vector2, Vector2> adjacentSideEndPoints;
         public IntersectionData(Vector2 intersectionPoint, Vector2 cellCoordinate, Side side) {
-//            logger.trace("creating Intersection data at:");
-//            logger.trace("\t"+intersectionPoint);
-//            logger.trace("\t"+cellCoordinate);
-//            logger.trace("\t"+side);
-            if(side != null && side.axis != null) {
-//                logger.trace("\t - " + side.axis);
-//                logger.trace("\t - " + side.axis.unitVector);
-            }
             this.intersectionPoint = intersectionPoint;
             this.cellCoordinate = cellCoordinate;
             this.side = side;
@@ -127,8 +119,8 @@ public class WorldUtils {
 
     public static List<IntersectionData> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {
 
-//        logger.trace("Called getIntersectedTilesWithWalls() with : ");
-//        logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
+        logger.trace("============================== Called getIntersectedTilesWithWalls() with : ");
+        logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
         List<IntersectionData> intersectionDatas = new ArrayList<>();
 
         double dx = x2 - x1;
@@ -139,6 +131,8 @@ public class WorldUtils {
 
         double currentX = x1;
         double currentY = y1;
+
+        logger.trace(String.format("dx: %.10f, dy: %.10f", dx, dy));
 
 //        List<Pair<Vector2, Side>> intersectedTiles = new ArrayList<>();
 
@@ -209,6 +203,7 @@ public class WorldUtils {
                     nextVerticalIntersect = (double) ((dx > 0) ? Math.ceil(currentX) : Math.floor(currentX));
                 }
                 distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
+                logger.trace(String.format("nextVerticalIntersect: %f\ndist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
             }
             if (dy != 0) {
                 if (currentY == Math.round(currentY)) {
@@ -217,6 +212,7 @@ public class WorldUtils {
                     nextHorizontalIntersect = (double) ((dy > 0) ? Math.ceil(currentY) : Math.floor(currentY));
                 }
                 distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
+                logger.trace(String.format("nextHorizontalIntersect: %f\ndist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
             }
 
             double nextInterceptX, nextInterceptY;
@@ -227,24 +223,34 @@ public class WorldUtils {
                 nextInterceptX = nextVerticalIntersect;
                 nextInterceptY = slope * nextInterceptX + b;
 
-                if(distToNextVerticalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
-                    double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dy);
-                    nextInterceptY = Math.round(nextInterceptY) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
-                }
+//                if(distToNextVerticalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
+//                    double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dy);
+//                    nextInterceptY = Math.round(nextInterceptY) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
+//                }
                 intersectAlignment = AxisAlignment.VERTICAL;
                 side = (dx > 0) ? Side.WEST : Side.EAST;
+                logger.trace("Going with vertical intersection");
 
             } else {
                 nextInterceptY = nextHorizontalIntersect;
                 nextInterceptX = (nextInterceptY - b) / slope;
 
-                if(distToNextHorizontalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
-                    double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dx);
-                    nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
-                }
+                logger.trace(String.format("y = %f, m = %f, b = %f", nextInterceptY, b, slope));
+                logger.trace(String.format("x calculated as = %f", nextInterceptX));
+
+//                if(distToNextHorizontalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
+//                    logger.trace("uh oh looks like the numbers are small");
+//                    double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dx);
+//                    nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
+//                    logger.trace(String.format("new x intercept = %f", nextInterceptX));
+//                }
                 intersectAlignment = AxisAlignment.HORIZONTAL;
                 side = (dy < 0) ? Side.NORTH :Side.SOUTH;
+                logger.trace("Going with horizontal intersection: ");
             }
+
+            logger.trace(String.format(" on %s side at (%f, %f)", side, nextInterceptX, nextInterceptY));
+
             if (Math.abs(nextInterceptX - x1) > Math.abs(dx) || Math.abs(nextInterceptY - y1) > Math.abs(dy) ) {
                 break;
             } else {

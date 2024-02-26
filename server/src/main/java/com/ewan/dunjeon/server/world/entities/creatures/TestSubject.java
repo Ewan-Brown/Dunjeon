@@ -5,6 +5,7 @@ import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.data.Sensor;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
+import com.ewan.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
@@ -18,6 +19,9 @@ public class TestSubject extends Creature {
     private final TestSubjectControls subjectInterface = new TestSubjectControls();
     static Logger logger = LogManager.getLogger();
 
+    private Vector2 desiredVelocity = new Vector2();
+    private double desiredAngularVelocity = 0;
+
     public TestSubject(String name) {
         this(name, false);
 
@@ -26,12 +30,18 @@ public class TestSubject extends Creature {
     public TestSubject(String name, Boolean trueSight) {
         super(name);
         senses.add(Dunjeon.getInstance().getSightDataStream().constructSensorForDatastream(this, c ->
-                new Datastreams.SightDataStream.SightStreamParameters(10, Math.PI,getRotationAngle() , getWorldCenter(), trueSight)));
+                new Datastreams.SightDataStream.SightStreamParameters(20, Math.PI/2,getRotationAngle() , getWorldCenter(), trueSight)));
 
     }
 
     public void update(double stepSize) {
         super.update(stepSize);
+
+        Vector2 velocityDiff = desiredVelocity.copy().subtract(getLinearVelocity());
+        double angularVelocityDiff = desiredAngularVelocity - getAngularVelocity();
+
+        applyForce(velocityDiff.multiply(5));
+        applyTorque(angularVelocityDiff*5);
     }
 
 
@@ -51,15 +61,19 @@ public class TestSubject extends Creature {
 
         public long getUUID(){return TestSubject.super.getUUID();}
 
-        public void moveInDirection(Vector2 v){
-            TestSubject.super.applyForce(v);
+        public void setDesiredVelocity(Vector2 v){
+            desiredVelocity = v;
         }
 
-        public void turn(double d){
-            TestSubject.super.applyTorque(d);
+        public void setDesiredAngularVelocity(double v){
+            desiredAngularVelocity = v*3;
         }
 
-        public Vector2 getCurrentSpeed(){return TestSubject.super.getLinearVelocity();}
+        public void setDesiredAngle(double d){
+            applyTorque(d);
+        }
+
+        public Vector2 getCurrentSpeed(){return getLinearVelocity();}
 
     }
 

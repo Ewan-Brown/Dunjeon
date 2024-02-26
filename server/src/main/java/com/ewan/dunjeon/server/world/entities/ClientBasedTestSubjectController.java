@@ -14,10 +14,10 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
     public ClientBasedTestSubjectController(TestSubject connectedCreature) {
         super(connectedCreature);
     }
+    double currentTurn = 0;
+    Vector2 currentMoveVector = new Vector2(0, 0);
 
     static Logger logger = LogManager.getLogger();
-    private Vector2 currentMoveVector = new Vector2(0,0);
-    private double currentTurn = 0;
 
     @Override
     void updateWithUserInputs(List<UserInput> inputs) {
@@ -29,8 +29,8 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
                 currentTurn = turnEntity.getTurn();
             }
         }
-        getControls().moveInDirection(currentMoveVector);
-        getControls().turn(currentTurn);
+        getControls().setDesiredVelocity(currentMoveVector);
+        getControls().setDesiredAngularVelocity(currentTurn);
 
     }
 

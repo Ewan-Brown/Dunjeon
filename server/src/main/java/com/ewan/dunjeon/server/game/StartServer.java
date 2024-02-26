@@ -27,9 +27,14 @@ public class StartServer {
 
     @SneakyThrows
     public static void main(String[] args) {
-        System.setProperty("log4j2.debug", "true");
-//        System.setOut(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
-//        System.setErr(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\server.txt").toFile())));
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+            static final Logger logger = LogManager.getLogger();
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                logger.error(e.getMessage());
+                logger.error(e.getStackTrace());
+            }
+        });
         logger.info("Starting server code");
         generateWorld();
         new Thread(ServerManager::runServer).start();
@@ -88,7 +93,7 @@ public class StartServer {
         for (int i = 0; i < entityCount; i++) {
             TestSubject npcTestSubject = new TestSubject("NPC");
             npcTestSubject.addFixture(new Rectangle(0.5,0.5));
-            npcTestSubject.setMass(new Mass(new Vector2(),1,1));
+            npcTestSubject.setMass(new Mass(new Vector2(),1,100));
             startFloor.addEntityRandomLoc(npcTestSubject);
         }
     }

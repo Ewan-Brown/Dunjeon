@@ -17,10 +17,7 @@ public class StartClient
     static Logger logger = LogManager.getLogger();
     @SneakyThrows
     public static void main(String[] args) {
-//        logger.info("Starting client");
-        logger.info("Logger.info called, and we're starting client");
-//        System.setOut(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\client.txt").toFile())));
-//        System.setErr(new PrintStream(new FileOutputStream(Paths.get("C:\\Users\\Ewan\\Documents\\Dunjeon\\client.txt").toFile())));
+        logger.info("Starting client");
         logger.debug("Arrays.toString(args) = " + Arrays.toString(args));
         ClientChannelHandler clientChannelHandler = new ClientChannelHandler(new BasicMemoryBank());
         new Thread(() -> new GameClient(clientChannelHandler, args[0])).start();
