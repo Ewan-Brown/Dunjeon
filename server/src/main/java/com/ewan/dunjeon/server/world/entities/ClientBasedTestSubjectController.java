@@ -1,9 +1,12 @@
 package com.ewan.dunjeon.server.world.entities;
 
+import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.meworking.data.client.TurnEntity;
 import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.client.MoveEntity;
+import com.ewan.meworking.data.server.data.Data;
+import com.ewan.meworking.data.server.data.Datas;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;

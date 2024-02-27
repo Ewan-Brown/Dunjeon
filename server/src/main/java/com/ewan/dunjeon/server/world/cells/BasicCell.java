@@ -10,7 +10,6 @@ import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 
 public class BasicCell extends Body {
 
@@ -52,7 +51,7 @@ public class BasicCell extends Body {
     /*
      Don't forget about me :)
      */
-    public boolean canBeSeenThrough(Entity e){
+    public boolean canBeSeenThroughBy(Entity e){
         return canBeEntered(e);
     }
 

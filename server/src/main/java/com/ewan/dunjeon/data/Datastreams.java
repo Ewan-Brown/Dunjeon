@@ -18,7 +18,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 public class Datastreams {
 
@@ -30,9 +39,60 @@ public class Datastreams {
          * The desired arc length of the 'wedges' created between each of the rays
          */
         static final double DESIRED_ARCLENGTH = 0.01;
-        //TODO Genericize this solution, make er reusable
+
+        static List<Line2D.Double> cached_raytracing_lines = new ArrayList<>();
+        static List<Point2D> cached_filled_walls = new ArrayList<>();
+        static List<Point2D> cached_known_filled_walls = new ArrayList<>();
+
+        public static void PRINT_DEBUG_IMAGE(){
+            logger.warn("PRINTING DEBUG IMAGE!");
+            BufferedImage b = new BufferedImage(10000,10000, BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D g2 = b.createGraphics();
+            int SCALE = 400;
+            g2.setColor(Color.WHITE);
+            g2.fillRect(0, 0, 10000, 10000);
+
+            g2.setColor(Color.BLACK);
+            for (Point2D cachedFilledWall : cached_filled_walls) {
+                g2.fillRect((int)((cachedFilledWall.getX()) * SCALE) - 1, (int)((cachedFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
+            }
+            g2.setColor(Color.GREEN);
+            for (Point2D cachedKnownFilledWall : cached_known_filled_walls) {
+                g2.fillRect((int)((cachedKnownFilledWall.getX()) * SCALE) - 1, (int)((cachedKnownFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
+            }
+            g2.setColor(Color.BLACK);
+            for (Point2D cachedFilledWall : cached_filled_walls) {
+                g2.drawRect((int)((cachedFilledWall.getX()) * SCALE), (int)((cachedFilledWall.getY()) * SCALE), SCALE, SCALE);
+                g2.drawRect((int)((cachedFilledWall.getX()) * SCALE) - 1, (int)((cachedFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
+            }
+
+            g2.setColor(Color.BLUE);
+
+            for (Line2D.Double cachedRaytracingLine : cached_raytracing_lines) {
+                //Draw a stupid thick line
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE), (int)((cachedRaytracingLine.y1) * SCALE), (int)((cachedRaytracingLine.x2) * SCALE), (int)((cachedRaytracingLine.y2) * SCALE));
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)+1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)+1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)-1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)-1);
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)+1, (int)((cachedRaytracingLine.y1) * SCALE)-1, (int)((cachedRaytracingLine.x2) * SCALE)+1, (int)((cachedRaytracingLine.y2) * SCALE)-1);
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
+            }
+
+            g2.dispose();
+            try {
+                ImageIO.write(b, "png", new File("C:\\Users\\Ewan\\Downloads\\image.png"));
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+
         @Override
         public void update(Dunjeon d) {
+
+            List<Line2D.Double> rayTracingLines = new ArrayList<>();
+            List<Point2D> filledWalls = new ArrayList<>();
+            List<Point2D> knownFilledWalls = new ArrayList<>();
+
             logger.debug("Updating Datastream: Sight");
             for (int i = 0; i < getSubscribers().size(); i++) {
                 Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
@@ -41,6 +101,12 @@ public class Datastreams {
                 SightStreamParameters params = sensor.getParameters();
                 HashMap<Vector2, Set<WorldUtils.Side>> tilesMap = new HashMap<>();
                 Vector2 sensorPos = params.getSightSourceLocation();
+
+                for (BasicCell basicCell : sensor.creature.getFloor().getCellsAsList()) {
+                    if(!basicCell.canBeSeenThroughBy(sensor.creature)){
+                        filledWalls.add(new Point2D.Double(basicCell.getIntegerX(), basicCell.getIntegerY()));
+                    }
+                }
 
                 List<DataWrapper<? extends Data, ?>> dataAmalgamated = new ArrayList<>();
 
@@ -70,7 +136,8 @@ public class Datastreams {
 
                     double startingAngle = currentEntityAngle - fov / 2;
                     double endingAngle = currentEntityAngle + fov / 2;
-                    double minAngle = 0.01f;
+                    double minAngle = 0.001f;
+                    double tinyAngle = 0.00001f;
                     int rayCounter = 0;
 
                     logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle);
@@ -79,14 +146,13 @@ public class Datastreams {
                     double currentAngle = startingAngle;
                     boolean finalLap = false;
                     do {
-                        boolean didCollide = false;
                         if (currentAngle > endingAngle) {
                             logger.trace("Last ray in this loop, trimming angle from : " + currentAngle + ", to: " + endingAngle);
                             finalLap = true;
                             currentAngle = endingAngle;
                         }
 
-                        logger.trace(String.format("Ray # : %d, angle : %.6f", rayCounter, currentAngle));
+                        logger.trace(String.format("============================== Ray # : %d, angle : %.6f", rayCounter, currentAngle));
 
                         Vector2 rayEnd = sensorPos.copy().add(Vector2.create(range, currentAngle));
                         var intersections = WorldUtils.getIntersectedTilesWithWall(sensorPos, rayEnd);
@@ -98,10 +164,13 @@ public class Datastreams {
                                 tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
                             }
                             tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
+                            knownFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
                             BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
-                            if (basicCell == null || !basicCell.canBeSeenThrough(sensor.creature)) {
+                            if (basicCell == null || !basicCell.canBeSeenThroughBy(sensor.creature) || intersections.indexOf(intersectionData) == intersections.size()-1) {
                                 logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVector(intersectionData.getIntersectionPoint()));
                                 // Figure out the _minimum_ angle increase required to push past this cell
+
+                                rayTracingLines.add(new Line2D.Double(sensorPos.x, sensorPos.y, intersectionData.getIntersectionPoint().x, intersectionData.getIntersectionPoint().y));
 
                                 // 1. Define the wall/side that has been collided with
                                 // 2. Get the corners of that wall
@@ -146,21 +215,16 @@ public class Datastreams {
                                     }
                                     if (theta1Diff > theta2Diff) {
                                         logger.trace("theta1diff is positive, choosing theta1+delta as next angle");
-                                        currentAngle += theta1Diff + minAngle;
+                                        currentAngle += theta1Diff + tinyAngle;
                                     } else if (theta1Diff < theta2Diff) {
                                         logger.trace("theta2diff is positive, choosing theta2+delta as next angle");
-                                        currentAngle += theta2Diff + minAngle;
+                                        currentAngle += theta2Diff + tinyAngle;
                                     }
-                                    didCollide = true;
                                 }
                                 break;
                             }
                         }
 
-                        if(!didCollide) {
-                            logger.trace("Ray did not collide");
-                            currentAngle += minAngle;
-                        }
                         rayCounter++;
                         logger.trace("-----------------------");
                     } while (!finalLap);
@@ -180,7 +244,7 @@ public class Datastreams {
 
                         for (WorldUtils.IntersectionData result : results) {
                             BasicCell basicCell = sensor.creature.getFloor().getCellAt(result.getCellCoordinate());
-                            if(basicCell != null && !basicCell.canBeSeenThrough(sensor.creature))
+                            if(basicCell != null && !basicCell.canBeSeenThroughBy(sensor.creature))
                                 break;
                         }
 
@@ -195,7 +259,15 @@ public class Datastreams {
                 sensor.passOnData(dataAmalgamated);
 
             }
+            cached_filled_walls = filledWalls;
+            cached_raytracing_lines = rayTracingLines;
+            cached_known_filled_walls = knownFilledWalls;
+            if(!didPrint) {
+                PRINT_DEBUG_IMAGE();
+//                didPrint = true;
+            }
         }
+        boolean didPrint = false;
 
         @Override
         public Sensor<SightStreamParameters> constructSensorForDatastream(Creature c, Sensor.ParameterCalculator<SightStreamParameters> pCalc) {

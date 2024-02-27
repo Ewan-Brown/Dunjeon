@@ -186,7 +186,7 @@ public class WorldUtils {
 
 
         //Iterate across intersects and find tiles
-        while (true) {
+        while (true) /**/{
 
             double nextVerticalIntersect = 0;
             double distToNextVerticalIntersect = Float.MAX_VALUE;
@@ -195,6 +195,12 @@ public class WorldUtils {
 
             Side side;
 
+            //Catch edge case where intersection point is exactly on a diagonal
+            //We should shift it slightly towards the CENTER of the cell
+//            if (currentX == (int) currentX && currentY == (int) currentY){
+//
+//                currentX+=0.01;
+//            }
             if (dx != 0) {
                 if (currentX == Math.round(currentX)) {
                     nextVerticalIntersect = currentX + Math.signum(dx);

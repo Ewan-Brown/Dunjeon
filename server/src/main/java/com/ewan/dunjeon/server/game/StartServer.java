@@ -22,7 +22,7 @@ public class StartServer {
 
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
-    private static final int entityCount = 0;
+    private static final int entityCount = 1;
     static Logger logger = LogManager.getLogger();
 
     @SneakyThrows
