@@ -96,7 +96,7 @@ public class WorldUtils {
         final Vector2 intersectionPoint;
         final Vector2 cellCoordinate;
         final Side side;
-        final Pair<Vector2, Vector2> adjacentSideEndPoints;
+        final List<Vector2> adjacentSideEndPoints;
         public IntersectionData(Vector2 intersectionPoint, Vector2 cellCoordinate, Side side) {
             this.intersectionPoint = intersectionPoint;
             this.cellCoordinate = cellCoordinate;
@@ -104,11 +104,11 @@ public class WorldUtils {
 
             Vector2 sideMidPoint = new Vector2(cellCoordinate).add(side.localCoord);
             if(side == Side.WITHIN) {
-                adjacentSideEndPoints = null;
+                adjacentSideEndPoints = new ArrayList<>();
             }else{
                 Vector2 p1 = sideMidPoint.copy().add(side.axis.unitVector.copy().multiply(0.5));
                 Vector2 p2 = sideMidPoint.copy().add(side.axis.unitVector.copy().multiply(-0.5));
-                adjacentSideEndPoints = new Pair<>(p1,p2);
+                adjacentSideEndPoints = List.of(p1, p2);
             }
         }
     }

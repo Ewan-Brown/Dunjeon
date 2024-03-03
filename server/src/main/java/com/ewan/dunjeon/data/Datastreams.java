@@ -25,9 +25,9 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 
 public class Datastreams {
 
@@ -40,9 +40,17 @@ public class Datastreams {
          */
         static final double DESIRED_ARCLENGTH = 0.01;
 
+        //Delete all this hacky bullshit TODO
+
         static List<Line2D.Double> cached_raytracing_lines = new ArrayList<>();
+        static List<Line2D.Double> cached_visible_sides = new ArrayList<>();
         static List<Point2D> cached_filled_walls = new ArrayList<>();
-        static List<Point2D> cached_known_filled_walls = new ArrayList<>();
+        static List<Point2D> cached_visible_walls = new ArrayList<>();
+        static List<Point2D> cached_visible_floors = new ArrayList<>();
+
+        public static Line2D.Double convertVectorsToLine(Vector2 v1, Vector2 v2){
+            return new Line2D.Double(v1.x, v1.y, v2.x, v2.y);
+        }
 
         public static void PRINT_DEBUG_IMAGE(){
             logger.warn("PRINTING DEBUG IMAGE!");
@@ -57,7 +65,11 @@ public class Datastreams {
                 g2.fillRect((int)((cachedFilledWall.getX()) * SCALE) - 1, (int)((cachedFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
             }
             g2.setColor(Color.GREEN);
-            for (Point2D cachedKnownFilledWall : cached_known_filled_walls) {
+            for (Point2D cachedKnownFilledWall : cached_visible_walls) {
+                g2.fillRect((int)((cachedKnownFilledWall.getX()) * SCALE) - 1, (int)((cachedKnownFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
+            }
+            g2.setColor(Color.ORANGE);
+            for (Point2D cachedKnownFilledWall : cached_visible_floors) {
                 g2.fillRect((int)((cachedKnownFilledWall.getX()) * SCALE) - 1, (int)((cachedKnownFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
             }
             g2.setColor(Color.BLACK);
@@ -77,6 +89,12 @@ public class Datastreams {
                 g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
             }
 
+            g2.setColor(Color.BLUE);
+
+            for (Line2D.Double cachedVisibleSide : cached_visible_sides) {
+                g2.drawLine((int)((cachedVisibleSide.x1) * SCALE), (int)((cachedVisibleSide.y1) * SCALE), (int)((cachedVisibleSide.x2) * SCALE), (int)((cachedVisibleSide.y2) * SCALE));
+            }
+
             g2.dispose();
             try {
                 ImageIO.write(b, "png", new File("C:\\Users\\Ewan\\Downloads\\image.png"));
@@ -86,12 +104,16 @@ public class Datastreams {
             }
         }
 
+
+
         @Override
         public void update(Dunjeon d) {
 
             List<Line2D.Double> rayTracingLines = new ArrayList<>();
+            List<Line2D.Double> visibleSides = new ArrayList<>();
             List<Point2D> filledWalls = new ArrayList<>();
-            List<Point2D> knownFilledWalls = new ArrayList<>();
+            List<Point2D> visibleFilledWalls = new ArrayList<>();
+            List<Point2D> visibleFloors = new ArrayList<>();
 
             logger.debug("Updating Datastream: Sight");
             for (int i = 0; i < getSubscribers().size(); i++) {
@@ -139,6 +161,7 @@ public class Datastreams {
                     double minAngle = 0.001f;
                     double tinyAngle = 0.00001f;
                     int rayCounter = 0;
+                    WorldUtils.Side lastIntersectionSide = null;
 
                     logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle);
 
@@ -164,13 +187,19 @@ public class Datastreams {
                                 tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
                             }
                             tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
-                            knownFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
                             BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
-                            if (basicCell == null || !basicCell.canBeSeenThroughBy(sensor.creature) || intersections.indexOf(intersectionData) == intersections.size()-1) {
-                                logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVector(intersectionData.getIntersectionPoint()));
+                            if(basicCell.canBeSeenThroughBy(sensor.creature)){
+                                visibleFloors.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
+                            }else{
+                                visibleFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
+                            }
+                            if (!basicCell.canBeSeenThroughBy(sensor.creature) || intersections.indexOf(intersectionData) == intersections.size() - 1) {
+
+
+                                logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
                                 // Figure out the _minimum_ angle increase required to push past this cell
 
-                                rayTracingLines.add(new Line2D.Double(sensorPos.x, sensorPos.y, intersectionData.getIntersectionPoint().x, intersectionData.getIntersectionPoint().y));
+                                rayTracingLines.add(convertVectorsToLine(sensorPos, intersectionData.getIntersectionPoint()));
 
                                 // 1. Define the wall/side that has been collided with
                                 // 2. Get the corners of that wall
@@ -178,51 +207,25 @@ public class Datastreams {
                                 // 3. Compare the current angle + rotation direction (should always be the same?) to figure out which of the two is next in the raytracer's path
                                 // 4. Take angle to point form #3 and add a tiny bit to it
 
-                                Pair<Vector2, Vector2> endPoints = intersectionData.getAdjacentSideEndPoints();
-                                if (endPoints != null) {
-
-                                    //Collect relevant angles
-                                    double theta1 = Math.atan2(endPoints.getElement0().y - sensorPos.y, endPoints.getElement0().x - sensorPos.x);
-                                    double theta2 = Math.atan2(endPoints.getElement1().y - sensorPos.y, endPoints.getElement1().x - sensorPos.x);
-
-                                    logger.trace(String.format("Endpoints: %s, %s on side %s", StringUtils.formatVector(endPoints.getElement0()), StringUtils.formatVector(endPoints.getElement1()), intersectionData.getSide().name()));
-                                    logger.trace(String.format("angles to endpoints : %.2f, %.2f", theta1, theta2));
-
-                                    if (theta1 == theta2) {
-                                        logger.error(String.format("theta1: %f, theta2: %f, rayStart: %s, rayEnd: %s, currentAngle: %f, endPoints: %s", theta1, theta2, sensorPos, rayEnd, currentAngle, endPoints));
-                                        logger.error("theta1 and theta2 are equal. This should NEVER occur, see error logs below");
-                                        throw new RuntimeException("theta1 == theta2, should never occur");
+                                List<Vector2> potentialEndPoints = intersectionData.getAdjacentSideEndPoints();
+                                //Only null if the current cell is the one the player is in
+                                Vector2 closestPoint = null;
+                                double closestAngle = 0;
+                                for (Vector2 potentialEndPoint : potentialEndPoints) {
+                                    Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
+                                    double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
+                                    double relativeAngle = angle - currentAngle;
+                                    if(closestPoint == null || relativeAngle > closestAngle){
+                                        closestPoint = potentialEndPoint;
+                                        closestAngle = relativeAngle;
                                     }
-
-                                    //Calculate difference for both angles from current ray
-
-                                    double theta1Diff = theta1 - currentAngle;
-                                    double theta2Diff = theta2 - currentAngle;
-
-                                    if (Math.abs(theta1Diff) > Math.PI) {
-                                        double overshoot = Math.abs(theta1Diff) - Math.PI;
-                                        theta1Diff = Math.PI * -1 * Math.signum(theta1Diff) - overshoot * -1 * Math.signum(theta1Diff);
-                                    }
-                                    if (Math.abs(theta2Diff) > Math.PI) {
-                                        double overshoot = Math.abs(theta2Diff) - Math.PI;
-                                        theta2Diff = Math.PI * -1 * Math.signum(theta2Diff) - overshoot * -1 * Math.signum(theta2Diff);
-                                    }
-
-                                    logger.trace(String.format("adjusted theta1, theta2 : %.2f, %.2f", theta1Diff, theta2Diff));
-                                    if (Math.signum(theta1Diff) == Math.signum(theta2Diff)) {
-                                        logger.error("theta1diff and theta2diff's signums are equal. This should NEVER occur, and signifies that I might be bad at trig");
-                                        throw new RuntimeException("Math.signum(theta1Diff) == Math.signum(theta2Diff), should never occur");
-                                    }
-                                    if (theta1Diff > theta2Diff) {
-                                        logger.trace("theta1diff is positive, choosing theta1+delta as next angle");
-                                        currentAngle += theta1Diff + tinyAngle;
-                                    } else if (theta1Diff < theta2Diff) {
-                                        logger.trace("theta2diff is positive, choosing theta2+delta as next angle");
-                                        currentAngle += theta2Diff + tinyAngle;
-                                    }
+                                }
+                                if(closestPoint != null){
+                                    currentAngle += closestAngle + tinyAngle;
                                 }
                                 break;
                             }
+
                         }
 
                         rayCounter++;
@@ -261,10 +264,12 @@ public class Datastreams {
             }
             cached_filled_walls = filledWalls;
             cached_raytracing_lines = rayTracingLines;
-            cached_known_filled_walls = knownFilledWalls;
+            cached_visible_walls = visibleFilledWalls;
+            cached_visible_floors = visibleFloors;
+            cached_visible_sides = visibleSides;
+
             if(!didPrint) {
                 PRINT_DEBUG_IMAGE();
-//                didPrint = true;
             }
         }
         boolean didPrint = false;
