@@ -43,6 +43,7 @@ public class Datastreams {
         //Delete all this hacky bullshit TODO
 
         static List<Line2D.Double> cached_raytracing_lines = new ArrayList<>();
+        static List<Line2D.Double> cached_full_raytracing_lines = new ArrayList<>();
         static List<Line2D.Double> cached_visible_sides = new ArrayList<>();
         static List<Point2D> cached_filled_walls = new ArrayList<>();
         static List<Point2D> cached_visible_walls = new ArrayList<>();
@@ -78,6 +79,17 @@ public class Datastreams {
                 g2.drawRect((int)((cachedFilledWall.getX()) * SCALE) - 1, (int)((cachedFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
             }
 
+            g2.setColor(Color.CYAN);
+
+            for (Line2D.Double cachedRaytracingLine : cached_full_raytracing_lines) {
+                //Draw a stupid thick line
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE), (int)((cachedRaytracingLine.y1) * SCALE), (int)((cachedRaytracingLine.x2) * SCALE), (int)((cachedRaytracingLine.y2) * SCALE));
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)+1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)+1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)-1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)-1);
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)+1, (int)((cachedRaytracingLine.y1) * SCALE)-1, (int)((cachedRaytracingLine.x2) * SCALE)+1, (int)((cachedRaytracingLine.y2) * SCALE)-1);
+                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
+            }
+
             g2.setColor(Color.BLUE);
 
             for (Line2D.Double cachedRaytracingLine : cached_raytracing_lines) {
@@ -110,6 +122,7 @@ public class Datastreams {
         public void update(Dunjeon d) {
 
             List<Line2D.Double> rayTracingLines = new ArrayList<>();
+            List<Line2D.Double> fullRayTracingLines = new ArrayList<>();
             List<Line2D.Double> visibleSides = new ArrayList<>();
             List<Point2D> filledWalls = new ArrayList<>();
             List<Point2D> visibleFilledWalls = new ArrayList<>();
@@ -161,7 +174,7 @@ public class Datastreams {
                     double minAngle = 0.001f;
                     double tinyAngle = 0.00001f;
                     int rayCounter = 0;
-                    WorldUtils.Side lastIntersectionSide = null;
+                    WorldUtils.Side lastRayEndSide = null;
 
                     logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle);
 
@@ -179,9 +192,11 @@ public class Datastreams {
 
                         Vector2 rayEnd = sensorPos.copy().add(Vector2.create(range, currentAngle));
                         var intersections = WorldUtils.getIntersectedTilesWithWall(sensorPos, rayEnd);
+                        fullRayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
 
                         logger.trace("Ray end : " + StringUtils.formatVector(rayEnd) +", # of intersections = " + intersections.size());
 
+                        WorldUtils.IntersectionData previousIntersection = null;
                         for (WorldUtils.IntersectionData intersectionData : intersections) {
                             if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
                                 tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
@@ -200,14 +215,12 @@ public class Datastreams {
                                 // Figure out the _minimum_ angle increase required to push past this cell
 
                                 rayTracingLines.add(convertVectorsToLine(sensorPos, intersectionData.getIntersectionPoint()));
+                                List<Vector2> potentialEndPoints = new ArrayList<>(intersectionData.getAdjacentSideEndPoints());
 
-                                // 1. Define the wall/side that has been collided with
-                                // 2. Get the corners of that wall
-                                // 2.5 transform the angles to match - as the ray angle and the angle to the points will be on different domains
-                                // 3. Compare the current angle + rotation direction (should always be the same?) to figure out which of the two is next in the raytracer's path
-                                // 4. Take angle to point form #3 and add a tiny bit to it
+                                if(previousIntersection != null && previousIntersection.getSide() != intersectionData.getSide()){
+                                    potentialEndPoints.addAll(previousIntersection.getAdjacentSideEndPoints());
+                                }
 
-                                List<Vector2> potentialEndPoints = intersectionData.getAdjacentSideEndPoints();
                                 //Only null if the current cell is the one the player is in
                                 Vector2 closestPoint = null;
                                 double closestAngle = 0;
@@ -215,17 +228,15 @@ public class Datastreams {
                                     Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
                                     double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
                                     double relativeAngle = angle - currentAngle;
-                                    if(closestPoint == null || relativeAngle > closestAngle){
+                                    if((closestPoint == null || relativeAngle < closestAngle) && relativeAngle > 0){
                                         closestPoint = potentialEndPoint;
                                         closestAngle = relativeAngle;
                                     }
                                 }
-                                if(closestPoint != null){
-                                    currentAngle += closestAngle + tinyAngle;
-                                }
+                                currentAngle += closestAngle + tinyAngle;
                                 break;
                             }
-
+                            previousIntersection = intersectionData;
                         }
 
                         rayCounter++;
@@ -267,6 +278,7 @@ public class Datastreams {
             cached_visible_walls = visibleFilledWalls;
             cached_visible_floors = visibleFloors;
             cached_visible_sides = visibleSides;
+            cached_full_raytracing_lines = fullRayTracingLines;
 
             if(!didPrint) {
                 PRINT_DEBUG_IMAGE();
