@@ -1,6 +1,7 @@
 package com.ewan.dunjeon.server.world;
 
 import com.ewan.dunjeon.server.world.cells.BasicCell;
+import com.ewan.util.StringUtils;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,10 +112,28 @@ public class WorldUtils {
                 adjacentSideEndPoints = List.of(p1, p2);
             }
         }
+
+        @Override
+        public String toString() {
+            return String.format("%s, side: %s, exact intersection at %s", StringUtils.formatVector(cellCoordinate), side, StringUtils.formatVectorFullPrecision(intersectionPoint));
+        }
     }
 
     public static List<IntersectionData> getIntersectedTilesWithWall(Vector2 pos1, Vector2 pos2){
         return getIntersectedTilesWithWall(pos1.x, pos1.y, pos2.x, pos2.y);
+    }
+
+    /**
+     * Returns the difference between two angles and fixes it to ensure it remains on the [-π, π] domain
+     */
+    public static double getAngleDiffInAtan2Domain(double angle1, double angle2){
+        double diff = angle1 - angle2;
+        if(diff > Math.PI){
+            diff = -Math.PI + (Math.PI - diff);
+        }else if(diff < -Math.PI){
+            diff = Math.PI + (-Math.PI - diff);
+        }
+        return diff;
     }
 
     public static List<IntersectionData> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {

@@ -20,6 +20,10 @@ public class StartClient
         logger.info("Starting client");
         logger.debug("Arrays.toString(args) = " + Arrays.toString(args));
         ClientChannelHandler clientChannelHandler = new ClientChannelHandler(new BasicMemoryBank());
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            logger.error(e.getMessage());
+            logger.error(e.getStackTrace());
+        });
         new Thread(() -> new GameClient(clientChannelHandler, args[0])).start();
         new Thread(() -> {
             new UsingJogl(clientChannelHandler).start();

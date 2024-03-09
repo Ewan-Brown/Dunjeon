@@ -84,6 +84,7 @@ public class UsingJogl implements GLEventListener {
 
 	@Override
 	public void display(GLAutoDrawable glDrawable) {
+		logger.trace("display() called");
 		// get the OpenGL context
 		GL2 gl = glDrawable.getGL().getGL2();
 
@@ -112,7 +113,6 @@ public class UsingJogl implements GLEventListener {
 
 		gl.glPushMatrix();
 		gl.glColor3d(1,0,0);
-
 		gl.glScaled(0.06, 0.06, 1.0);
 
 		BasicMemoryBank basicMemoryBank = clientChannelHandler.getClientMemoryBank();
@@ -121,22 +121,34 @@ public class UsingJogl implements GLEventListener {
 		}
 
 		gl.glPopMatrix();
+
+//		gl.glBegin(GL2.GL_POLYGON);
+//		gl.glColor3d(1,0,0);
+//		gl.glVertex2d(0,0);
+//		gl.glVertex2d(1,0);
+//		gl.glVertex2d(1,1);
+//		gl.glVertex2d(0,1);
+//		gl.glEnd();
 	}
 
 	boolean debug_hasReceivedAnyValidPackets = false;
+	boolean debug_hasReceivedAnyNullPackets = false;
 
 	public void renderMemoryBank(GL2 gl, BasicMemoryBank basicMemoryBank){
 		final double SIZE = 1;
 		final double HALF_SIZE = SIZE / 2;
 		if(clientChannelHandler.getMostRecentFrameInfoPacket() == null){
-			if(!debug_hasReceivedAnyValidPackets){
-				logger.info("Most recent frame packet null");
-			}else{
+			if(!debug_hasReceivedAnyValidPackets && debug_hasReceivedAnyNullPackets){
+				logger.info("Frame packet null");
+			}else if (debug_hasReceivedAnyValidPackets){
 				logger.warn("Most recent frame packet null - but we've previously received valid frame packets!");
 			}
 			return;
 		}else{
-			debug_hasReceivedAnyValidPackets=true;
+			if(debug_hasReceivedAnyNullPackets || !debug_hasReceivedAnyValidPackets){
+				logger.info("First valid packet received!!");
+			}
+			debug_hasReceivedAnyValidPackets = true;
 		}
 		long ownerUUID = clientChannelHandler.getMostRecentFrameInfoPacket().clientUUID();
 		BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> hostPos = basicMemoryBank.querySinglePackage(ownerUUID, Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
@@ -153,6 +165,7 @@ public class UsingJogl implements GLEventListener {
 		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 		MultiQueryAccessor<CellPosition, Datas.CellData> cellQueryResults = basicMemoryBank.queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
 
+		logger.info("# of known cells: " + cellQueryResults.getIndividualAccessors().size());
 		for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
 			var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
 			CellPosition position = singleQueryAccessor.getIdentifier();
@@ -180,7 +193,7 @@ public class UsingJogl implements GLEventListener {
 		}
 
 		MultiQueryAccessor<Long, Datas.EntityData> entityQueryResults = basicMemoryBank.queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
-
+		logger.info("# of known entities: " + entityQueryResults.getIndividualAccessors().size());
 		for (BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
 			gl.glPushMatrix();
 
@@ -207,5 +220,7 @@ public class UsingJogl implements GLEventListener {
 			}
 			gl.glPopMatrix();
 		}
+
+
 	}
 }

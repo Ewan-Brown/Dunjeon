@@ -51,6 +51,7 @@ public class ManagedClient {
     }
 
     public void sendDataToClient(Channel channel){
+        logger.debug("sending some data to client: " + channel.toString());
         if(isConnectionActive) {
             //We need to ensure that the client knows how many datawrappers to expect before it can draw its next frame, as well as what creature it is attached to
             channel.writeAndFlush(new ServerPacketWrapper(new FrameInfoPacket(creatureController.getBasicMemoryBank().getOwnerUUID(), Dunjeon.getInstance().getTimeElapsed(), Dunjeon.getInstance().getTicksElapsed(), unProcessedDataWrappers.size()), PacketTypes.PacketType.FRAME_PACKET, clientAddress));

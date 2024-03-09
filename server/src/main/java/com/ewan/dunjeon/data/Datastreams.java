@@ -29,6 +29,8 @@ import java.util.*;
 import java.util.List;
 import java.util.function.Function;
 
+import static com.ewan.dunjeon.server.world.WorldUtils.*;
+
 public class Datastreams {
 
     static Logger logger = LogManager.getLogger();
@@ -162,8 +164,8 @@ public class Datastreams {
                     }
 
                 }else {
-                    logger.trace("Processing Raycasting");
-                    logger.trace("=====================");
+                    logger.debug("Processing Raycasting");
+                    logger.debug("=====================");
                     //************* Do Raycasting *******************//
                     double range = params.getSightRange();
                     double fov = params.getSightFieldOfView();
@@ -171,12 +173,12 @@ public class Datastreams {
 
                     double startingAngle = currentEntityAngle - fov / 2;
                     double endingAngle = currentEntityAngle + fov / 2;
-                    double minAngle = 0.001f;
-                    double tinyAngle = 0.00001f;
+                    double tinyAngle = 0.00001d;
+                    double minRelativeAngle = 0.0001d; //Used to cut off some floating point errors... May need reinspection
                     int rayCounter = 0;
                     WorldUtils.Side lastRayEndSide = null;
 
-                    logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle);
+                    logger.debug("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle);
 
                     //Iterate across rays. Written to ensure that the first and last angles are casted, to avoid any funny business
                     double currentAngle = startingAngle;
@@ -196,8 +198,11 @@ public class Datastreams {
 
                         logger.trace("Ray end : " + StringUtils.formatVector(rayEnd) +", # of intersections = " + intersections.size());
 
-                        WorldUtils.IntersectionData previousIntersection = null;
+                        Vector2 closestPoint = null;
+                        double closestAngle = 0;
+
                         for (WorldUtils.IntersectionData intersectionData : intersections) {
+                            logger.trace("inspecting intersection: " + intersectionData);
                             if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
                                 tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
                             }
@@ -208,40 +213,35 @@ public class Datastreams {
                             }else{
                                 visibleFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
                             }
+
+                            for (Vector2 potentialEndPoint : intersectionData.getAdjacentSideEndPoints()) {
+                                Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
+                                double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
+                                double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
+                                if((closestPoint == null || relativeAngle < closestAngle) && relativeAngle > minRelativeAngle){
+                                    logger.trace(" taking endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
+                                    closestPoint = potentialEndPoint;
+                                    closestAngle = relativeAngle;
+                                }else{
+                                    logger.trace(" ignoring endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
+                                }
+                            }
+
+                            logger.trace("endpoint chosen: " + StringUtils.formatVector(closestPoint)+", with angle: " + closestAngle);
+
                             if (!basicCell.canBeSeenThroughBy(sensor.creature) || intersections.indexOf(intersectionData) == intersections.size() - 1) {
-
-
                                 logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
-                                // Figure out the _minimum_ angle increase required to push past this cell
-
                                 rayTracingLines.add(convertVectorsToLine(sensorPos, intersectionData.getIntersectionPoint()));
-                                List<Vector2> potentialEndPoints = new ArrayList<>(intersectionData.getAdjacentSideEndPoints());
-
-                                if(previousIntersection != null && previousIntersection.getSide() != intersectionData.getSide()){
-                                    potentialEndPoints.addAll(previousIntersection.getAdjacentSideEndPoints());
-                                }
-
-                                //Only null if the current cell is the one the player is in
-                                Vector2 closestPoint = null;
-                                double closestAngle = 0;
-                                for (Vector2 potentialEndPoint : potentialEndPoints) {
-                                    Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
-                                    double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
-                                    double relativeAngle = angle - currentAngle;
-                                    if((closestPoint == null || relativeAngle < closestAngle) && relativeAngle > 0){
-                                        closestPoint = potentialEndPoint;
-                                        closestAngle = relativeAngle;
-                                    }
-                                }
-                                currentAngle += closestAngle + tinyAngle;
                                 break;
                             }
-                            previousIntersection = intersectionData;
                         }
+                        currentAngle += closestAngle + tinyAngle;
 
                         rayCounter++;
                         logger.trace("-----------------------");
                     } while (!finalLap);
+
+                    logger.debug("# of rays: " + rayCounter);
 
                     for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tilesMap.entrySet()) {
                         BasicCell basicCell = sensor.creature.getFloor().getCellAt(tile.getKey());
@@ -281,6 +281,7 @@ public class Datastreams {
             cached_full_raytracing_lines = fullRayTracingLines;
 
             if(!didPrint) {
+                didPrint=true;
                 PRINT_DEBUG_IMAGE();
             }
         }

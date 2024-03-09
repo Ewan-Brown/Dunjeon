@@ -38,7 +38,7 @@ public class GameClient {
             });
 
 
-            logger.info("Client binding to local port...");
+            logger.info("Client binding to local port ...");
             ChannelFuture f = b.connect(host, port).sync();
             logger.info("Client successfully bound to local port! : " + f.toString());
             f.channel().writeAndFlush(new ClientInputData(List.of()));

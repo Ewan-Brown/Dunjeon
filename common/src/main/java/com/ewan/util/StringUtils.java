@@ -8,6 +8,8 @@ public class StringUtils {
     final private static DecimalFormat twoDecimalsKept = new DecimalFormat("#.0");
     final private static DecimalFormat allDecimalsKept = new DecimalFormat("#.0000000000000000");
     public static String formatVector(Vector2 v){
+        if(v == null)
+            return "(null)";
         return String.format("(%s, %s)", twoDecimalsKept.format(v.x), twoDecimalsKept.format(v.y));
     }
     public static String formatVectorFullPrecision(Vector2 v){

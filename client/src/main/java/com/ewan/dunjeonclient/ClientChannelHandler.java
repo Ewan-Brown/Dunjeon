@@ -29,8 +29,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     private Channel server;
 
     private HashMap<Integer, GameFrame> gameFrames = new HashMap<>();
-
-    private FrameInfoPacket mostRecentFrameInfoPacket;
+    private FrameInfoPacket mostRecentFrameInfoPacket = null;
 
     public ClientChannelHandler(BasicMemoryBank clientMemoryBank){
         this.clientMemoryBank = clientMemoryBank;
@@ -45,14 +44,15 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         int releventTick;
         if(msg instanceof DataPacket data) {
             releventTick = data.getDataWrapper().getTickstamp();
+            logger.debug("received dataPacket for tick : " + releventTick);
             if(!gameFrames.containsKey(data.getDataWrapper().getTickstamp())){
                 gameFrames.put(releventTick, new GameFrame(null));
             }
             gameFrames.get(releventTick).getCollectedData().add(data.getDataWrapper());
         }
         else if(msg instanceof FrameInfoPacket frameInfo) {
-//            logger.info("FrameInfoPacket received = " + frameInfo);
             releventTick = frameInfo.worldTimeTicks();
+            logger.debug("received frameInfoPacket for tick: " + releventTick);
             if(!gameFrames.containsKey(releventTick)){
                 gameFrames.put(releventTick, new GameFrame(frameInfo));
             }else{
@@ -63,6 +63,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (gameFrames.get(releventTick).isComplete()){
+            logger.debug("frame for tick: " + releventTick +" is complete");
             mostRecentTimestampReceived = gameFrames.get(releventTick).getFramePacket().worldTimeExact();
             mostRecentFrameInfoPacket = gameFrames.get(releventTick).getFramePacket();
             for (DataWrapper<?,?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {

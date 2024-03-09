@@ -22,24 +22,24 @@ public class StartServer {
 
     public static final Random rand = new Random();
     static final long UPDATE_DELAY = 16;
-    private static final int entityCount = 1;
+    private static final int entityCount = 0;
     static Logger logger = LogManager.getLogger();
 
     @SneakyThrows
     public static void main(String[] args) {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
-            static final Logger logger = LogManager.getLogger();
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                logger.error(e.getMessage());
-                logger.error(e.getStackTrace());
-            }
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            logger.error(e.getMessage());
+            logger.error(e.getStackTrace());
         });
         logger.info("Starting server code");
         generateWorld();
         new Thread(ServerManager::runServer).start();
 
         new Thread(() -> {
+            Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+                logger.error(e.getMessage());
+                logger.error(e.getStackTrace());
+            });
             while (true) {
                 updateCurrentWorld();
             }
@@ -94,6 +94,7 @@ public class StartServer {
             TestSubject npcTestSubject = new TestSubject("NPC");
             npcTestSubject.addFixture(new Rectangle(0.5,0.5));
             npcTestSubject.setMass(new Mass(new Vector2(),1,100));
+            npcTestSubject.rotate(Math.PI/2);
             startFloor.addEntityRandomLoc(npcTestSubject);
         }
     }
