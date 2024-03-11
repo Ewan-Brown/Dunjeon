@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Server" type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="Compile Server" type="MavenRunConfiguration" factoryName="Maven">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings">
@@ -20,7 +20,6 @@
       </option>
       <option name="myRunnerParameters">
         <MavenRunnerParameters>
-          <option name="cmdOptions" />
           <option name="profiles">
             <set />
           </option>
@@ -34,9 +33,6 @@
           <option name="pomFileName" />
           <option name="profilesMap">
             <map />
-          </option>
-          <option name="projectsCmdOptionValues">
-            <list />
           </option>
           <option name="resolveToWorkspace" value="false" />
           <option name="workingDirPath" value="$PROJECT_DIR$" />
