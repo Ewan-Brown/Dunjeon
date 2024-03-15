@@ -142,12 +142,25 @@ public class Floor {
         creatureControllers.add(c);
     }
 
+    public void addEntitySpecificLocation(Entity e, double x, double y, double a){
+        BasicCell matchingCell = getCellAt((int)Math.floor(x), (int)Math.floor(y));
+        if(matchingCell == null) throw new Error(String.format("Cell at %f, %f is not valid because null", x, y));
+        if(matchingCell.isFilled()) throw new Error(String.format("Cell at %f, %f is not valid because it's filled", x, y));
+        else {
+            e.rotate(a, 0, 0);
+            e.translate(x, y);
+            e.setFloor(this);
+            addEntity(e);
+            getWorld().addBody(e);
+        }
+
+    }
+
     public void addEntityRandomLoc(Entity e){
         List<BasicCell> validCells =  getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).toList();
-        if(validCells.size() == 0) throw new Error("No valid spots for entity found");
+        if(validCells.isEmpty()) throw new Error("No valid spots for entity found");
         else {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
-            e.rotate(Math.PI/2);
             e.translate(randomValidCell.getIntegerX() + 0.5, randomValidCell.getIntegerY() + 0.5);
             e.setFloor(this);
             addEntity(e);

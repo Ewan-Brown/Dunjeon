@@ -129,9 +129,11 @@ public class WorldUtils {
     public static double getAngleDiffInAtan2Domain(double angle1, double angle2){
         double diff = angle1 - angle2;
         if(diff > Math.PI){
-            diff = -Math.PI + (Math.PI - diff);
+            diff -= Math.PI;
+            diff = -Math.PI + diff;
         }else if(diff < -Math.PI){
-            diff = Math.PI + (-Math.PI - diff);
+            diff += Math.PI;
+            diff = Math.PI + diff;
         }
         return diff;
     }
@@ -225,7 +227,7 @@ public class WorldUtils {
                     nextVerticalIntersect = currentX + Math.signum(dx);
 
                 } else {
-                    nextVerticalIntersect = (double) ((dx > 0) ? Math.ceil(currentX) : Math.floor(currentX));
+                    nextVerticalIntersect = (dx > 0) ? Math.ceil(currentX) : Math.floor(currentX);
                 }
                 distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
                 logger.trace(String.format("nextVerticalIntersect: %f\ndist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
@@ -234,7 +236,7 @@ public class WorldUtils {
                 if (currentY == Math.round(currentY)) {
                     nextHorizontalIntersect = currentY + Math.signum(dy);
                 } else {
-                    nextHorizontalIntersect = (double) ((dy > 0) ? Math.ceil(currentY) : Math.floor(currentY));
+                    nextHorizontalIntersect = (dy > 0) ? Math.ceil(currentY) : Math.floor(currentY);
                 }
                 distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
                 logger.trace(String.format("nextHorizontalIntersect: %f\ndist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
@@ -272,6 +274,16 @@ public class WorldUtils {
                 intersectAlignment = AxisAlignment.HORIZONTAL;
                 side = (dy < 0) ? Side.NORTH :Side.SOUTH;
                 logger.trace("Going with horizontal intersection: ");
+            }
+
+            if(dx == 0){
+                nextInterceptX = currentX;
+            }
+            if(dy == 0){
+                nextInterceptY = currentY;
+            }
+            if(dx == 0 && dy == 0){
+                throw new IllegalArgumentException("cannot do raymarch if dx and dy both equal zero!"); //TODO check if we don't need this?
             }
 
             logger.trace(String.format(" on %s side at (%f, %f)", side, nextInterceptX, nextInterceptY));

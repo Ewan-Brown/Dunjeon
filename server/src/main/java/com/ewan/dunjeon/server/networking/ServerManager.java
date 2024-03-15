@@ -48,7 +48,7 @@ public class ServerManager {
             ChannelFuture f = b.bind(1471).sync();
             f.channel().closeFuture().sync();
         }catch(InterruptedException e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         } finally {
             bossGroup.shutdownGracefully();
         }
@@ -60,6 +60,7 @@ public class ServerManager {
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             super.channelRead(ctx, msg);
+            logger.debug("Received a message from client");
 
             if(channel == null){
                 channel = ctx.channel();
@@ -72,19 +73,10 @@ public class ServerManager {
                 ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
                 clientHandlerHashMap.put(address, new ManagedClient(controller, address));
             }
-            {
-                //Process input as necessary
-                ManagedClient clientController = clientHandlerHashMap.get(address);
-                clientController.passInputsToController(dataWrapper.clientInputData().inputs());
+            //Process input as necessary
+            ManagedClient clientController = clientHandlerHashMap.get(address);
+            clientController.passInputsToController(dataWrapper.clientInputData().inputs());
 
-            }
-
-        }
-
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-            cause.printStackTrace();
-            ctx.close();
         }
     }
 

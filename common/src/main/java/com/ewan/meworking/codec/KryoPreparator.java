@@ -35,7 +35,7 @@ public class KryoPreparator {
             try {
                 kryo.writeObject(output, object.getClass());
             }catch(Exception e){
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
             Field[] fields = object.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -43,7 +43,7 @@ public class KryoPreparator {
                     field.setAccessible(true);
                     kryo.writeClassAndObject(output, field.get(object));
                 }catch(IllegalAccessException e){
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
             output.flush();
@@ -83,7 +83,7 @@ public class KryoPreparator {
                     field.setAccessible(true);
                     kryo.writeClassAndObject(output, field.get(object));
                 }catch(IllegalAccessException e){
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
             output.flush();

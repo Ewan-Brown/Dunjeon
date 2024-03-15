@@ -51,14 +51,19 @@ public class ManagedClient {
     }
 
     public void sendDataToClient(Channel channel){
-        logger.debug("sending some data to client: " + channel.toString());
         if(isConnectionActive) {
+            logger.debug("sending some data to client: " + channel.toString());
             //We need to ensure that the client knows how many datawrappers to expect before it can draw its next frame, as well as what creature it is attached to
+            logger.debug("sending frameInfoPacket for " + unProcessedDataWrappers.size() +" # of datas on frame" + Dunjeon.getInstance().getTicksElapsed());
             channel.writeAndFlush(new ServerPacketWrapper(new FrameInfoPacket(creatureController.getBasicMemoryBank().getOwnerUUID(), Dunjeon.getInstance().getTimeElapsed(), Dunjeon.getInstance().getTicksElapsed(), unProcessedDataWrappers.size()), PacketTypes.PacketType.FRAME_PACKET, clientAddress));
+            int dataCounter = 0;
             for (DataWrapper<?, ?> unProcessedDataWrapper : unProcessedDataWrappers) {
+                logger.trace("sending dataPacket "+dataCounter+"/"+unProcessedDataWrappers.size());
                 channel.writeAndFlush(new ServerPacketWrapper(new DataPacket(unProcessedDataWrapper), PacketTypes.PacketType.DATA_PACKET, clientAddress));
+                dataCounter++;
             }
             unProcessedDataWrappers = new ArrayList<>();
+//            isConnectionActive = false; //TODO DEBUG LINE
         }
     }
 }

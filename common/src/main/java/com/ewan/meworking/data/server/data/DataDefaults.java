@@ -1,10 +1,10 @@
 package com.ewan.meworking.data.server.data;
 
-import com.ewan.meworking.data.server.memory.BasicMemoryBank.QueryResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -21,12 +21,12 @@ public class DataDefaults {
     }
 
     @SuppressWarnings("unchecked")
-    public static <D extends Data> QueryResult<D, Boolean> getDefault(Class<D> clazz){
+    public static <D extends Data> Optional<D> getDefault(Class<D> clazz){
         var result = pairingMap.get(clazz);
         if(result == null){
-            return new QueryResult<>(null, false);
+            return Optional.empty();
         }else{
-            return new QueryResult<>((D)result.get(), true);
+            return Optional.of((D)result.get());
         }
     }
 

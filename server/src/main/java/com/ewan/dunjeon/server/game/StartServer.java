@@ -27,19 +27,11 @@ public class StartServer {
 
     @SneakyThrows
     public static void main(String[] args) {
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            logger.error(e.getMessage());
-            logger.error(e.getStackTrace());
-        });
         logger.info("Starting server code");
         generateWorld();
         new Thread(ServerManager::runServer).start();
 
         new Thread(() -> {
-            Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-                logger.error(e.getMessage());
-                logger.error(e.getStackTrace());
-            });
             while (true) {
                 updateCurrentWorld();
             }
@@ -55,7 +47,7 @@ public class StartServer {
             Thread.sleep(DESIRED_FRAMETIME_NS/1000000L);
             w.update(1.0D);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         ServerManager.sendDataToClients();
     }
@@ -94,7 +86,6 @@ public class StartServer {
             TestSubject npcTestSubject = new TestSubject("NPC");
             npcTestSubject.addFixture(new Rectangle(0.5,0.5));
             npcTestSubject.setMass(new Mass(new Vector2(),1,100));
-            npcTestSubject.rotate(Math.PI/2);
             startFloor.addEntityRandomLoc(npcTestSubject);
         }
     }

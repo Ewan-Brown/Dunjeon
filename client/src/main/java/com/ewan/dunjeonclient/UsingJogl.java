@@ -16,6 +16,7 @@ import org.dyn4j.geometry.Vector2;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 
 public class UsingJogl implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
@@ -105,8 +106,9 @@ public class UsingJogl implements GLEventListener {
 	@Override
 	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width, int height) {}
 
+	//Only reason to change this is if packets are being occasionally dropped and causing flickering. This is LAST resort.
 	private boolean isMemoryDataPresent(KnowledgeFragment<?> d){
-        return (clientChannelHandler.getMostRecentTimestampReceived() - d.getTickStamp()) < 2;
+        return (clientChannelHandler.getMostRecentTimestampReceived() - d.getTickStamp()) == 0;
 	}
 	
 	protected void render(GL2 gl) {
@@ -139,23 +141,23 @@ public class UsingJogl implements GLEventListener {
 		final double HALF_SIZE = SIZE / 2;
 		if(clientChannelHandler.getMostRecentFrameInfoPacket() == null){
 			if(!debug_hasReceivedAnyValidPackets && debug_hasReceivedAnyNullPackets){
-				logger.info("Frame packet null");
+				logger.debug("Frame packet null");
 			}else if (debug_hasReceivedAnyValidPackets){
 				logger.warn("Most recent frame packet null - but we've previously received valid frame packets!");
 			}
 			return;
 		}else{
 			if(debug_hasReceivedAnyNullPackets || !debug_hasReceivedAnyValidPackets){
-				logger.info("First valid packet received!!");
+				logger.debug("First valid packet received!!");
 			}
 			debug_hasReceivedAnyValidPackets = true;
 		}
 		long ownerUUID = clientChannelHandler.getMostRecentFrameInfoPacket().clientUUID();
-		BasicMemoryBank.QueryResult<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>, Boolean> hostPos = basicMemoryBank.querySinglePackage(ownerUUID, Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
+		Optional<BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData>> hostPos = basicMemoryBank.querySinglePackage(ownerUUID, Datas.EntityData.class, List.of(Datas.EntityPositionalData.class));
 
 		//Check for query success
-		if(hostPos.status()){
-			Vector2 hostEntityPosition = hostPos.result().getKnowledge(Datas.EntityPositionalData.class).getInfo().getPosition();
+		if(hostPos.isPresent()){
+			Vector2 hostEntityPosition = hostPos.get().getKnowledge(Datas.EntityPositionalData.class).getInfo().getPosition();
 			Vector2 cameraDiff =  lastCameraPos.difference(hostEntityPosition);
 			lastCameraPos.subtract(cameraDiff.multiply(0.003));
 		}else{
@@ -165,7 +167,7 @@ public class UsingJogl implements GLEventListener {
 		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 		MultiQueryAccessor<CellPosition, Datas.CellData> cellQueryResults = basicMemoryBank.queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
 
-		logger.info("# of known cells: " + cellQueryResults.getIndividualAccessors().size());
+		logger.debug("# of known cells: " + cellQueryResults.getIndividualAccessors().size());
 		for (var singleQueryAccessor : cellQueryResults.getIndividualAccessors().values()) {
 			var enterableFragment = singleQueryAccessor.getKnowledge(Datas.CellEnterableData.class);
 			CellPosition position = singleQueryAccessor.getIdentifier();
@@ -193,7 +195,7 @@ public class UsingJogl implements GLEventListener {
 		}
 
 		MultiQueryAccessor<Long, Datas.EntityData> entityQueryResults = basicMemoryBank.queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
-		logger.info("# of known entities: " + entityQueryResults.getIndividualAccessors().size());
+		logger.debug("# of known entities: " + entityQueryResults.getIndividualAccessors().size());
 		for (BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
 			gl.glPushMatrix();
 

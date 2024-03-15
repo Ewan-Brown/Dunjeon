@@ -57,15 +57,13 @@ public class Dunjeon{
         //Update Datastreams!
         //TODO SHOULD DATASTREAMS POTENTIALLY BE PER-FLOOR??????
         sightDataStream.update(this);
-        logger.debug("sightDataStream done");
     }
 
     public ClientBasedController<TestSubject, TestSubject.TestSubjectControls> createClientTestCreatureAndGetController(){
         TestSubject testSubject = new TestSubject("Player");
         testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
-        // Do this for raycasting testing
-        testSubject.rotate(-Math.PI);
+
 
         ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = new ClientBasedTestSubjectController(testSubject);
 

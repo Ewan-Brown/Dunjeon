@@ -27,6 +27,7 @@ public class GameClient {
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);
             b.channel(NioDatagramChannel.class);
+            b.option(ChannelOption.SO_RCVBUF, Integer.MAX_VALUE); //VERY IMPORTANT Otherwise the buffer seems to be too small and packets get dropped TODO figure out if this is too high or not
             b.handler(new ChannelInitializer<DatagramChannel>() {
                 @Override
                 public void initChannel(DatagramChannel ch) {
@@ -47,8 +48,7 @@ public class GameClient {
             logger.info("f.isCancelled() = " + f.isCancelled());
             logger.info("f.isDone() = " + f.isDone());
         } catch(InterruptedException e) {
-            logger.error(e);
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }finally {
             workerGroup.shutdownGracefully();
         }

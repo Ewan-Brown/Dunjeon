@@ -9,6 +9,8 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DataFragmentPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
@@ -17,19 +19,16 @@ public class DataFragmentPacketDecoder extends MessageToMessageDecoder<DatagramP
         this.kryo = kryo;
     }
 
+    Logger logger = LogManager.getLogger();
+
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, DatagramPacket msg, List<Object> out){
+        logger.trace("decoding a data fragment");
         Input input = new Input(new ByteBufferInputStream(msg.content().nioBuffer()));
         PacketTypes.PacketType pType = PacketTypes.PacketType.values()[input.readShort()];
         out.add(kryo.readObject(input, pType.relatedClass));
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
-        try {
-            super.exceptionCaught(ctx, cause);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        if(logger.isTraceEnabled() && pType == PacketTypes.PacketType.DATA_PACKET) {
+//            logger.trace("#: "+ input.readInt());
+//        }
     }
 }

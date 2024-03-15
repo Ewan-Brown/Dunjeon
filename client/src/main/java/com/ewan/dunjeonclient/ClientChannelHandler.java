@@ -44,15 +44,24 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         int releventTick;
         if(msg instanceof DataPacket data) {
             releventTick = data.getDataWrapper().getTickstamp();
-            logger.debug("received dataPacket for tick : " + releventTick);
             if(!gameFrames.containsKey(data.getDataWrapper().getTickstamp())){
                 gameFrames.put(releventTick, new GameFrame(null));
+            }
+            if(logger.isDebugEnabled()) {
+                int collectedData = gameFrames.get(releventTick).getCollectedData().size();
+                String collectString;
+                if (gameFrames.get(releventTick).getFramePacket() != null) {
+                    collectString = collectedData+"/"+gameFrames.get(releventTick).getFramePacket().expectedDataCount();
+                }else{
+                    collectString = collectedData+"/?";
+                }
+                logger.trace("received dataPacket for tick : " + releventTick + " " + collectString);
             }
             gameFrames.get(releventTick).getCollectedData().add(data.getDataWrapper());
         }
         else if(msg instanceof FrameInfoPacket frameInfo) {
             releventTick = frameInfo.worldTimeTicks();
-            logger.debug("received frameInfoPacket for tick: " + releventTick);
+            logger.trace("received frameInfoPacket for tick: " + releventTick);
             if(!gameFrames.containsKey(releventTick)){
                 gameFrames.put(releventTick, new GameFrame(frameInfo));
             }else{
@@ -63,19 +72,13 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (gameFrames.get(releventTick).isComplete()){
-            logger.debug("frame for tick: " + releventTick +" is complete");
+            logger.trace("frame for tick: " + releventTick +" is complete");
             mostRecentTimestampReceived = gameFrames.get(releventTick).getFramePacket().worldTimeExact();
             mostRecentFrameInfoPacket = gameFrames.get(releventTick).getFramePacket();
             for (DataWrapper<?,?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
                 clientMemoryBank.processWrappedData(collectedDatum);
             }
         }
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
     }
 
     public void sendMessageToClient(ClientInputData data){

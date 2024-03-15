@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Client" type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="Compile Everything" type="MavenRunConfiguration" factoryName="Maven">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />
@@ -14,11 +14,6 @@
               <option value="clean" />
               <option value="install" />
               <option value="-q" />
-              <option value="exec:java" />
-              <option value="-pl" />
-              <option value="client" />
-              <option value="-Dexec.mainClass=com.ewan.dunjeonclient.StartClient" />
-              <option value="-Dexec.args=127.0.0.1" />
             </list>
           </option>
           <option name="pomFileName" />

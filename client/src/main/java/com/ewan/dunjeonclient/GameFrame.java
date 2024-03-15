@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class used to contain data pertaining to a Game update "frame". Collects all DataWrappers associated with a single game update tick, based on the ordinal
- * Once all of the relevant datawrappers are received this frame is ready to be drawn and can be processed
+ * Class used to contain data pertaining to a Game update "frame". Collects all DataWrappers associated with a single game update tick
+ * Once all the relevant datawrappers are received this frame is ready to be drawn and can be processed
  */
 public class GameFrame {
     @Setter

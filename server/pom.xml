@@ -43,7 +43,7 @@
 <!--            <plugin>-->
 <!--                <groupId>org.codehaus.mojo</groupId>-->
 <!--                <artifactId>exec-maven-plugin</artifactId>-->
-<!--                <version>1.4.0</version>-->
+<!--                <version>3.2.0</version>-->
 <!--                <executions>-->
 <!--                    <execution>-->
 <!--                        <id>my-execution</id>-->
@@ -76,11 +76,11 @@
             <artifactId>dyn4j</artifactId>
             <version>5.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.4.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.codehaus.mojo</groupId>-->
+<!--            <artifactId>exec-maven-plugin</artifactId>-->
+<!--            <version>3.2.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>
             <artifactId>gluegen-rt-main</artifactId>
@@ -138,6 +138,12 @@
             <artifactId>log4j-core</artifactId>
             <version>2.22.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.23.1</version>
+        </dependency>
+
 
     </dependencies>
 

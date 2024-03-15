@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
 
 import static com.ewan.dunjeon.server.world.WorldUtils.*;
 
@@ -59,7 +58,7 @@ public class Datastreams {
             logger.warn("PRINTING DEBUG IMAGE!");
             BufferedImage b = new BufferedImage(10000,10000, BufferedImage.TYPE_3BYTE_BGR);
             Graphics2D g2 = b.createGraphics();
-            int SCALE = 400;
+            int SCALE = 200;
             g2.setColor(Color.WHITE);
             g2.fillRect(0, 0, 10000, 10000);
 
@@ -113,7 +112,6 @@ public class Datastreams {
             try {
                 ImageIO.write(b, "png", new File("C:\\Users\\Ewan\\Downloads\\image.png"));
             } catch (IOException e) {
-                logger.error(e.getMessage());
                 throw new RuntimeException(e);
             }
         }
@@ -130,7 +128,7 @@ public class Datastreams {
             List<Point2D> visibleFilledWalls = new ArrayList<>();
             List<Point2D> visibleFloors = new ArrayList<>();
 
-            logger.debug("Updating Datastream: Sight");
+//            logger.trace("Updating Datastream: Sight");
             for (int i = 0; i < getSubscribers().size(); i++) {
                 Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
 
@@ -164,8 +162,8 @@ public class Datastreams {
                     }
 
                 }else {
-                    logger.debug("Processing Raycasting");
-                    logger.debug("=====================");
+                    logger.trace("Processing Raycasting");
+                    logger.trace("=====================");
                     //************* Do Raycasting *******************//
                     double range = params.getSightRange();
                     double fov = params.getSightFieldOfView();
@@ -178,7 +176,7 @@ public class Datastreams {
                     int rayCounter = 0;
                     WorldUtils.Side lastRayEndSide = null;
 
-                    logger.debug("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle);
+                    logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle + " endingAngle: " + endingAngle);
 
                     //Iterate across rays. Written to ensure that the first and last angles are casted, to avoid any funny business
                     double currentAngle = startingAngle;
@@ -203,10 +201,12 @@ public class Datastreams {
 
                         for (WorldUtils.IntersectionData intersectionData : intersections) {
                             logger.trace("inspecting intersection: " + intersectionData);
+
                             if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
                                 tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
                             }
                             tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
+
                             BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
                             if(basicCell.canBeSeenThroughBy(sensor.creature)){
                                 visibleFloors.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
@@ -214,12 +214,17 @@ public class Datastreams {
                                 visibleFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
                             }
 
+                            if(intersectionData.getSide() == Side.WITHIN){
+                                logger.trace("Identified as WITHIN, skipping next endpoint calculation");
+                                continue;
+                            }
+
                             for (Vector2 potentialEndPoint : intersectionData.getAdjacentSideEndPoints()) {
                                 Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
                                 double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
                                 double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
                                 if((closestPoint == null || relativeAngle < closestAngle) && relativeAngle > minRelativeAngle){
-                                    logger.trace(" taking endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
+                                    logger.trace(" taking endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: " + relativeAngle);
                                     closestPoint = potentialEndPoint;
                                     closestAngle = relativeAngle;
                                 }else{
@@ -241,7 +246,7 @@ public class Datastreams {
                         logger.trace("-----------------------");
                     } while (!finalLap);
 
-                    logger.debug("# of rays: " + rayCounter);
+                    logger.trace("# of rays: " + rayCounter);
 
                     for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tilesMap.entrySet()) {
                         BasicCell basicCell = sensor.creature.getFloor().getCellAt(tile.getKey());
@@ -250,16 +255,17 @@ public class Datastreams {
                         dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimeElapsed(), d.getTicksElapsed()));
                     }
 
-                    Set<Entity> entitiesOnSameFloor = sensor.creature.getFloor().getEntities();
-                    for (Entity entity : entitiesOnSameFloor) {
+                    for (Entity entity : sensor.creature.getFloor().getEntities()) {
 
                         Vector2 entityPos = entity.getWorldCenter();
-                        var results = WorldUtils.getIntersectedTilesWithWall(sensorPos, entityPos);
 
-                        for (WorldUtils.IntersectionData result : results) {
-                            BasicCell basicCell = sensor.creature.getFloor().getCellAt(result.getCellCoordinate());
-                            if(basicCell != null && !basicCell.canBeSeenThroughBy(sensor.creature))
-                                break;
+                        if(entity != sensor.creature) {
+                            var results = WorldUtils.getIntersectedTilesWithWall(sensorPos, entityPos);
+                            for (WorldUtils.IntersectionData result : results) {
+                                BasicCell basicCell = sensor.creature.getFloor().getCellAt(result.getCellCoordinate());
+                                if (basicCell != null && !basicCell.canBeSeenThroughBy(sensor.creature))
+                                    break;
+                            }
                         }
 
                         Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getRotationAngle(), entity.getAngularVelocity());
@@ -280,11 +286,12 @@ public class Datastreams {
             cached_visible_sides = visibleSides;
             cached_full_raytracing_lines = fullRayTracingLines;
 
-            if(!didPrint) {
-                didPrint=true;
-                PRINT_DEBUG_IMAGE();
+            if(!cached_full_raytracing_lines.isEmpty() && !didPrint) {
+//                didPrint=true;
+//                PRINT_DEBUG_IMAGE();
             }
         }
+
         boolean didPrint = false;
 
         @Override
@@ -300,7 +307,7 @@ public class Datastreams {
             private final double currentSightAngle; //What is the absolute current angle of the viewer
 
             private final Vector2 sightSourceLocation; /// Where the eyeball at
-            private final Boolean trueSight; //Magic sight that lets you see everything! (hopefully just for debugging)
+            private final Boolean trueSight; //Magic sight that lets you see everything! (really just for debugging)
         }
     }
 }

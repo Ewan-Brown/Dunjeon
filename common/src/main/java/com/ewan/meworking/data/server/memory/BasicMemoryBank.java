@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
         import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BasicMemoryBank extends DataSink {
@@ -73,21 +74,26 @@ public class BasicMemoryBank extends DataSink {
 
     //in order to keep access to this tree of data clean and safe accessors are the only way to read data.
     //************** ACCESSORS ***************//
-    @SuppressWarnings("unchecked")
-    public <I, D extends Data, K extends KnowledgePackage<I,D>> QueryResult<SingleQueryAccessor<I, D>, Boolean> querySinglePackage(I identifier, Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
-        Pairing<I, D, K> pairing = (Pairing<I, D, K>) knowledgeDataPairings.stream().filter(p -> p.relatedBaseDataClass() == baseClazz).findAny().get();
-        ConcurrentHashMap<I, K> knowledgeMap =  pairing.knowledgeMap();
-        K knowledgePackage = knowledgeMap.get(identifier);
-        if(knowledgePackage == null){
-            return new QueryResult<>(null, false);
-        }
-        for (Class<? extends D> requiredClass : requiredClasses) {
-            if(knowledgePackage.get(requiredClass) == null){
-                return new QueryResult<>(null, false);
-            }
-        }
 
-        return new QueryResult<>(new SingleQueryAccessor<>(knowledgePackage, requiredClasses), true);
+    @SuppressWarnings("unchecked")
+    public <I, D extends Data, K extends KnowledgePackage<I,D>> Optional<SingleQueryAccessor<I, D>> querySinglePackage(I identifier, Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
+        Optional<?> pairingOptional = knowledgeDataPairings.stream().filter(p -> p.relatedBaseDataClass() == baseClazz).findAny();
+        if(pairingOptional.isPresent()) {
+            Pairing<I, D, K> pairing = (Pairing<I, D, K>) pairingOptional.get();
+            ConcurrentHashMap<I, K> knowledgeMap = pairing.knowledgeMap();
+            K knowledgePackage = knowledgeMap.get(identifier);
+            if (knowledgePackage == null) {
+                return Optional.empty();
+            }
+            for (Class<? extends D> requiredClass : requiredClasses) {
+                if (knowledgePackage.get(requiredClass) == null) {
+                    return Optional.empty();
+                }
+            }
+            return Optional.of(new SingleQueryAccessor<>(knowledgePackage, requiredClasses));
+        }else{
+            return Optional.empty();
+        }
 
     }
 
@@ -115,8 +121,8 @@ public class BasicMemoryBank extends DataSink {
 
         private final List<Class<? extends D>> requestedClasses;
         @Getter
-        I identifier;
-        KnowledgePackage<I,D> relatedPackage;
+        private final I identifier;
+        private final KnowledgePackage<I,D> relatedPackage;
 
         private SingleQueryAccessor(KnowledgePackage<I,D> knowledgePackage, List<Class<? extends D>> requestedClasses) {
             this.requestedClasses = requestedClasses;
@@ -126,7 +132,7 @@ public class BasicMemoryBank extends DataSink {
 
         public <T extends D> KnowledgeFragment<T> getKnowledge(Class<T> clazz){
             if(!requestedClasses.contains(clazz)){
-                throw new IllegalArgumentException("Attempted to retrieve knowledge who's type was not part of requested classes: " + clazz.getName());
+                throw new IllegalArgumentException("Attempted to retrieve knowledge who's type was not part of requested classes: " + clazz.getName()+" requestedClasses: " + requestedClasses);
             }else{
                 return relatedPackage.get(clazz);
             }
@@ -147,7 +153,6 @@ public class BasicMemoryBank extends DataSink {
 
     }
 
-    public record QueryResult<A, S>(A result, S status){}
 
     public long getOwnerUUID(){
         if(ownerUUID == null){

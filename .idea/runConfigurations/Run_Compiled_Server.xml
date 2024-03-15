@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Compiled Server" type="JarApplication">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/server/target/server-1.0-jar-with-dependencies.jar" />
+    <option name="VM_PARAMETERS" value="--add-exports java.base/java.lang=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/sun.java2d=ALL-UNNAMED --add-opens java.desktop/java.awt=ALL-UNNAMED --add-opens java.desktop/java.awt.color=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.math=ALL-UNNAMED -Dlog4j.configurationFile=C:\Users\Ewan\IdeaProjects\Dunjeon\server\src\main\resources\log4j2.properties" />
+    <option name="WORKING_DIRECTORY" value="C:\Users\Ewan\IdeaProjects\Dunjeon" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="temurin-18" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -24,16 +24,22 @@ public class ServerDataEncoder
         this.kryo = kryo;
     }
 
+//    int i = 0;
+
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ServerPacketWrapper serverPacketWrapper, List<Object> list) throws Exception {
 
         try {
-            Output output = new Output(BUFFER_SIZE + 1);
+            Output output = new Output(BUFFER_SIZE);
             output.writeShort(serverPacketWrapper.pType().ordinal()); //TODO This is not ideal, absolutely feeble in fact. Atleast use a char or something more debuggable.
             kryo.writeObject(output, serverPacketWrapper.data());
+//            if(serverPacketWrapper.pType() == PacketTypes.PacketType.DATA_PACKET) {
+//                output.writeInt(i);//TODO REMOVE, USED FOR DEBUGGING!
+//                i++;
+//            }
             list.add(new DatagramPacket(Unpooled.wrappedBuffer(output.getBuffer()), serverPacketWrapper.address()));
         }catch(Exception e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
