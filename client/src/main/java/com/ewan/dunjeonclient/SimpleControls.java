@@ -1,15 +1,13 @@
 package com.ewan.dunjeonclient;
 
-import com.ewan.meworking.data.client.ClientInputData;
-import com.ewan.meworking.data.client.MoveEntity;
-import com.ewan.meworking.data.client.TurnEntity;
-import com.ewan.meworking.data.client.UserInput;
+import com.ewan.meworking.data.client.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
@@ -51,7 +49,8 @@ public class SimpleControls implements KeyListener {
      */
     public void processKeys(KeyEvent triggeringKeyEvent){
 
-        //Note that the controls here are ONLY responsible for sending stuff each key event - it's left up to the server-side controller to decide what to do with these
+
+        List<UserInput> collectedInputs = new ArrayList<>();
 
         // Process movement keys
         float x = 0;
@@ -70,7 +69,7 @@ public class SimpleControls implements KeyListener {
             x--;
         }
 
-        UserInput mEntity = new MoveEntity(new Vector2(x, y).getNormalized());
+        collectedInputs.add(new MoveEntity(new Vector2(x, y).getNormalized()));
         //Process turning keys
 
         float turn = 0;
@@ -82,7 +81,11 @@ public class SimpleControls implements KeyListener {
             turn += 1;
         }
 
-        UserInput tEntity = new TurnEntity(turn);
-        clientChannelHandler.sendMessageToClient(new ClientInputData(List.of(tEntity, mEntity)));
+        collectedInputs.add(new TurnEntity(turn));
+
+        if(triggeringKeyEvent.getKeyCode() == KeyEvent.VK_SPACE){
+            collectedInputs.add(new DebugInput());
+        }
+        clientChannelHandler.sendMessageToClient(new ClientInputData(collectedInputs));
     }
 }

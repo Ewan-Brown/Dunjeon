@@ -140,12 +140,16 @@ public class WorldUtils {
 
     public static List<IntersectionData> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {
 
-        logger.trace("============================== Called getIntersectedTilesWithWalls() with : ");
+        logger.trace("======Called getIntersectedTilesWithWalls()========");
         logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
         List<IntersectionData> intersectionDatas = new ArrayList<>();
 
         double dx = x2 - x1;
         double dy = y2 - y1;
+
+        if(dx == 0 && dy == 0){
+            throw new IllegalArgumentException("cannot do raymarch if dx and dy both equal zero!"); //TODO check if we don't need this?
+        }
 
         double slope = dy / dx;
         double b = y1 - slope * x1;
@@ -155,56 +159,9 @@ public class WorldUtils {
 
         logger.trace(String.format("dx: %.10f, dy: %.10f", dx, dy));
 
-//        List<Pair<Vector2, Side>> intersectedTiles = new ArrayList<>();
-
         Vector2 currentPoint = new Vector2( Math.floor(x1), Math.floor(y1));
 
-//        System.out.println("Check if we need to bring intersection checking for where dx or dy == 0");
-//        if(dx == 0){
-//            int tileX = (int)Math.floor(x1);
-//            Side intersectSide = dy > 0 ? Side.NORTH : Side.SOUTH;
-//            int y1Floored = (int)Math.floor(y1);
-//            int y2Ceil = (int)Math.floor(y2)+1;
-//
-//            boolean reverse = false;
-//            int minY = y1Floored;
-//            int maxY = y2Ceil;
-//            if(y2Ceil < y1Floored){
-//                maxY = y1Floored;
-//                minY = y2Ceil;
-//                reverse = true;
-//            }
-//            IntStream.range(minY, maxY).forEach(value -> intersectedTiles.add(new Pair<>(new Vector2(tileX, value), intersectSide)));
-//            if(reverse){
-//                Collections.reverse(intersectedTiles);
-//            }
-//            return intersectedTiles;
-//        }else if(dy == 0){
-//            int tileY = (int)Math.floor(y1);
-//            Side intersectSide = dx > 0 ? Side.WEST : Side.EAST;
-//            int x1Floored = (int)Math.floor(x1);
-//            int x2Ceil = (int)Math.floor(x2)+1;
-//
-//            boolean reverse = false;
-//            int minX = x1Floored;
-//            int maxX = x2Ceil;
-//            if(x2Ceil < x1Floored){
-//                maxX = x1Floored;
-//                minX = x2Ceil;
-//                reverse = true;
-//            }
-//
-//            IntStream.range(minX, maxX).forEach(value -> intersectedTiles.add(new Pair<>(new Vector2(value, tileY), intersectSide)));
-//            if(reverse){
-//                Collections.reverse(intersectedTiles);
-//            }
-//            return intersectedTiles;
-//        }
-
         intersectionDatas.add(new IntersectionData(new Vector2(x1, y1), currentPoint, Side.WITHIN));
-//        intersectedTiles.add(new Pair<>(currentPoint, Side.WITHIN));
-
-
 
         //Iterate across intersects and find tiles
         while (true) /**/{
@@ -215,13 +172,6 @@ public class WorldUtils {
             double distToNextHorizontalIntersect = Float.MAX_VALUE;
 
             Side side;
-
-            //Catch edge case where intersection point is exactly on a diagonal
-            //We should shift it slightly towards the CENTER of the cell
-//            if (currentX == (int) currentX && currentY == (int) currentY){
-//
-//                currentX+=0.01;
-//            }
             if (dx != 0) {
                 if (currentX == Math.round(currentX)) {
                     nextVerticalIntersect = currentX + Math.signum(dx);
@@ -250,10 +200,6 @@ public class WorldUtils {
                 nextInterceptX = nextVerticalIntersect;
                 nextInterceptY = slope * nextInterceptX + b;
 
-//                if(distToNextVerticalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
-//                    double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dy);
-//                    nextInterceptY = Math.round(nextInterceptY) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
-//                }
                 intersectAlignment = AxisAlignment.VERTICAL;
                 side = (dx > 0) ? Side.WEST : Side.EAST;
                 logger.trace("Going with vertical intersection");
@@ -265,12 +211,6 @@ public class WorldUtils {
                 logger.trace(String.format("y = %f, m = %f, b = %f", nextInterceptY, b, slope));
                 logger.trace(String.format("x calculated as = %f", nextInterceptX));
 
-//                if(distToNextHorizontalIntersect < INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD){
-//                    logger.trace("uh oh looks like the numbers are small");
-//                    double delta = INTERSECTION_FLOATING_POINT_NUDGE_THRESHOLD * Math.signum(dx);
-//                    nextInterceptX = Math.round(nextInterceptX) + delta; //The reason for this is to 'nudge' the intersection point if its so close to zero that doubling point errors come into play in the result of y = mx+b
-//                    logger.trace(String.format("new x intercept = %f", nextInterceptX));
-//                }
                 intersectAlignment = AxisAlignment.HORIZONTAL;
                 side = (dy < 0) ? Side.NORTH :Side.SOUTH;
                 logger.trace("Going with horizontal intersection: ");
@@ -282,9 +222,7 @@ public class WorldUtils {
             if(dy == 0){
                 nextInterceptY = currentY;
             }
-            if(dx == 0 && dy == 0){
-                throw new IllegalArgumentException("cannot do raymarch if dx and dy both equal zero!"); //TODO check if we don't need this?
-            }
+
 
             logger.trace(String.format(" on %s side at (%f, %f)", side, nextInterceptX, nextInterceptY));
 

@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.server.networking;
 
+import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
@@ -8,6 +9,8 @@ import com.ewan.meworking.data.client.ClientInputDataWrapper;
 import com.ewan.meworking.codec.KryoPreparator;
 import com.ewan.meworking.codec.ServerDataEncoder;
 import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.ewan.meworking.data.client.DebugInput;
+import com.ewan.meworking.data.client.UserInput;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -18,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Interface between packets and server. Send and receive.
@@ -68,6 +73,16 @@ public class ServerManager {
 
             ClientInputDataWrapper dataWrapper = (ClientInputDataWrapper) msg;
             InetSocketAddress address = ((ClientInputDataWrapper) msg).sender();
+
+            for (int i = 0; i < dataWrapper.clientInputData().inputs().size(); i++) {
+                UserInput input = dataWrapper.clientInputData().inputs().get(i);
+                if(input instanceof DebugInput) {
+                    dataWrapper.clientInputData().inputs().remove(input);
+                    logger.warn("received debug request!");
+                    Datastreams.SightDataStream.debugNextImage = true;
+                }
+            }
+
             if(!clientHandlerHashMap.containsKey(dataWrapper.sender())){
 
                 ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();

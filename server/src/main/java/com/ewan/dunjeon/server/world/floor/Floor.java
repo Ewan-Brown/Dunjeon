@@ -44,30 +44,30 @@ public class Floor {
         UUID = UUIDCounter;
         UUIDCounter++;
 
-        //TODO Collisions are to be passed by datastream!
-        CollisionListener<Body, BodyFixture> collisionListener = new CollisionListener<>() {
-
-            @Override
-            public boolean collision(BroadphaseCollisionData collision) {
-                logger.info("Floor.collision - Broadphase");
-                return true;
-            }
-
-            @Override
-            public boolean collision(NarrowphaseCollisionData collision) {
-                logger.info("Floor.collision - Narrowphase");
-                return true;
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public boolean collision(ManifoldCollisionData collision) {
-                logger.info("Floor.collision - Manifold");
-                collisionDataAccumulator.add(collision);
-                return true;
-
-            }
-        };
+//        //TODO Collisions are to be passed by datastream!
+//        CollisionListener<Body, BodyFixture> collisionListener = new CollisionListener<>() {
+//
+//            @Override
+//            public boolean collision(BroadphaseCollisionData collision) {
+//                logger.info("Floor.collision - Broadphase");
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean collision(NarrowphaseCollisionData collision) {
+//                logger.info("Floor.collision - Narrowphase");
+//                return true;
+//            }
+//
+//            @SuppressWarnings("unchecked")
+//            @Override
+//            public boolean collision(ManifoldCollisionData collision) {
+//                logger.info("Floor.collision - Manifold");
+//                collisionDataAccumulator.add(collision);
+//                return true;
+//
+//            }
+//        };
 
         world.setGravity(0,0);
 //        world.addCollisionListener(collisionListener);
