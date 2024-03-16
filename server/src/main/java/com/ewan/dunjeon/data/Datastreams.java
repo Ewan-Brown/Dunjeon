@@ -122,6 +122,9 @@ public class Datastreams {
 
 
 
+        //Optimization tip : We are currently very conservative about how we select "nextPointToMarchTo", we should ONLY
+        // grab an intersection if the angle to the point is minimum AND we haven't yet identified the tile on the 'opposing' side of the intersection. If we know that that is a wall/floor then no point right?!
+        // Use debug
         @Override
         public void update(Dunjeon d) {
             if(debugNextImage){
