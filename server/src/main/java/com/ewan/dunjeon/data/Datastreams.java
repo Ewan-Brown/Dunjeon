@@ -139,7 +139,6 @@ public class Datastreams {
             List<Point2D> visibleFilledWalls = new ArrayList<>();
             List<Point2D> visibleFloors = new ArrayList<>();
 
-//            logger.trace("Updating Datastream: Sight");
             for (int i = 0; i < getSubscribers().size(); i++) {
                 Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
 
@@ -222,7 +221,6 @@ public class Datastreams {
 
                         if(logger.isTraceEnabled())
                             logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
-//                        List<IntersectionData> intersections = new ArrayList<>();
 
                         double dx = x2 - x1;
                         double dy = y2 - y1;
@@ -383,12 +381,6 @@ public class Datastreams {
                                         logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
                                     break;
                                 }
-//                                if(intersections.indexOf(intersectionData) == intersections.size() - 1){
-//                                    rayTracingLines.add(convertVectorsToLine(sensorPos, intersectionData.getIntersectionPoint()));
-//                                    if(logger.isTraceEnabled())
-//                                        logger.trace("Ray ended without colliding at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
-//
-//                                }
                                 currentX = nextInterceptX;
                                 currentY = nextInterceptY;
                             }
@@ -397,63 +389,6 @@ public class Datastreams {
                         if(didCollide)
                             rayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
                         fullRayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
-
-//                        if(logger.isTraceEnabled())
-//                            logger.trace("Ray end : " + StringUtils.formatVector(rayEnd) + ", # of intersections = " + intersections.size());
-
-
-//                        for (WorldUtils.IntersectionData intersectionData : intersections) {
-//                            if(logger.isTraceEnabled())
-//                                logger.trace("inspecting intersection: " + intersectionData);
-//
-//                            if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
-//                                tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
-//                            }
-//                            tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
-//
-//                            BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
-//                            if(basicCell.canBeSeenThroughBy(sensor.creature)){
-//                                visibleFloors.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
-//                            }else{
-//                                visibleFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
-//                            }
-//
-//                            if(intersectionData.getSide() == Side.WITHIN){
-//                                if(logger.isTraceEnabled())
-//                                    logger.trace("Identified as WITHIN, skipping next endpoint calculation");
-//                                continue;
-//                            }
-//
-//                            for (Vector2 potentialEndPoint : intersectionData.getAdjacentSideEndPoints()) {
-//                                Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
-//                                double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
-//                                double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
-//                                if((closestPoint == null || relativeAngle < closestAngle) && relativeAngle > minRelativeAngle){
-//                                    if(logger.isTraceEnabled())
-//                                        logger.trace(" taking endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: " + relativeAngle);
-//                                    closestPoint = potentialEndPoint;
-//                                    closestAngle = relativeAngle;
-//                                }else{
-//                                    if(logger.isTraceEnabled())
-//                                        logger.trace(" ignoring endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
-//                                }
-//                            }
-//
-//                            if(logger.isTraceEnabled())
-//                                logger.trace("endpoint chosen: " + StringUtils.formatVector(closestPoint)+", with angle: " + closestAngle);
-//
-//                            if (!basicCell.canBeSeenThroughBy(sensor.creature)) {
-//                                if(logger.isTraceEnabled())
-//                                    logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
-//                                break;
-//                            }
-//                            if(intersections.indexOf(intersectionData) == intersections.size() - 1){
-//                                rayTracingLines.add(convertVectorsToLine(sensorPos, intersectionData.getIntersectionPoint()));
-//                                if(logger.isTraceEnabled())
-//                                    logger.trace("Ray ended without colliding at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
-//
-//                            }
-//                        }
                         currentAngle += nextRayAngle + tinyAngle;
 
                         rayCounter++;
