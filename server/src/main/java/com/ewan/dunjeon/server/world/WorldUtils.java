@@ -9,10 +9,8 @@ import org.dyn4j.geometry.Vector2;
 import org.jfree.chart.axis.Axis;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.abs;
@@ -117,6 +115,121 @@ public class WorldUtils {
         public String toString() {
             return String.format("%s, side: %s, exact intersection at %s", StringUtils.formatVector(cellCoordinate), side, StringUtils.formatVectorFullPrecision(intersectionPoint));
         }
+    }
+
+    public static Optional<IntersectionData> getNextGridIntersect(Vector2 pos1, Vector2 pos2){
+
+        double x1 = pos1.x;
+        double y1 = pos1.y;
+
+        double x2 = pos2.x;
+        double y2 = pos2.y;
+
+        if(logger.isTraceEnabled())
+            logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
+
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+
+        if(dx == 0 && dy == 0){
+            throw new IllegalArgumentException("cannot do raymarch if dx and dy both equal zero!"); //TODO check if we don't need this?
+        }
+
+        double slope = dy / dx;
+        double b = y1 - slope * x1;
+
+        double currentX = x1;
+        double currentY = y1;
+
+        if(logger.isTraceEnabled())
+            logger.trace(String.format("dx: %.10f, dy: %.10f", dx, dy));
+
+        double nextVerticalIntersect = 0;
+        double distToNextVerticalIntersect = Float.MAX_VALUE;
+        double nextHorizontalIntersect = 0;
+        double distToNextHorizontalIntersect = Float.MAX_VALUE;
+
+        Side side;
+        if (dx != 0) {
+            if (currentX == Math.round(currentX)) {
+                nextVerticalIntersect = currentX + Math.signum(dx);
+
+            } else {
+                nextVerticalIntersect = (dx > 0) ? Math.ceil(currentX) : Math.floor(currentX);
+            }
+            distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
+            if(logger.isTraceEnabled())
+                logger.trace(String.format("nextVerticalIntersect: %f\ndist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
+        }
+        if (dy != 0) {
+            if (currentY == Math.round(currentY)) {
+                nextHorizontalIntersect = currentY + Math.signum(dy);
+            } else {
+                nextHorizontalIntersect = (dy > 0) ? Math.ceil(currentY) : Math.floor(currentY);
+            }
+            distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
+            if(logger.isTraceEnabled())
+                logger.trace(String.format("nextHorizontalIntersect: %f\ndist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
+        }
+
+        double nextInterceptX, nextInterceptY;
+
+        AxisAlignment intersectAlignment;
+
+        if (distToNextVerticalIntersect < distToNextHorizontalIntersect) {
+            nextInterceptX = nextVerticalIntersect;
+            nextInterceptY = slope * nextInterceptX + b;
+
+            intersectAlignment = AxisAlignment.VERTICAL;
+            side = (dx > 0) ? Side.WEST : Side.EAST;
+            if(logger.isTraceEnabled())
+                logger.trace("Going with vertical intersection");
+
+        } else {
+            nextInterceptY = nextHorizontalIntersect;
+            nextInterceptX = (nextInterceptY - b) / slope;
+
+            if(logger.isTraceEnabled()) {
+                logger.trace(String.format("y = %f, m = %f, b = %f", nextInterceptY, b, slope));
+                logger.trace(String.format("x calculated as = %f", nextInterceptX));
+            }
+
+            intersectAlignment = AxisAlignment.HORIZONTAL;
+            side = (dy < 0) ? Side.NORTH :Side.SOUTH;
+            if(logger.isTraceEnabled())
+                logger.trace("Going with horizontal intersection: ");
+        }
+
+        if(dx == 0){
+            nextInterceptX = currentX;
+        }
+        if(dy == 0){
+            nextInterceptY = currentY;
+        }
+
+        if(logger.isTraceEnabled())
+            logger.trace(String.format(" on %s side at (%f, %f)", side, nextInterceptX, nextInterceptY));
+
+        if (Math.abs(nextInterceptX - x1) > Math.abs(dx) || Math.abs(nextInterceptY - y1) > Math.abs(dy) )
+            return Optional.empty();
+        int nextTileX, nextTileY;
+
+        if (intersectAlignment == AxisAlignment.VERTICAL) {
+            if (dx > 0) {
+                nextTileX = (int) nextInterceptX;
+            } else {
+                nextTileX = (int) (nextInterceptX - 1);
+            }
+            nextTileY = (int) Math.floor(nextInterceptY);
+        } else {
+            if (dy > 0) {
+                nextTileY = (int) nextInterceptY;
+            } else {
+                nextTileY = (int) (nextInterceptY - 1);
+            }
+            nextTileX = (int) Math.floor(nextInterceptX);
+        }
+        return Optional.of(new IntersectionData(new Vector2(nextInterceptX, nextInterceptY), new Vector2(nextTileX, nextTileY), side));
     }
 
     public static List<IntersectionData> getIntersectedTilesWithWall(Vector2 pos1, Vector2 pos2){

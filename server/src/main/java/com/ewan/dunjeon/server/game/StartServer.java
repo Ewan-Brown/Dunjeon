@@ -2,27 +2,21 @@ package com.ewan.dunjeon.server.game;
 
 import com.ewan.dunjeon.server.networking.ServerManager;
 import com.ewan.dunjeon.server.generation.FloorGenerator;
-import com.ewan.dunjeon.server.world.entities.ClientBasedController;
-import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import lombok.SneakyThrows;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.*;
 
-import java.io.*;
-import java.nio.file.Paths;
 import java.util.*;
 
 
 public class StartServer {
 
     public static final Random rand = new Random();
-    static final long UPDATE_DELAY = 16;
-    private static final int entityCount = 100;
+    private static final int entityCount = 0;
     static Logger logger = LogManager.getLogger();
 
     @SneakyThrows

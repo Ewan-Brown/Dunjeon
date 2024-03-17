@@ -15,7 +15,7 @@ Resolved Major dyn4j-related lag
 Added basic simultaneous multiplayer
 
 ----TODO----
-Clean up... everything
+Clean up... half
 Add unit testing
 Make use of a proper logging system
 Make use of Docker

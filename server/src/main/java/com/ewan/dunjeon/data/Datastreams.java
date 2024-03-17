@@ -201,6 +201,9 @@ public class Datastreams {
                     //Iterate across rays. Written to ensure that the first and last angles are casted, to avoid any funny business
                     double currentAngle = startingAngle;
                     boolean finalLap = false;
+
+                    //Keeps track of the last ray's final intersection point IF it hit a wall, used for optimization. if null, we didn't hit a wall and gotta use a different optimization technique
+                    IntersectionData previousCollidingIntersection = null;
                     do {
                         if (currentAngle > endingAngle) {
                             if(logger.isTraceEnabled())
@@ -216,30 +219,9 @@ public class Datastreams {
 
                         // ************************************* GET INTERSECTIONS **********************************************
 
-                        double x1 = sensorPos.x;
-                        double y1 = sensorPos.y;
 
-                        double x2 = rayEnd.x;
-                        double y2 = rayEnd.y;
 
-                        if(logger.isTraceEnabled())
-                            logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
-
-                        double dx = x2 - x1;
-                        double dy = y2 - y1;
-
-                        if(dx == 0 && dy == 0){
-                            throw new IllegalArgumentException("cannot do raymarch if dx and dy both equal zero!"); //TODO check if we don't need this?
-                        }
-
-                        double slope = dy / dx;
-                        double b = y1 - slope * x1;
-
-                        double currentX = x1;
-                        double currentY = y1;
-
-                        if(logger.isTraceEnabled())
-                            logger.trace(String.format("dx: %.10f, dy: %.10f", dx, dy));
+                        IntersectionData finalIntersectionOfThisRay = null;
 
                         Vector2 nextPointToMarchTo = null;
                         double nextRayAngle = 0;
@@ -248,149 +230,96 @@ public class Datastreams {
                         //Iterate across intersects and find tiles
                         while (true) /**/{
 
-                            double nextVerticalIntersect = 0;
-                            double distToNextVerticalIntersect = Float.MAX_VALUE;
-                            double nextHorizontalIntersect = 0;
-                            double distToNextHorizontalIntersect = Float.MAX_VALUE;
+                            Optional<IntersectionData> intersectionDataOpt = WorldUtils.getNextGridIntersect(currentPoint, rayEnd);
 
-
-
-                            Side side;
-                            if (dx != 0) {
-                                if (currentX == Math.round(currentX)) {
-                                    nextVerticalIntersect = currentX + Math.signum(dx);
-
-                                } else {
-                                    nextVerticalIntersect = (dx > 0) ? Math.ceil(currentX) : Math.floor(currentX);
-                                }
-                                distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
-                                if(logger.isTraceEnabled())
-                                    logger.trace(String.format("nextVerticalIntersect: %f\ndist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
+                            if(intersectionDataOpt.isEmpty()){
+                                break;
                             }
-                            if (dy != 0) {
-                                if (currentY == Math.round(currentY)) {
-                                    nextHorizontalIntersect = currentY + Math.signum(dy);
-                                } else {
-                                    nextHorizontalIntersect = (dy > 0) ? Math.ceil(currentY) : Math.floor(currentY);
-                                }
-                                distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
-                                if(logger.isTraceEnabled())
-                                    logger.trace(String.format("nextHorizontalIntersect: %f\ndist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
+                            IntersectionData intersectionData = intersectionDataOpt.get();
+                            finalIntersectionOfThisRay = intersectionData;
+                            // INSPECTING AN INTERSECTION
+                            if(logger.isTraceEnabled())
+                                logger.trace("inspecting intersection: " + intersectionData);
+
+                            if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
+                                tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
+                            }
+                            tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
+
+                            BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
+                            boolean isBlocking = !basicCell.canBeSeenThroughBy(sensor.creature);
+                            if(!isBlocking){
+                                visibleFloors.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
+                            }else{
+                                visibleFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
                             }
 
-                            double nextInterceptX, nextInterceptY;
-
-                            AxisAlignment intersectAlignment;
-
-                            if (distToNextVerticalIntersect < distToNextHorizontalIntersect) {
-                                nextInterceptX = nextVerticalIntersect;
-                                nextInterceptY = slope * nextInterceptX + b;
-
-                                intersectAlignment = AxisAlignment.VERTICAL;
-                                side = (dx > 0) ? Side.WEST : Side.EAST;
+                            if(intersectionData.getSide() == Side.WITHIN){
                                 if(logger.isTraceEnabled())
-                                    logger.trace("Going with vertical intersection");
+                                    logger.trace("Identified as WITHIN, skipping next endpoint calculation");
+                                continue;
+                            }
 
-                            } else {
-                                nextInterceptY = nextHorizontalIntersect;
-                                nextInterceptX = (nextInterceptY - b) / slope;
+                            //OPTIMIZATION : If the ray has collided with a wall that is parallel and colinear to the last wall, we can ignore all previous potential endpoints
+                            // This does mean discarding already-calculated data but we save on multiple _entire_ rays so it's a net positive from what we have now
 
-                                if(logger.isTraceEnabled()) {
-                                    logger.trace(String.format("y = %f, m = %f, b = %f", nextInterceptY, b, slope));
-                                    logger.trace(String.format("x calculated as = %f", nextInterceptX));
+                            if(isBlocking){
+                                if(previousCollidingIntersection != null){
+                                    if(previousCollidingIntersection.getSide() == intersectionData.getSide()){
+                                        double currentIntersectX = intersectionData.getIntersectionPoint().x;
+                                        double currentIntersectY = intersectionData.getIntersectionPoint().y;
+                                        double previousIntersectX = previousCollidingIntersection.getIntersectionPoint().x;
+                                        double previousIntersectY = previousCollidingIntersection.getIntersectionPoint().y;
+                                        if(currentIntersectX == previousIntersectX || currentIntersectY == previousIntersectY){
+                                            nextPointToMarchTo = null; // "clear" the results from previous angle checks
+                                        }
+                                    }
                                 }
 
-                                intersectAlignment = AxisAlignment.HORIZONTAL;
-                                side = (dy < 0) ? Side.NORTH :Side.SOUTH;
-                                if(logger.isTraceEnabled())
-                                    logger.trace("Going with horizontal intersection: ");
                             }
 
-                            if(dx == 0){
-                                nextInterceptX = currentX;
-                            }
-                            if(dy == 0){
-                                nextInterceptY = currentY;
+                            //****************************************************************
+
+                            for (Vector2 potentialEndPoint : intersectionData.getAdjacentSideEndPoints()) {
+                                Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
+                                double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
+                                double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
+                                if((nextPointToMarchTo == null || relativeAngle < nextRayAngle) && relativeAngle > minRelativeAngle){
+                                    if(logger.isTraceEnabled())
+                                        logger.trace(" taking endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: " + relativeAngle);
+                                    nextPointToMarchTo = potentialEndPoint;
+                                    nextRayAngle = relativeAngle;
+                                }else{
+                                    if(logger.isTraceEnabled())
+                                        logger.trace(" ignoring endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
+                                }
                             }
 
                             if(logger.isTraceEnabled())
-                                logger.trace(String.format(" on %s side at (%f, %f)", side, nextInterceptX, nextInterceptY));
+                                logger.trace("endpoint chosen: " + StringUtils.formatVector(nextPointToMarchTo)+", with angle: " + nextRayAngle);
 
-                            if (Math.abs(nextInterceptX - x1) > Math.abs(dx) || Math.abs(nextInterceptY - y1) > Math.abs(dy) ) {
+                            if (isBlocking) {
+                                rayTracingLines.add(convertVectorsToLine(sensorPos, intersectionData.getIntersectionPoint()));
+                                didCollide = true;
+                                if(logger.isTraceEnabled())
+                                    logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
                                 break;
-                            } else {
-                                int nextTileX, nextTileY;
-
-                                if (intersectAlignment == AxisAlignment.VERTICAL) {
-                                    if (dx > 0) {
-                                        nextTileX = (int) nextInterceptX;
-                                    } else {
-                                        nextTileX = (int) (nextInterceptX - 1);
-                                    }
-                                    nextTileY = (int) Math.floor(nextInterceptY);
-                                } else {
-                                    if (dy > 0) {
-                                        nextTileY = (int) nextInterceptY;
-                                    } else {
-                                        nextTileY = (int) (nextInterceptY - 1);
-                                    }
-                                    nextTileX = (int) Math.floor(nextInterceptX);
-                                }
-                                IntersectionData intersectionData = new IntersectionData(new Vector2(nextInterceptX, nextInterceptY), new Vector2(nextTileX, nextTileY), side);
-                                // INSPECTING AN INTERSECTION
-                                if(logger.isTraceEnabled())
-                                    logger.trace("inspecting intersection: " + intersectionData);
-
-                                if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
-                                    tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
-                                }
-                                tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
-
-                                BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
-                                if(basicCell.canBeSeenThroughBy(sensor.creature)){
-                                    visibleFloors.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
-                                }else{
-                                    visibleFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
-                                }
-
-                                if(intersectionData.getSide() == Side.WITHIN){
-                                    if(logger.isTraceEnabled())
-                                        logger.trace("Identified as WITHIN, skipping next endpoint calculation");
-                                    continue;
-                                }
-
-                                for (Vector2 potentialEndPoint : intersectionData.getAdjacentSideEndPoints()) {
-                                    Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
-                                    double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
-                                    double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
-                                    if((nextPointToMarchTo == null || relativeAngle < nextRayAngle) && relativeAngle > minRelativeAngle){
-                                        if(logger.isTraceEnabled())
-                                            logger.trace(" taking endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: " + relativeAngle);
-                                        nextPointToMarchTo = potentialEndPoint;
-                                        nextRayAngle = relativeAngle;
-                                    }else{
-                                        if(logger.isTraceEnabled())
-                                            logger.trace(" ignoring endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
-                                    }
-                                }
-
-                                if(logger.isTraceEnabled())
-                                    logger.trace("endpoint chosen: " + StringUtils.formatVector(nextPointToMarchTo)+", with angle: " + nextRayAngle);
-
-                                if (!basicCell.canBeSeenThroughBy(sensor.creature)) {
-                                    rayTracingLines.add(convertVectorsToLine(sensorPos, intersectionData.getIntersectionPoint()));
-                                    didCollide = true;
-                                    if(logger.isTraceEnabled())
-                                        logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
-                                    break;
-                                }
-                                currentX = nextInterceptX;
-                                currentY = nextInterceptY;
                             }
+                            currentPoint = intersectionData.getIntersectionPoint();
+
                         }
 
-                        if(didCollide)
+                        if(didCollide) {
+                            previousCollidingIntersection = finalIntersectionOfThisRay;
+                        }else{
+
+                            // OPTIMIZATION 2
+
+
+
+                            previousCollidingIntersection = null;
                             rayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
+                        }
                         fullRayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
                         currentAngle += nextRayAngle + tinyAngle;
 
