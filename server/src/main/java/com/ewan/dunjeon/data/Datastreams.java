@@ -315,9 +315,17 @@ public class Datastreams {
 
                             // OPTIMIZATION 2
 
+                            Vector2 tileCoordinateOfRayEnd = new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y));
+                            Side
+
+//                            double slope = (rayEnd.y - sensorPos.y) / (rayEnd.x - sensorPos.x);
+//                            double b = rayEnd.y - slope * rayEnd.x;
+//
+//                            double negativeReciprocal = - 1.0 / (slope);
 
 
-                            previousCollidingIntersection = null;
+
+//                            previousCollidingIntersection = null;
                             rayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
                         }
                         fullRayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));

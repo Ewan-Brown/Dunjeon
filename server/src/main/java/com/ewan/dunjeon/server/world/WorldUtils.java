@@ -60,19 +60,23 @@ public class WorldUtils {
     }
 
     public enum Side {
-        NORTH(0.5, 1, AxisAlignment.HORIZONTAL),
-        EAST(1, 0.5, AxisAlignment.VERTICAL),
-        SOUTH(0.5, 0, AxisAlignment.HORIZONTAL),
-        WEST(0, 0.5, AxisAlignment.VERTICAL),
-        WITHIN(0.5, 0.5, null);
+        //_Yikes_
+        NORTH(0.5, 1, AxisAlignment.HORIZONTAL, new Pair<>(new Vector2(0, 1), new Vector2(1, 1))),
+        EAST(1, 0.5, AxisAlignment.VERTICAL,    new Pair<>(new Vector2(0, 0), new Vector2(0, 1))),
+        SOUTH(0.5, 0, AxisAlignment.HORIZONTAL, new Pair<>(new Vector2(0, 0), new Vector2(1, 0))),
+        WEST(0, 0.5, AxisAlignment.VERTICAL,    new Pair<>(new Vector2(1, 0), new Vector2(1, 1))),
+        WITHIN(0.5, 0.5, null, null); // Don't like this. Not one bit.
 
-        //The components of the vector spanning from a cell's local origin (bottom left corner) to the midline of this Side
+        //The vector spanning from a cell's local origin (bottom left corner) to the midline of this Side
         final Vector2 localCoord;
+        //The vectors spanning from the cells local origin to the edges of this side
+        final Pair<Vector2, Vector2> edges;
         final AxisAlignment axis;
 
-        Side(double x, double y, AxisAlignment a){
+        Side(double x, double y, AxisAlignment a, Pair<Vector2, Vector2> e){
             localCoord = new Vector2(x,y);
             this.axis = a;
+            this.edges = e;
         }
     }
 
