@@ -130,9 +130,6 @@ public class Datastreams {
             if(debugNextImage){
                 Configurator.setLevel(logger, Level.TRACE);
                 Configurator.setLevel("logger.worldutils.name", Level.TRACE);
-            }else{
-                Configurator.setLevel(logger, Level.WARN);
-                Configurator.setLevel("logger.worldutils.name", Level.WARN);
             }
 
             List<Line2D.Double> rayTracingLines = new ArrayList<>();
@@ -191,12 +188,10 @@ public class Datastreams {
 
                     logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle + " endingAngle: " + endingAngle);
 
-                    Vector2 currentPoint = new Vector2( Math.floor(sensorPos.x), Math.floor(sensorPos.y));
 
-                    IntersectionData innerPoint = new IntersectionData(sensorPos, currentPoint, Side.WITHIN);
-                    Set<Side> t = new HashSet<>();
-                    t.add(innerPoint.getSide());
-                    tilesMap.put(currentPoint, t);
+                    tilesMap.put(new Vector2( Math.floor(sensorPos.x), Math.floor(sensorPos.y)), Set.of(Side.values()));
+
+                    Vector2 currentPoint = sensorPos;
 
                     //Iterate across rays. Written to ensure that the first and last angles are casted, to avoid any funny business
                     double currentAngle = startingAngle;
@@ -233,6 +228,8 @@ public class Datastreams {
                             Optional<IntersectionData> intersectionDataOpt = WorldUtils.getNextGridIntersect(currentPoint, rayEnd);
 
                             if(intersectionDataOpt.isEmpty()){
+                                if(logger.isTraceEnabled())
+                                    logger.trace("no intersections returned");
                                 break;
                             }
                             IntersectionData intersectionData = intersectionDataOpt.get();
@@ -240,7 +237,6 @@ public class Datastreams {
                             // INSPECTING AN INTERSECTION
                             if(logger.isTraceEnabled())
                                 logger.trace("inspecting intersection: " + intersectionData);
-
                             if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
                                 tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
                             }
@@ -248,16 +244,13 @@ public class Datastreams {
 
                             BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
                             boolean isBlocking = !basicCell.canBeSeenThroughBy(sensor.creature);
+                            if(logger.isTraceEnabled()){
+                                logger.trace("blocking cell : " + isBlocking);
+                            }
                             if(!isBlocking){
                                 visibleFloors.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
                             }else{
                                 visibleFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
-                            }
-
-                            if(intersectionData.getSide() == Side.WITHIN){
-                                if(logger.isTraceEnabled())
-                                    logger.trace("Identified as WITHIN, skipping next endpoint calculation");
-                                continue;
                             }
 
                             //OPTIMIZATION : If the ray has collided with a wall that is parallel and colinear to the last wall, we can ignore all previous potential endpoints
@@ -280,7 +273,8 @@ public class Datastreams {
 
                             //****************************************************************
 
-                            for (Vector2 potentialEndPoint : intersectionData.getAdjacentSideEndPoints()) {
+                            for (Corner corner : intersectionData.getSide().getCorners()) {
+                                Vector2 potentialEndPoint = corner.getLocalCoord().sum(intersectionData.getCellCoordinate());
                                 Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
                                 double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
                                 double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
@@ -291,7 +285,7 @@ public class Datastreams {
                                     nextRayAngle = relativeAngle;
                                 }else{
                                     if(logger.isTraceEnabled())
-                                        logger.trace(" ignoring endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
+                                        logger.trace(" ignoring endpoint: " + StringUtils.formatVectorFullPrecision(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
                                 }
                             }
 
@@ -315,8 +309,8 @@ public class Datastreams {
 
                             // OPTIMIZATION 2
 
-                            Vector2 tileCoordinateOfRayEnd = new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y));
-                            Side
+//                            Vector2 tileCoordinateOfRayEnd = new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y));
+//                            Side
 
 //                            double slope = (rayEnd.y - sensorPos.y) / (rayEnd.x - sensorPos.x);
 //                            double b = rayEnd.y - slope * rayEnd.x;
@@ -379,6 +373,8 @@ public class Datastreams {
             if(debugNextImage) {
                 debugNextImage=false;
                 PRINT_DEBUG_IMAGE();
+                Configurator.setLevel(logger, Level.WARN);
+                Configurator.setLevel("logger.worldutils.name", Level.WARN);
             }
         }
 

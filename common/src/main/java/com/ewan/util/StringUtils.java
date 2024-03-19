@@ -5,8 +5,8 @@ import org.dyn4j.geometry.Vector2;
 import java.text.DecimalFormat;
 
 public class StringUtils {
-    final private static DecimalFormat twoDecimalsKept = new DecimalFormat("#.0");
-    final private static DecimalFormat allDecimalsKept = new DecimalFormat("#.0000000000000000");
+    final private static DecimalFormat twoDecimalsKept = new DecimalFormat("0.0000");
+    final private static DecimalFormat allDecimalsKept = new DecimalFormat("0.0000000000000000");
     public static String formatVector(Vector2 v){
         if(v == null)
             return "(null)";

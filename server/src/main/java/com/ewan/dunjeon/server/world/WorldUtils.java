@@ -6,12 +6,10 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
-import org.jfree.chart.axis.Axis;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static java.lang.Math.abs;
 
@@ -59,24 +57,40 @@ public class WorldUtils {
         return integers;
     }
 
-    public enum Side {
-        //_Yikes_
-        NORTH(0.5, 1, AxisAlignment.HORIZONTAL, new Pair<>(new Vector2(0, 1), new Vector2(1, 1))),
-        EAST(1, 0.5, AxisAlignment.VERTICAL,    new Pair<>(new Vector2(0, 0), new Vector2(0, 1))),
-        SOUTH(0.5, 0, AxisAlignment.HORIZONTAL, new Pair<>(new Vector2(0, 0), new Vector2(1, 0))),
-        WEST(0, 0.5, AxisAlignment.VERTICAL,    new Pair<>(new Vector2(1, 0), new Vector2(1, 1))),
-        WITHIN(0.5, 0.5, null, null); // Don't like this. Not one bit.
+    @Getter
+    public enum Corner {
+        SOUTH_WEST(new Vector2(0, 0)),
+        NORTH_WEST(new Vector2(0, 1)),
+        NORTH_EAST(new Vector2(1, 1)),
+        SOUTH_EAST(new Vector2(1, 0));
+
+        //The vector spanning from a cell's local origin (bottom left corner) to this corner
+        final Vector2 localCoord;
 
         //The vector spanning from a cell's local origin (bottom left corner) to the midline of this Side
-        final Vector2 localCoord;
+
+        Corner(Vector2 localCoord) {
+            this.localCoord = localCoord;
+        }
+    }
+
+    @Getter
+    public enum Side {
+        NORTH(0.5, 1, AxisAlignment.HORIZONTAL, Corner.NORTH_WEST, Corner.NORTH_EAST),
+        EAST(1, 0.5, AxisAlignment.VERTICAL,    Corner.SOUTH_EAST, Corner.NORTH_EAST),
+        SOUTH(0.5, 0, AxisAlignment.HORIZONTAL, Corner.SOUTH_WEST, Corner.SOUTH_EAST),
+        WEST(0, 0.5, AxisAlignment.VERTICAL,    Corner.SOUTH_WEST, Corner.NORTH_EAST);
+
+        //The vector spanning from a cell's local origin (bottom left corner) to the midline of this Side
+        final Vector2 localMidpointCoord;
         //The vectors spanning from the cells local origin to the edges of this side
-        final Pair<Vector2, Vector2> edges;
+        final List<Corner> corners;
         final AxisAlignment axis;
 
-        Side(double x, double y, AxisAlignment a, Pair<Vector2, Vector2> e){
-            localCoord = new Vector2(x,y);
-            this.axis = a;
-            this.edges = e;
+        Side(double x, double y, AxisAlignment a, Corner c1, Corner c2){
+            localMidpointCoord = new Vector2(x,y);
+            axis = a;
+            corners = List.of(c1, c2);
         }
     }
 
@@ -99,20 +113,17 @@ public class WorldUtils {
         final Vector2 intersectionPoint;
         final Vector2 cellCoordinate;
         final Side side;
-        final List<Vector2> adjacentSideEndPoints;
         public IntersectionData(Vector2 intersectionPoint, Vector2 cellCoordinate, Side side) {
             this.intersectionPoint = intersectionPoint;
             this.cellCoordinate = cellCoordinate;
             this.side = side;
 
-            Vector2 sideMidPoint = new Vector2(cellCoordinate).add(side.localCoord);
-            if(side == Side.WITHIN) {
-                adjacentSideEndPoints = new ArrayList<>();
-            }else{
-                Vector2 p1 = sideMidPoint.copy().add(side.axis.unitVector.copy().multiply(0.5));
-                Vector2 p2 = sideMidPoint.copy().add(side.axis.unitVector.copy().multiply(-0.5));
-                adjacentSideEndPoints = List.of(p1, p2);
-            }
+            Vector2 sideMidPoint = new Vector2(cellCoordinate).add(side.localMidpointCoord);
+
+            //TODO This vector code is not necessary, we can cache this?
+//            Vector2 p1 = sideMidPoint.copy().add(side.axis.unitVector.copy().multiply(0.5));
+//            Vector2 p2 = sideMidPoint.copy().add(side.axis.unitVector.copy().multiply(-0.5));
+//            adjacentSideEndPoints = List.of(p1, p2);
         }
 
         @Override
@@ -163,7 +174,7 @@ public class WorldUtils {
             }
             distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
             if(logger.isTraceEnabled())
-                logger.trace(String.format("nextVerticalIntersect: %f\ndist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
+                logger.trace(String.format("nextVerticalIntersect: %f, dist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
         }
         if (dy != 0) {
             if (currentY == Math.round(currentY)) {
@@ -173,7 +184,7 @@ public class WorldUtils {
             }
             distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
             if(logger.isTraceEnabled())
-                logger.trace(String.format("nextHorizontalIntersect: %f\ndist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
+                logger.trace(String.format("nextHorizontalIntersect: %f, dist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
         }
 
         double nextInterceptX, nextInterceptY;
@@ -276,10 +287,6 @@ public class WorldUtils {
 
         logger.trace(String.format("dx: %.10f, dy: %.10f", dx, dy));
 
-        Vector2 currentPoint = new Vector2( Math.floor(x1), Math.floor(y1));
-
-        intersectionDatas.add(new IntersectionData(new Vector2(x1, y1), currentPoint, Side.WITHIN));
-
         //Iterate across intersects and find tiles
         while (true) /**/{
 
@@ -297,7 +304,7 @@ public class WorldUtils {
                     nextVerticalIntersect = (dx > 0) ? Math.ceil(currentX) : Math.floor(currentX);
                 }
                 distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
-                logger.trace(String.format("nextVerticalIntersect: %f\ndist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
+                logger.trace(String.format("nextVerticalIntersect: %f, dist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
             }
             if (dy != 0) {
                 if (currentY == Math.round(currentY)) {
@@ -306,7 +313,7 @@ public class WorldUtils {
                     nextHorizontalIntersect = (dy > 0) ? Math.ceil(currentY) : Math.floor(currentY);
                 }
                 distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
-                logger.trace(String.format("nextHorizontalIntersect: %f\ndist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
+                logger.trace(String.format("nextHorizontalIntersect: %f, dist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
             }
 
             double nextInterceptX, nextInterceptY;
