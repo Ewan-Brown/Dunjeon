@@ -76,11 +76,10 @@ public class ServerManager {
 
             for (int i = 0; i < dataWrapper.clientInputData().inputs().size(); i++) {
                 UserInput input = dataWrapper.clientInputData().inputs().get(i);
-                if(input instanceof DebugInput) {
-                    dataWrapper.clientInputData().inputs().remove(input);
-                    logger.warn("received debug request!");
-                    Datastreams.SightDataStream.debugNextImage = true;
-                }
+//                if(input instanceof DebugInput) {
+//                    dataWrapper.clientInputData().inputs().remove(input);
+//                    logger.warn("received debug request!");
+//                }
             }
 
             if(!clientHandlerHashMap.containsKey(dataWrapper.sender())){

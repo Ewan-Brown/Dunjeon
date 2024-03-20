@@ -313,8 +313,10 @@ public class WorldUtils {
 
     public static List<IntersectionData> getIntersectedTilesWithWall(double x1, double y1, double x2, double y2) {
 
-        logger.trace("======Called getIntersectedTilesWithWalls()========");
-        logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
+        if(logger.isTraceEnabled()) {
+            logger.trace("======Called getIntersectedTilesWithWalls()========");
+            logger.trace(String.format("(%f, %f) -> (%f, %f)", x1, y1, x2, y2));
+        }
         List<IntersectionData> intersectionDatas = new ArrayList<>();
 
         double dx = x2 - x1;
@@ -330,7 +332,8 @@ public class WorldUtils {
         double currentX = x1;
         double currentY = y1;
 
-        logger.trace(String.format("dx: %.10f, dy: %.10f", dx, dy));
+        if(logger.isTraceEnabled())
+            logger.trace(String.format("dx: %.10f, dy: %.10f", dx, dy));
 
         //Iterate across intersects and find tiles
         while (true) /**/{
@@ -349,7 +352,8 @@ public class WorldUtils {
                     nextVerticalIntersect = (dx > 0) ? Math.ceil(currentX) : Math.floor(currentX);
                 }
                 distToNextVerticalIntersect = (nextVerticalIntersect - currentX) / dx;
-                logger.trace(String.format("nextVerticalIntersect: %f, dist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
+                if(logger.isTraceEnabled())
+                    logger.trace(String.format("nextVerticalIntersect: %f, dist: %f", nextVerticalIntersect, distToNextVerticalIntersect));
             }
             if (dy != 0) {
                 if (currentY == Math.round(currentY)) {
@@ -358,7 +362,8 @@ public class WorldUtils {
                     nextHorizontalIntersect = (dy > 0) ? Math.ceil(currentY) : Math.floor(currentY);
                 }
                 distToNextHorizontalIntersect = (nextHorizontalIntersect - currentY) / dy;
-                logger.trace(String.format("nextHorizontalIntersect: %f, dist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
+                if(logger.isTraceEnabled())
+                    logger.trace(String.format("nextHorizontalIntersect: %f, dist: %f", nextHorizontalIntersect, distToNextHorizontalIntersect));
             }
 
             double nextInterceptX, nextInterceptY;
@@ -371,18 +376,22 @@ public class WorldUtils {
 
                 intersectAlignment = AxisAlignment.VERTICAL;
                 side = (dx > 0) ? Side.WEST : Side.EAST;
-                logger.trace("Going with vertical intersection");
+                if(logger.isTraceEnabled())
+                    logger.trace("Going with vertical intersection");
 
             } else {
                 nextInterceptY = nextHorizontalIntersect;
                 nextInterceptX = (nextInterceptY - b) / slope;
 
-                logger.trace(String.format("y = %f, m = %f, b = %f", nextInterceptY, b, slope));
-                logger.trace(String.format("x calculated as = %f", nextInterceptX));
+                if(logger.isTraceEnabled()) {
+                    logger.trace(String.format("y = %f, m = %f, b = %f", nextInterceptY, b, slope));
+                    logger.trace(String.format("x calculated as = %f", nextInterceptX));
+                }
 
                 intersectAlignment = AxisAlignment.HORIZONTAL;
                 side = (dy < 0) ? Side.NORTH :Side.SOUTH;
-                logger.trace("Going with horizontal intersection: ");
+                if(logger.isTraceEnabled())
+                    logger.trace("Going with horizontal intersection: ");
             }
 
             if(dx == 0){
@@ -393,7 +402,8 @@ public class WorldUtils {
             }
 
 
-            logger.trace(String.format(" on %s side at (%f, %f)", side, nextInterceptX, nextInterceptY));
+            if(logger.isTraceEnabled())
+                logger.trace(String.format(" on %s side at (%f, %f)", side, nextInterceptX, nextInterceptY));
 
             if (Math.abs(nextInterceptX - x1) > Math.abs(dx) || Math.abs(nextInterceptY - y1) > Math.abs(dy) ) {
                 break;

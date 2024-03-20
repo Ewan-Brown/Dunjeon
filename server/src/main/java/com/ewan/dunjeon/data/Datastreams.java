@@ -44,100 +44,8 @@ public class Datastreams {
          */
         static final double DESIRED_ARCLENGTH = 0.01;
 
-        //Delete all this hacky bullshit TODO
-
-        static List<Line2D.Double> cached_raytracing_lines = new ArrayList<>();
-        static List<Line2D.Double> cached_full_raytracing_lines = new ArrayList<>();
-        static List<Line2D.Double> cached_visible_sides = new ArrayList<>();
-        static List<Point2D> cached_filled_walls = new ArrayList<>();
-        static List<Point2D> cached_visible_walls = new ArrayList<>();
-        static List<Point2D> cached_visible_floors = new ArrayList<>();
-        public static boolean debugNextImage = false;
-
-        public static Line2D.Double convertVectorsToLine(Vector2 v1, Vector2 v2){
-            return new Line2D.Double(v1.x, v1.y, v2.x, v2.y);
-        }
-
-        public static void PRINT_DEBUG_IMAGE(){
-            logger.warn("PRINTING DEBUG IMAGE!");
-            BufferedImage b = new BufferedImage(10000,10000, BufferedImage.TYPE_3BYTE_BGR);
-            Graphics2D g2 = b.createGraphics();
-            int SCALE = 200;
-            g2.setColor(Color.WHITE);
-            g2.fillRect(0, 0, 10000, 10000);
-
-            g2.setColor(Color.BLACK);
-            for (Point2D cachedFilledWall : cached_filled_walls) {
-                g2.fillRect((int)((cachedFilledWall.getX()) * SCALE) - 1, (int)((cachedFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
-            }
-            g2.setColor(Color.GREEN);
-            for (Point2D cachedKnownFilledWall : cached_visible_walls) {
-                g2.fillRect((int)((cachedKnownFilledWall.getX()) * SCALE) - 1, (int)((cachedKnownFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
-            }
-            g2.setColor(Color.ORANGE);
-            for (Point2D cachedKnownFilledWall : cached_visible_floors) {
-                g2.fillRect((int)((cachedKnownFilledWall.getX()) * SCALE) - 1, (int)((cachedKnownFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
-            }
-            g2.setColor(Color.BLACK);
-            for (Point2D cachedFilledWall : cached_filled_walls) {
-                g2.drawRect((int)((cachedFilledWall.getX()) * SCALE), (int)((cachedFilledWall.getY()) * SCALE), SCALE, SCALE);
-                g2.drawRect((int)((cachedFilledWall.getX()) * SCALE) - 1, (int)((cachedFilledWall.getY()) * SCALE) - 1, SCALE - 2, SCALE -2 );
-            }
-
-            g2.setColor(Color.CYAN);
-
-            for (Line2D.Double cachedRaytracingLine : cached_full_raytracing_lines) {
-                //Draw a stupid thick line
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE), (int)((cachedRaytracingLine.y1) * SCALE), (int)((cachedRaytracingLine.x2) * SCALE), (int)((cachedRaytracingLine.y2) * SCALE));
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)+1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)+1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)-1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)-1);
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)+1, (int)((cachedRaytracingLine.y1) * SCALE)-1, (int)((cachedRaytracingLine.x2) * SCALE)+1, (int)((cachedRaytracingLine.y2) * SCALE)-1);
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
-            }
-
-            g2.setColor(Color.BLUE);
-
-            for (Line2D.Double cachedRaytracingLine : cached_raytracing_lines) {
-                //Draw a stupid thick line
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE), (int)((cachedRaytracingLine.y1) * SCALE), (int)((cachedRaytracingLine.x2) * SCALE), (int)((cachedRaytracingLine.y2) * SCALE));
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)+1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)+1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)-1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)-1);
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)+1, (int)((cachedRaytracingLine.y1) * SCALE)-1, (int)((cachedRaytracingLine.x2) * SCALE)+1, (int)((cachedRaytracingLine.y2) * SCALE)-1);
-                g2.drawLine((int)((cachedRaytracingLine.x1) * SCALE)-1, (int)((cachedRaytracingLine.y1) * SCALE)+1, (int)((cachedRaytracingLine.x2) * SCALE)-1, (int)((cachedRaytracingLine.y2) * SCALE)+1);
-            }
-
-            g2.setColor(Color.BLUE);
-
-            for (Line2D.Double cachedVisibleSide : cached_visible_sides) {
-                g2.drawLine((int)((cachedVisibleSide.x1) * SCALE), (int)((cachedVisibleSide.y1) * SCALE), (int)((cachedVisibleSide.x2) * SCALE), (int)((cachedVisibleSide.y2) * SCALE));
-            }
-
-            g2.dispose();
-            try {
-                ImageIO.write(b, "png", new File("C:\\Users\\Ewan\\Downloads\\image.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-
-
-        //Optimization tip : We are currently very conservative about how we select "nextPointToMarchTo", we should ONLY
-        // grab an intersection if the angle to the point is minimum AND we haven't yet identified the tile on the 'opposing' side of the intersection. If we know that that is a wall/floor then no point right?!
-        // Use debug
         @Override
         public void update(Dunjeon d) {
-            if(debugNextImage){
-                Configurator.setLevel(logger, Level.TRACE);
-                Configurator.setLevel("logger.worldutils.name", Level.TRACE);
-            }
-
-            List<Line2D.Double> rayTracingLines = new ArrayList<>();
-            List<Line2D.Double> fullRayTracingLines = new ArrayList<>();
-            List<Line2D.Double> visibleSides = new ArrayList<>();
-            List<Point2D> filledWalls = new ArrayList<>();
-            List<Point2D> visibleFilledWalls = new ArrayList<>();
-            List<Point2D> visibleFloors = new ArrayList<>();
 
             for (int i = 0; i < getSubscribers().size(); i++) {
                 Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
@@ -146,12 +54,6 @@ public class Datastreams {
                 SightStreamParameters params = sensor.getParameters();
                 HashMap<Vector2, Set<WorldUtils.Side>> tilesMap = new HashMap<>();
                 Vector2 sensorPos = params.getSightSourceLocation();
-
-                for (BasicCell basicCell : sensor.creature.getFloor().getCellsAsList()) {
-                    if(!basicCell.canBeSeenThroughBy(sensor.creature)){
-                        filledWalls.add(new Point2D.Double(basicCell.getIntegerX(), basicCell.getIntegerY()));
-                    }
-                }
 
                 List<DataWrapper<? extends Data, ?>> dataAmalgamated = new ArrayList<>();
 
@@ -214,10 +116,6 @@ public class Datastreams {
 
                         Vector2 rayEnd = sensorPos.copy().add(Vector2.create(range, currentAngle));
 
-                        // ************************************* GET INTERSECTIONS **********************************************
-
-
-
                         IntersectionData finalIntersectionOfThisRay = null;
 
                         Vector2 nextPointToMarchTo = null;
@@ -249,13 +147,8 @@ public class Datastreams {
                             if(logger.isTraceEnabled()){
                                 logger.trace("blocking cell : " + isBlocking);
                             }
-                            if(!isBlocking){
-                                visibleFloors.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
-                            }else{
-                                visibleFilledWalls.add(new Point2D.Double(intersectionData.getCellCoordinate().x, intersectionData.getCellCoordinate().y));
-                            }
 
-                            //OPTIMIZATION : If the ray has collided with a wall that is parallel and colinear to the last wall, we can ignore all previous potential endpoints
+                            //OPTIMIZATION 1 : If the ray has collided with a wall that is parallel and colinear to the last wall, we can ignore all previous potential endpoints
                             // This does mean discarding already-calculated data but we save on multiple _entire_ rays so it's a net positive from what we have now
 
                             if(isBlocking){
@@ -295,7 +188,6 @@ public class Datastreams {
                                 logger.trace("endpoint chosen: " + StringUtils.formatVector(nextPointToMarchTo)+", with angle: " + nextRayAngle);
 
                             if (isBlocking) {
-                                rayTracingLines.add(convertVectorsToLine(sensorPos, intersectionData.getIntersectionPoint()));
                                 didCollide = true;
                                 if(logger.isTraceEnabled())
                                     logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
@@ -310,7 +202,6 @@ public class Datastreams {
                         }else{
                             if(logger.isTraceEnabled())
                                 logger.trace("ray ended without colliding, entering Optimization 2");
-                            rayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
                             // OPTIMIZATION 2
                             // If we are here then the ray has ended and we have NOT collided
                             List<Vector2> potentialEndPoints = new ArrayList<>();
@@ -340,7 +231,6 @@ public class Datastreams {
                                 }
                             }
                         }
-                        fullRayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
                         currentAngle += nextRayAngle + tinyAngle;
 
                         rayCounter++;
@@ -377,26 +267,9 @@ public class Datastreams {
                     }
 
                 }
-
                 sensor.passOnData(dataAmalgamated);
-
-            }
-            cached_filled_walls = filledWalls;
-            cached_raytracing_lines = rayTracingLines;
-            cached_visible_walls = visibleFilledWalls;
-            cached_visible_floors = visibleFloors;
-            cached_visible_sides = visibleSides;
-            cached_full_raytracing_lines = fullRayTracingLines;
-
-            if(debugNextImage) {
-                debugNextImage=false;
-                PRINT_DEBUG_IMAGE();
-                Configurator.setLevel(logger, Level.WARN);
-                Configurator.setLevel("logger.worldutils.name", Level.WARN);
             }
         }
-
-        boolean didPrint = false;
 
         @Override
         public Sensor<SightStreamParameters> constructSensorForDatastream(Creature c, Sensor.ParameterCalculator<SightStreamParameters> pCalc) {

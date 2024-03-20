@@ -16,7 +16,7 @@ import java.util.*;
 public class StartServer {
 
     public static final Random rand = new Random();
-    private static final int entityCount = 0;
+    private static final int entityCount = 20;
     static Logger logger = LogManager.getLogger();
 
     @SneakyThrows
