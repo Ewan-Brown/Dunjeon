@@ -2,7 +2,6 @@ package com.ewan.dunjeon.data;
 
 import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.dunjeon.server.world.Dunjeon;
-import com.ewan.dunjeon.server.world.Pair;
 import com.ewan.dunjeon.server.world.WorldUtils;
 import com.ewan.dunjeon.server.world.cells.BasicCell;
 import com.ewan.dunjeon.server.world.entities.Entity;
@@ -14,20 +13,10 @@ import com.ewan.meworking.data.server.data.Datas;
 import com.ewan.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.dyn4j.geometry.Vector2;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -240,6 +229,7 @@ public class Datastreams {
                     if(logger.isTraceEnabled())
                         logger.trace("# of rays: " + rayCounter);
 
+                    // Do tile sight algorithm
                     for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tilesMap.entrySet()) {
                         BasicCell basicCell = sensor.creature.getFloor().getCellAt(tile.getKey());
                         if (basicCell == null) continue;
@@ -247,24 +237,27 @@ public class Datastreams {
                         dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimeElapsed(), d.getTicksElapsed()));
                     }
 
+                    int entity_count = 0;
+                    //Do entity sight algorithm
                     for (Entity entity : sensor.creature.getFloor().getEntities()) {
 
                         Vector2 entityPos = entity.getWorldCenter();
+                        Vector2 tilePos = new Vector2(Math.floor(entityPos.x), Math.floor(entityPos.y));
 
                         if(entity != sensor.creature) {
-                            var results = WorldUtils.getIntersectedTilesWithWall(sensorPos, entityPos);
-                            for (WorldUtils.IntersectionData result : results) {
-                                BasicCell basicCell = sensor.creature.getFloor().getCellAt(result.getCellCoordinate());
-                                if (basicCell != null && !basicCell.canBeSeenThroughBy(sensor.creature))
-                                    break;
+                            if(!tilesMap.containsKey(tilePos)){
+                                continue;
                             }
                         }
+
+                        entity_count++;
 
                         Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getRotationAngle(), entity.getAngularVelocity());
                         Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
                         Long entityId = entity.getUUID();
                         dataAmalgamated.add(DataWrappers.wrapEntityData(List.of(kineticData, positionalData), entityId, d.getTimeElapsed(), d.getTicksElapsed()));
                     }
+                    logger.warn(entity_count + " entities visible!");
 
                 }
                 sensor.passOnData(dataAmalgamated);
