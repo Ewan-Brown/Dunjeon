@@ -177,6 +177,7 @@ public class Datastreams {
 
                     //************* Do Raycasting *******************//
                     double range = params.getSightRange();
+                    double rangeSquared = range*range;
                     double fov = params.getSightFieldOfView();
                     double currentEntityAngle = params.getCurrentSightAngle();
 
@@ -191,7 +192,6 @@ public class Datastreams {
 
                     tilesMap.put(new Vector2( Math.floor(sensorPos.x), Math.floor(sensorPos.y)), Set.of(Side.values()));
 
-                    Vector2 currentPoint = sensorPos;
 
                     //Iterate across rays. Written to ensure that the first and last angles are casted, to avoid any funny business
                     double currentAngle = startingAngle;
@@ -206,6 +206,8 @@ public class Datastreams {
                             finalLap = true;
                             currentAngle = endingAngle;
                         }
+
+                        Vector2 currentPoint = sensorPos;
 
                         if(logger.isTraceEnabled())
                             logger.trace(String.format("============================== Ray # : %d, angle : %.6f", rayCounter, currentAngle));
@@ -306,21 +308,37 @@ public class Datastreams {
                         if(didCollide) {
                             previousCollidingIntersection = finalIntersectionOfThisRay;
                         }else{
-
-                            // OPTIMIZATION 2
-
-//                            Vector2 tileCoordinateOfRayEnd = new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y));
-//                            Side
-
-//                            double slope = (rayEnd.y - sensorPos.y) / (rayEnd.x - sensorPos.x);
-//                            double b = rayEnd.y - slope * rayEnd.x;
-//
-//                            double negativeReciprocal = - 1.0 / (slope);
-
-
-
-//                            previousCollidingIntersection = null;
+                            if(logger.isTraceEnabled())
+                                logger.trace("ray ended without colliding, entering Optimization 2");
                             rayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
+                            // OPTIMIZATION 2
+                            // If we are here then the ray has ended and we have NOT collided
+                            List<Vector2> potentialEndPoints = new ArrayList<>();
+                            Vector2 furthestPossibleEndpoint = null;
+                            double furthestAngle = 0;
+                            for (Side side : Side.values()) {
+                                List<Vector2> points = WorldUtils.getIntersectsBetweenCircleAndTileSide(sensorPos, rangeSquared,new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y)), side);
+                                if(logger.isTraceEnabled())
+                                    logger.trace("for side " + side+ ", " + points.size()+" intersects found");
+                                potentialEndPoints.addAll(points);
+                            }
+                            for (Vector2 potentialEndPoint : potentialEndPoints) {
+
+                                Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
+                                double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
+                                double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
+                                if(logger.isTraceEnabled()){
+                                    logger.trace("looking at endpoint: " + StringUtils.formatVectorFullPrecision(potentialEndPoint));
+                                    logger.trace("angle: " + angle + ", relative angle: " + relativeAngle);
+                                }
+                                if((furthestPossibleEndpoint == null || furthestAngle  < relativeAngle) && relativeAngle > minRelativeAngle){
+                                    if(logger.isTraceEnabled())
+                                        logger.trace("taking this endpoint!");
+                                    furthestPossibleEndpoint = potentialEndPoint;
+                                    furthestAngle = relativeAngle;
+                                    nextRayAngle = furthestAngle;
+                                }
+                            }
                         }
                         fullRayTracingLines.add(convertVectorsToLine(sensorPos, rayEnd));
                         currentAngle += nextRayAngle + tinyAngle;

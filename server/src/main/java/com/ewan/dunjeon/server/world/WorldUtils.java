@@ -10,6 +10,7 @@ import org.dyn4j.geometry.Vector2;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static java.lang.Math.abs;
 
@@ -79,7 +80,7 @@ public class WorldUtils {
         NORTH(0.5, 1, AxisAlignment.HORIZONTAL, Corner.NORTH_WEST, Corner.NORTH_EAST),
         EAST(1, 0.5, AxisAlignment.VERTICAL,    Corner.SOUTH_EAST, Corner.NORTH_EAST),
         SOUTH(0.5, 0, AxisAlignment.HORIZONTAL, Corner.SOUTH_WEST, Corner.SOUTH_EAST),
-        WEST(0, 0.5, AxisAlignment.VERTICAL,    Corner.SOUTH_WEST, Corner.NORTH_EAST);
+        WEST(0, 0.5, AxisAlignment.VERTICAL,    Corner.SOUTH_WEST, Corner.NORTH_WEST);
 
         //The vector spanning from a cell's local origin (bottom left corner) to the midline of this Side
         final Vector2 localMidpointCoord;
@@ -132,6 +133,50 @@ public class WorldUtils {
         }
     }
 
+    public static List<Vector2> getIntersectsBetweenCircleAndTileSide(Vector2 circleCenter, double circleRadiusSquared, Vector2 tileCoord, Side side){
+        List<Vector2> data = new ArrayList<>();
+
+        Vector2 relativeTileCoord = tileCoord.difference(circleCenter);
+
+        if(side.getAxis() == AxisAlignment.HORIZONTAL){
+            // y == y
+            double relativeSideY = relativeTileCoord.y + side.getLocalMidpointCoord().y;
+            double relativeSideYSquared = relativeSideY * relativeSideY;
+            if(relativeSideYSquared > circleRadiusSquared){
+                return new ArrayList<>();
+            }
+            double x = Math.sqrt(circleRadiusSquared - relativeSideYSquared);
+            data.add(new Vector2(x, relativeSideY).add(circleCenter));
+            data.add(new Vector2(-x, relativeSideY).add(circleCenter));
+
+            data.removeIf(vector2 -> vector2.x > tileCoord.x + 1 || vector2.x < tileCoord.x);
+        }
+        else if(side.getAxis() == AxisAlignment.VERTICAL){
+            // x == x
+            double relativeSideX = relativeTileCoord.x + side.getLocalMidpointCoord().x;
+            double relativeSideXSquared = relativeSideX * relativeSideX;
+            if(relativeSideXSquared > circleRadiusSquared){
+                return new ArrayList<>();
+            }
+            double y = Math.sqrt(circleRadiusSquared - relativeSideXSquared);
+            data.add(new Vector2(relativeSideX, y).add(circleCenter));
+            data.add(new Vector2(relativeSideX, -y).add(circleCenter));
+
+            data.removeIf(vector2 -> vector2.y > tileCoord.y + 1 || vector2.y < tileCoord.y);
+        }
+
+
+
+        return data;
+    }
+
+    /**
+     * Returns the first point where the vector formed from pos1 -> pos2 intersects with any integer 'line' on a cartesian grid,
+     *  or empty if none (e.g the vector from (0.4, 0.2) -> (0.9, 0.8) does not intersect any grid lines
+     * @param pos1
+     * @param pos2
+     * @return
+     */
     public static Optional<IntersectionData> getNextGridIntersect(Vector2 pos1, Vector2 pos2){
 
         double x1 = pos1.x;
