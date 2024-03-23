@@ -165,8 +165,6 @@ public class WorldUtils {
             data.removeIf(vector2 -> vector2.y > tileCoord.y + 1 || vector2.y < tileCoord.y);
         }
 
-
-
         return data;
     }
 

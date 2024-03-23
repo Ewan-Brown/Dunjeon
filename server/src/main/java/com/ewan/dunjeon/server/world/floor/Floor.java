@@ -161,6 +161,7 @@ public class Floor {
         if(validCells.isEmpty()) throw new Error("No valid spots for entity found");
         else {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));
+            e.rotate(Math.PI/2);
             e.translate(randomValidCell.getIntegerX() + 0.5, randomValidCell.getIntegerY() + 0.5);
             e.setFloor(this);
             addEntity(e);

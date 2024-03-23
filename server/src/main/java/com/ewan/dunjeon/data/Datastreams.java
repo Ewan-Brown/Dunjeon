@@ -12,11 +12,16 @@ import com.ewan.meworking.data.server.data.DataWrappers;
 import com.ewan.meworking.data.server.data.Datas;
 import com.ewan.util.StringUtils;
 import lombok.AllArgsConstructor;
+import lombok.ConfigurationKeys;
 import lombok.Getter;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.dyn4j.geometry.Vector2;
 
+import javax.swing.plaf.OptionPaneUI;
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.List;
 
@@ -28,20 +33,21 @@ public class Datastreams {
 
     public static class SightDataStream extends Datastream<SightDataStream.SightStreamParameters> {
 
-        /**
-         * The desired arc length of the 'wedges' created between each of the rays
-         */
-        static final double DESIRED_ARCLENGTH = 0.01;
+        public static boolean do_debug = false;
 
         @Override
         public void update(Dunjeon d) {
+            Level l = logger.getLevel();
+            if(do_debug){
+                Configurator.setLevel(logger, Level.TRACE);
+            }
 
             for (int i = 0; i < getSubscribers().size(); i++) {
                 Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
 
                 //Get necessary parameters from sensor
                 SightStreamParameters params = sensor.getParameters();
-                HashMap<Vector2, Set<WorldUtils.Side>> tilesMap = new HashMap<>();
+                HashMap<Vector2, Set<WorldUtils.Side>> tileVisibilityMap = new HashMap<>();
                 Vector2 sensorPos = params.getSightSourceLocation();
 
                 List<DataWrapper<? extends Data, ?>> dataAmalgamated = new ArrayList<>();
@@ -74,23 +80,43 @@ public class Datastreams {
 
                     double startingAngle = currentEntityAngle - fov / 2;
                     double endingAngle = currentEntityAngle + fov / 2;
-                    double tinyAngle = 0.00001d;
-                    double minRelativeAngle = 0.0001d; //Used to cut off some floating point errors... May need reinspection
+                    final double tinyAngle = 0.00001d;
+                    final double minRelativeAngle = 0; //Used to cut off some floating point errors... May need reinspection
                     int rayCounter = 0;
 
                     logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle + " endingAngle: " + endingAngle);
 
-
-                    tilesMap.put(new Vector2( Math.floor(sensorPos.x), Math.floor(sensorPos.y)), Set.of(Side.values()));
+                    tileVisibilityMap.put(new Vector2( Math.floor(sensorPos.x), Math.floor(sensorPos.y)), Set.of(Side.values()));
 
 
                     //Iterate across rays. Written to ensure that the first and last angles are casted, to avoid any funny business
                     double currentAngle = startingAngle;
                     boolean finalLap = false;
 
-                    //Keeps track of the last ray's final intersection point IF it hit a wall, used for optimization. if null, we didn't hit a wall and gotta use a different optimization technique
-                    IntersectionData previousCollidingIntersection = null;
+                    Optional<Vector2> previousEndingTileCoords = Optional.empty();
+
+                    //Updated every step, referring to the corners of every gridline segment that the ray intersects, used on the next ray if it turns out we jumped too far
+                    Set<Double> cachedStepAnglesFromLastRay = new HashSet<>();
+                    Optional<Vector2> worstCaseLastTileCoord = Optional.empty();
+                    boolean doingWorstCase = false;
+                    //Ray loop
+                    rayLoop:
                     do {
+
+                        logger.trace("======================== ");
+
+                        if(doingWorstCase){
+                            if(cachedStepAnglesFromLastRay.isEmpty()){
+//                                throw new RuntimeException("Attempting to do worst case but no cached steps!");
+                                doingWorstCase = false;
+                                logger.trace("ran out of worst case angles, reverting back to normal");
+                            }else {
+                                currentAngle = cachedStepAnglesFromLastRay.stream().min(Double::compareTo).get();
+                                cachedStepAnglesFromLastRay.remove(currentAngle);
+                                logger.trace("continuing with worst case, setting angle to : " + currentAngle + ", with " + cachedStepAnglesFromLastRay.size() + " angles left to try");
+                            }
+                            }
+
                         if (currentAngle > endingAngle) {
                             if(logger.isTraceEnabled())
                                 logger.trace("Last ray in this loop, trimming angle from : " + currentAngle + ", to: " + endingAngle);
@@ -101,18 +127,21 @@ public class Datastreams {
                         Vector2 currentPoint = sensorPos;
 
                         if(logger.isTraceEnabled())
-                            logger.trace(String.format("============================== Ray # : %d, angle : %.6f", rayCounter, currentAngle));
+                            logger.trace(String.format("Ray # : %d, angle : %.6f", rayCounter, currentAngle));
 
                         Vector2 rayEnd = sensorPos.copy().add(Vector2.create(range, currentAngle));
 
-                        IntersectionData finalIntersectionOfThisRay = null;
+                        //IntersectionData used to determine if we can just 'skip' to the corner of this tile
+                        // - Is there 'space' in between these blocks relative to the line of sight?
+                        // Empty if no collision occurred
+                        Optional<IntersectionData> collidingIntersection = Optional.empty();
 
-                        Vector2 nextPointToMarchTo = null;
-                        double nextRayAngle = 0;
-                        boolean didCollide = false;
+                        Set<Double> potentialWorstCaseAngles = new HashSet<>();
 
-                        //Iterate across intersects and find tiles
-                        while (true) /**/{
+                        //Marching loop
+                        while (true) {
+
+                            logger.trace("------------------------");
 
                             Optional<IntersectionData> intersectionDataOpt = WorldUtils.getNextGridIntersect(currentPoint, rayEnd);
 
@@ -122,115 +151,197 @@ public class Datastreams {
                                 break;
                             }
                             IntersectionData intersectionData = intersectionDataOpt.get();
-                            finalIntersectionOfThisRay = intersectionData;
                             // INSPECTING AN INTERSECTION
                             if(logger.isTraceEnabled())
                                 logger.trace("inspecting intersection: " + intersectionData);
-                            if (!tilesMap.containsKey(intersectionData.getCellCoordinate())) {
-                                tilesMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
+
+                            if (!tileVisibilityMap.containsKey(intersectionData.getCellCoordinate())) {
+                                tileVisibilityMap.put(intersectionData.getCellCoordinate(), new HashSet<>());
                             }
-                            tilesMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
+
+                            tileVisibilityMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
 
                             BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
                             boolean isBlocking = !basicCell.canBeSeenThroughBy(sensor.creature);
-                            if(logger.isTraceEnabled()){
-                                logger.trace("blocking cell : " + isBlocking);
-                            }
-
-                            //OPTIMIZATION 1 : If the ray has collided with a wall that is parallel and colinear to the last wall, we can ignore all previous potential endpoints
-                            // This does mean discarding already-calculated data but we save on multiple _entire_ rays so it's a net positive from what we have now
-
-                            if(isBlocking){
-                                if(previousCollidingIntersection != null){
-                                    if(previousCollidingIntersection.getSide() == intersectionData.getSide()){
-                                        double currentIntersectX = intersectionData.getIntersectionPoint().x;
-                                        double currentIntersectY = intersectionData.getIntersectionPoint().y;
-                                        double previousIntersectX = previousCollidingIntersection.getIntersectionPoint().x;
-                                        double previousIntersectY = previousCollidingIntersection.getIntersectionPoint().y;
-                                        if(currentIntersectX == previousIntersectX || currentIntersectY == previousIntersectY){
-                                            nextPointToMarchTo = null; // "clear" the results from previous angle checks
-                                        }
-                                    }
-                                }
-
-                            }
-
-                            //****************************************************************
-
-                            for (Corner corner : intersectionData.getSide().getCorners()) {
-                                Vector2 potentialEndPoint = corner.getLocalCoord().sum(intersectionData.getCellCoordinate());
-                                Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
-                                double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
-                                double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
-                                if((nextPointToMarchTo == null || relativeAngle < nextRayAngle) && relativeAngle > minRelativeAngle){
-                                    if(logger.isTraceEnabled())
-                                        logger.trace(" taking endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: " + relativeAngle);
-                                    nextPointToMarchTo = potentialEndPoint;
-                                    nextRayAngle = relativeAngle;
-                                }else{
-                                    if(logger.isTraceEnabled())
-                                        logger.trace(" ignoring endpoint: " + StringUtils.formatVectorFullPrecision(potentialEndPoint) + ", relativeAngle: "+relativeAngle);
-                                }
-                            }
-
-                            if(logger.isTraceEnabled())
-                                logger.trace("endpoint chosen: " + StringUtils.formatVector(nextPointToMarchTo)+", with angle: " + nextRayAngle);
 
                             if (isBlocking) {
-                                didCollide = true;
+                                collidingIntersection = Optional.of(intersectionData);
                                 if(logger.isTraceEnabled())
                                     logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
                                 break;
+                            }else{
+                                logger.trace("gathering angles for potential worst case...");
+                                Optional<Double> currentChosenAngle = Optional.empty();
+                                for (Corner corner : intersectionData.getSide().getCorners()) {
+                                    Vector2 potentialEndPoint = corner.getLocalCoord().sum(intersectionData.getCellCoordinate());
+                                    Vector2 vectorToEndpoint = potentialEndPoint.difference(sensorPos);
+//                                    logger.trace("potentialEndpoint: " + potentialEndPoint);
+//                                    logger.trace("vectorToEndpoint: " + vectorToEndpoint);
+                                    double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
+                                    double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
+                                    logger.trace("angle: " + angle);
+//                                    logger.trace("relativeAngle: " + relativeAngle);
+                                    if((currentChosenAngle.isEmpty() || relativeAngle < currentChosenAngle.get()) && relativeAngle >= minRelativeAngle){
+                                        logger.trace("taken : " + relativeAngle);
+                                        currentChosenAngle = Optional.of(relativeAngle);
+                                    }
+                                }
+                                if(currentChosenAngle.isEmpty()){
+                                    throw new RuntimeException("None of the corners had valid angles? Not possible");
+                                }else{
+                                    potentialWorstCaseAngles.add(currentChosenAngle.get() + currentAngle + tinyAngle);
+                                    logger.trace("added another angle, size is now: " + potentialWorstCaseAngles.size());
+                                }
+
                             }
                             currentPoint = intersectionData.getIntersectionPoint();
 
                         }
 
-                        if(didCollide) {
-                            previousCollidingIntersection = finalIntersectionOfThisRay;
-                        }else{
-                            if(logger.isTraceEnabled())
-                                logger.trace("ray ended without colliding, entering Optimization 2");
-                            // OPTIMIZATION 2
-                            // If we are here then the ray has ended and we have NOT collided
-                            List<Vector2> potentialEndPoints = new ArrayList<>();
-                            Vector2 furthestPossibleEndpoint = null;
-                            double furthestAngle = 0;
-                            for (Side side : Side.values()) {
-                                List<Vector2> points = WorldUtils.getIntersectsBetweenCircleAndTileSide(sensorPos, rangeSquared,new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y)), side);
-                                if(logger.isTraceEnabled())
-                                    logger.trace("for side " + side+ ", " + points.size()+" intersects found");
-                                potentialEndPoints.addAll(points);
-                            }
-                            for (Vector2 potentialEndPoint : potentialEndPoints) {
+                        if(logger.isTraceEnabled())
+                            logger.trace("Calculating next ray angle");
 
-                                Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
-                                double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
-                                double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
-                                if(logger.isTraceEnabled()){
-                                    logger.trace("looking at endpoint: " + StringUtils.formatVectorFullPrecision(potentialEndPoint));
-                                    logger.trace("angle: " + angle + ", relative angle: " + relativeAngle);
+                        double nextRayAngleIncrement;
+
+                        //Calculations to to make a change to currentAngle
+
+                        // possible cases:
+                        // - Best case: We collided with a cell directly adjacent to previous collision
+                        // - Ok case: We didn't hit anything and can skip to the end of the cell
+                        // - Worst case We collided with a cell that was NOT directly adjacent to the previous collision and need to _go back_
+
+                        boolean didCollide = collidingIntersection.isPresent();
+                        boolean didCollideAdjacentToPrevious = false;
+                        boolean forceBestCase = false;
+
+                        logger.trace("didCollide: " + didCollide);
+
+                        if(rayCounter == 0 && didCollide){
+                            forceBestCase = true;
+                        }
+
+                        if(doingWorstCase){
+                            logger.trace("🚨 working on worst case");
+                        }
+
+                        if(didCollide){
+                            if(doingWorstCase){
+                                Vector2 collidingCellCoord = collidingIntersection.get().getCellCoordinate();
+                                Vector2 diff = collidingCellCoord.difference(worstCaseLastTileCoord.get());
+                                if(diff.getMagnitude() > 0 ){
+                                    //Ok we've moved far enough to skip past the last 'ok' cell
+                                    doingWorstCase = false;
+                                    forceBestCase = true;
+                                    logger.trace("Ending worst case, we've collided with a cell close enough. Forcing best case.");
                                 }
-                                if((furthestPossibleEndpoint == null || furthestAngle  < relativeAngle) && relativeAngle > minRelativeAngle){
-                                    if(logger.isTraceEnabled())
-                                        logger.trace("taking this endpoint!");
-                                    furthestPossibleEndpoint = potentialEndPoint;
-                                    furthestAngle = relativeAngle;
-                                    nextRayAngle = furthestAngle;
+                            }
+                            if(previousEndingTileCoords.isPresent()) {
+                                Vector2 vectorToCurrentTile = collidingIntersection.get().getCellCoordinate();
+                                Vector2 vectorToPreviousCollidingTile = previousEndingTileCoords.get();
+                                if(vectorToCurrentTile.getMagnitudeSquared() > vectorToPreviousCollidingTile.getMagnitudeSquared()){
+                                    forceBestCase = true;
                                 }
                             }
                         }
-                        currentAngle += nextRayAngle + tinyAngle;
 
-                        rayCounter++;
-                        if(logger.isTraceEnabled())
-                            logger.trace("-----------------------");
+                        if(!doingWorstCase || forceBestCase){
+                            if (!forceBestCase && didCollide) {
+                                if (previousEndingTileCoords.isPresent()) {
+                                    Vector2 diff = collidingIntersection.get().getCellCoordinate().difference(previousEndingTileCoords.get());
+                                    if (diff.getMagnitudeSquared() <= 2.00001) {
+                                        didCollideAdjacentToPrevious = true;
+                                        logger.trace("Identified that we we have collided adjacent to pervious");
+                                    }
+                                }
+                            }
+
+                            if (forceBestCase || didCollideAdjacentToPrevious) {
+                                if (logger.isTraceEnabled())
+                                    logger.trace("Best case scenario: " + ((didCollideAdjacentToPrevious) ? "did collide adjacent" : "forced"));
+
+                                IntersectionData intersection = collidingIntersection.get();
+                                Optional<Double> currentChosenAngle = Optional.empty();
+                                for (Corner corner : intersection.getSide().getCorners()) {
+                                    Vector2 potentialEndPoint = corner.getLocalCoord().sum(intersection.getCellCoordinate());
+                                    Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
+                                    double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
+                                    double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
+                                    if ((currentChosenAngle.isEmpty() || relativeAngle < currentChosenAngle.get()) && relativeAngle >= minRelativeAngle) {
+                                        if (logger.isTraceEnabled())
+                                            logger.trace(" taking endpoint: " + StringUtils.formatVector(potentialEndPoint) + ", relativeAngle: " + relativeAngle);
+                                        currentChosenAngle = Optional.of(relativeAngle);
+                                    } else {
+                                        if (logger.isTraceEnabled())
+                                            logger.trace(" ignoring endpoint: " + StringUtils.formatVectorFullPrecision(potentialEndPoint) + ", relativeAngle: " + relativeAngle);
+                                    }
+                                }
+                                if (currentChosenAngle.isEmpty()) {
+                                    throw new RuntimeException("None of the endpoint angles were valid! This should be impossible");
+                                }
+                                nextRayAngleIncrement = currentChosenAngle.get();
+
+                            } else if (!didCollide) {
+                                if (logger.isTraceEnabled())
+                                    logger.trace("Best case scenario, didn't collide");
+//                             OPTIMIZATION opportunity
+//                             If we are here then the ray has ended and we have NOT collided
+                                List<Vector2> potentialEndPoints = new ArrayList<>();
+                                Optional<Double> furthestAngle = Optional.empty();
+                                for (Side side : Side.values()) {
+                                    List<Vector2> points = WorldUtils.getIntersectsBetweenCircleAndTileSide(sensorPos, rangeSquared, new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y)), side);
+                                    if (logger.isTraceEnabled())
+                                        logger.trace("for side " + side + ", " + points.size() + " intersects found");
+                                    potentialEndPoints.addAll(points);
+                                }
+                                for (Vector2 potentialEndPoint : potentialEndPoints) {
+
+                                    Vector2 vectorToEndpoint = potentialEndPoint.copy().subtract(sensorPos);
+                                    double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
+                                    double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
+                                    if (logger.isTraceEnabled()) {
+                                        logger.trace("looking at endpoint: " + StringUtils.formatVectorFullPrecision(potentialEndPoint));
+                                        logger.trace("angle: " + angle + ", relative angle: " + relativeAngle);
+                                    }
+                                    if ((furthestAngle.isEmpty() || furthestAngle.get() < relativeAngle) && relativeAngle > minRelativeAngle) {
+                                        if (logger.isTraceEnabled())
+                                            logger.trace("taking this endpoint!");
+                                        furthestAngle = Optional.of(relativeAngle);
+                                    }
+                                }
+                                if (furthestAngle.isPresent()) {
+                                    nextRayAngleIncrement = furthestAngle.get();
+                                } else {
+                                    throw new RuntimeException("None of the endpoints were valid!");
+                                }
+                            } else {
+                                if (logger.isTraceEnabled())
+                                    logger.trace("We might worst case scenario, did collide but not adjacent");
+
+                                doingWorstCase = true;
+                                worstCaseLastTileCoord = previousEndingTileCoords;
+                                rayCounter++;
+                                continue rayLoop;
+                            }
+
+                            cachedStepAnglesFromLastRay = potentialWorstCaseAngles;
+                            logger.trace("size of cachedAngles: " + cachedStepAnglesFromLastRay.size());
+
+                            if (didCollide) {
+                                previousEndingTileCoords = Optional.of(collidingIntersection.get().getCellCoordinate());
+                            } else {
+                                previousEndingTileCoords = Optional.of(new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y)));
+                            }
+
+                            currentAngle += nextRayAngleIncrement + tinyAngle;
+
+                            rayCounter++;
+                        }
                     } while (!finalLap);
-                    if(logger.isTraceEnabled())
-                        logger.trace("# of rays: " + rayCounter);
+                    if(logger.isDebugEnabled())
+                        logger.debug("# of rays: " + rayCounter);
 
                     // Do tile sight algorithm
-                    for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tilesMap.entrySet()) {
+                    for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tileVisibilityMap.entrySet()) {
                         BasicCell basicCell = sensor.creature.getFloor().getCellAt(tile.getKey());
                         if (basicCell == null) continue;
                         Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
@@ -245,7 +356,7 @@ public class Datastreams {
                         Vector2 tilePos = new Vector2(Math.floor(entityPos.x), Math.floor(entityPos.y));
 
                         if(entity != sensor.creature) {
-                            if(!tilesMap.containsKey(tilePos)){
+                            if(!tileVisibilityMap.containsKey(tilePos)){
                                 continue;
                             }
                         }
@@ -257,10 +368,14 @@ public class Datastreams {
                         Long entityId = entity.getUUID();
                         dataAmalgamated.add(DataWrappers.wrapEntityData(List.of(kineticData, positionalData), entityId, d.getTimeElapsed(), d.getTicksElapsed()));
                     }
-                    logger.warn(entity_count + " entities visible!");
+                    logger.trace(entity_count + " entities visible!");
 
                 }
                 sensor.passOnData(dataAmalgamated);
+            }
+            if(do_debug){
+                Configurator.setLevel(logger, l);
+                do_debug = false;
             }
         }
 

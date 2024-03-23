@@ -11,6 +11,8 @@ import com.ewan.meworking.codec.ServerDataEncoder;
 import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.ewan.meworking.data.client.DebugInput;
 import com.ewan.meworking.data.client.UserInput;
+import com.ewan.meworking.data.server.data.Data;
+import com.ewan.meworking.data.server.data.Datas;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -76,10 +78,11 @@ public class ServerManager {
 
             for (int i = 0; i < dataWrapper.clientInputData().inputs().size(); i++) {
                 UserInput input = dataWrapper.clientInputData().inputs().get(i);
-//                if(input instanceof DebugInput) {
-//                    dataWrapper.clientInputData().inputs().remove(input);
-//                    logger.warn("received debug request!");
-//                }
+                if(input instanceof DebugInput) {
+                    dataWrapper.clientInputData().inputs().remove(input);
+                    logger.warn("received debug request!");
+                    Datastreams.SightDataStream.do_debug = true;
+                }
             }
 
             if(!clientHandlerHashMap.containsKey(dataWrapper.sender())){
