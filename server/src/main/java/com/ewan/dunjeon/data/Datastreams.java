@@ -22,6 +22,7 @@ import org.dyn4j.geometry.Vector2;
 
 import javax.swing.plaf.OptionPaneUI;
 import javax.swing.text.html.Option;
+import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -41,10 +42,11 @@ public class Datastreams {
             if(do_debug){
                 Configurator.setLevel(logger, Level.TRACE);
             }
-
+            DebugDrawer debugDrawer = null;
             for (int i = 0; i < getSubscribers().size(); i++) {
                 Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
-
+                if(do_debug)
+                    debugDrawer = new DebugDrawer(sensor.creature.getWorldCenter());
                 //Get necessary parameters from sensor
                 SightStreamParameters params = sensor.getParameters();
                 HashMap<Vector2, Set<WorldUtils.Side>> tileVisibilityMap = new HashMap<>();
@@ -131,6 +133,9 @@ public class Datastreams {
 
                         Vector2 rayEnd = sensorPos.copy().add(Vector2.create(range, currentAngle));
 
+                        if(do_debug)
+                            debugDrawer.addLine(sensorPos, rayEnd, new Color(100, 100, 0), 1);
+
                         //IntersectionData used to determine if we can just 'skip' to the corner of this tile
                         // - Is there 'space' in between these blocks relative to the line of sight?
                         // Empty if no collision occurred
@@ -165,22 +170,23 @@ public class Datastreams {
                             boolean isBlocking = !basicCell.canBeSeenThroughBy(sensor.creature);
 
                             if (isBlocking) {
+                                if(do_debug)
+                                    debugDrawer.addSquare(intersectionData.getCellCoordinate(), new Color(255, 0, 0)   , true, 0);
                                 collidingIntersection = Optional.of(intersectionData);
                                 if(logger.isTraceEnabled())
                                     logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
                                 break;
                             }else{
+                                if(do_debug)
+                                    debugDrawer.addSquare(intersectionData.getCellCoordinate(), new Color(0, 0, 255), true, 0);
                                 logger.trace("gathering angles for potential worst case...");
                                 Optional<Double> currentChosenAngle = Optional.empty();
                                 for (Corner corner : intersectionData.getSide().getCorners()) {
                                     Vector2 potentialEndPoint = corner.getLocalCoord().sum(intersectionData.getCellCoordinate());
                                     Vector2 vectorToEndpoint = potentialEndPoint.difference(sensorPos);
-//                                    logger.trace("potentialEndpoint: " + potentialEndPoint);
-//                                    logger.trace("vectorToEndpoint: " + vectorToEndpoint);
                                     double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
                                     double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
                                     logger.trace("angle: " + angle);
-//                                    logger.trace("relativeAngle: " + relativeAngle);
                                     if((currentChosenAngle.isEmpty() || relativeAngle < currentChosenAngle.get()) && relativeAngle >= minRelativeAngle){
                                         logger.trace("taken : " + relativeAngle);
                                         currentChosenAngle = Optional.of(relativeAngle);
@@ -236,8 +242,8 @@ public class Datastreams {
                                 }
                             }
                             if(previousEndingTileCoords.isPresent()) {
-                                Vector2 vectorToCurrentTile = collidingIntersection.get().getCellCoordinate();
-                                Vector2 vectorToPreviousCollidingTile = previousEndingTileCoords.get();
+                                Vector2 vectorToCurrentTile = collidingIntersection.get().getCellCoordinate().difference(sensorPos);
+                                Vector2 vectorToPreviousCollidingTile = previousEndingTileCoords.get().difference(sensorPos);
                                 if(vectorToCurrentTile.getMagnitudeSquared() > vectorToPreviousCollidingTile.getMagnitudeSquared()){
                                     forceBestCase = true;
                                 }
@@ -327,8 +333,12 @@ public class Datastreams {
                             logger.trace("size of cachedAngles: " + cachedStepAnglesFromLastRay.size());
 
                             if (didCollide) {
+                                if(do_debug)
+                                    debugDrawer.addLine(sensorPos, collidingIntersection.get().getIntersectionPoint(), Color.YELLOW, 2);
                                 previousEndingTileCoords = Optional.of(collidingIntersection.get().getCellCoordinate());
                             } else {
+                                if(do_debug)
+                                    debugDrawer.addLine(sensorPos, rayEnd, Color.YELLOW, 2);
                                 previousEndingTileCoords = Optional.of(new Vector2(Math.floor(rayEnd.x), Math.floor(rayEnd.y)));
                             }
 
@@ -339,6 +349,7 @@ public class Datastreams {
                     } while (!finalLap);
                     if(logger.isDebugEnabled())
                         logger.debug("# of rays: " + rayCounter);
+
 
                     // Do tile sight algorithm
                     for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tileVisibilityMap.entrySet()) {
@@ -376,6 +387,9 @@ public class Datastreams {
             if(do_debug){
                 Configurator.setLevel(logger, l);
                 do_debug = false;
+                if(debugDrawer != null){
+                    debugDrawer.generateImage();
+                }
             }
         }
 

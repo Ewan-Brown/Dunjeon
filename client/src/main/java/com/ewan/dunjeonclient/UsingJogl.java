@@ -181,8 +181,6 @@ public class UsingJogl implements GLEventListener {
 				gl.glColor3d(alpha, 0, 0);
 			}
 
-
-
 			Vector2 centerPos = new Vector2(position.getPosition());
 			gl.glTranslated(centerPos.x, centerPos.y, 0);
 			gl.glBegin(GL2.GL_POLYGON);
