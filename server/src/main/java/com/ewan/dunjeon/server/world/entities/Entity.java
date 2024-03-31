@@ -25,21 +25,21 @@ public abstract class Entity extends Body {
     }
 
     private double cachedRotationAngle = 0;
-    private int cachedRotationAngleTicks = 0;
+    private int cachedRotationAngleTick = -1;
 
     public final double getRotationAngle(){
-        if(cachedRotationAngleTicks != Dunjeon.getInstance().getTicksElapsed()){
+
+        if(cachedRotationAngleTick != Dunjeon.getInstance().getTimestamp().serverTick()){
             cachedRotationAngle = getTransform().getRotationAngle();
-            cachedRotationAngleTicks = Dunjeon.getInstance().getTicksElapsed();
         }
         return cachedRotationAngle;
     }
 
     /**
-     * Update anything realted to the physical aspect of this entity (NOT AI)
+     * Update anything realted to the non-AI aspects of entity
      * @param stepSize
      */
-    public abstract void update(double stepSize) ;
+    public abstract void update(double stepSize);
 
     public Floor getFloor() {
         return floor;

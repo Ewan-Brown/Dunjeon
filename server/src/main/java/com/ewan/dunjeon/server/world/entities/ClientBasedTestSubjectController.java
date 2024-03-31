@@ -24,11 +24,14 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
 
     @Override
     void updateWithUserInputs(List<UserInput> inputs) {
+        logger.trace("updateWithUserInputs, # of inputs: " + inputs.size());
         for (UserInput input : inputs) {
             if(input instanceof MoveEntity moveEntityInput){
+                logger.debug("received moveEntity control: " + moveEntityInput.getMoveDir());
                 currentMoveVector = moveEntityInput.getMoveDir().multiply(10);
             }
             if(input instanceof TurnEntity turnEntity){
+                logger.debug("received turnEntity control: " + turnEntity.getTurn());
                 currentTurn = turnEntity.getTurn();
             }
         }

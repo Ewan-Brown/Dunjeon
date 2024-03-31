@@ -28,7 +28,7 @@ public class KnowledgePackage<I, D extends Data> {
     @SuppressWarnings("unchecked")
     public <T extends KnowledgeFragment<D>> void register(T object){
 
-        Class<? extends D> clazz = (Class<? extends D>) object.info.getClass();
+        Class<? extends D> clazz = (Class<? extends D>) object.getInfo().getClass();
         dataMap.put(clazz, object);
 
     }

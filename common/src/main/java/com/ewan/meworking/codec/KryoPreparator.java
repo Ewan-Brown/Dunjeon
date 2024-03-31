@@ -7,6 +7,7 @@ import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.ewan.meworking.data.client.ClientInputData;
 import com.ewan.meworking.data.server.DataPacket;
 import com.ewan.meworking.data.client.UserInput;
+import com.ewan.meworking.data.server.Timestamp;
 import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
@@ -19,6 +20,7 @@ import org.dyn4j.geometry.Vector2;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,8 +126,7 @@ public class KryoPreparator {
             }
             kryo.writeObject(output, object.getBaseClass());
             kryo.writeClassAndObject(output, object.getIdentifier());
-            output.writeDouble(object.getTimestamp());
-            output.writeInt(object.getTickstamp());
+            kryo.writeObject(output, object.getTimestamp());
             output.flush();
         }
 
@@ -138,9 +139,8 @@ public class KryoPreparator {
             }
             Class<?> baseClass = kryo.readObject(input, Class.class);
             Object o = kryo.readClassAndObject(input);
-            double t = input.readDouble();
-            int tick = input.readInt();
-            return DataWrappers.readFromGenericFields(datas, baseClass, o, t, tick);
+            Timestamp t = kryo.readObject(input, Timestamp.class);
+            return DataWrappers.readFromGenericFields(datas, baseClass, o, t);
         }
     }
 
@@ -152,13 +152,12 @@ public class KryoPreparator {
             @Override
             public void write(Kryo kryo, Output output, FrameInfoPacket object) {
                 output.writeLong(object.clientUUID());
-                output.writeDouble(object.worldTimeExact());
-                output.writeInt(object.worldTimeTicks());
+                kryo.writeObject(output, object.timestamp());
                 output.writeInt(object.expectedDataCount());
             }
             @Override
             public FrameInfoPacket read(Kryo kryo, Input input, Class<? extends FrameInfoPacket> type) {
-                return new FrameInfoPacket(input.readLong(), input.readDouble(), input.readInt(), input.readInt());
+                return new FrameInfoPacket(input.readLong(), kryo.readObject(input, Timestamp.class), input.readInt());
             }
         });
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {
@@ -220,6 +219,18 @@ public class KryoPreparator {
                     actions.add(kryo.readObject(input, UserInput.class ,clientInputSerializer));
                 }
                 return new ClientInputData(actions);
+            }
+        });
+        kryo.register(Timestamp.class, new Serializer<Timestamp>() {
+            @Override
+            public void write(Kryo kryo, Output output, Timestamp object) {
+                output.writeInt(object.serverTick());
+                output.writeFloat(object.worldTime());
+            }
+
+            @Override
+            public Timestamp read(Kryo kryo, Input input, Class type) {
+                return new Timestamp(input.readInt(), input.readFloat());
             }
         });
         return kryo;

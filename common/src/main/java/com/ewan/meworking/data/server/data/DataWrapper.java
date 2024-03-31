@@ -1,5 +1,6 @@
 package com.ewan.meworking.data.server.data;
 
+import com.ewan.meworking.data.server.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -17,6 +18,5 @@ public abstract class DataWrapper<D extends Data, I> {
     List<D> data;
     Class<D> baseClass;
     I identifier;
-    double timestamp;
-    int tickstamp;
+    Timestamp timestamp;
 }

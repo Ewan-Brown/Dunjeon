@@ -24,7 +24,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     @Getter
     private BasicMemoryBank clientMemoryBank;
-    private double mostRecentTimestampReceived = 0; //TODO Does this really need to be stored if i'm storing mostRecentFrameInfoPacket
     private InetSocketAddress serverAddress;
     private Channel server;
 
@@ -43,8 +42,8 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         //Check datatype and sort among gameFrames
         int releventTick;
         if(msg instanceof DataPacket data) {
-            releventTick = data.getDataWrapper().getTickstamp();
-            if(!gameFrames.containsKey(data.getDataWrapper().getTickstamp())){
+            releventTick = data.getDataWrapper().getTimestamp().serverTick();
+            if(!gameFrames.containsKey(releventTick)){
                 gameFrames.put(releventTick, new GameFrame(null));
             }
             if(logger.isDebugEnabled()) {
@@ -60,7 +59,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
             gameFrames.get(releventTick).getCollectedData().add(data.getDataWrapper());
         }
         else if(msg instanceof FrameInfoPacket frameInfo) {
-            releventTick = frameInfo.worldTimeTicks();
+            releventTick = frameInfo.timestamp().serverTick();
             logger.trace("received frameInfoPacket for tick: " + releventTick);
             if(!gameFrames.containsKey(releventTick)){
                 gameFrames.put(releventTick, new GameFrame(frameInfo));
@@ -73,7 +72,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
         if (gameFrames.get(releventTick).isComplete()){
             logger.trace("frame for tick: " + releventTick +" is complete");
-            mostRecentTimestampReceived = gameFrames.get(releventTick).getFramePacket().worldTimeExact();
             mostRecentFrameInfoPacket = gameFrames.get(releventTick).getFramePacket();
             for (DataWrapper<?,?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
                 clientMemoryBank.processWrappedData(collectedDatum);

@@ -37,8 +37,11 @@ public class TestSubject extends Creature {
     public void update(double stepSize) {
         super.update(stepSize);
 
+
         Vector2 velocityDiff = desiredVelocity.copy().subtract(getLinearVelocity());
         double angularVelocityDiff = desiredAngularVelocity - getAngularVelocity();
+
+        logger.trace("updating testsubject with vDiff: " + velocityDiff + ", angularVDiff: " + angularVelocityDiff);
 
         applyForce(velocityDiff.multiply(5));
         applyTorque(angularVelocityDiff*5);

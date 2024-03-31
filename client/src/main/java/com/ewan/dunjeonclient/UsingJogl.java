@@ -108,7 +108,7 @@ public class UsingJogl implements GLEventListener {
 
 	//Only reason to change this is if packets are being occasionally dropped and causing flickering. This is LAST resort.
 	private boolean isMemoryDataPresent(KnowledgeFragment<?> d){
-        return (clientChannelHandler.getMostRecentTimestampReceived() - d.getTickStamp()) == 0;
+        return (clientChannelHandler.getMostRecentFrameInfoPacket().timestamp().serverTick() - d.getTime().serverTick()) == 0;
 	}
 	
 	protected void render(GL2 gl) {

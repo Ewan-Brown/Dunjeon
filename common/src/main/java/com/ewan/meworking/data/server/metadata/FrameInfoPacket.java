@@ -1,4 +1,6 @@
 package com.ewan.meworking.data.server.metadata;
 
 
-public record FrameInfoPacket(long clientUUID, double worldTimeExact, int worldTimeTicks, int expectedDataCount){}
+import com.ewan.meworking.data.server.Timestamp;
+
+public record FrameInfoPacket(long clientUUID, Timestamp timestamp, int expectedDataCount){}

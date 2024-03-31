@@ -5,6 +5,7 @@ import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
+import com.ewan.meworking.data.server.Timestamp;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +26,15 @@ public class Dunjeon{
     /**
      * How much in-world time has passed
      */
-    @Getter
-    private double timeElapsed = 0;
+    private float timeElapsed = 0;
     /**
      * How many individual world updates have occured
      */
-    @Getter
     private int ticksElapsed = 0;
 
+    public Timestamp getTimestamp(){
+        return new Timestamp(ticksElapsed, timeElapsed);
+    }
     public static Dunjeon getInstance(){return dunjeon;}
 
     List<Floor> floors = new ArrayList<>(); // TODO Should this be here, or should everything be stored in a node tree...?
