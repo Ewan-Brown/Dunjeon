@@ -10,23 +10,25 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 public class Sensor<P extends DataStreamParameters> implements KnowledgeFragment.Source {
-    final protected Creature creature;
+    //TODO This should probably just be wider/higher up the hierarchy, or even an interface!
+    // Are we sure Creatures are the only things that can have sensors?
+    final protected SensorListener sensorListener;
     final protected Datastream<P> datastream;
     final private ParameterCalculator<P> parameterCalculator;
     static Logger logger = LogManager.getLogger();
 
-    protected Sensor(Creature c, Datastream<P> d, ParameterCalculator<P> pCalc){
-        creature = c;
+    protected Sensor(SensorListener l, Datastream<P> d, ParameterCalculator<P> pCalc){
+        sensorListener = l;
         datastream = d;
         datastream.addSubscriber(this);
         parameterCalculator = pCalc;
     }
 
-    public final P getParameters(){return parameterCalculator.calculateParameter(creature);}
+    public final P getParameters(){return parameterCalculator.calculateParameter(sensorListener);}
 
     public final void passOnData(List<? extends DataWrapper<? extends Data, ?>> data){
         for (DataWrapper<? extends Data, ?> datum : data) {
-            creature.getMemoryBank().processWrappedData(datum);
+           sensorListener.passOnData(datum);
         }
     }
 
@@ -38,6 +40,6 @@ public class Sensor<P extends DataStreamParameters> implements KnowledgeFragment
     }
 
     public interface ParameterCalculator<P>{
-        public P calculateParameter(Creature c);
+        public P calculateParameter(SensorListener c);
     }
 }

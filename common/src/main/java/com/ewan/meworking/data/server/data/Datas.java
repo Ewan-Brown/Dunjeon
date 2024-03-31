@@ -7,9 +7,9 @@ import org.dyn4j.geometry.Vector2;
 import java.util.List;
 
 /**
- * The heriarchy of data types defines what they are attached to. This allows datawrappers to restrict the type associated with them.
+ * The base class of data types defines what they are attached to. This allows datawrappers to restrict the type associated with them.
  * e.x CellData is an abstract class for any data that is per-cell
- * Cell color, cell physical state are all must all directly extend CellData
+ * Cell color, cell physical state must all directly extend CellData
  */
 public class Datas {
 

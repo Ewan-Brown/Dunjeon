@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.data;
 
+import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.meworking.data.server.Timestamp;
 import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.dunjeon.server.world.Dunjeon;
@@ -46,24 +47,26 @@ public class Datastreams {
             DebugDrawer debugDrawer = null;
             for (int i = 0; i < getSubscribers().size(); i++) {
                 Sensor<SightStreamParameters> sensor = getSubscribers().get(i);
-                if(do_debug)
-                    debugDrawer = new DebugDrawer(sensor.creature.getWorldCenter());
+
                 //Get necessary parameters from sensor
                 SightStreamParameters params = sensor.getParameters();
                 HashMap<Vector2, Set<WorldUtils.Side>> tileVisibilityMap = new HashMap<>();
                 Vector2 sensorPos = params.getSightSourceLocation();
-
                 List<DataWrapper<? extends Data, ?>> dataAmalgamated = new ArrayList<>();
+
+                if(do_debug)
+                    debugDrawer = new DebugDrawer(params.sightSourceLocation);
+
 
                 if(params.getTrueSight()){
                     logger.trace("truesight is enabled");
 
-                    for (BasicCell basicCell : sensor.creature.getFloor().getCellsAsList()) {
+                    for (BasicCell basicCell : params.sensorFloor.getCellsAsList()) {
                         Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
                         dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimestamp()));
                     }
 
-                    for (Entity entity : sensor.creature.getFloor().getEntities()){
+                    for (Entity entity : params.sensorFloor.getEntities()){
 
                         Datas.EntityKineticData kineticData = new Datas.EntityKineticData(entity.getLinearVelocity(), entity.getRotationAngle(), entity.getAngularVelocity());
                         Datas.EntityPositionalData positionalData = new Datas.EntityPositionalData((entity.getWorldCenter()), entity.getUUID());
@@ -408,6 +411,19 @@ public class Datastreams {
 
             private final Vector2 sightSourceLocation; /// Where the eyeball at
             private final Boolean trueSight; //Magic sight that lets you see everything! (really just for debugging)
+            private final Floor sensorFloor;
+            private final long sensorUUID;
+
+            /*
+             * This represents the sensor's ability to see through certain things (e.x maybe some entities can see through doors)
+             * Haven't really made use of it yet.
+             * Basic is your typical "can't see through solid objects"
+             * Enhanced can see through thin objects and furniture
+             * Full just has full-on true sight
+             */
+            enum SightPenetration{
+                BASIC,ENHANCED,FULL
+            }
         }
     }
 }

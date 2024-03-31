@@ -1,0 +1,4 @@
+Reworking some logic around Datastreams as I start adding the hearing/feeling stuff.
+- IMO no datastreams should have direct access to the Sensor's source. They should HAVE to entirely work within the limits of the parameters provided by the sensor.
+- This means that I need to rework the 'basicCell.canSeeThrough(Entity e) function' - instead, I am going to use the new 'SightPenetration' enum so we can just do a compare against the 'level' of object density vs entity sight perception
+- This means rewriting a bunch of code which I don't want to do right now :)
