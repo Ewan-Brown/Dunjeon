@@ -157,7 +157,7 @@ public class Floor {
     }
 
     public void addEntityRandomLoc(Entity e){
-        List<BasicCell> validCells =  getCellsAsList().stream().filter(basicCell -> basicCell.canBeEntered(e)).toList();
+        List<BasicCell> validCells =  getCellsAsList().stream().filter(basicCell -> !basicCell.isFilled()).toList();
         if(validCells.isEmpty()) throw new Error("No valid spots for entity found");
         else {
             BasicCell randomValidCell = validCells.get(rand.nextInt(validCells.size()));

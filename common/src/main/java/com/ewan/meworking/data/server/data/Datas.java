@@ -28,7 +28,7 @@ public class Datas {
         EnterableStatus enterableStatus;
 
         public enum EnterableStatus{
-            BLOCKED, //This cell isn't enterable! Don't even try.
+            IMPASSABLE, //This cell isn't enterable! Don't even try.
             ENTERABLE, //This entity is certainly enterable! Go ahead.
             INTERACTABLE, //This entity may be enterable if we interact with it...?
             UNKNOWN //No clue.

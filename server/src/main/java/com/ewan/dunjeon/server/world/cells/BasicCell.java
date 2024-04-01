@@ -1,7 +1,9 @@
 package com.ewan.dunjeon.server.world.cells;
 
+import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.server.world.entities.Entity;
 import com.ewan.dunjeon.server.world.floor.Floor;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.collision.CategoryFilter;
@@ -13,11 +15,15 @@ import java.awt.*;
 
 public class BasicCell extends Body {
 
-    int x;
-    int y;
-    Floor floor;
-    public Color color;
+    @Getter
+    final private int x;
+    @Getter
+    final private int y;
+    @Getter
+    final private Floor floor;
     static Logger logger = LogManager.getLogger();
+
+    public Color color;
 
     public boolean isFilled() {
         return filled;
@@ -29,10 +35,10 @@ public class BasicCell extends Body {
         this.x = x;
         this.y = y;
         this.floor = f;
-        this.color = c;
         this.addFixture();
         this.setMass(MassType.INFINITE);
         this.translate(x+0.5, y+0.5);
+        color = c;
     }
 
     public void setFilled(boolean f){
@@ -51,13 +57,15 @@ public class BasicCell extends Body {
     /*
      Don't forget about me :)
      */
-    public boolean canBeSeenThroughBy(Entity e){
-        return canBeEntered(e);
-    }
+//    public boolean canBeSeenThroughBy(Entity e){
+//        return canBeEntered(e);
+//    }
 
-    public boolean canBeEntered(Entity e){
-        return !filled;
-    }
+//    public boolean canBeEntered(Entity e){
+//        return !filled;
+//    }
+
+
 
     public int getIntegerX(){return x;}
     public int getIntegerY(){return y;}

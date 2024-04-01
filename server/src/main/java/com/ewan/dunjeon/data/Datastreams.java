@@ -1,7 +1,6 @@
 package com.ewan.dunjeon.data;
 
 import com.ewan.dunjeon.server.world.floor.Floor;
-import com.ewan.meworking.data.server.Timestamp;
 import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.WorldUtils;
@@ -14,7 +13,6 @@ import com.ewan.meworking.data.server.data.DataWrappers;
 import com.ewan.meworking.data.server.data.Datas;
 import com.ewan.util.StringUtils;
 import lombok.AllArgsConstructor;
-import lombok.ConfigurationKeys;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -22,8 +20,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.dyn4j.geometry.Vector2;
 
-import javax.swing.plaf.OptionPaneUI;
-import javax.swing.text.html.Option;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -37,6 +33,15 @@ public class Datastreams {
     public static class SightDataStream extends Datastream<SightDataStream.SightStreamParameters> {
 
         public static boolean do_debug = false;
+
+        public Datas.CellEnterableData.EnterableStatus estimateEnterablePerspective(SightStreamParameters.SightPenetration p, BasicCell c){
+            // This is where we can do something fun, like if the cell is only see-through for entities with enhanced sight
+            if(c.isFilled()){
+                return Datas.CellEnterableData.EnterableStatus.IMPASSABLE;
+            }else{
+                return Datas.CellEnterableData.EnterableStatus.ENTERABLE;
+            }
+        }
 
         @Override
         public void update(Dunjeon d) {
@@ -62,7 +67,7 @@ public class Datastreams {
                     logger.trace("truesight is enabled");
 
                     for (BasicCell basicCell : params.sensorFloor.getCellsAsList()) {
-                        Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
+                        Datas.CellData cellData = (new Datas.CellEnterableData(estimateEnterablePerspective(params.sightPenetration, basicCell)));
                         dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimestamp()));
                     }
 
@@ -148,6 +153,7 @@ public class Datastreams {
                         Set<Double> potentialWorstCaseAngles = new HashSet<>();
 
                         //Marching loop
+                        marchLoop:
                         while (true) {
 
                             logger.trace("------------------------");
@@ -170,39 +176,55 @@ public class Datastreams {
 
                             tileVisibilityMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
 
-                            BasicCell basicCell = sensor.creature.getFloor().getCellAt(intersectionData.getCellCoordinate());
-                            boolean isBlocking = !basicCell.canBeSeenThroughBy(sensor.creature);
+                            BasicCell basicCell = params.getSensorFloor().getCellAt(intersectionData.getCellCoordinate());
+                            Datas.CellEnterableData.EnterableStatus e = estimateEnterablePerspective(params.sightPenetration, basicCell);
+                            Datas.CellData cellData = (new Datas.CellEnterableData(e));
 
-                            if (isBlocking) {
-                                if(do_debug)
-                                    debugDrawer.addSquare(intersectionData.getCellCoordinate(), new Color(255, 0, 0)   , true, 0);
-                                collidingIntersection = Optional.of(intersectionData);
-                                if(logger.isTraceEnabled())
-                                    logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
-                                break;
-                            }else{
-                                if(do_debug)
-                                    debugDrawer.addSquare(intersectionData.getCellCoordinate(), new Color(0, 0, 255), true, 0);
-                                logger.trace("gathering angles for potential worst case...");
-                                Optional<Double> currentChosenAngle = Optional.empty();
-                                for (Corner corner : intersectionData.getSide().getCorners()) {
-                                    Vector2 potentialEndPoint = corner.getLocalCoord().sum(intersectionData.getCellCoordinate());
-                                    Vector2 vectorToEndpoint = potentialEndPoint.difference(sensorPos);
-                                    double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
-                                    double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
-                                    logger.trace("angle: " + angle);
-                                    if((currentChosenAngle.isEmpty() || relativeAngle < currentChosenAngle.get()) && relativeAngle >= minRelativeAngle){
-                                        logger.trace("taken : " + relativeAngle);
-                                        currentChosenAngle = Optional.of(relativeAngle);
+//                            boolean isBlocking = !basicCell.canBeSeenThroughBy(sensor.creature);
+                            switch(e){
+                                case IMPASSABLE :
+                                    // Do somethin
+                                    break;
+                                case ENTERABLE:
+                                    // Do somethin else
+                                    break;
+                                default:
+                                    // Aaaa
+                            }
+
+                            switch(e){
+                                case IMPASSABLE -> {
+                                    if(do_debug)
+                                        debugDrawer.addSquare(intersectionData.getCellCoordinate(), new Color(255, 0, 0)   , true, 0);
+                                    collidingIntersection = Optional.of(intersectionData);
+                                    if(logger.isTraceEnabled())
+                                        logger.trace("Ray collided with cell: " + StringUtils.formatVector(intersectionData.getCellCoordinate()) + ", at " + StringUtils.formatVectorFullPrecision(intersectionData.getIntersectionPoint()));
+                                    break marchLoop;
+                                }
+                                case ENTERABLE -> {
+                                    if(do_debug)
+                                        debugDrawer.addSquare(intersectionData.getCellCoordinate(), new Color(0, 0, 255), true, 0);
+                                    logger.trace("gathering angles for potential worst case...");
+                                    Optional<Double> currentChosenAngle = Optional.empty();
+                                    for (Corner corner : intersectionData.getSide().getCorners()) {
+                                        Vector2 potentialEndPoint = corner.getLocalCoord().sum(intersectionData.getCellCoordinate());
+                                        Vector2 vectorToEndpoint = potentialEndPoint.difference(sensorPos);
+                                        double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
+                                        double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
+                                        logger.trace("angle: " + angle);
+                                        if((currentChosenAngle.isEmpty() || relativeAngle < currentChosenAngle.get()) && relativeAngle >= minRelativeAngle){
+                                            logger.trace("taken : " + relativeAngle);
+                                            currentChosenAngle = Optional.of(relativeAngle);
+                                        }
+                                    }
+                                    if(currentChosenAngle.isEmpty()){
+                                        throw new RuntimeException("None of the corners had valid angles? Not possible idiot");
+                                    }else{
+                                        potentialWorstCaseAngles.add(currentChosenAngle.get() + currentAngle + tinyAngle);
+                                        logger.trace("added another angle, size is now: " + potentialWorstCaseAngles.size());
                                     }
                                 }
-                                if(currentChosenAngle.isEmpty()){
-                                    throw new RuntimeException("None of the corners had valid angles? Not possible");
-                                }else{
-                                    potentialWorstCaseAngles.add(currentChosenAngle.get() + currentAngle + tinyAngle);
-                                    logger.trace("added another angle, size is now: " + potentialWorstCaseAngles.size());
-                                }
-
+                                default -> throw new RuntimeException("You've gone and shit the bed with this one");
                             }
                             currentPoint = intersectionData.getIntersectionPoint();
 
@@ -325,7 +347,7 @@ public class Datastreams {
                                 }
                             } else {
                                 if (logger.isTraceEnabled())
-                                    logger.trace("We might worst case scenario, did collide but not adjacent");
+                                    logger.trace("We are switching to worst case scenario, did collide but not adjacent");
 
                                 doingWorstCase = true;
                                 worstCaseLastTileCoord = previousEndingTileCoords;
@@ -354,23 +376,22 @@ public class Datastreams {
                     if(logger.isDebugEnabled())
                         logger.debug("# of rays: " + rayCounter);
 
-
                     // Do tile sight algorithm
                     for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tileVisibilityMap.entrySet()) {
-                        BasicCell basicCell = sensor.creature.getFloor().getCellAt(tile.getKey());
+                        BasicCell basicCell = params.sensorFloor.getCellAt(tile.getKey());
                         if (basicCell == null) continue;
-                        Datas.CellData cellData = (new Datas.CellEnterableData(basicCell.canBeEntered(sensor.creature) ? Datas.CellEnterableData.EnterableStatus.ENTERABLE : Datas.CellEnterableData.EnterableStatus.BLOCKED));
+                        Datas.CellData cellData = (new Datas.CellEnterableData(estimateEnterablePerspective(params.sightPenetration, basicCell)));
                         dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimestamp()));
                     }
 
                     int entity_count = 0;
                     //Do entity sight algorithm
-                    for (Entity entity : sensor.creature.getFloor().getEntities()) {
+                    for (Entity entity : params.sensorFloor.getEntities()) {
 
                         Vector2 entityPos = entity.getWorldCenter();
                         Vector2 tilePos = new Vector2(Math.floor(entityPos.x), Math.floor(entityPos.y));
 
-                        if(entity != sensor.creature) {
+                        if(entity.getUUID() != params.sensorHostUUID) {
                             if(!tileVisibilityMap.containsKey(tilePos)){
                                 continue;
                             }
@@ -412,7 +433,8 @@ public class Datastreams {
             private final Vector2 sightSourceLocation; /// Where the eyeball at
             private final Boolean trueSight; //Magic sight that lets you see everything! (really just for debugging)
             private final Floor sensorFloor;
-            private final long sensorUUID;
+            private final long sensorHostUUID;
+            private final SightPenetration sightPenetration;
 
             /*
              * This represents the sensor's ability to see through certain things (e.x maybe some entities can see through doors)
@@ -420,8 +442,9 @@ public class Datastreams {
              * Basic is your typical "can't see through solid objects"
              * Enhanced can see through thin objects and furniture
              * Full just has full-on true sight
+             * _Stupid name_
              */
-            enum SightPenetration{
+            public enum SightPenetration{
                 BASIC,ENHANCED,FULL
             }
         }
