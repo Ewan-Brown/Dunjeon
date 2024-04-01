@@ -6,13 +6,28 @@ import com.ewan.dunjeon.data.Sensor;
 import com.ewan.dunjeon.data.SensorListener;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.entities.creatures.Creature;
+import com.ewan.meworking.data.server.event.GenericSoundEvent;
 import lombok.AllArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class HearingDataStream extends Datastream<HearingDataStream.HearingDataStreamParameters> {
 
+    private Set<GenericSoundEvent> amalgamatedSoundEvents = new HashSet<>();
+
+    public void appendSoundEvent(GenericSoundEvent e){
+        amalgamatedSoundEvents.add(e);
+    }
+
     @Override
     public void update(Dunjeon d) {
+        for (GenericSoundEvent amalgamatedSoundEvent : amalgamatedSoundEvents) {
 
+        }
+        amalgamatedSoundEvents.clear();
     }
 
     @Override
