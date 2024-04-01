@@ -1,19 +1,17 @@
 package com.ewan.dunjeon.server.world;
 
-import com.ewan.dunjeon.data.Datastreams;
+import com.ewan.dunjeon.data.datastreams.SightDataStream;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.meworking.data.server.Timestamp;
-import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,8 +75,8 @@ public class Dunjeon{
 
 
     //****** Data streams ******//
-    private final Datastreams.SightDataStream sightDataStream = new Datastreams.SightDataStream();
-    public Datastreams.SightDataStream getSightDataStream() {
+    private final SightDataStream sightDataStream = new SightDataStream();
+    public SightDataStream getSightDataStream() {
         return sightDataStream;
     }
 

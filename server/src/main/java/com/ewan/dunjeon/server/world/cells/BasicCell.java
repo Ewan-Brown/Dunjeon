@@ -1,7 +1,5 @@
 package com.ewan.dunjeon.server.world.cells;
 
-import com.ewan.dunjeon.data.Datastreams;
-import com.ewan.dunjeon.server.world.entities.Entity;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;

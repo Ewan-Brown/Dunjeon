@@ -1,11 +1,10 @@
 package com.ewan.dunjeon.server.world.entities.creatures;
 
+import com.ewan.dunjeon.data.datastreams.SightDataStream;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.data.DataStreamParameters;
-import com.ewan.dunjeon.data.Datastreams;
 import com.ewan.dunjeon.data.Sensor;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
-import com.ewan.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
@@ -30,13 +29,13 @@ public class TestSubject extends Creature {
     public TestSubject(String name, Boolean trueSight) {
         super(name);
         senses.add(Dunjeon.getInstance().getSightDataStream().constructSensorForDatastream(this, c ->
-                new Datastreams.SightDataStream.SightStreamParameters(20,
+                new SightDataStream.SightStreamParameters(20,
                         Math.PI*0.75,getRotationAngle(),
                         getWorldCenter(),
                         trueSight,
                         getFloor(),
                         getUUID(),
-                        Datastreams.SightDataStream.SightStreamParameters.SightPenetration.BASIC)));
+                        SightDataStream.SightStreamParameters.SightPenetration.BASIC)));
 
     }
 
