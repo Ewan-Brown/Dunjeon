@@ -24,7 +24,8 @@ public class ClientDataDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) {
-        logger.trace("decoding incoming message");
+        if(logger.isTraceEnabled())
+            logger.trace("decoding incoming message");
         try{
             ClientInputData data = kryo.readObject(new Input(new ByteBufferInputStream(msg.content().nioBuffer())), ClientInputData.class);
             ClientInputDataWrapper wrapper = new ClientInputDataWrapper(data, msg.sender());

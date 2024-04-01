@@ -46,7 +46,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
             if(!gameFrames.containsKey(releventTick)){
                 gameFrames.put(releventTick, new GameFrame(null));
             }
-            if(logger.isDebugEnabled()) {
+            if(logger.isTraceEnabled()) {
                 int collectedData = gameFrames.get(releventTick).getCollectedData().size();
                 String collectString;
                 if (gameFrames.get(releventTick).getFramePacket() != null) {
@@ -60,7 +60,8 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         }
         else if(msg instanceof FrameInfoPacket frameInfo) {
             releventTick = frameInfo.timestamp().serverTick();
-            logger.trace("received frameInfoPacket for tick: " + releventTick);
+            if(logger.isTraceEnabled())
+                logger.trace("received frameInfoPacket for tick: " + releventTick);
             if(!gameFrames.containsKey(releventTick)){
                 gameFrames.put(releventTick, new GameFrame(frameInfo));
             }else{
@@ -71,7 +72,8 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (gameFrames.get(releventTick).isComplete()){
-            logger.trace("frame for tick: " + releventTick +" is complete");
+            if(logger.isTraceEnabled())
+                logger.trace("frame for tick: " + releventTick +" is complete");
             mostRecentFrameInfoPacket = gameFrames.get(releventTick).getFramePacket();
             for (DataWrapper<?,?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
                 clientMemoryBank.processWrappedData(collectedDatum);

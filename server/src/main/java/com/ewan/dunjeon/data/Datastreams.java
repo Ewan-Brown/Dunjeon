@@ -64,7 +64,8 @@ public class Datastreams {
 
 
                 if(params.getTrueSight()){
-                    logger.trace("truesight is enabled");
+                    if(logger.isTraceEnabled())
+                        logger.trace("truesight is enabled");
 
                     for (BasicCell basicCell : params.sensorFloor.getCellsAsList()) {
                         Datas.CellData cellData = (new Datas.CellEnterableData(estimateEnterablePerspective(params.sightPenetration, basicCell)));
@@ -95,7 +96,8 @@ public class Datastreams {
                     final double minRelativeAngle = 0; //Used to cut off some floating point errors... May need reinspection
                     int rayCounter = 0;
 
-                    logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle + " endingAngle: " + endingAngle);
+                    if(logger.isTraceEnabled())
+                        logger.trace("pos: " + params.sightSourceLocation + " fov: " + fov + ", range: " + range + ", starting angle: " + startingAngle + " endingAngle: " + endingAngle);
 
                     tileVisibilityMap.put(new Vector2( Math.floor(sensorPos.x), Math.floor(sensorPos.y)), Set.of(Side.values()));
 
@@ -114,17 +116,20 @@ public class Datastreams {
                     rayLoop:
                     do {
 
-                        logger.trace("======================== ");
+                        if(logger.isTraceEnabled())
+                            logger.trace("======================== ");
 
                         if(doingWorstCase){
                             if(cachedStepAnglesFromLastRay.isEmpty()){
 //                                throw new RuntimeException("Attempting to do worst case but no cached steps!");
                                 doingWorstCase = false;
-                                logger.trace("ran out of worst case angles, reverting back to normal");
+                                if(logger.isTraceEnabled())
+                                    logger.trace("ran out of worst case angles, reverting back to normal");
                             }else {
                                 currentAngle = cachedStepAnglesFromLastRay.stream().min(Double::compareTo).get();
                                 cachedStepAnglesFromLastRay.remove(currentAngle);
-                                logger.trace("continuing with worst case, setting angle to : " + currentAngle + ", with " + cachedStepAnglesFromLastRay.size() + " angles left to try");
+                                if(logger.isTraceEnabled())
+                                    logger.trace("continuing with worst case, setting angle to : " + currentAngle + ", with " + cachedStepAnglesFromLastRay.size() + " angles left to try");
                             }
                             }
 
@@ -156,7 +161,8 @@ public class Datastreams {
                         marchLoop:
                         while (true) {
 
-                            logger.trace("------------------------");
+                            if(logger.isTraceEnabled())
+                                logger.trace("------------------------");
 
                             Optional<IntersectionData> intersectionDataOpt = WorldUtils.getNextGridIntersect(currentPoint, rayEnd);
 
@@ -204,16 +210,19 @@ public class Datastreams {
                                 case ENTERABLE -> {
                                     if(do_debug)
                                         debugDrawer.addSquare(intersectionData.getCellCoordinate(), new Color(0, 0, 255), true, 0);
-                                    logger.trace("gathering angles for potential worst case...");
+                                    if(logger.isTraceEnabled())
+                                        logger.trace("gathering angles for potential worst case...");
                                     Optional<Double> currentChosenAngle = Optional.empty();
                                     for (Corner corner : intersectionData.getSide().getCorners()) {
                                         Vector2 potentialEndPoint = corner.getLocalCoord().sum(intersectionData.getCellCoordinate());
                                         Vector2 vectorToEndpoint = potentialEndPoint.difference(sensorPos);
                                         double angle = Math.atan2(vectorToEndpoint.y, vectorToEndpoint.x);
                                         double relativeAngle = getAngleDiffInAtan2Domain(angle, currentAngle);
-                                        logger.trace("angle: " + angle);
+                                        if(logger.isTraceEnabled())
+                                            logger.trace("angle: " + angle);
                                         if((currentChosenAngle.isEmpty() || relativeAngle < currentChosenAngle.get()) && relativeAngle >= minRelativeAngle){
-                                            logger.trace("taken : " + relativeAngle);
+                                            if(logger.isTraceEnabled())
+                                                logger.trace("taken : " + relativeAngle);
                                             currentChosenAngle = Optional.of(relativeAngle);
                                         }
                                     }
@@ -221,7 +230,8 @@ public class Datastreams {
                                         throw new RuntimeException("None of the corners had valid angles? Not possible idiot");
                                     }else{
                                         potentialWorstCaseAngles.add(currentChosenAngle.get() + currentAngle + tinyAngle);
-                                        logger.trace("added another angle, size is now: " + potentialWorstCaseAngles.size());
+                                        if(logger.isTraceEnabled())
+                                            logger.trace("added another angle, size is now: " + potentialWorstCaseAngles.size());
                                     }
                                 }
                                 default -> throw new RuntimeException("You've gone and shit the bed with this one");
@@ -246,13 +256,14 @@ public class Datastreams {
                         boolean didCollideAdjacentToPrevious = false;
                         boolean forceBestCase = false;
 
-                        logger.trace("didCollide: " + didCollide);
+                        if(logger.isTraceEnabled())
+                            logger.trace("didCollide: " + didCollide);
 
                         if(rayCounter == 0 && didCollide){
                             forceBestCase = true;
                         }
 
-                        if(doingWorstCase){
+                        if(doingWorstCase && logger.isTraceEnabled()){
                             logger.trace("🚨 working on worst case");
                         }
 
@@ -264,7 +275,8 @@ public class Datastreams {
                                     //Ok we've moved far enough to skip past the last 'ok' cell
                                     doingWorstCase = false;
                                     forceBestCase = true;
-                                    logger.trace("Ending worst case, we've collided with a cell close enough. Forcing best case.");
+                                    if(logger.isTraceEnabled())
+                                        logger.trace("Ending worst case, we've collided with a cell close enough. Forcing best case.");
                                 }
                             }
                             if(previousEndingTileCoords.isPresent()) {
@@ -282,7 +294,8 @@ public class Datastreams {
                                     Vector2 diff = collidingIntersection.get().getCellCoordinate().difference(previousEndingTileCoords.get());
                                     if (diff.getMagnitudeSquared() <= 2.00001) {
                                         didCollideAdjacentToPrevious = true;
-                                        logger.trace("Identified that we we have collided adjacent to pervious");
+                                        if(logger.isTraceEnabled())
+                                            logger.trace("Identified that we we have collided adjacent to pervious");
                                     }
                                 }
                             }
@@ -356,7 +369,8 @@ public class Datastreams {
                             }
 
                             cachedStepAnglesFromLastRay = potentialWorstCaseAngles;
-                            logger.trace("size of cachedAngles: " + cachedStepAnglesFromLastRay.size());
+                            if(logger.isTraceEnabled())
+                                logger.trace("size of cachedAngles: " + cachedStepAnglesFromLastRay.size());
 
                             if (didCollide) {
                                 if(do_debug)
@@ -404,7 +418,8 @@ public class Datastreams {
                         Long entityId = entity.getUUID();
                         dataAmalgamated.add(DataWrappers.wrapEntityData(List.of(kineticData, positionalData), entityId, d.getTimestamp()));
                     }
-                    logger.trace(entity_count + " entities visible!");
+                    if(logger.isTraceEnabled())
+                        logger.trace(entity_count + " entities visible!");
 
                 }
                 sensor.passOnData(dataAmalgamated);

@@ -85,7 +85,8 @@ public class UsingJogl implements GLEventListener {
 
 	@Override
 	public void display(GLAutoDrawable glDrawable) {
-		logger.trace("display() called");
+		if(logger.isTraceEnabled())
+			logger.trace("display() called");
 		// get the OpenGL context
 		GL2 gl = glDrawable.getGL().getGL2();
 

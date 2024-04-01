@@ -25,7 +25,8 @@ public class ClientDataEncoder
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, ClientInputData clientInputData, List<Object> list) throws Exception {
-        logger.trace("encoding outgoing message");
+        if(logger.isTraceEnabled())
+            logger.trace("encoding outgoing message");
         try {
             Output output = new Output(BUFFER_SIZE);
             kryo.writeObject(output, clientInputData);

@@ -23,7 +23,8 @@ public class DataFragmentPacketDecoder extends MessageToMessageDecoder<DatagramP
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, DatagramPacket msg, List<Object> out){
-        logger.trace("decoding a data fragment");
+        if(logger.isTraceEnabled())
+            logger.trace("decoding a data fragment");
         Input input = new Input(new ByteBufferInputStream(msg.content().nioBuffer()));
         PacketTypes.PacketType pType = PacketTypes.PacketType.values()[input.readShort()];
         out.add(kryo.readObject(input, pType.relatedClass));

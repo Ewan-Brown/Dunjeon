@@ -58,7 +58,8 @@ public class ManagedClient {
             channel.writeAndFlush(new ServerPacketWrapper(new FrameInfoPacket(creatureController.getBasicMemoryBank().getOwnerUUID(), Dunjeon.getInstance().getTimestamp(), unProcessedDataWrappers.size()), PacketTypes.PacketType.FRAME_PACKET, clientAddress));
             int dataCounter = 0;
             for (DataWrapper<?, ?> unProcessedDataWrapper : unProcessedDataWrappers) {
-                logger.trace("sending dataPacket "+dataCounter+"/"+unProcessedDataWrappers.size());
+                if(logger.isTraceEnabled())
+                    logger.trace("sending dataPacket "+dataCounter+"/"+unProcessedDataWrappers.size());
                 channel.writeAndFlush(new ServerPacketWrapper(new DataPacket(unProcessedDataWrapper), PacketTypes.PacketType.DATA_PACKET, clientAddress));
                 dataCounter++;
             }

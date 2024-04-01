@@ -24,7 +24,8 @@ public class ClientBasedTestSubjectController extends ClientBasedController<Test
 
     @Override
     void updateWithUserInputs(List<UserInput> inputs) {
-        logger.trace("updateWithUserInputs, # of inputs: " + inputs.size());
+        if(logger.isTraceEnabled())
+            logger.trace("updateWithUserInputs, # of inputs: " + inputs.size());
         for (UserInput input : inputs) {
             if(input instanceof MoveEntity moveEntityInput){
                 logger.debug("received moveEntity control: " + moveEntityInput.getMoveDir());
