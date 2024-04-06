@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO Does this really need to be parameterized? We never actually make use of C and D, how else can we constrict this...?
 public abstract class ClientBasedController<C extends Creature, D extends CreatureControls<C>> extends CreatureController<C, D> {
 
     static Logger logger = LogManager.getLogger();

@@ -1,9 +1,11 @@
 package com.ewan.dunjeon.server.world.entities.creatures;
 
+import com.ewan.dunjeon.data.datastreams.HearingDataStream;
 import com.ewan.dunjeon.data.datastreams.SightDataStream;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.data.Sensor;
+import com.ewan.meworking.data.server.event.GenericSoundEvent;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +39,9 @@ public class TestSubject extends Creature {
                         getUUID(),
                         SightDataStream.SightStreamParameters.SightPenetration.BASIC)));
 
+        senses.add(Dunjeon.getInstance().getHearingDataStream().constructSensorForDatastream(this, c ->
+                new HearingDataStream.HearingDataStreamParameters()));
+
     }
 
     public void update(double stepSize) {
@@ -51,6 +56,10 @@ public class TestSubject extends Creature {
 
         applyForce(velocityDiff.multiply(5));
         applyTorque(angularVelocityDiff*5);
+
+        Dunjeon.getInstance().getHearingDataStream().appendSoundEvent(new GenericSoundEvent(Dunjeon.getInstance().getTimestamp(),
+                GenericSoundEvent.SoundSourceCategory.ENTITY, 1, getUUID(), List.of()));
+
     }
 
 

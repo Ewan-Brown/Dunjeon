@@ -23,10 +23,7 @@ public class BasicCell extends Body {
 
     public Color color;
 
-    public boolean isFilled() {
-        return filled;
-    }
-
+    @Getter
     private boolean filled; //TODO Replace this with something a little more flexible?
 
     public BasicCell(int x, int y, Floor f, Color c) {
@@ -47,30 +44,13 @@ public class BasicCell extends Body {
     public void addFixture(){
         this.addFixture(new Rectangle(1,1));
         this.fixtures.forEach(bodyFixture -> {
-            final short WALL_CATEGORY = 0x0002; // 2 in binary
+            final short WALL_CATEGORY = 0x0002;
             bodyFixture.setFilter(new CategoryFilter(WALL_CATEGORY, (short) ~WALL_CATEGORY));
         });
     }
 
-    /*
-     Don't forget about me :)
-     */
-//    public boolean canBeSeenThroughBy(Entity e){
-//        return canBeEntered(e);
-//    }
-
-//    public boolean canBeEntered(Entity e){
-//        return !filled;
-//    }
-
-
-
     public int getIntegerX(){return x;}
     public int getIntegerY(){return y;}
-    public Floor getFloor(){
-        return floor;
-    }
-
 
     public void update() {
 

@@ -1,6 +1,8 @@
 package com.ewan.dunjeon.server.world.entities;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.dunjeon.server.world.Dunjeon;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.dynamics.Body;
@@ -13,6 +15,8 @@ public abstract class Entity extends Body {
 
     private final long UUID;
 
+    @Getter
+    @Setter
     private Floor floor;
 
     public String getName(){return name;}
@@ -41,13 +45,6 @@ public abstract class Entity extends Body {
      */
     public abstract void update(double stepSize);
 
-    public Floor getFloor() {
-        return floor;
-    }
-
-    public void setFloor(Floor floor) {
-        this.floor = floor;
-    }
     public long getUUID(){ return UUID;}
 
 

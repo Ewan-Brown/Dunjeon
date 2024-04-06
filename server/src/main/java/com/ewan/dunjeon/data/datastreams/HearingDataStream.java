@@ -24,8 +24,12 @@ public class HearingDataStream extends Datastream<HearingDataStream.HearingDataS
 
     @Override
     public void update(Dunjeon d) {
+        System.out.println("HearingDataStream.update, with : " + amalgamatedSoundEvents.size() + " sounds to process!");
         for (GenericSoundEvent amalgamatedSoundEvent : amalgamatedSoundEvents) {
-
+            System.out.println(" beep!");
+            for (Sensor<HearingDataStreamParameters> subscriber : getSubscribers()) {
+                HearingDataStreamParameters params = subscriber.getParameters();
+            }
         }
         amalgamatedSoundEvents.clear();
     }
@@ -33,13 +37,6 @@ public class HearingDataStream extends Datastream<HearingDataStream.HearingDataS
     @Override
     public Sensor<HearingDataStreamParameters> constructSensorForDatastream(Creature c, Sensor.ParameterCalculator<HearingDataStreamParameters> pCalc) {
         return null;
-    }
-
-    public static class HearingDataStreamSensor extends Sensor<HearingDataStreamParameters>{
-
-        public HearingDataStreamSensor(SensorListener l, Datastream<HearingDataStreamParameters> d, ParameterCalculator<HearingDataStreamParameters> pCalc) {
-            super(l, d, pCalc);
-        }
     }
 
     @AllArgsConstructor

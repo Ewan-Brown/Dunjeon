@@ -9,23 +9,18 @@ import org.dyn4j.geometry.Vector2;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class GenericSoundEvent extends Event{
+public class GenericSoundEvent extends Event{
     final private SoundSourceCategory category;
     final private float intensity;
     final private List<SoundHint> soundHints;
+    final private Long sourceUUID;
 
-    public GenericSoundEvent(Timestamp timestamp, SoundSourceCategory category, float i, List<SoundHint> hints) {
+    public GenericSoundEvent(Timestamp timestamp, SoundSourceCategory category, float i, Long uuid, List<SoundHint> hints) {
         super(timestamp);
         this.category = category;
         this.intensity = i;
         soundHints = hints;
-    }
-
-    public GenericSoundEvent(Timestamp timestamp, SoundSourceCategory category, float i) {
-        super(timestamp);
-        this.category = category;
-        this.intensity = i;
-        soundHints = List.of();
+        this.sourceUUID = uuid;
     }
 
     public enum SoundSourceCategory{

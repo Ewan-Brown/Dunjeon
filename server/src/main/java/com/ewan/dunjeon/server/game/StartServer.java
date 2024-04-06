@@ -39,7 +39,7 @@ public class StartServer {
         Dunjeon w = Dunjeon.getInstance();
         try {
             Thread.sleep(DESIRED_FRAMETIME_NS/1000000L);
-            w.update(1.0D);
+            w.update(1.0f);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

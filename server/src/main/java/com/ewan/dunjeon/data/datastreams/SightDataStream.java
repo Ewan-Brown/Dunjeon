@@ -181,19 +181,6 @@ public class SightDataStream extends Datastream<SightDataStream.SightStreamParam
 
                         BasicCell basicCell = params.getSensorFloor().getCellAt(intersectionData.getCellCoordinate());
                         Datas.CellEnterableData.EnterableStatus e = estimateEnterablePerspective(params.sightPenetration, basicCell);
-                        Datas.CellData cellData = (new Datas.CellEnterableData(e));
-
-//                            boolean isBlocking = !basicCell.canBeSeenThroughBy(sensor.creature);
-                        switch(e){
-                            case IMPASSABLE :
-                                // Do somethin
-                                break;
-                            case ENTERABLE:
-                                // Do somethin else
-                                break;
-                            default:
-                                // Aaaa
-                        }
 
                         switch(e){
                             case IMPASSABLE -> {

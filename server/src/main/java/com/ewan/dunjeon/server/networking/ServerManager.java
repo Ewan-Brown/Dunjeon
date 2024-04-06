@@ -85,6 +85,7 @@ public class ServerManager {
 
                 ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
                 clientHandlerHashMap.put(address, new ManagedClient(controller, address));
+
             }
             //Process input as necessary
             ManagedClient clientController = clientHandlerHashMap.get(address);

@@ -7,11 +7,13 @@ import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.ewan.meworking.data.client.ClientInputData;
 import com.ewan.meworking.data.server.DataPacket;
 import com.ewan.meworking.data.client.UserInput;
+import com.ewan.meworking.data.server.EventPacket;
 import com.ewan.meworking.data.server.Timestamp;
 import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.data.DataWrappers;
+import com.ewan.meworking.data.server.event.Event;
 import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,8 +31,52 @@ public class KryoPreparator {
     static private final DataSerializer dataSerializer = new DataSerializer();
     static private final ClientInputSerializer clientInputSerializer = new ClientInputSerializer();
     static private final DataWrapperSerializer dataWrapperSerializer = new DataWrapperSerializer();
+    static private final EventSerializer eventSerializer = new EventSerializer();
     static private Logger logger = LogManager.getLogger();
 
+    public static class EventSerializer extends Serializer<Event>{
+        @Override
+        public void write(Kryo kryo, Output output, Event object) {
+            try {
+                kryo.writeObject(output, object.getClass());
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
+            Field[] fields = object.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                try {
+                    field.setAccessible(true);
+                    kryo.writeClassAndObject(output, field.get(object));
+                }catch(IllegalAccessException e){
+                    throw new RuntimeException(e);
+                }
+            }
+            output.flush();
+        }
+
+        @Override
+        public Event read(Kryo kryo, Input input, Class<? extends Event> type) {
+            Class<?> clazz = kryo.readObject(input, Class.class);
+            Field[] fields = clazz.getDeclaredFields();
+            Object[] obj = new Object[fields.length];
+            for (int i = 0; i < fields.length; i++) {
+                obj[i] = kryo.readClassAndObject(input);
+            }
+
+            Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+            if(constructors.length != 1){
+                throw new IllegalArgumentException("This data class should have EXACTLY 1 all-arg constructor! : " + clazz.toString());
+            }else{
+                Constructor<?> constructor = constructors[0];
+                try {
+                    return (Event) constructor.newInstance(obj);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+    }
     public static class DataSerializer extends Serializer<Data>{
         @Override
         public void write(Kryo kryo, Output output, Data object) {
@@ -148,6 +194,17 @@ public class KryoPreparator {
         Kryo kryo = new Kryo();
         kryo.setRegistrationRequired(false);
         kryo.setReferences(true);
+        kryo.register(EventPacket.class, new Serializer<EventPacket>() {
+            @Override
+            public void write(Kryo kryo, Output output, EventPacket eventPacket) {
+                kryo.writeObject(output, eventPacket.getEvent(), eventSerializer);
+            }
+
+            @Override
+            public EventPacket read(Kryo kryo, Input input, Class<? extends EventPacket> aClass) {
+                return new EventPacket(kryo.readObject(input, Event.class, eventSerializer));
+            }
+        })
         kryo.register(FrameInfoPacket.class, new Serializer<FrameInfoPacket>() {
             @Override
             public void write(Kryo kryo, Output output, FrameInfoPacket object) {

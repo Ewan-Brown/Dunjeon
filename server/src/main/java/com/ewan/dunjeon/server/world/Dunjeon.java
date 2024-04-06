@@ -1,11 +1,13 @@
 package com.ewan.dunjeon.server.world;
 
+import com.ewan.dunjeon.data.datastreams.HearingDataStream;
 import com.ewan.dunjeon.data.datastreams.SightDataStream;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.meworking.data.server.Timestamp;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Mass;
@@ -43,7 +45,7 @@ public class Dunjeon{
     /*
     Updates the game, returns true if the game is over.
      */
-    public void update(double t){
+    public void update(float t){
         logger.debug("calling Update");
         this.timeElapsed += t;
         this.ticksElapsed += 1;
@@ -58,13 +60,13 @@ public class Dunjeon{
         //Update Datastreams!
         //TODO SHOULD DATASTREAMS POTENTIALLY BE PER-FLOOR??????
         sightDataStream.update(this);
+        hearingDataStream.update(this);
     }
 
     public ClientBasedController<TestSubject, TestSubject.TestSubjectControls> createClientTestCreatureAndGetController(){
         TestSubject testSubject = new TestSubject("Player");
         testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
-
 
         ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = new ClientBasedTestSubjectController(testSubject);
 
@@ -75,9 +77,9 @@ public class Dunjeon{
 
 
     //****** Data streams ******//
+    @Getter
     private final SightDataStream sightDataStream = new SightDataStream();
-    public SightDataStream getSightDataStream() {
-        return sightDataStream;
-    }
+    @Getter
+    private final HearingDataStream hearingDataStream = new HearingDataStream();
 
 }
