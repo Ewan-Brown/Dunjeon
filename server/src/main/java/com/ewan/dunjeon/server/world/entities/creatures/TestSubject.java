@@ -5,6 +5,7 @@ import com.ewan.dunjeon.data.datastreams.SightDataStream;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.data.Sensor;
+import com.ewan.meworking.data.server.event.Event;
 import com.ewan.meworking.data.server.event.GenericSoundEvent;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import org.apache.logging.log4j.LogManager;
@@ -40,7 +41,7 @@ public class TestSubject extends Creature {
                         SightDataStream.SightStreamParameters.SightPenetration.BASIC)));
 
         senses.add(Dunjeon.getInstance().getHearingDataStream().constructSensorForDatastream(this, c ->
-                new HearingDataStream.HearingDataStreamParameters()));
+                new HearingDataStream.HearingDataStreamParameters(getWorldCenter(), getUUID())));
 
     }
 

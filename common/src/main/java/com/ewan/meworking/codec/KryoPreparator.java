@@ -204,7 +204,7 @@ public class KryoPreparator {
             public EventPacket read(Kryo kryo, Input input, Class<? extends EventPacket> aClass) {
                 return new EventPacket(kryo.readObject(input, Event.class, eventSerializer));
             }
-        })
+        });
         kryo.register(FrameInfoPacket.class, new Serializer<FrameInfoPacket>() {
             @Override
             public void write(Kryo kryo, Output output, FrameInfoPacket object) {

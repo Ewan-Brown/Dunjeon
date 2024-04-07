@@ -1,8 +1,8 @@
 package com.ewan.dunjeon.data;
 
-import com.ewan.dunjeon.server.world.entities.creatures.Creature;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
+import com.ewan.meworking.data.server.event.Event;
 import com.ewan.meworking.data.server.memory.KnowledgeFragment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +27,12 @@ public class Sensor<P extends DataStreamParameters> implements KnowledgeFragment
     public final void passOnData(List<? extends DataWrapper<? extends Data, ?>> data){
         for (DataWrapper<? extends Data, ?> datum : data) {
            sensorListener.passOnData(datum);
+        }
+    }
+
+    public final void passOnEvents(List<? extends Event> events){
+        for (Event event : events) {
+            sensorListener.passOnEvent(event);
         }
     }
 

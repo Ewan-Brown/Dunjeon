@@ -22,7 +22,9 @@ public abstract class Datastream<S extends DataStreamParameters> {
         return subscribers;
     }
 
-    public abstract Sensor<S> constructSensorForDatastream(Creature c, Sensor.ParameterCalculator<S> pCalc);
+    public final Sensor<S> constructSensorForDatastream(Creature c, Sensor.ParameterCalculator<S> pCalc){
+        return new Sensor<>(c, this, pCalc);
+    }
 
 
 

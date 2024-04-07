@@ -417,10 +417,10 @@ public class SightDataStream extends Datastream<SightDataStream.SightStreamParam
         }
     }
 
-    @Override
-    public Sensor<SightStreamParameters> constructSensorForDatastream(Creature c, Sensor.ParameterCalculator<SightStreamParameters> pCalc) {
-        return new Sensor<>(c, this, pCalc);
-    }
+//    @Override
+//    public Sensor<SightStreamParameters> constructSensorForDatastream(Creature c, Sensor.ParameterCalculator<SightStreamParameters> pCalc) {
+//        return new Sensor<>(c, this, pCalc);
+//    }
 
     @AllArgsConstructor
     @Getter
