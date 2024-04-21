@@ -6,10 +6,8 @@ import com.ewan.dunjeon.server.world.entities.Entity;
 import com.ewan.dunjeon.data.Sensor;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
-import com.ewan.meworking.data.server.event.Event;
+import com.ewan.meworking.data.server.event.ObservedEvent;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -19,9 +17,7 @@ public abstract class Creature extends Entity implements SensorListener {
     }
 
     @Override
-    public void update(double stepSize) {
-
-    }
+    public void update(double stepSize) {}
 
 
     protected abstract List<Sensor<? extends DataStreamParameters>> getSensors();
@@ -40,7 +36,6 @@ public abstract class Creature extends Entity implements SensorListener {
     }
 
     @Override
-    public final void passOnEvent(Event e){
-    }
+    public final void passOnEvent(ObservedEvent e){ getMemoryBank().addEvent(e);}
 
 }

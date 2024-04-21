@@ -5,8 +5,7 @@ import com.ewan.dunjeon.data.datastreams.SightDataStream;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.data.Sensor;
-import com.ewan.meworking.data.server.event.Event;
-import com.ewan.meworking.data.server.event.GenericSoundEvent;
+import com.ewan.meworking.data.server.event.HeardSoundEvent;
 import com.ewan.meworking.data.server.memory.BasicMemoryBank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,8 +57,7 @@ public class TestSubject extends Creature {
         applyForce(velocityDiff.multiply(5));
         applyTorque(angularVelocityDiff*5);
 
-        Dunjeon.getInstance().getHearingDataStream().appendSoundEvent(new GenericSoundEvent(Dunjeon.getInstance().getTimestamp(),
-                GenericSoundEvent.SoundSourceCategory.ENTITY, 1, getUUID(), List.of()));
+        Dunjeon.getInstance().getHearingDataStream().appendSoundEvent(new HearingDataStream.SoundRequest(getWorldCenter(), 1.0f, getUUID(), HeardSoundEvent.SoundSourceCategory.ENTITY));
 
     }
 

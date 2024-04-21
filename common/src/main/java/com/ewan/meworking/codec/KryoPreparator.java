@@ -13,7 +13,7 @@ import com.ewan.meworking.data.server.data.CellPosition;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
 import com.ewan.meworking.data.server.data.DataWrappers;
-import com.ewan.meworking.data.server.event.Event;
+import com.ewan.meworking.data.server.event.ObservedEvent;
 import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +22,6 @@ import org.dyn4j.geometry.Vector2;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,15 +33,16 @@ public class KryoPreparator {
     static private final EventSerializer eventSerializer = new EventSerializer();
     static private Logger logger = LogManager.getLogger();
 
-    public static class EventSerializer extends Serializer<Event>{
+    public static class EventSerializer extends Serializer<ObservedEvent>{
         @Override
-        public void write(Kryo kryo, Output output, Event object) {
+        public void write(Kryo kryo, Output output, ObservedEvent object) {
             try {
                 kryo.writeObject(output, object.getClass());
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
-            Field[] fields = object.getClass().getDeclaredFields();
+            Field[] fields = object.getClass().getFields();
+            logger.trace("write ObservedEvent with " + fields.length + " fields");
             for (Field field : fields) {
                 try {
                     field.setAccessible(true);
@@ -55,10 +55,11 @@ public class KryoPreparator {
         }
 
         @Override
-        public Event read(Kryo kryo, Input input, Class<? extends Event> type) {
+        public ObservedEvent read(Kryo kryo, Input input, Class<? extends ObservedEvent> type) {
             Class<?> clazz = kryo.readObject(input, Class.class);
-            Field[] fields = clazz.getDeclaredFields();
+            Field[] fields = clazz.getFields();
             Object[] obj = new Object[fields.length];
+            logger.trace("read ObservedEvent with " + fields.length + " fields");
             for (int i = 0; i < fields.length; i++) {
                 obj[i] = kryo.readClassAndObject(input);
             }
@@ -69,8 +70,9 @@ public class KryoPreparator {
             }else{
                 Constructor<?> constructor = constructors[0];
                 try {
-                    return (Event) constructor.newInstance(obj);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    return (ObservedEvent) constructor.newInstance(obj);
+                } catch (Exception e) {
+                    logger.error("size of array is: " + obj.length);
                     throw new RuntimeException(e);
                 }
             }
@@ -85,7 +87,7 @@ public class KryoPreparator {
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
-            Field[] fields = object.getClass().getDeclaredFields();
+            Field[] fields = object.getClass().getFields();
             for (Field field : fields) {
                 try {
                     field.setAccessible(true);
@@ -100,7 +102,7 @@ public class KryoPreparator {
         @Override
         public Data read(Kryo kryo, Input input, Class<? extends Data> type) {
             Class<?> clazz = kryo.readObject(input, Class.class);
-            Field[] fields = clazz.getDeclaredFields();
+            Field[] fields = clazz.getFields();
             Object[] obj = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
                 obj[i] = kryo.readClassAndObject(input);
@@ -125,7 +127,7 @@ public class KryoPreparator {
         @Override
         public void write(Kryo kryo, Output output, UserInput object) {
             kryo.writeObject(output, object.getClass());
-            Field[] fields = object.getClass().getDeclaredFields();
+            Field[] fields = object.getClass().getFields();
             for (Field field : fields) {
                 try {
                     field.setAccessible(true);
@@ -140,7 +142,7 @@ public class KryoPreparator {
         @Override
         public UserInput read(Kryo kryo, Input input, Class<? extends UserInput> type) {
             Class<?> clazz = kryo.readObject(input, Class.class);
-            Field[] fields = clazz.getDeclaredFields();
+            Field[] fields = clazz.getFields();
             Object[] obj = new Object[fields.length];
             for (int i = 0; i < fields.length; i++) {
                 obj[i] = kryo.readClassAndObject(input);
@@ -197,12 +199,12 @@ public class KryoPreparator {
         kryo.register(EventPacket.class, new Serializer<EventPacket>() {
             @Override
             public void write(Kryo kryo, Output output, EventPacket eventPacket) {
-                kryo.writeObject(output, eventPacket.getEvent(), eventSerializer);
+                kryo.writeObject(output, eventPacket.getObservedEvent(), eventSerializer);
             }
 
             @Override
             public EventPacket read(Kryo kryo, Input input, Class<? extends EventPacket> aClass) {
-                return new EventPacket(kryo.readObject(input, Event.class, eventSerializer));
+                return new EventPacket(kryo.readObject(input, ObservedEvent.class, eventSerializer));
             }
         });
         kryo.register(FrameInfoPacket.class, new Serializer<FrameInfoPacket>() {
@@ -211,10 +213,11 @@ public class KryoPreparator {
                 output.writeLong(object.clientUUID());
                 kryo.writeObject(output, object.timestamp());
                 output.writeInt(object.expectedDataCount());
+                output.writeInt(object.expectedEventCount());
             }
             @Override
             public FrameInfoPacket read(Kryo kryo, Input input, Class<? extends FrameInfoPacket> type) {
-                return new FrameInfoPacket(input.readLong(), kryo.readObject(input, Timestamp.class), input.readInt());
+                return new FrameInfoPacket(input.readLong(), kryo.readObject(input, Timestamp.class), input.readInt(), input.readInt());
             }
         });
         kryo.register(CellPosition.class, new Serializer<CellPosition>() {

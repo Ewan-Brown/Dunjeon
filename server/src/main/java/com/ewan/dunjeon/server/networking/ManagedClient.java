@@ -4,10 +4,12 @@ import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.meworking.codec.PacketTypes;
 import com.ewan.meworking.data.server.DataPacket;
+import com.ewan.meworking.data.server.EventPacket;
 import com.ewan.meworking.data.server.ServerPacketWrapper;
 import com.ewan.meworking.data.client.UserInput;
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
+import com.ewan.meworking.data.server.event.ObservedEvent;
 import com.ewan.meworking.data.server.memory.KnowledgePackage;
 import com.ewan.meworking.data.server.memory.MemoryBankListener;
 import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
@@ -27,6 +29,7 @@ public class ManagedClient {
     private InetSocketAddress clientAddress;
     private ClientBasedController<?, ?> creatureController;
     private List<DataWrapper<?,?>> unProcessedDataWrappers = new ArrayList<>(); //This doesn't currently need to worry about thread safety, since data is always processed at a different step from sending it
+    private List<ObservedEvent> unprocessedEvents = new ArrayList<>();
     static Logger logger = LogManager.getLogger();
 
     @Getter
@@ -40,6 +43,12 @@ public class ManagedClient {
             @Override
             public <T extends Data, I, P extends KnowledgePackage<I, T>> void processWrappedData(DataWrapper<T, I> dataWrapper) {
                 unProcessedDataWrappers.add(dataWrapper);
+            }
+
+            @Override
+            public void processEvent(ObservedEvent e) {
+                logger.trace("event listened!");
+                unprocessedEvents.add(e);
             }
         });
     }
@@ -55,7 +64,7 @@ public class ManagedClient {
             logger.debug("sending some data to client: " + channel.toString());
             //We need to ensure that the client knows how many datawrappers to expect before it can draw its next frame, as well as what creature it is attached to
             logger.debug("sending frameInfoPacket for " + unProcessedDataWrappers.size() +" # of datas on frame" + Dunjeon.getInstance().getTimestamp());
-            channel.writeAndFlush(new ServerPacketWrapper(new FrameInfoPacket(creatureController.getBasicMemoryBank().getOwnerUUID(), Dunjeon.getInstance().getTimestamp(), unProcessedDataWrappers.size()), PacketTypes.PacketType.FRAME_PACKET, clientAddress));
+            channel.writeAndFlush(new ServerPacketWrapper(new FrameInfoPacket(creatureController.getBasicMemoryBank().getOwnerUUID(), Dunjeon.getInstance().getTimestamp(), unProcessedDataWrappers.size(), unprocessedEvents.size()), PacketTypes.PacketType.FRAME_PACKET, clientAddress));
             int dataCounter = 0;
             for (DataWrapper<?, ?> unProcessedDataWrapper : unProcessedDataWrappers) {
                 if(logger.isTraceEnabled())
@@ -64,7 +73,14 @@ public class ManagedClient {
                 dataCounter++;
             }
             unProcessedDataWrappers = new ArrayList<>();
-//            isConnectionActive = false; //TODO DEBUG LINE
+            int eventCount = 0;
+            for (ObservedEvent unprocessedEvent : unprocessedEvents) {
+                if(logger.isTraceEnabled())
+                    logger.trace("sending eventPacket " + eventCount + "/" + unprocessedEvents.size());
+                channel.writeAndFlush(new ServerPacketWrapper(new EventPacket(unprocessedEvent), PacketTypes.PacketType.EVENT_PACKET, clientAddress));
+                eventCount++;
+            }
+            unprocessedEvents.clear();
         }
     }
 }

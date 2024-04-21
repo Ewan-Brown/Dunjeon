@@ -18,7 +18,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
-public class UsingJogl implements GLEventListener {
+public class ClientInterface implements GLEventListener {
 	private static final long serialVersionUID = 5663760293144882635L;
 	static Logger logger = LogManager.getLogger();
 
@@ -26,12 +26,14 @@ public class UsingJogl implements GLEventListener {
 	protected GLCanvas canvas;
 	private JFrame frame;
 	private final ClientChannelHandler clientChannelHandler;
+	private EventManager eventManager;
 	final static Vector2 lastCameraPos = new Vector2();
 
-	public UsingJogl(ClientChannelHandler clientChannelHandler) {
+	public ClientInterface(ClientChannelHandler clientChannelHandler, EventManager eventManager) {
 		logger.info("Creating UI");
 		frame = new JFrame("Dungeon Client");
 
+		this.eventManager = eventManager;
 		this.clientChannelHandler = clientChannelHandler;
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -221,6 +223,8 @@ public class UsingJogl implements GLEventListener {
 			}
 			gl.glPopMatrix();
 		}
+
+		eventManager.drawEvents(gl);
 
 
 	}

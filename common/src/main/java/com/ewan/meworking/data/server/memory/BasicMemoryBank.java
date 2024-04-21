@@ -2,7 +2,8 @@ package com.ewan.meworking.data.server.memory;
 
 import com.ewan.meworking.data.server.data.Data;
 import com.ewan.meworking.data.server.data.DataWrapper;
-        import lombok.Getter;
+import com.ewan.meworking.data.server.event.ObservedEvent;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +14,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BasicMemoryBank extends DataSink {
+
+    private static long MAX_EVENTS_CACHED = 100;
 
     private final Long ownerUUID;
     static Logger logger = LogManager.getLogger();
@@ -39,8 +42,27 @@ public class BasicMemoryBank extends DataSink {
     public record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
             (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass){}
 
+    //TODO Does it really make sense to store events in the memory bank
+    private List<ObservedEvent> unprocessedEvents = new ArrayList<>();
     //Each pairing in this list is a for specific 'category' of knowledge - defined by the base Data class. For example EntityData/FloorData/CellData are 3 existing categories.
     final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings;
+
+    public void addEvent(ObservedEvent e){
+        for (MemoryBankListener listener : listeners) {
+            listener.processEvent(e);
+        }
+        if(unprocessedEvents.size() < MAX_EVENTS_CACHED){
+            unprocessedEvents.add(e);
+        }else{
+            logger.warn("cache size reached, skipped adding event : " + e);
+        }
+    }
+
+    public List<ObservedEvent> getAndClearEvents(){
+        List<ObservedEvent> returnEvents = unprocessedEvents;
+        unprocessedEvents = new ArrayList<>();
+        return returnEvents;
+    }
 
     //Unwrap data to understand its context, and place it in the appropriate knowledge object
     @SuppressWarnings("unchecked")
