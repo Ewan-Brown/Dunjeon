@@ -16,7 +16,7 @@ import java.util.List;
 public class EventManager {
 
     public EventManager(){
-        addEventHandler(new EventHandler<HeardSoundEvent>() {
+        addEventHandler(new EventHandler<>() {
             @Override
             public void handleEvent(HeardSoundEvent event) {
                 managedEvents.add(new ManagedEvent() {
@@ -27,13 +27,12 @@ public class EventManager {
 
                     @Override
                     public void doSomeRendering(GL2 gl) {
-                        System.out.println("EventManager<HeardSoundEvent>.doSomeRendering");
                         gl.glPushMatrix();
-                        System.out.println(event.getApproxLocation().x + " " +event.getApproxLocation().y);
                         gl.glTranslated(event.getApproxLocation().x, event.getApproxLocation().y, 0);
-//                        gl.glRotated(this.tickCount/100.0,1,0,0);
+//                        gl.glRotated(this.tickCount / 100.0 * 360.0,0,0,1);
+                        gl.glColor4d(1, 0, 1, (10.0 - tickCount)/10.0);
                         gl.glBegin(GL2.GL_POLYGON);
-                        gl.glColor3d(1,0,1);
+                        System.out.println(this.tickCount/100.0);
                         gl.glVertex2d(-1, 1);
                         gl.glVertex2d(-1, -1);
                         gl.glVertex2d(1, -1);
@@ -44,7 +43,7 @@ public class EventManager {
 
                     @Override
                     public boolean isComplete() {
-                        return false;
+                        return this.tickCount > 10;
                     }
                 });
             }
@@ -65,8 +64,12 @@ public class EventManager {
     }
 
     public void drawEvents(GL2 gl){
-        for (ManagedEvent managedEvent : managedEvents) {
-            managedEvent.doSomeRendering(gl);
+        for (int i = 0; i < managedEvents.size(); i++) {
+            if(managedEvents.get(i).isComplete()){
+                managedEvents.remove(i);
+            }else {
+                managedEvents.get(i).doSomeRendering(gl);
+            }
         }
     }
 

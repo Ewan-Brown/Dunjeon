@@ -47,7 +47,6 @@ public class TestSubject extends Creature {
     public void update(double stepSize) {
         super.update(stepSize);
 
-
         Vector2 velocityDiff = desiredVelocity.copy().subtract(getLinearVelocity());
         double angularVelocityDiff = desiredAngularVelocity - getAngularVelocity();
 
@@ -57,8 +56,9 @@ public class TestSubject extends Creature {
         applyForce(velocityDiff.multiply(5));
         applyTorque(angularVelocityDiff*5);
 
-        Dunjeon.getInstance().getHearingDataStream().appendSoundEvent(new HearingDataStream.SoundRequest(getWorldCenter(), 1.0f, getUUID(), HeardSoundEvent.SoundSourceCategory.ENTITY));
-
+        if(Dunjeon.getInstance().getTimestamp().serverTick() % 10 == 0) {
+            Dunjeon.getInstance().getHearingDataStream().appendSoundEvent(new HearingDataStream.SoundRequest(getWorldCenter(), 1.0f, getUUID(), HeardSoundEvent.SoundSourceCategory.ENTITY));
+        }
     }
 
 

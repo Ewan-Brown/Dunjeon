@@ -32,4 +32,9 @@ public class DataFragmentPacketDecoder extends MessageToMessageDecoder<DatagramP
 //            logger.trace("#: "+ input.readInt());
 //        }
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        throw new RuntimeException(cause);
+    }
 }

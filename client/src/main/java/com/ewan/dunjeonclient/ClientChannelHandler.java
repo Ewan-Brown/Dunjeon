@@ -34,6 +34,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private HashMap<Integer, GameFrame> gameFrames = new HashMap<>();
     private FrameInfoPacket mostRecentFrameInfoPacket = null;
+    private boolean isFirstFrame = true;
 
     public ClientChannelHandler(BasicMemoryBank clientMemoryBank, EventManager manager){
         this.clientMemoryBank = clientMemoryBank;
@@ -99,7 +100,6 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
                 logger.trace("frame for tick: " + releventTick +" is complete");
             float updateDelta = 0;
             FrameInfoPacket prevFrameInfoPacket = mostRecentFrameInfoPacket;
-            boolean isFirstFrame = (prevFrameInfoPacket == null);
             mostRecentFrameInfoPacket = gameFrames.get(releventTick).getFramePacket();
             if(!isFirstFrame){
                 updateDelta = mostRecentFrameInfoPacket.timestamp().worldTime() - prevFrameInfoPacket.timestamp().worldTime();
@@ -113,6 +113,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
             for (ObservedEvent event : gameFrames.get(releventTick).getCollectedEvents()) {
                 eventManager.processEvent(event);
             }
+            isFirstFrame = false;
         }
     }
 

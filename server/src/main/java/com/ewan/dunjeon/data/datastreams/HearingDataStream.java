@@ -26,7 +26,7 @@ public class HearingDataStream extends Datastream<HearingDataStream.HearingDataS
 
             List<HeardSoundEvent> events = new ArrayList<>();
             for (SoundRequest sound : amalgamatedSoundEvents) {
-                HeardSoundEvent event = new HeardSoundEvent(d.getTimestamp(), sound.sourceLocation, sound.category, 1.0f, sound.sourceUUID == subscriber.getParameters().sensorHostUUID);
+                HeardSoundEvent event = new HeardSoundEvent(sound.category, sound.sourceLocation, 1.0f, sound.sourceUUID == subscriber.getParameters().sensorHostUUID, d.getTimestamp());
                 events.add(event);
             }
             //Transform each of the existing soundrequests to heardSoundEvents for this subscriber

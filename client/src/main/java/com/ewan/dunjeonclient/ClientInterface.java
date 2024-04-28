@@ -80,7 +80,9 @@ public class ClientInterface implements GLEventListener {
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
-		gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		gl.glEnable(GL.GL_BLEND);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		gl.setSwapInterval(0);
 	}

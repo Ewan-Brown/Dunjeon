@@ -24,5 +24,6 @@ public class StartClient
         new Thread(() -> {
             new ClientInterface(clientChannelHandler, eventManager).start();
         }).start();
+
     }
 }

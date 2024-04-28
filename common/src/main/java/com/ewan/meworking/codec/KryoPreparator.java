@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class KryoPreparator {
@@ -41,13 +42,13 @@ public class KryoPreparator {
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
-            Field[] fields = object.getClass().getFields();
-            logger.trace("write ObservedEvent with " + fields.length + " fields");
+            List<Field> fields = getAllFields(object.getClass());
+            logger.trace("write ObservedEvent with " + fields.size() + " fields");
             for (Field field : fields) {
                 try {
                     field.setAccessible(true);
                     kryo.writeClassAndObject(output, field.get(object));
-                }catch(IllegalAccessException e){
+                }catch(Exception e){
                     throw new RuntimeException(e);
                 }
             }
@@ -57,10 +58,10 @@ public class KryoPreparator {
         @Override
         public ObservedEvent read(Kryo kryo, Input input, Class<? extends ObservedEvent> type) {
             Class<?> clazz = kryo.readObject(input, Class.class);
-            Field[] fields = clazz.getFields();
-            Object[] obj = new Object[fields.length];
-            logger.trace("read ObservedEvent with " + fields.length + " fields");
-            for (int i = 0; i < fields.length; i++) {
+            List<Field> fields = getAllFields(clazz);
+            Object[] obj = new Object[fields.size()];
+            logger.trace("read ObservedEvent with " + fields.size() + " fields");
+            for (int i = 0; i < fields.size(); i++) {
                 obj[i] = kryo.readClassAndObject(input);
             }
 
@@ -87,12 +88,12 @@ public class KryoPreparator {
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
-            Field[] fields = object.getClass().getFields();
+            List<Field> fields = getAllFields(object.getClass());
             for (Field field : fields) {
                 try {
                     field.setAccessible(true);
                     kryo.writeClassAndObject(output, field.get(object));
-                }catch(IllegalAccessException e){
+                }catch(Exception e){
                     throw new RuntimeException(e);
                 }
             }
@@ -102,9 +103,9 @@ public class KryoPreparator {
         @Override
         public Data read(Kryo kryo, Input input, Class<? extends Data> type) {
             Class<?> clazz = kryo.readObject(input, Class.class);
-            Field[] fields = clazz.getFields();
-            Object[] obj = new Object[fields.length];
-            for (int i = 0; i < fields.length; i++) {
+            List<Field> fields = getAllFields(clazz);
+            Object[] obj = new Object[fields.size()];
+            for (int i = 0; i < fields.size(); i++) {
                 obj[i] = kryo.readClassAndObject(input);
             }
 
@@ -115,7 +116,7 @@ public class KryoPreparator {
                 Constructor<?> constructor = constructors[0];
                 try {
                     return (Data) constructor.newInstance(obj);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -127,12 +128,12 @@ public class KryoPreparator {
         @Override
         public void write(Kryo kryo, Output output, UserInput object) {
             kryo.writeObject(output, object.getClass());
-            Field[] fields = object.getClass().getFields();
+            List<Field> fields = getAllFields(object.getClass());
             for (Field field : fields) {
                 try {
                     field.setAccessible(true);
                     kryo.writeClassAndObject(output, field.get(object));
-                }catch(IllegalAccessException e){
+                }catch(Exception e){
                     throw new RuntimeException(e);
                 }
             }
@@ -142,9 +143,9 @@ public class KryoPreparator {
         @Override
         public UserInput read(Kryo kryo, Input input, Class<? extends UserInput> type) {
             Class<?> clazz = kryo.readObject(input, Class.class);
-            Field[] fields = clazz.getFields();
-            Object[] obj = new Object[fields.length];
-            for (int i = 0; i < fields.length; i++) {
+            List<Field> fields = getAllFields(clazz);
+            Object[] obj = new Object[fields.size()];
+            for (int i = 0; i < fields.size(); i++) {
                 obj[i] = kryo.readClassAndObject(input);
             }
 
@@ -294,5 +295,16 @@ public class KryoPreparator {
             }
         });
         return kryo;
+    }
+
+    /**
+     https://stackoverflow.com/questions/1042798/retrieving-the-inherited-attribute-names-values-using-java-reflection
+     */
+    public static List<Field> getAllFields(Class<?> type) {
+        List<Field> fields = new ArrayList<Field>();
+        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+            fields.addAll(Arrays.asList(c.getDeclaredFields()));
+        }
+        return fields;
     }
 }
