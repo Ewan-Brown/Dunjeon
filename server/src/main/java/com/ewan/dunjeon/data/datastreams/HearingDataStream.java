@@ -15,18 +15,21 @@ public class HearingDataStream extends Datastream<HearingDataStream.HearingDataS
 
     private List<SoundRequest> amalgamatedSoundEvents = new ArrayList<>();
 
+    private static Vector2 randomizeVector2(Vector2 v, double intensity){
+        return new Vector2(v.x += (Math.random() - 0.5) * intensity, v.y += (Math.random() - 0.5) * intensity);
+    }
+
     public void appendSoundEvent(SoundRequest e){
         amalgamatedSoundEvents.add(e);
     }
 
     @Override
     public void update(Dunjeon d) {
-        System.out.println("HearingDataStream.update, with : " + amalgamatedSoundEvents.size() + " sounds to process!");
         for (Sensor<HearingDataStreamParameters> subscriber : getSubscribers()) {
 
             List<HeardSoundEvent> events = new ArrayList<>();
             for (SoundRequest sound : amalgamatedSoundEvents) {
-                HeardSoundEvent event = new HeardSoundEvent(sound.category, sound.sourceLocation, 1.0f, sound.sourceUUID == subscriber.getParameters().sensorHostUUID, d.getTimestamp());
+                HeardSoundEvent event = new HeardSoundEvent(sound.category, randomizeVector2(sound.sourceLocation, 0.5), 1.0f, sound.sourceUUID == subscriber.getParameters().sensorHostUUID, d.getTimestamp());
                 events.add(event);
             }
             //Transform each of the existing soundrequests to heardSoundEvents for this subscriber

@@ -23,10 +23,6 @@ public class PathFinding {
         int innerCount = 0;
         int secondCount = 0;
 
-//        if(print) {
-//            logger.info("Starting pathfinding...");
-//            System.out.printf("Going from (%d, %d) to (%d, %d)\n", startNode.x, startNode.y, targetNode.x, targetNode.y);
-//        }
         int height = primitiveWeightMap.length;
         int width = primitiveWeightMap[0].length;
 
@@ -72,22 +68,18 @@ public class PathFinding {
             });
             Point currentNode = openNodes.get(0);
 
-//            if(print) logger.info("[Node Loop] Current node : " + currentNode.toString() );
             openNodes.remove(0);
             closedNodes.add(currentNode);
             List<Pair<Point, Boolean>>  neighbors = getAdjacent(currentNode, width, height, cornerRule, weightMap);
             for (Pair<Point, Boolean> successorPair : neighbors) {
                 innerCount++;
                 Point successor = successorPair.getElement0();
-//                if(print) System.out.printf("Checking Neighbor (%d, %d)\n", successor.x, successor.y);
                 if (successor.equals(targetNode)) {
                     setVal(prevNodeMap, successor, currentNode);
-//                    if(print) logger.info("FOUND THE END!");
                     break outerLoop;
                 }
 
                 if (closedNodes.stream().anyMatch(successor::equals)) {
-//                    if (print) logger.info("This neighbor is already on the closed list - skipping");
                     continue; //Skip this node if it's on the closed list
                 }
 
@@ -108,7 +100,6 @@ public class PathFinding {
                 }
 
                 double successorF = successorG + successorH;
-//                if(print) logger.info("successorG = " + successorG);
                 if(successorG == Float.POSITIVE_INFINITY) continue; //Skip cells that are infinite weight
 
                 //If this successor point is NOT on the open list
@@ -119,7 +110,6 @@ public class PathFinding {
                     openNodes.add(successor);
                     setVal(prevNodeMap, successor, currentNode);
                     setVal(prevDirMap, successor, successorAngle);
-//                    if (print) logger.info("Added to open list!");
                     setVal(hMap, successor, successorH);
                     setVal(gMap, successor, successorG);
                     setVal(fMap, successor, successorF);

@@ -29,10 +29,10 @@ public class EventManager {
                     public void doSomeRendering(GL2 gl) {
                         gl.glPushMatrix();
                         gl.glTranslated(event.getApproxLocation().x, event.getApproxLocation().y, 0);
+                        gl.glScaled(0.3f,0.3f,0.3f);
 //                        gl.glRotated(this.tickCount / 100.0 * 360.0,0,0,1);
-                        gl.glColor4d(1, 0, 1, (10.0 - tickCount)/10.0);
+                        gl.glColor4d(1, 0, 1, (5.0 - tickCount)/10.0);
                         gl.glBegin(GL2.GL_POLYGON);
-                        System.out.println(this.tickCount/100.0);
                         gl.glVertex2d(-1, 1);
                         gl.glVertex2d(-1, -1);
                         gl.glVertex2d(1, -1);
