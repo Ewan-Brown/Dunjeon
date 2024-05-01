@@ -33,7 +33,7 @@ public class TestSubject extends Creature {
 
     public TestSubject(String name, Boolean trueSight) {
         super(name);
-        senses.add(Dunjeon.getInstance().getSightDataStream().constructSensorForDatastream(this, c ->
+        senses.add(Dunjeon.getInstance().getDataStreamManager().getSightDataStream().constructSensorForDatastream(this, c ->
                 new SightDataStream.SightStreamParameters(20,
                         Math.PI*0.75,getRotationAngle(),
                         getWorldCenter(),
@@ -42,7 +42,7 @@ public class TestSubject extends Creature {
                         getUUID(),
                         SightDataStream.SightStreamParameters.SightPenetration.BASIC)));
 
-        senses.add(Dunjeon.getInstance().getHearingDataStream().constructSensorForDatastream(this, c ->
+        senses.add(Dunjeon.getInstance().getDataStreamManager().getHearingDataStream().constructSensorForDatastream(this, c ->
                 new HearingDataStream.HearingDataStreamParameters(getWorldCenter(), getUUID())));
 
     }
@@ -64,7 +64,7 @@ public class TestSubject extends Creature {
         timeToNextSound--;
         if(timeToNextSound == 0){
             timeToNextSound = 50 + rand.nextInt(10);
-            Dunjeon.getInstance().getHearingDataStream().appendSoundEvent(new HearingDataStream.SoundRequest(getWorldCenter(), 1.0f, getUUID(), HeardSoundEvent.SoundSourceCategory.ENTITY));
+            Dunjeon.getInstance().getDataStreamManager().getHearingDataStream().appendSoundEvent(new HearingDataStream.SoundRequest(getWorldCenter(), 1.0f, getUUID(), HeardSoundEvent.SoundSourceCategory.ENTITY));
         }
     }
 

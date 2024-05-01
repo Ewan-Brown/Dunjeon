@@ -1,5 +1,6 @@
 package com.ewan.dunjeon.server.world;
 
+import com.ewan.dunjeon.data.datastreams.DataStreamManager;
 import com.ewan.dunjeon.data.datastreams.HearingDataStream;
 import com.ewan.dunjeon.data.datastreams.SightDataStream;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
@@ -22,6 +23,9 @@ public class Dunjeon{
     static Logger logger = LogManager.getLogger();
 
     private static final Dunjeon dunjeon = new Dunjeon();
+
+    @Getter
+    private final DataStreamManager dataStreamManager = new DataStreamManager();
 
     /**
      * How much in-world time has passed
@@ -58,9 +62,8 @@ public class Dunjeon{
         }
 
         //Update Datastreams!
-        //TODO SHOULD DATASTREAMS POTENTIALLY BE PER-FLOOR??????
-        sightDataStream.update(this);
-        hearingDataStream.update(this);
+        //TODO Circular reference....
+        dataStreamManager.update(t, this);
     }
 
     public ClientBasedController<TestSubject, TestSubject.TestSubjectControls> createClientTestCreatureAndGetController(){
@@ -74,12 +77,5 @@ public class Dunjeon{
         this.floors.get(0).addCreatureController(controller);
         return controller;
     }
-
-
-    //****** Data streams ******//
-    @Getter
-    private final SightDataStream sightDataStream = new SightDataStream();
-    @Getter
-    private final HearingDataStream hearingDataStream = new HearingDataStream();
 
 }

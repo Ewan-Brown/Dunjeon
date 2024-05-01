@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
+import org.dyn4j.world.World;
 
 import java.awt.*;
 import java.util.*;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.log;
 
 
 public class WorldUtils {
@@ -288,6 +290,31 @@ public class WorldUtils {
             nextTileX = (int) Math.floor(nextInterceptX);
         }
         return Optional.of(new IntersectionData(new Vector2(nextInterceptX, nextInterceptY), new Vector2(nextTileX, nextTileY), side));
+    }
+
+    public static List<Vector2> getMatchingTilesBetweenPoints(Vector2 pos1, Vector2 pos2, Predicate<Vector2> tilePredicate){
+        if(logger.isDebugEnabled())
+            logger.debug("getting matching tiles between : " + StringUtils.formatVector(pos1) + ", " + StringUtils.formatVector(pos2));
+        List<Vector2> matchingTileCoords = new ArrayList<>();
+        Vector2 currentPos = pos1;
+        while(true) {
+            Optional<IntersectionData> nextIntersectOpt = getNextGridIntersect(currentPos, pos2);
+            if (nextIntersectOpt.isPresent()) {
+                if (logger.isDebugEnabled())
+                    logger.debug("inspecting intersect: " + nextIntersectOpt.get());
+
+                IntersectionData intersect = nextIntersectOpt.get();
+                if (tilePredicate.test(intersect.getCellCoordinate())) {
+                    matchingTileCoords.add(intersect.getCellCoordinate());
+                }
+                currentPos = intersect.intersectionPoint;
+            } else {
+                if (logger.isDebugEnabled())
+                    logger.debug("no more intersects to find");
+                break;
+            }
+        }
+        return matchingTileCoords;
     }
 
     public static List<IntersectionData> getIntersectedTilesWithWall(Vector2 pos1, Vector2 pos2){
