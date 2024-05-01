@@ -58,10 +58,10 @@ public class BasicMemoryBank extends DataSink {
         }
     }
 
-    public List<ObservedEvent> getAndClearEvents(){
-        List<ObservedEvent> returnEvents = unprocessedEvents;
-        unprocessedEvents = new ArrayList<>();
-        return returnEvents;
+    public void clearEvents(){
+        if(!unprocessedEvents.isEmpty()){
+            logger.warn("Basic Memory Bank left with unprocessed events! You should probably clear those up at parent update");
+        }
     }
 
     //Unwrap data to understand its context, and place it in the appropriate knowledge object

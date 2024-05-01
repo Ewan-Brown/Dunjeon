@@ -17,6 +17,8 @@ public class EventManager {
 
     public EventManager(){
         addEventHandler(new EventHandler<>() {
+            final double LIFE = 30;
+
             @Override
             public void handleEvent(HeardSoundEvent event) {
                 managedEvents.add(new ManagedEvent() {
@@ -27,11 +29,12 @@ public class EventManager {
 
                     @Override
                     public void doSomeRendering(GL2 gl) {
+                        final double completePercent = Math.cos((tickCount) / LIFE * Math.PI/2);
                         gl.glPushMatrix();
                         gl.glTranslated(event.getApproxLocation().x, event.getApproxLocation().y, 0);
-                        gl.glScaled(0.3f,0.3f,0.3f);
+                        gl.glScaled(completePercent/3+0.1,completePercent/3+0.1,completePercent/3+0.1);
 //                        gl.glRotated(this.tickCount / 100.0 * 360.0,0,0,1);
-                        gl.glColor4d(1, 0, 1, (5.0 - tickCount)/10.0);
+                        gl.glColor4d(1, 0, 1, completePercent/2 + 0.25);
                         gl.glBegin(GL2.GL_POLYGON);
                         gl.glVertex2d(-1, 1);
                         gl.glVertex2d(-1, -1);
@@ -43,7 +46,7 @@ public class EventManager {
 
                     @Override
                     public boolean isComplete() {
-                        return this.tickCount > 10;
+                        return this.tickCount > LIFE;
                     }
                 });
             }

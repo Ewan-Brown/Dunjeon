@@ -2,6 +2,7 @@ package com.ewan.dunjeon.server.world.entities.creatures;
 
 import com.ewan.dunjeon.data.datastreams.HearingDataStream;
 import com.ewan.dunjeon.data.datastreams.SightDataStream;
+import com.ewan.dunjeon.server.game.StartServer;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.data.DataStreamParameters;
 import com.ewan.dunjeon.data.Sensor;
@@ -13,6 +14,8 @@ import org.dyn4j.geometry.Vector2;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ewan.dunjeon.server.game.StartServer.rand;
 
 public class TestSubject extends Creature {
     private List<Sensor<? extends DataStreamParameters>> senses = new ArrayList<>();
@@ -44,6 +47,8 @@ public class TestSubject extends Creature {
 
     }
 
+    int timeToNextSound = 50 + rand.nextInt(10);
+
     public void update(double stepSize) {
         super.update(stepSize);
 
@@ -56,7 +61,9 @@ public class TestSubject extends Creature {
         applyForce(velocityDiff.multiply(5));
         applyTorque(angularVelocityDiff*5);
 
-        if(Dunjeon.getInstance().getTimestamp().serverTick() % 10 == 0) {
+        timeToNextSound--;
+        if(timeToNextSound == 0){
+            timeToNextSound = 50 + rand.nextInt(10);
             Dunjeon.getInstance().getHearingDataStream().appendSoundEvent(new HearingDataStream.SoundRequest(getWorldCenter(), 1.0f, getUUID(), HeardSoundEvent.SoundSourceCategory.ENTITY));
         }
     }

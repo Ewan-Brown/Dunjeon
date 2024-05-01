@@ -126,6 +126,7 @@ public class Floor {
     public void updateCreatureControllers(double stepSize){
         for (CreatureController<?, ?> creatureController : creatureControllers) {
             creatureController.update(stepSize);
+            creatureController.getBasicMemoryBank().clearEvents();
         }
     }
 

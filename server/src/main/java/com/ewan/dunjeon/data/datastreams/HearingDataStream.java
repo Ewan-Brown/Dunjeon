@@ -26,12 +26,19 @@ public class HearingDataStream extends Datastream<HearingDataStream.HearingDataS
     @Override
     public void update(Dunjeon d) {
         for (Sensor<HearingDataStreamParameters> subscriber : getSubscribers()) {
+            HearingDataStreamParameters params = subscriber.getParameters();
 
             List<HeardSoundEvent> events = new ArrayList<>();
             for (SoundRequest sound : amalgamatedSoundEvents) {
-                HeardSoundEvent event = new HeardSoundEvent(sound.category, randomizeVector2(sound.sourceLocation, 0.5), 1.0f, sound.sourceUUID == subscriber.getParameters().sensorHostUUID, d.getTimestamp());
-                events.add(event);
+                if(sound.sourceUUID == subscriber.getParameters().sensorHostUUID){
+                    //TODO If player then they should probably be able to hear themselves for audio feedback
+                }else{
+                    HeardSoundEvent event = new HeardSoundEvent(sound.category, randomizeVector2(sound.sourceLocation, 0.1), 1.0f, sound.sourceUUID == subscriber.getParameters().sensorHostUUID, d.getTimestamp());
+                    events.add(event);
+                }
+
             }
+
             //Transform each of the existing soundrequests to heardSoundEvents for this subscriber
             subscriber.passOnEvents(events);
         }
