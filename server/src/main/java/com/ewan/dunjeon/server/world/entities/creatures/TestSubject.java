@@ -43,11 +43,11 @@ public class TestSubject extends Creature {
                         SightDataStream.SightStreamParameters.SightPenetration.BASIC)));
 
         senses.add(Dunjeon.getInstance().getDataStreamManager().getHearingDataStream().constructSensorForDatastream(this, c ->
-                new HearingDataStream.HearingDataStreamParameters(getWorldCenter(), getUUID())));
+                new HearingDataStream.HearingDataStreamParameters(getWorldCenter(), getUUID(), getFloor())));
 
     }
 
-    int timeToNextSound = 50 + rand.nextInt(10);
+    int timeToNextSound = 10 + rand.nextInt(10);
 
     public void update(double stepSize) {
         super.update(stepSize);
@@ -63,7 +63,7 @@ public class TestSubject extends Creature {
 
         timeToNextSound--;
         if(timeToNextSound == 0){
-            timeToNextSound = 50 + rand.nextInt(10);
+            timeToNextSound = 10 + rand.nextInt(10);
             Dunjeon.getInstance().getDataStreamManager().getHearingDataStream().appendSoundEvent(new HearingDataStream.SoundRequest(getWorldCenter(), 1.0f, getUUID(), HeardSoundEvent.SoundSourceCategory.ENTITY));
         }
     }

@@ -130,12 +130,12 @@ public class Floor {
         }
     }
 
-    public BasicCell getCellAt(int x, int y){
+    public Optional<BasicCell> getCellAt(int x, int y){
         if(x < 0 || y < 0 || x >= getWidth() || y >= getHeight()){
-            return null;
+            return Optional.empty();
         }
         else {
-            return cells[y][x];
+            return Optional.of(cells[y][x]);
         }
     }
 
@@ -144,8 +144,7 @@ public class Floor {
     }
 
     public void addEntitySpecificLocation(Entity e, double x, double y, double a){
-        BasicCell matchingCell = getCellAt((int)Math.floor(x), (int)Math.floor(y));
-        if(matchingCell == null) throw new Error(String.format("Cell at %f, %f is not valid because null", x, y));
+        BasicCell matchingCell = getCellAt((int)Math.floor(x), (int)Math.floor(y)).orElseThrow();
         if(matchingCell.isFilled()) throw new Error(String.format("Cell at %f, %f is not valid because it's filled", x, y));
         else {
             e.rotate(a, 0, 0);
@@ -170,10 +169,10 @@ public class Floor {
 
     }
 
-    public BasicCell getCellAt(double x, double y){
+    public Optional<BasicCell> getCellAt(double x, double y){
         return getCellAt((int)Math.floor(x),(int)Math.floor(y));
     }
-    public BasicCell getCellAt(Vector2 v){
+    public Optional<BasicCell> getCellAt(Vector2 v){
         return getCellAt((int)Math.floor(v.x), (int)Math.floor(v.y));
     }
 }

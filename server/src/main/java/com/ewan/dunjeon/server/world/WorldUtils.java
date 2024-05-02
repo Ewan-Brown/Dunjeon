@@ -292,7 +292,7 @@ public class WorldUtils {
         return Optional.of(new IntersectionData(new Vector2(nextInterceptX, nextInterceptY), new Vector2(nextTileX, nextTileY), side));
     }
 
-    public static List<Vector2> getMatchingTilesBetweenPoints(Vector2 pos1, Vector2 pos2, Predicate<Vector2> tilePredicate){
+    public static List<Vector2> getMatchingTilesBetweenPoints(Vector2 pos1, Vector2 pos2, Predicate<Vector2> tilePredicate, Predicate<Vector2> stopPredicate){
         if(logger.isDebugEnabled())
             logger.debug("getting matching tiles between : " + StringUtils.formatVector(pos1) + ", " + StringUtils.formatVector(pos2));
         List<Vector2> matchingTileCoords = new ArrayList<>();
@@ -303,6 +303,11 @@ public class WorldUtils {
                 if (logger.isDebugEnabled())
                     logger.debug("inspecting intersect: " + nextIntersectOpt.get());
 
+                if(stopPredicate.test(nextIntersectOpt.get().getCellCoordinate())){
+                    if (logger.isDebugEnabled())
+                        logger.debug("intersect is out of bounds, time to stop");
+                    break;
+                }
                 IntersectionData intersect = nextIntersectOpt.get();
                 if (tilePredicate.test(intersect.getCellCoordinate())) {
                     matchingTileCoords.add(intersect.getCellCoordinate());
@@ -433,5 +438,6 @@ public class WorldUtils {
         }
         return intersectionDatas;
     }
+
 
 }

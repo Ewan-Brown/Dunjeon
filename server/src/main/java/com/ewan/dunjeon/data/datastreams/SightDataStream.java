@@ -179,7 +179,7 @@ public class SightDataStream extends Datastream<SightDataStream.SightStreamParam
 
                         tileVisibilityMap.get(intersectionData.getCellCoordinate()).add(intersectionData.getSide());
 
-                        BasicCell basicCell = params.getSensorFloor().getCellAt(intersectionData.getCellCoordinate());
+                        BasicCell basicCell = params.getSensorFloor().getCellAt(intersectionData.getCellCoordinate()).orElseThrow();
                         Datas.CellEnterableData.EnterableStatus e = estimateEnterablePerspective(params.sightPenetration, basicCell);
 
                         switch(e){
@@ -376,7 +376,7 @@ public class SightDataStream extends Datastream<SightDataStream.SightStreamParam
 
                 // Do tile sight algorithm
                 for (Map.Entry<Vector2, Set<WorldUtils.Side>> tile : tileVisibilityMap.entrySet()) {
-                    BasicCell basicCell = params.sensorFloor.getCellAt(tile.getKey());
+                    BasicCell basicCell = params.sensorFloor.getCellAt(tile.getKey()).orElseThrow();
                     if (basicCell == null) continue;
                     Datas.CellData cellData = (new Datas.CellEnterableData(estimateEnterablePerspective(params.sightPenetration, basicCell)));
                     dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimestamp()));
@@ -431,7 +431,7 @@ public class SightDataStream extends Datastream<SightDataStream.SightStreamParam
 
         private final Vector2 sightSourceLocation; /// Where the eyeball at
         private final Boolean trueSight; //Magic sight that lets you see everything! (really just for debugging)
-        private final Floor sensorFloor;
+        private final Floor sensorFloor; //TODO REMOVEME?
         private final long sensorHostUUID;
         private final SightPenetration sightPenetration;
 
