@@ -435,7 +435,7 @@ public class SightDataStream extends Datastream<SightDataStream.SightStreamParam
         private final long sensorHostUUID;
         private final SightPenetration sightPenetration;
 
-        /*
+        /**
          * This represents the sensor's ability to see through certain things (e.x maybe some entities can see through doors)
          * Haven't really made use of it yet.
          * Basic is your typical "can't see through solid objects"

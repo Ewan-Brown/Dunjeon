@@ -119,11 +119,10 @@ public class ClientInterface implements GLEventListener {
 	protected void render(GL2 gl) {
 
 		gl.glPushMatrix();
-		gl.glColor3d(1,0,0);
-		gl.glScaled(0.06, 0.06, 1.0);
 
 		BasicMemoryBank basicMemoryBank = clientChannelHandler.getClientMemoryBank();
 		if(basicMemoryBank != null){
+			gl.glScaled(0.05, 0.05, 1.0);
 			renderMemoryBank(gl, basicMemoryBank);
 		}
 
@@ -169,6 +168,7 @@ public class ClientInterface implements GLEventListener {
 			throw new IllegalStateException("The client's entity is unaware of its own position! Aaaaaa");
 		}
 
+
 		gl.glTranslated(-lastCameraPos.x, -lastCameraPos.y, 0);
 		MultiQueryAccessor<CellPosition, Datas.CellData> cellQueryResults = basicMemoryBank.queryMultiPackage(Datas.CellData.class, List.of(Datas.CellEnterableData.class));
 
@@ -197,7 +197,8 @@ public class ClientInterface implements GLEventListener {
 			gl.glPopMatrix();
 		}
 
-		MultiQueryAccessor<Long, Datas.EntityData> entityQueryResults = basicMemoryBank.queryMultiPackage(Datas.EntityData.class, List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
+		MultiQueryAccessor<Long, Datas.EntityData> entityQueryResults = basicMemoryBank.queryMultiPackage(Datas.EntityData.class,
+				List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
 		logger.debug("# of known entities: " + entityQueryResults.getIndividualAccessors().size());
 		for (BasicMemoryBank.SingleQueryAccessor<Long, Datas.EntityData> singleQueryAccessor : entityQueryResults.getIndividualAccessors().values()) {
 			gl.glPushMatrix();
