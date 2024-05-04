@@ -10,10 +10,8 @@ import com.ewan.meworking.data.server.metadata.FrameInfoPacket;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import jdk.jfr.Event;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.math3.fraction.FractionConversionException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,6 +23,7 @@ import java.util.HashMap;
 public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     static Logger logger = LogManager.getLogger();
+    public static final Object drawLock = new Object();
 
     @Getter
     private BasicMemoryBank clientMemoryBank;
@@ -101,19 +100,24 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
             float updateDelta = 0;
             FrameInfoPacket prevFrameInfoPacket = mostRecentFrameInfoPacket;
             mostRecentFrameInfoPacket = gameFrames.get(releventTick).getFramePacket();
-            if(!isFirstFrame){
-                updateDelta = mostRecentFrameInfoPacket.timestamp().worldTime() - prevFrameInfoPacket.timestamp().worldTime();
+            synchronized (drawLock) {
+                if (!isFirstFrame) {
+                    updateDelta = mostRecentFrameInfoPacket.timestamp().worldTime() - prevFrameInfoPacket.timestamp().worldTime();
+                }
+//            if(gameFrames.size() % 10 == 0) {
+                ClientInterface.setCurrentTick(releventTick);
+                for (DataWrapper<?, ?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
+                    clientMemoryBank.processWrappedData(collectedDatum);
+                }
             }
-            for (DataWrapper<?,?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
-                clientMemoryBank.processWrappedData(collectedDatum);
-            }
-            if(!isFirstFrame) {
-                eventManager.updateEvents(updateDelta);
-            }
-            for (ObservedEvent event : gameFrames.get(releventTick).getCollectedEvents()) {
-                eventManager.processEvent(event);
-            }
-            isFirstFrame = false;
+                if (!isFirstFrame) {
+                    eventManager.updateEvents(updateDelta);
+                }
+                for (ObservedEvent event : gameFrames.get(releventTick).getCollectedEvents()) {
+                    eventManager.processEvent(event);
+                }
+                isFirstFrame = false;
+//            }
         }
     }
 

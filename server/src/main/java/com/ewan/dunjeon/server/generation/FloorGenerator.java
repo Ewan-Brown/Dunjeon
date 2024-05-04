@@ -114,19 +114,21 @@ public class FloorGenerator {
     }
 
     public void generateDoorways(){
-        for (Door door : doors) {
-            int dx = door.entryPoints.get(0).x - door.x;
-            int dy = door.entryPoints.get(0).y - door.y;
-            int currentX = door.entryPoints.get(0).x;
-            int currentY = door.entryPoints.get(0).y;
-            while(true){
-                if(cells[currentY][currentX].isFilled()) {
-                    cells[currentY][currentX] = new BasicCell(currentX, currentY, floor, Color.GRAY);
-                    cells[currentY][currentX].setFilled(false);
-                    currentX += dx;
-                    currentY += dy;
-                }else{
-                    break;
+        if(doors != null) {
+            for (Door door : doors) {
+                int dx = door.entryPoints.get(0).x - door.x;
+                int dy = door.entryPoints.get(0).y - door.y;
+                int currentX = door.entryPoints.get(0).x;
+                int currentY = door.entryPoints.get(0).y;
+                while (true) {
+                    if (cells[currentY][currentX].isFilled()) {
+                        cells[currentY][currentX] = new BasicCell(currentX, currentY, floor, Color.GRAY);
+                        cells[currentY][currentX].setFilled(false);
+                        currentX += dx;
+                        currentY += dy;
+                    } else {
+                        break;
+                    }
                 }
             }
         }

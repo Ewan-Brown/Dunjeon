@@ -9,12 +9,14 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.Animator;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dyn4j.geometry.Vector2;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,9 +31,13 @@ public class ClientInterface implements GLEventListener {
 	private EventManager eventManager;
 	final static Vector2 lastCameraPos = new Vector2();
 
+	@Setter
+	private static int currentTick = 0;
+
 	public ClientInterface(ClientChannelHandler clientChannelHandler, EventManager eventManager) {
 		logger.info("Creating UI");
 		frame = new JFrame("Dungeon Client");
+
 
 		this.eventManager = eventManager;
 		this.clientChannelHandler = clientChannelHandler;
@@ -113,20 +119,22 @@ public class ClientInterface implements GLEventListener {
 
 	//Only reason to change this is if packets are being occasionally dropped and causing flickering. This is LAST resort.
 	private boolean isMemoryDataPresent(KnowledgeFragment<?> d){
-        return (clientChannelHandler.getMostRecentFrameInfoPacket().timestamp().serverTick() - d.getTime().serverTick()) == 0;
+        return (currentTick - d.getTime().serverTick()) == 0;
 	}
-	
+
+
 	protected void render(GL2 gl) {
+		synchronized (ClientChannelHandler.drawLock) {
+			gl.glPushMatrix();
 
-		gl.glPushMatrix();
+			BasicMemoryBank basicMemoryBank = clientChannelHandler.getClientMemoryBank();
+			if (basicMemoryBank != null) {
+				gl.glScaled(0.05, 0.05, 1.0);
+				renderMemoryBank(gl, basicMemoryBank);
+			}
 
-		BasicMemoryBank basicMemoryBank = clientChannelHandler.getClientMemoryBank();
-		if(basicMemoryBank != null){
-			gl.glScaled(0.05, 0.05, 1.0);
-			renderMemoryBank(gl, basicMemoryBank);
+			gl.glPopMatrix();
 		}
-
-		gl.glPopMatrix();
 
 //		gl.glBegin(GL2.GL_POLYGON);
 //		gl.glColor3d(1,0,0);
