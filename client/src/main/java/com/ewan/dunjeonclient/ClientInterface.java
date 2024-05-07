@@ -19,9 +19,9 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientInterface implements GLEventListener {
-	private static final long serialVersionUID = 5663760293144882635L;
 	static Logger logger = LogManager.getLogger();
 
 	@Getter
@@ -31,7 +31,8 @@ public class ClientInterface implements GLEventListener {
 	private EventManager eventManager;
 	final static Vector2 lastCameraPos = new Vector2();
 
-	@Setter
+	@Getter
+	private static final AtomicInteger nextCurrentTick = new AtomicInteger(0);
 	private static int currentTick = 0;
 
 	public ClientInterface(ClientChannelHandler clientChannelHandler, EventManager eventManager) {
@@ -98,6 +99,7 @@ public class ClientInterface implements GLEventListener {
 		if(logger.isTraceEnabled())
 			logger.trace("display() called");
 		// get the OpenGL context
+		currentTick = nextCurrentTick.get();
 		GL2 gl = glDrawable.getGL().getGL2();
 
 		// clear the screen
@@ -124,7 +126,7 @@ public class ClientInterface implements GLEventListener {
 
 
 	protected void render(GL2 gl) {
-		synchronized (ClientChannelHandler.drawLock) {
+//		synchronized (ClientChannelHandler.drawLock) {
 			gl.glPushMatrix();
 
 			BasicMemoryBank basicMemoryBank = clientChannelHandler.getClientMemoryBank();
@@ -134,15 +136,8 @@ public class ClientInterface implements GLEventListener {
 			}
 
 			gl.glPopMatrix();
-		}
+//		}
 
-//		gl.glBegin(GL2.GL_POLYGON);
-//		gl.glColor3d(1,0,0);
-//		gl.glVertex2d(0,0);
-//		gl.glVertex2d(1,0);
-//		gl.glVertex2d(1,1);
-//		gl.glVertex2d(0,1);
-//		gl.glEnd();
 	}
 
 	boolean debug_hasReceivedAnyValidPackets = false;
@@ -173,7 +168,8 @@ public class ClientInterface implements GLEventListener {
 			Vector2 cameraDiff =  lastCameraPos.difference(hostEntityPosition);
 			lastCameraPos.subtract(cameraDiff.multiply(0.003));
 		}else{
-			throw new IllegalStateException("The client's entity is unaware of its own position! Aaaaaa");
+			logger.error("The client's entity is unaware of its own position! Aaaaaa");
+			return;
 		}
 
 

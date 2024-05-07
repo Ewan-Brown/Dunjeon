@@ -95,31 +95,42 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (gameFrames.get(releventTick).isComplete()){
+
+            if(lastFrameReceivedTime != 0){
+                long diff = System.nanoTime() - lastFrameReceivedTime;
+                System.out.println(diff/1000000.0);
+            }
+            lastFrameReceivedTime = System.nanoTime();
+
             if(logger.isTraceEnabled())
                 logger.trace("frame for tick: " + releventTick +" is complete");
             float updateDelta = 0;
+
+            //Double buffering so we can swap when done
+            BasicMemoryBank clonedBank = clientMemoryBank.getShallowClone();
+            for (DataWrapper<?, ?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
+                clonedBank.processWrappedData(collectedDatum);
+            }
             FrameInfoPacket prevFrameInfoPacket = mostRecentFrameInfoPacket;
             mostRecentFrameInfoPacket = gameFrames.get(releventTick).getFramePacket();
-            synchronized (drawLock) {
-                if (!isFirstFrame) {
-                    updateDelta = mostRecentFrameInfoPacket.timestamp().worldTime() - prevFrameInfoPacket.timestamp().worldTime();
-                }
-//            if(gameFrames.size() % 10 == 0) {
-                ClientInterface.setCurrentTick(releventTick);
-                for (DataWrapper<?, ?> collectedDatum : gameFrames.get(releventTick).getCollectedData()) {
-                    clientMemoryBank.processWrappedData(collectedDatum);
-                }
+            if (!isFirstFrame) {
+                updateDelta = mostRecentFrameInfoPacket.timestamp().worldTime() - prevFrameInfoPacket.timestamp().worldTime();
             }
-                if (!isFirstFrame) {
-                    eventManager.updateEvents(updateDelta);
-                }
-                for (ObservedEvent event : gameFrames.get(releventTick).getCollectedEvents()) {
-                    eventManager.processEvent(event);
-                }
-                isFirstFrame = false;
-//            }
+            clientMemoryBank = clonedBank;
+            ClientInterface.getNextCurrentTick().set(releventTick);
+
+            //TODO We've now introduced a double buffered memory bank, we need to do the same for Event Manager
+            if (!isFirstFrame) {
+                eventManager.updateEvents(updateDelta);
+            }
+            for (ObservedEvent event : gameFrames.get(releventTick).getCollectedEvents()) {
+                eventManager.processEvent(event);
+            }
+            isFirstFrame = false;
         }
     }
+
+    long lastFrameReceivedTime = 0;
 
     public void sendMessageToClient(ClientInputData data){
         server.writeAndFlush(data);

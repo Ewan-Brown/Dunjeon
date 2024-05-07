@@ -59,8 +59,14 @@ public class ManagedClient {
         }
     }
 
+    long lastSendTime = 0;
+
     public void sendDataToClient(Channel channel){
         if(isConnectionActive) {
+            if(lastSendTime != 0){
+                System.out.println("Time between frames sent: " + (System.nanoTime() - lastSendTime)/1000000.0 +" ms");
+            }
+            lastSendTime = System.nanoTime();
             logger.debug("sending some data to client: " + channel.toString());
             //We need to ensure that the client knows how many datawrappers to expect before it can draw its next frame, as well as what creature it is attached to
             logger.debug("sending frameInfoPacket for " + unProcessedDataWrappers.size() +" # of datas on frame" + Dunjeon.getInstance().getTimestamp());

@@ -27,7 +27,7 @@ public class TestSubject extends Creature {
     private double desiredAngularVelocity = 0;
 
     public TestSubject(String name) {
-        this(name, false);
+        this(name, true);
 
     }
 

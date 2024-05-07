@@ -24,7 +24,6 @@ public class KnowledgePackage<I, D extends Data> {
         this.dataMap = dataMap;
     }
 
-
     @SuppressWarnings("unchecked")
     public <T extends KnowledgeFragment<D>> void register(T object){
 

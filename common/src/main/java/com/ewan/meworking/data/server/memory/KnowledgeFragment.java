@@ -5,7 +5,10 @@ import com.ewan.meworking.data.server.Timestamp;
 import com.ewan.meworking.data.server.data.Data;
 import lombok.Getter;
 
-
+/**
+ * Immutable, atomic data + requred time/source context
+ * @param <D>
+ */
 @Getter
 public class KnowledgeFragment<D extends Data> {
 

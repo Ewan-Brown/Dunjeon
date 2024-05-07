@@ -7,10 +7,7 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-        import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BasicMemoryBank extends DataSink {
@@ -39,13 +36,13 @@ public class BasicMemoryBank extends DataSink {
         listeners.add(lis);
     }
 
-    public record Pairing<I, D extends Data, K extends KnowledgePackage<I,? extends D>>
-            (ConcurrentHashMap<I, K> knowledgeMap, Class<D> relatedBaseDataClass){}
+    public record Pairing<I, D extends Data, P extends KnowledgePackage<I,? extends D>>
+            (ConcurrentHashMap<I, P> knowledgeMap, Class<D> relatedBaseDataClass){}
 
     //TODO Does it really make sense to store events in the memory bank
     private List<ObservedEvent> unprocessedEvents = new ArrayList<>();
     //Each pairing in this list is a for specific 'category' of knowledge - defined by the base Data class. For example EntityData/FloorData/CellData are 3 existing categories.
-    final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings;
+    private final List<Pairing<?, ? extends Data, ? extends KnowledgePackage<? , ?>>> knowledgeDataPairings;
 
     public void addEvent(ObservedEvent e){
         for (MemoryBankListener listener : listeners) {
@@ -66,7 +63,7 @@ public class BasicMemoryBank extends DataSink {
 
     //Unwrap data to understand its context, and place it in the appropriate knowledge object
     @SuppressWarnings("unchecked")
-    public <T extends Data, I, P extends KnowledgePackage<I,T>> void processWrappedData(DataWrapper<T, I> wrappedData){
+    public <D extends Data, I, P extends KnowledgePackage<I, D>> void processWrappedData(DataWrapper<D, I> wrappedData){
 
         for (MemoryBankListener listener : listeners) {
             listener.processWrappedData(wrappedData);
@@ -84,11 +81,11 @@ public class BasicMemoryBank extends DataSink {
         P relevantPackage = hashMap.get(wrappedData.getIdentifier());
 
         if(relevantPackage == null){
-            relevantPackage = (P) new KnowledgePackage<I, T>(wrappedData.getIdentifier());
+            relevantPackage = (P) new KnowledgePackage<I, D>(wrappedData.getIdentifier());
             hashMap.put(wrappedData.getIdentifier(), relevantPackage);
         }
-        for (T datum : wrappedData.getData()) {
-            KnowledgeFragment<T> fragment = new KnowledgeFragment<>(datum, null, wrappedData.getTimestamp());
+        for (D datum : wrappedData.getData()) {
+            KnowledgeFragment<D> fragment = new KnowledgeFragment<>(datum, null, wrappedData.getTimestamp());
             relevantPackage.register(fragment);
         }
 
@@ -98,12 +95,12 @@ public class BasicMemoryBank extends DataSink {
     //************** ACCESSORS ***************//
 
     @SuppressWarnings("unchecked")
-    public <I, D extends Data, K extends KnowledgePackage<I,D>> Optional<SingleQueryAccessor<I, D>> querySinglePackage(I identifier, Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
+    public <I, D extends Data, P extends KnowledgePackage<I,D>> Optional<SingleQueryAccessor<I, D>> querySinglePackage(I identifier, Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
         Optional<?> pairingOptional = knowledgeDataPairings.stream().filter(p -> p.relatedBaseDataClass() == baseClazz).findAny();
         if(pairingOptional.isPresent()) {
-            Pairing<I, D, K> pairing = (Pairing<I, D, K>) pairingOptional.get();
-            ConcurrentHashMap<I, K> knowledgeMap = pairing.knowledgeMap();
-            K knowledgePackage = knowledgeMap.get(identifier);
+            Pairing<I, D, P> pairing = (Pairing<I, D, P>) pairingOptional.get();
+            ConcurrentHashMap<I, P> knowledgeMap = pairing.knowledgeMap();
+            P knowledgePackage = knowledgeMap.get(identifier);
             if (knowledgePackage == null) {
                 return Optional.empty();
             }
@@ -120,20 +117,20 @@ public class BasicMemoryBank extends DataSink {
     }
 
     @SuppressWarnings("unchecked")
-    public <I, D extends Data, K extends KnowledgePackage<I,D>> MultiQueryAccessor<I, D> queryMultiPackage(Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
-        Pairing<I, D, K> pairing = (Pairing<I, D, K>) knowledgeDataPairings.stream().filter(p -> p.relatedBaseDataClass == baseClazz).findFirst().orElseThrow();
-        ConcurrentHashMap<I, K> hashMap = pairing.knowledgeMap();
+    public <I, D extends Data, P extends KnowledgePackage<I,D>> MultiQueryAccessor<I, D> queryMultiPackage(Class<D> baseClazz, List<Class<? extends D>> requiredClasses){
+        Pairing<I, D, P> pairing = (Pairing<I, D, P>) knowledgeDataPairings.stream().filter(p -> p.relatedBaseDataClass == baseClazz).findFirst().orElseThrow();
+        ConcurrentHashMap<I, P> hashMap = pairing.knowledgeMap();
         HashMap<I, SingleQueryAccessor<I, D>> individualAccessors = new HashMap<>();
         packages:
-        for (K k : hashMap.values()) {
+        for (P p : hashMap.values()) {
             for (Class<? extends D> requestedClass : requiredClasses) {
-                if (k.get(requestedClass) == null){
+                if (p.get(requestedClass) == null){
                     continue packages;
                 }
             }
             //All requestedClasses are valid! Add this package to the collection.
-            SingleQueryAccessor<I, D> accessor = new SingleQueryAccessor<>(k, requiredClasses);
-            individualAccessors.put(k.getIdentifier(), accessor);
+            SingleQueryAccessor<I, D> accessor = new SingleQueryAccessor<>(p, requiredClasses);
+            individualAccessors.put(p.getIdentifier(), accessor);
         }
 
         return new MultiQueryAccessor<>(requiredClasses, individualAccessors);
@@ -175,7 +172,6 @@ public class BasicMemoryBank extends DataSink {
 
     }
 
-
     public long getOwnerUUID(){
         if(ownerUUID == null){
             throw new RuntimeException("Client side Basic Memory Bank doesn't store owner UUID yet - use the FrameInfo packet instead");
@@ -183,4 +179,39 @@ public class BasicMemoryBank extends DataSink {
             return ownerUUID;
         }
     }
+
+    public BasicMemoryBank getShallowClone(){
+        BasicMemoryBank clone = new BasicMemoryBank();
+        for (var knowledgeDataPairing : knowledgeDataPairings) {
+            var newPairing = getShallowClone(knowledgeDataPairing);
+            clone.knowledgeDataPairings.add(newPairing);
+        }
+
+        return clone;
+    }
+
+
+    //TODO Clean this up...
+    @SuppressWarnings("unchecked") //trust
+    private <I, D extends Data, P extends KnowledgePackage<I,D>> Pairing<?, ?, ?> getShallowClone(Pairing<?, ?, ?> pairing){
+        Pairing<I, D, P> p2 = (Pairing<I, D, P>) pairing;
+        final Class<D> baseClazz = p2.relatedBaseDataClass();
+        ConcurrentHashMap<I, P> newMap = new ConcurrentHashMap<>();
+        for (var entry : p2.knowledgeMap().entrySet()) {
+            I identifier = entry.getKey();
+            P newPackage = getShallowClone(entry.getValue());
+            newMap.put(identifier, newPackage);
+        }
+
+        return new Pairing<>(newMap, baseClazz);
+    }
+
+    @SuppressWarnings("unchecked") //trust
+    public <I, D extends Data, K extends KnowledgePackage<I, D>> K getShallowClone(K oldPackage){
+        return (K) new KnowledgePackage<>(oldPackage.getIdentifier(),
+                (HashMap<Class<? extends D>, KnowledgeFragment<? extends D>>) oldPackage.getDataMap().clone());
+    }
+
+
+
 }
