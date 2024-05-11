@@ -66,6 +66,7 @@ public class ManagedClient {
             if(lastSendTime != 0){
                 System.out.println("Time between frames sent: " + (System.nanoTime() - lastSendTime)/1000000.0 +" ms");
             }
+            long t0 = System.nanoTime();
             lastSendTime = System.nanoTime();
             logger.debug("sending some data to client: " + channel.toString());
             //We need to ensure that the client knows how many datawrappers to expect before it can draw its next frame, as well as what creature it is attached to
@@ -87,6 +88,8 @@ public class ManagedClient {
                 eventCount++;
             }
             unprocessedEvents.clear();
+            long t1 = System.nanoTime();
+            System.out.println("Time spent packaging data: " + (t1 - t0)/1000000.0 +" ms");
         }
     }
 }

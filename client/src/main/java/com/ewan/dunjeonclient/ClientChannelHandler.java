@@ -98,7 +98,7 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
             if(lastFrameReceivedTime != 0){
                 long diff = System.nanoTime() - lastFrameReceivedTime;
-                System.out.println(diff/1000000.0);
+                System.out.println("Tick:[" + releventTick+"] Time between receiving frames:" + diff/1000000.0 + " ms");
             }
             lastFrameReceivedTime = System.nanoTime();
 

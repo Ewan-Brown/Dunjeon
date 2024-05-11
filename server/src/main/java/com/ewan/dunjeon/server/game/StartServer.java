@@ -38,15 +38,22 @@ public class StartServer {
     private static void updateCurrentWorld(){
         Dunjeon w = Dunjeon.getInstance();
         try {
-            Thread.sleep(DESIRED_FRAMETIME_NS/1000000L);
             long t0 = System.nanoTime();
             w.update(1.0f);
             long t1 = System.nanoTime();
-            System.out.println("Server Update took :" + (t1-t0)/1000000.0 + " ms");
-        } catch (InterruptedException e) {
+            long diff = t1 - t0;
+            System.out.println("World Update took :" + (diff)/1000000.0 + " ms");
+            if(diff < DESIRED_FRAMETIME_NS) {
+                Thread.sleep((DESIRED_FRAMETIME_NS - diff) / 1000000L);   
+            }
+
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        long t0 = System.nanoTime();
         ServerManager.sendDataToClients();
+        long t1 = System.nanoTime();
+        System.out.println("Networking Update took :" + (t1-t0)/1000000.0 + " ms");
     }
 
     private static void generateWorld(){
