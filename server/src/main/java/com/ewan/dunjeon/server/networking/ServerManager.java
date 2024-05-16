@@ -3,7 +3,6 @@ package com.ewan.dunjeon.server.networking;
 import com.ewan.dunjeon.data.datastreams.SightDataStream;
 import com.ewan.dunjeon.server.world.Dunjeon;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
-import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.meworking.codec.ClientDataDecoder;
 import com.ewan.meworking.data.client.ClientInputDataWrapper;
 import com.ewan.meworking.codec.KryoPreparator;
@@ -20,14 +19,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Interface between packets and server. Send and receive.
  */
 public class ServerManager {
 
-    private static final HashMap<InetSocketAddress, ManagedClient> clientHandlerHashMap = new HashMap<>(); //TODO add a thing that removes clients when they disconnect - IF PLAYER CLIENT CRASHES HOW CAN A UDP BASED SERVER KNOW?! MAYBE SEND KEEPALIVE MESSAGES?
+    private static final HashMap<InetSocketAddress, ManagedClient> clientHandlerHashMap = new HashMap<>(); //TODO add a thing that removes clients when they disconnect - maybe implement keepalive or something too?
+    static List<InetSocketAddress> allClientRequests = new ArrayList<>();
     private static Channel channel;
     static Logger logger = LogManager.getLogger();
 
@@ -81,10 +83,12 @@ public class ServerManager {
                 }
             }
 
-            if(!clientHandlerHashMap.containsKey(dataWrapper.sender())){
-
-                ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
-                clientHandlerHashMap.put(address, new ManagedClient(controller, address));
+            if(!allClientRequests.contains(address)){
+//                ClientBasedController<TestSubject, TestSubject.TestSubjectControls> controller = Dunjeon.getInstance().createClientTestCreatureAndGetController();
+//                clientHandlerHashMap.put(address, new ManagedClient(controller, address));
+                NewClientJoin newClientJoin = new NewClientJoin(address);
+                Dunjeon.getInstance().requestNewClient(newClientJoin);
+                allClientRequests.add(address);
 
             }
             //Process input as necessary
@@ -94,6 +98,9 @@ public class ServerManager {
         }
     }
 
+    public static void mapRegisteredClient(InetSocketAddress address, ClientBasedController<?, ?> controller){
+        clientHandlerHashMap.put(address, new ManagedClient(controller, address));
+    }
     public static void sendDataToClients(){
         for (ManagedClient handler : clientHandlerHashMap.values()) {
             handler.sendDataToClient(channel);

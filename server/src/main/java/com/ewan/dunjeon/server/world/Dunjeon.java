@@ -1,8 +1,8 @@
 package com.ewan.dunjeon.server.world;
 
 import com.ewan.dunjeon.data.datastreams.DataStreamManager;
-import com.ewan.dunjeon.data.datastreams.HearingDataStream;
-import com.ewan.dunjeon.data.datastreams.SightDataStream;
+import com.ewan.dunjeon.server.networking.NewClientJoin;
+import com.ewan.dunjeon.server.networking.ServerManager;
 import com.ewan.dunjeon.server.world.entities.ClientBasedController;
 import com.ewan.dunjeon.server.world.entities.ClientBasedTestSubjectController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
@@ -27,6 +27,7 @@ public class Dunjeon{
     @Getter
     private final DataStreamManager dataStreamManager = new DataStreamManager();
 
+    private List<NewClientJoin> awaitingClients = new ArrayList<>();
     /**
      * How much in-world time has passed
      */
@@ -51,6 +52,7 @@ public class Dunjeon{
      */
     public void update(float t){
         logger.debug("calling Update");
+        registerNewClients();
         this.timeElapsed += t;
         this.ticksElapsed += 1;
 
@@ -66,7 +68,7 @@ public class Dunjeon{
         dataStreamManager.update(t, this);
     }
 
-    public ClientBasedController<TestSubject, TestSubject.TestSubjectControls> createClientTestCreatureAndGetController(){
+    private ClientBasedController<TestSubject, TestSubject.TestSubjectControls> createClientTestCreatureAndGetController(NewClientJoin newClient){
         TestSubject testSubject = new TestSubject("Player");
         testSubject.addFixture(new Rectangle(0.5,0.5));
         testSubject.setMass(new Mass(new Vector2(),1,1));
@@ -76,6 +78,19 @@ public class Dunjeon{
         this.floors.get(0).addEntityRandomLoc(testSubject);
         this.floors.get(0).addCreatureController(controller);
         return controller;
+    }
+
+    public void requestNewClient(NewClientJoin newClient){
+        awaitingClients.add(newClient);
+    }
+
+    private void registerNewClients(){
+        List<NewClientJoin> clientsToAdd = awaitingClients;
+        awaitingClients = new ArrayList<>();
+        for (NewClientJoin newClient : clientsToAdd) {
+            var newController = createClientTestCreatureAndGetController(newClient);
+            ServerManager.mapRegisteredClient(newClient.address(), newController);
+        }
     }
 
 }
