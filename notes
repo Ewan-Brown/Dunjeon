@@ -1,4 +1,8 @@
-Reworking some logic around Datastreams as I start adding the hearing/feeling stuff.
-- IMO no datastreams should have direct access to the Sensor's source. They should HAVE to entirely work within the limits of the parameters provided by the sensor.
-- This means that I need to rework the 'basicCell.canSeeThrough(Entity e) function' - instead, I am going to use the new 'SightPenetration' enum so we can just do a compare against the 'level' of object density vs entity sight perception
-- This means rewriting a bunch of code which I don't want to do right now :)
+FIXED:
+  ConcurrentModificationException in dyn4j update : I thik this is because the Dunjeon is trying to add the new client's entity to the list while Dyn4J is updating it. Should be fixed anyways this is lazy and dangerous
+  Server -> Client side data updates are now thread safe (do a shallow copy of BasicMemoryBank to double buffer)
+
+FIXES TO DO:
+ - The frame-frame time on client is behind server. I think this is because of decoder performance being too slow?
+ - on client+server start, params.GetFloor() is null in SightDataStream : The getter here is definitely being set to null.
+ - Server -> Client event updates are NOT thread safe (note the flickering of the sound events)
