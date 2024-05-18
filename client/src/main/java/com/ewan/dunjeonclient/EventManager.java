@@ -30,10 +30,10 @@ public class EventManager {
 
                     @Override
                     public void doSomeRendering(GL2 gl) {
-//                        final double completePercent = Math.cos((tickCount) / LIFE * Math.PI/2);
+                        final double progress = Math.cos((tickCount) / LIFE * Math.PI/2);
                         gl.glPushMatrix();
                         gl.glTranslated(event.getApproxLocation().x, event.getApproxLocation().y, 0);
-//                        gl.glScaled(completePercent/3.0+intensity,completePercent/3.0+intensity,completePercent/3.0+intensity);
+                        gl.glScaled(progress,progress,progress);
 //                        gl.glRotated(this.tickCount / 100.0 * 360.0,0,0,1);
                         gl.glColor4d(1, 0, 1, intensity);
                         gl.glBegin(GL2.GL_POLYGON);

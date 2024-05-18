@@ -47,7 +47,7 @@ public class TestSubject extends Creature {
 
     }
 
-    int timeToNextSound = 10 + rand.nextInt(10);
+    int timeToNextSound = 200;
 
     public void update(double stepSize) {
         super.update(stepSize);
@@ -63,7 +63,7 @@ public class TestSubject extends Creature {
 
         timeToNextSound--;
         if(timeToNextSound == 0){
-            timeToNextSound = 10 + rand.nextInt(10);
+            timeToNextSound = 200;
             Dunjeon.getInstance().getDataStreamManager().getHearingDataStream().appendSoundEvent(new HearingDataStream.SoundRequest(getWorldCenter(), 1.0f, getUUID(), HeardSoundEvent.SoundSourceCategory.ENTITY));
         }
     }
