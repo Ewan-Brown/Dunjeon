@@ -149,6 +149,14 @@ public class BasicMemoryBank extends DataSink {
             identifier = knowledgePackage.getIdentifier();
         }
 
+        public <T extends D> Optional<KnowledgeFragment<T>> attemptGetKnowledge(Class<T> clazz){
+            if(!requestedClasses.contains(clazz)){
+                return Optional.empty();
+            }else{
+                return Optional.of(relatedPackage.get(clazz));
+            }
+        }
+
         public <T extends D> KnowledgeFragment<T> getKnowledge(Class<T> clazz){
             if(!requestedClasses.contains(clazz)){
                 throw new IllegalArgumentException("Attempted to retrieve knowledge who's type was not part of requested classes: " + clazz.getName()+" requestedClasses: " + requestedClasses);

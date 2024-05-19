@@ -2,6 +2,7 @@ package com.ewan.dunjeon.server.game;
 
 import com.ewan.dunjeon.server.networking.ServerManager;
 import com.ewan.dunjeon.server.generation.FloorGenerator;
+import com.ewan.dunjeon.server.world.entities.ai.TestSubjectAIController;
 import com.ewan.dunjeon.server.world.entities.creatures.TestSubject;
 import com.ewan.dunjeon.server.world.floor.Floor;
 import com.ewan.dunjeon.server.world.Dunjeon;
@@ -88,8 +89,10 @@ public class StartServer {
 
         for (int i = 0; i < entityCount; i++) {
             TestSubject npcTestSubject = new TestSubject("NPC");
+            TestSubjectAIController controller = new TestSubjectAIController(npcTestSubject);
             npcTestSubject.addFixture(new Rectangle(0.5,0.5));
             npcTestSubject.setMass(new Mass(new Vector2(),1,100));
+            startFloor.addCreatureController(controller);
             startFloor.addEntityRandomLoc(npcTestSubject);
         }
     }

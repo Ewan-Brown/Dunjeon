@@ -4,10 +4,13 @@ package com.ewan.dunjeon.server.generation;
 import com.ewan.dunjeon.server.world.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dyn4j.geometry.Rectangle;
+import org.dyn4j.geometry.Vector2;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * I'm afraid to delete this... a bit of an artifact
@@ -16,22 +19,21 @@ public class PathFinding {
 
     static Logger logger = LogManager.getLogger();
 
-    public static List<Point> getAStarPath(double[][] primitiveWeightMap, Point startNode, Point targetNode, boolean print, CornerInclusionRule cornerRule, double weightAgainstTurning, boolean includeStartNodeInPath){
-
+    public static List<Point> getAStarPath(Function<Vector2, Double> weightProvider, Point startNode, Point targetNode, Point lowPoint, Point highPoint, boolean print, CornerInclusionRule cornerRule, double weightAgainstTurning, boolean includeStartNodeInPath){
 
         int outerCount = 0;
         int innerCount = 0;
         int secondCount = 0;
 
-        int height = primitiveWeightMap.length;
-        int width = primitiveWeightMap[0].length;
+        int height = highPoint.y - lowPoint.y;
+        int width = highPoint.x - lowPoint.x;
 
-        Double[][] weightMap = new Double[height][width];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                weightMap[y][x] = primitiveWeightMap[y][x];
-            }
-        }
+//        Double[][] weightMap = new Double[height][width];
+//        for (int y = 0; y < height; y++) {
+//            for (int x = 0; x < width; x++) {
+//                weightMap[y][x] = primitiveWeightMap[y][x];
+//            }
+//        }
 
         List<Point> openNodes = new ArrayList<>();
         List<Point> closedNodes = new ArrayList<>();
@@ -51,9 +53,9 @@ public class PathFinding {
         int shortestDistSoFar = Integer.MAX_VALUE;
 
         //Set the starting heuristic to 0
-        setVal(gMap, startNode, 0.0f);
-        setVal(hMap, startNode, 0.0f);
-        setVal(fMap, startNode, 0.0f);
+        setVal(gMap, startNode, 0.0d);
+        setVal(hMap, startNode, 0.0d);
+        setVal(fMap, startNode, 0.0d);
         setVal(prevDirMap, startNode, null);
         openNodes.add(startNode);
 
@@ -70,7 +72,7 @@ public class PathFinding {
 
             openNodes.remove(0);
             closedNodes.add(currentNode);
-            List<Pair<Point, Boolean>>  neighbors = getAdjacent(currentNode, width, height, cornerRule, weightMap);
+            List<Pair<Point, Boolean>>  neighbors = getAdjacent(currentNode, width, height, cornerRule, weightProvider);
             for (Pair<Point, Boolean> successorPair : neighbors) {
                 innerCount++;
                 Point successor = successorPair.getElement0();
@@ -85,14 +87,14 @@ public class PathFinding {
 
 
                 //Calculate next G. equal to last cell's G + cost to move to this cell.
-                //Note that cost is multiplied by root of 2 (1.41 if diagonal movement!)
+                //Note that cost is multiplied by sqrt of 2 if diagonal movement!
                 double successorG = getVal(gMap, currentNode) +
-                        getVal(weightMap, successor) * ((successorPair.getElement1()) ? 1.41f : 1f);
-                double successorH = (Math.abs(targetNode.x - successor.x) + Math.abs(targetNode.y - successor.y)) / 10f; //FIXME Why is this ALWAYS Manhattan distance? FOr AI Too?
+                        weightProvider.apply(new Vector2(successor.x, successor.y)) * ((successorPair.getElement1()) ? 1.41f : 1f);
+                double successorH = (Math.abs(targetNode.x - successor.x) + Math.abs(targetNode.y - successor.y)) / 10f; //FIXME Is manhattan distance really appropriate here
 
 
                 Double currentAngleObj = getVal(prevDirMap, currentNode);
-                double successorAngle = (double)Math.atan2(successor.y - currentNode.y, successor.x - currentNode.x);
+                double successorAngle = Math.atan2(successor.y - currentNode.y, successor.x - currentNode.x);
                 if(currentAngleObj != null) {
                     if(Math.abs(currentAngleObj-successorAngle) > 0.001){ //FIXME Check if rounded doubles are equivalent... Sketchy but will work
                         successorG+=weightAgainstTurning;
@@ -169,7 +171,7 @@ public class PathFinding {
         map[p.y][p.x] = val;
     }
 
-    public static List<Pair<Point, Boolean>> getAdjacent(Point currentNode, int width, int height, CornerInclusionRule cornerRule, Double[][] weightMap){
+    public static List<Pair<Point, Boolean>> getAdjacent(Point currentNode, int width, int height, CornerInclusionRule cornerRule, Function<Vector2, Double> weightProvider){
         List<Pair<Point, Boolean>> neighbors = new ArrayList<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
@@ -181,8 +183,8 @@ public class PathFinding {
                     if(cornerRule == CornerInclusionRule.NO_CORNERS) continue;
                     //Is corner
                     //Points representing the tiles that are clipping, need to check if these are 'blocked'
-                    boolean side1 = weightMap[y][currentNode.x] == Double.POSITIVE_INFINITY;
-                    boolean side2 = weightMap[currentNode.y][x] == Double.POSITIVE_INFINITY;
+                    boolean side1 = weightProvider.apply(new Vector2(currentNode.x, y)) == Double.POSITIVE_INFINITY;
+                    boolean side2 = weightProvider.apply(new Vector2(currentNode.y, x)) == Double.POSITIVE_INFINITY;
                     int clippingCount = ((side1) ? 1 : 0) + ((side2) ? 1 : 0);
                     if(clippingCount <= cornerRule.clippingCornersAllowed){
                         neighbors.add(new Pair<>(new Point(x, y), true));
