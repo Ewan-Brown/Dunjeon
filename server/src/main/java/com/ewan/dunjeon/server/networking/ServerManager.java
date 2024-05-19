@@ -90,10 +90,11 @@ public class ServerManager {
                 Dunjeon.getInstance().requestNewClient(newClientJoin);
                 allClientRequests.add(address);
 
+            }else if(clientHandlerHashMap.containsKey(address)){
+                //Process input as necessary
+                ManagedClient clientController = clientHandlerHashMap.get(address);
+                clientController.passInputsToController(dataWrapper.clientInputData().inputs());
             }
-            //Process input as necessary
-            ManagedClient clientController = clientHandlerHashMap.get(address);
-            clientController.passInputsToController(dataWrapper.clientInputData().inputs());
 
         }
     }
