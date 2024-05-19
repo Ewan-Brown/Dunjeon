@@ -8,6 +8,7 @@ import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
+import org.dyn4j.geometry.Vector2;
 
 import java.awt.*;
 
@@ -51,6 +52,10 @@ public class BasicCell extends Body {
 
     public int getIntegerX(){return x;}
     public int getIntegerY(){return y;}
+
+    public Vector2 getGridPos(){
+        return new Vector2(x, y);
+    }
 
     public void update() {
 

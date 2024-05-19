@@ -19,8 +19,10 @@ public class PathFinding {
 
     static Logger logger = LogManager.getLogger();
 
-    public static List<Point> getAStarPath(Function<Vector2, Double> weightProvider, Point startNode, Point targetNode, Point lowPoint, Point highPoint, boolean print, CornerInclusionRule cornerRule, double weightAgainstTurning, boolean includeStartNodeInPath){
+    public static List<Point> getAStarPath(Function<Vector2, Double> weightProvider, Point startNodeAbsolute, Point targetNodeAbsolute, Point lowPoint, Point highPoint, boolean print, CornerInclusionRule cornerRule, double weightAgainstTurning, boolean includeStartNodeInPath){
 
+        Point startNodeRelative = new Point(startNodeAbsolute.x - lowPoint.x, startNodeAbsolute.y - lowPoint.y);
+        Point targetNodeRelative = new Point(targetNodeAbsolute.x - lowPoint.x, targetNodeAbsolute.y - lowPoint.y);
         int outerCount = 0;
         int innerCount = 0;
         int secondCount = 0;
@@ -53,11 +55,11 @@ public class PathFinding {
         int shortestDistSoFar = Integer.MAX_VALUE;
 
         //Set the starting heuristic to 0
-        setVal(gMap, startNode, 0.0d);
-        setVal(hMap, startNode, 0.0d);
-        setVal(fMap, startNode, 0.0d);
-        setVal(prevDirMap, startNode, null);
-        openNodes.add(startNode);
+        setVal(gMap, startNodeRelative, 0.0d);
+        setVal(hMap, startNodeRelative, 0.0d);
+        setVal(fMap, startNodeRelative, 0.0d);
+        setVal(prevDirMap, startNodeRelative, null);
+        openNodes.add(startNodeRelative);
 
         if(print) logger.info("Starting node looping");
         outerLoop:
@@ -76,7 +78,7 @@ public class PathFinding {
             for (Pair<Point, Boolean> successorPair : neighbors) {
                 innerCount++;
                 Point successor = successorPair.getElement0();
-                if (successor.equals(targetNode)) {
+                if (successor.equals(targetNodeRelative)) {
                     setVal(prevNodeMap, successor, currentNode);
                     break outerLoop;
                 }
@@ -89,8 +91,8 @@ public class PathFinding {
                 //Calculate next G. equal to last cell's G + cost to move to this cell.
                 //Note that cost is multiplied by sqrt of 2 if diagonal movement!
                 double successorG = getVal(gMap, currentNode) +
-                        weightProvider.apply(new Vector2(successor.x, successor.y)) * ((successorPair.getElement1()) ? 1.41f : 1f);
-                double successorH = (Math.abs(targetNode.x - successor.x) + Math.abs(targetNode.y - successor.y)) / 10f; //FIXME Is manhattan distance really appropriate here
+                        weightProvider.apply(new Vector2(successor.x + lowPoint.x, successor.y + lowPoint.y)) * ((successorPair.getElement1()) ? 1.41f : 1f);
+                double successorH = (Math.abs(targetNodeRelative.x - successor.x) + Math.abs(targetNodeRelative.y - successor.y)) / 10f; //FIXME Is manhattan distance really appropriate here
 
 
                 Double currentAngleObj = getVal(prevDirMap, currentNode);
@@ -120,19 +122,19 @@ public class PathFinding {
             }
         }
 
-        if(getVal(prevNodeMap, targetNode) == null){
+        if(getVal(prevNodeMap, targetNodeRelative) == null){
             return null;
         }else{
             secondCount++;
             List<Point> foundPath = new ArrayList<>();
-            Point currentPoint = targetNode;
+            Point currentPoint = targetNodeRelative;
             while(true){
 
                 foundPath.add(currentPoint);
                 currentPoint = getVal(prevNodeMap, currentPoint);
-                if(startNode.equals(currentPoint)){
+                if(startNodeRelative.equals(currentPoint)){
                     if(includeStartNodeInPath){
-                        foundPath.add(currentPoint);
+                        foundPath.add(new Point(currentPoint.x + lowPoint.x, currentPoint.y + lowPoint.y));
                     }
                     break;
                 }

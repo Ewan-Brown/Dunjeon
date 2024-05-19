@@ -191,7 +191,7 @@ public class ClientInterface implements GLEventListener {
 			}
 
 			Vector2 centerPos = new Vector2(position.getPosition());
-			gl.glTranslated(centerPos.x, centerPos.y, 0);
+			gl.glTranslated(centerPos.x + 0.5, centerPos.y + 0.5, 0);
 			gl.glBegin(GL2.GL_POLYGON);
 			gl.glVertex2d(-HALF_SIZE, -HALF_SIZE);
 			gl.glVertex2d(HALF_SIZE, -HALF_SIZE);
@@ -199,7 +199,10 @@ public class ClientInterface implements GLEventListener {
 			gl.glVertex2d(-HALF_SIZE, HALF_SIZE);
 			gl.glEnd();
 			gl.glPopMatrix();
+
 		}
+
+		eventManager.drawEvents(gl);
 
 		MultiQueryAccessor<Long, Datas.EntityData> entityQueryResults = basicMemoryBank.queryMultiPackage(Datas.EntityData.class,
 				List.of(Datas.EntityPositionalData.class, Datas.EntityKineticData.class));
@@ -231,7 +234,6 @@ public class ClientInterface implements GLEventListener {
 			gl.glPopMatrix();
 		}
 
-		eventManager.drawEvents(gl);
 
 
 	}

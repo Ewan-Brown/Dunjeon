@@ -64,7 +64,7 @@ public class ManagedClient {
     public void sendDataToClient(Channel channel){
         if(isConnectionActive) {
             if(lastSendTime != 0){
-                System.out.println("Tick:[" + Dunjeon.getInstance().getTimestamp().serverTick()+ "]  Time between frames sent: " + (System.nanoTime() - lastSendTime)/1000000.0 +" ms");
+//                System.out.println("Tick:[" + Dunjeon.getInstance().getTimestamp().serverTick()+ "]  Time between frames sent: " + (System.nanoTime() - lastSendTime)/1000000.0 +" ms");
             }
             long t0 = System.nanoTime();
             lastSendTime = System.nanoTime();

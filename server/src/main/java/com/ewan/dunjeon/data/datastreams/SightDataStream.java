@@ -66,7 +66,7 @@ public class SightDataStream extends Datastream<SightDataStream.SightStreamParam
 
                 for (BasicCell basicCell : params.sensorFloor.getCellsAsList()) {
                     Datas.CellData cellData = (new Datas.CellEnterableData(estimateEnterablePerspective(params.sightPenetration, basicCell)));
-                    dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimestamp()));
+                    dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getGridPos(), basicCell.getFloor().getUUID()), d.getTimestamp()));
                 }
 
                 for (Entity entity : params.sensorFloor.getEntities()){
@@ -379,7 +379,7 @@ public class SightDataStream extends Datastream<SightDataStream.SightStreamParam
                     BasicCell basicCell = params.sensorFloor.getCellAt(tile.getKey()).orElseThrow();
                     if (basicCell == null) continue;
                     Datas.CellData cellData = (new Datas.CellEnterableData(estimateEnterablePerspective(params.sightPenetration, basicCell)));
-                    dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getWorldCenter(), basicCell.getFloor().getUUID()), d.getTimestamp()));
+                    dataAmalgamated.add(DataWrappers.wrapCellData(List.of(cellData), new CellPosition(basicCell.getGridPos(), basicCell.getFloor().getUUID()), d.getTimestamp()));
                 }
 
                 int entity_count = 0;
